@@ -1,6 +1,6 @@
 // Copyright ©️ 2021 oddstream.games
 
-package maze
+package sol
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -24,31 +24,15 @@ var GSM *GameStateManager = &GameStateManager{}
 // TheAcmeFonts provides access to small, normal, large, huge Acme fonts
 var TheAcmeFonts *AcmeFonts = NewAcmeFonts()
 
-// TheGrid points to the Grid currently being played
-var TheGrid *Grid
-
 // TheUserData holds serialized game progress data
-var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Herding Kittens", CompletedLevels: 0}
-
-// LevelData width,height,ghosts
-var LevelData = [][]int{
-	{7, 5, 4},
-	{7, 7, 4},
-	{9, 7, 4},
-	{11, 7, 4},
-	{13, 9, 4},
-	{15, 11, 5},
-	{17, 13, 6},
-	{19, 15, 7},
-	{21, 17, 8},
-}
+var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire"}
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	g := &Game{}
 	// println("LevelData", len(LevelData))
 
-	TheUserData.Load()
+//	TheUserData.Load()
 
 	GSM.Switch(NewSplash())
 

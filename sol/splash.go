@@ -1,6 +1,6 @@
 // Copyright ©️ 2021 oddstream.games
 
-package maze
+package sol
 
 import (
 	"bytes"
@@ -84,7 +84,7 @@ func (s *Splash) Update() error {
 	if s.skew < 90 {
 		s.skew++
 	} else {
-		GSM.Switch(NewMenu())
+		GSM.Switch(NewBaize())
 	}
 
 	return nil

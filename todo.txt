@@ -1,2 +1,3 @@
+$ git branch -m master main
 
 + Card.go, String() and Id() func, testing

@@ -1,6 +1,6 @@
 // Copyright ©️ 2021 oddstream.games
 
-package maze
+package sol
 
 import "github.com/hajimehoshi/ebiten/v2"
 
