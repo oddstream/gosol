@@ -1,0 +1,2 @@
+
++ Card.go, String() and Id() func, testing
