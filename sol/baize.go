@@ -4,11 +4,14 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 // Baize object describes the baize
 type Baize struct {
+	shoe *Shoe
 }
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{}
+	b.shoe = NewShoe(1)
+	b.shoe.Shuffle()
 	return b
 }
 

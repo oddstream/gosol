@@ -10,22 +10,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-/*
-   {x = 5, y = 4, width = 71, height = 96},    -- Aquarium
-   {x = 85, y = 4, width = 71, height = 96},    -- CardHand
-   {x = 165, y = 4, width = 71, height = 96},    -- Castle
-   {x = 245, y = 4, width = 71, height = 96},    -- Empty
-   {x = 325, y = 4, width = 71, height = 96},    -- Fishes
-   {x = 405, y = 4, width = 71, height = 96},    -- FlowerBlack
-   {x = 485, y = 4, width = 71, height = 96},    -- FlowerBlue
-   {x = 5, y = 140, width = 71, height = 96},    -- PalmBeach
-   {x = 85, y = 140, width = 71, height = 96},    -- Pattern1
-   {x = 165, y = 140, width = 71, height = 96},    -- Pattern2
-   {x = 245, y = 140, width = 71, height = 96},    -- Robot
-   {x = 325, y = 140, width = 71, height = 96},    -- Roses
-   {x = 405, y = 140, width = 71, height = 96},    -- Shell
-*/
-
 var (
 	faceImageSheet *ebiten.Image
 	backImageSheet *ebiten.Image
@@ -85,7 +69,6 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	}
 	c.prone = true
 	c.id = c.String()
-
 	return c
 }
 
@@ -98,13 +81,23 @@ func (c *Card) ParseID(id string) {
 
 }
 
+// Layout implements ebiten.Game's Layout.
+func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return outsideWidth, outsideHeight
+}
+
+// Update the baize state (transitions, user input)
+func (c *Card) Update() error {
+	return nil
+}
+
 // Draw renders the baize into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(c.screenX, c.screenY)
 	if c.prone {
 		pt := backFrames["JazzCup"]
 		x, y := pt.X, pt.Y
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(c.screenX, c.screenY)
 		screen.DrawImage(backImageSheet.SubImage(image.Rect(x, y, x+71, y+96)).(*ebiten.Image), op)
 	} else {
 		var x, y int
@@ -119,8 +112,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			y = 96 + 96 + 96
 		}
 		x = (c.ordinal - 1) * 71
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(c.screenX, c.screenY)
 		screen.DrawImage(faceImageSheet.SubImage(image.Rect(x, y, x+71, y+96)).(*ebiten.Image), op)
 	}
 }
