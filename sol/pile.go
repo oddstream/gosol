@@ -1,30 +1,32 @@
 package sol
 
 import (
+	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
+
+var outline *ebiten.Image
+
+func init() {
+	dc := gg.NewContext(71, 96)
+	dc.SetColor(colorPile)
+	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
+	dc.Stroke()
+	outline = ebiten.NewImageFromImage(dc.Image())
+}
+
+// CardOwner is an interface to objects that can own cards (Pile and Pile 'subclasses')
+type CardOwner interface {
+	Position() (int, int)
+	Peek() *Card
+	Pop() *Card
+	Push(*Card)
+}
 
 // Pile is a generic container for cards
 type Pile struct {
 	cards []*Card
 	X, Y  int // grid position of Pile
-}
-
-// CreateCards fills the pile with packs*52 new cards
-func (p *Pile) CreateCards(packs int) *Pile {
-	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
-	for pack := 0; pack < packs; pack++ {
-		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
-			for ord := 1; ord < 14; ord++ {
-				c := NewCard(pack, suit, ord)
-				c.owner = p
-				c.PositionTo(p.X*71, p.Y*96)
-				p.cards = append(p.cards, c)
-			}
-		}
-	}
-	// println("created", len(p.cards), "cards")
-	return p
 }
 
 // Position returns the x,y screen coords of this pile
@@ -60,7 +62,7 @@ func (p *Pile) Push(c *Card) {
 	p.cards = append(p.cards, c)
 }
 
-// Update the baize state (transitions, user input)
+// Update the Pile state (transitions, user input)
 func (p *Pile) Update() error {
 	for _, c := range p.cards {
 		c.Update()
@@ -68,8 +70,14 @@ func (p *Pile) Update() error {
 	return nil
 }
 
-// Draw renders the card into the screen
+// Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
+
+	op := &ebiten.DrawImageOptions{}
+	x, y := p.Position()
+	op.GeoM.Translate(float64(x), float64(y))
+	screen.DrawImage(outline, op)
+
 	for _, c := range p.cards {
 		c.Draw(screen)
 	}

@@ -19,6 +19,22 @@ func NewStock(packs, x, y int) *Stock {
 	return s
 }
 
+// CreateCards fills the pile with packs*52 new cards
+func (s *Stock) CreateCards(packs int) {
+	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
+	for pack := 0; pack < packs; pack++ {
+		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
+			for ord := 1; ord < 14; ord++ {
+				c := NewCard(pack, suit, ord)
+				c.owner = s // Stock implements the CardOwner interface
+				c.PositionTo(s.X*71, s.Y*96)
+				s.cards = append(s.cards, c)
+			}
+		}
+	}
+	// println("created", len(p.cards), "cards")
+}
+
 // Shuffle the cards in the Stock
 func (s *Stock) Shuffle() {
 

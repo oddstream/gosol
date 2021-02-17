@@ -80,7 +80,7 @@ type Card struct {
 	prone   bool
 	id      string
 	color   color.RGBA
-	owner   *Pile
+	owner   CardOwner
 
 	screenX, screenY int     // current position on screen
 	srcX, srcY       float64 // smoothstep origin

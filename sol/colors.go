@@ -65,4 +65,5 @@ var ExtendedColors = map[string]color.RGBA{
 var (
 	colorBackground = color.RGBA{R: 0x50, G: 0x50, B: 0x50, A: 0xff}
 	colorBaize      = color.RGBA{R: 0, G: 0x50, B: 0, A: 0xff}
+	colorPile       = color.RGBA{R: 0, G: 0x75, B: 0, A: 0xff}
 )

@@ -10,8 +10,10 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	stock  *Stock
-	stroke *Stroke
+	stock       *Stock
+	waste       *Waste
+	foundations []*Foundation
+	stroke      *Stroke
 }
 
 // NewBaize is the factory func for Baize object
@@ -19,6 +21,12 @@ func NewBaize() *Baize {
 	b := &Baize{}
 	b.stock = NewStock(1, 1, 1)
 	b.stock.Shuffle()
+
+	b.waste = NewWaste(2, 1)
+
+	for i := 0; i < 4; i++ {
+		b.foundations = append(b.foundations, NewFoundation(4+i, 1))
+	}
 	return b
 }
 
@@ -84,7 +92,10 @@ func (b *Baize) Update() error {
 	}
 
 	b.stock.Update()
-
+	b.waste.Update()
+	for _, f := range b.foundations {
+		f.Update()
+	}
 	return nil
 }
 
@@ -94,4 +105,8 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	screen.Fill(colorBaize)
 
 	b.stock.Draw(screen)
+	b.waste.Draw(screen)
+	for _, f := range b.foundations {
+		f.Draw(screen)
+	}
 }
