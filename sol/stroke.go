@@ -2,6 +2,7 @@ package sol
 
 import (
 	"image"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -51,7 +52,10 @@ type Stroke struct {
 	// current X,Y represents the current position
 	current image.Point
 
+	startTime time.Time
+
 	released bool
+	tapped   bool
 
 	// draggingObject represents a object (like a tile) that is being dragged.
 	draggingObject interface{}
@@ -61,9 +65,10 @@ type Stroke struct {
 func NewStroke(source StrokeSource) *Stroke {
 	cx, cy := source.Position()
 	return &Stroke{
-		source:  source,
-		init:    image.Point{X: cx, Y: cy},
-		current: image.Point{X: cx, Y: cy},
+		source:    source,
+		init:      image.Point{X: cx, Y: cy},
+		current:   image.Point{X: cx, Y: cy},
+		startTime: time.Now(),
 	}
 }
 
@@ -74,6 +79,10 @@ func (s *Stroke) Update() {
 	}
 	if s.source.IsJustReleased() {
 		s.released = true
+		elapsed := time.Since(s.startTime) / 1000 / 1000 // convert nano- to milli- seconds
+		if elapsed < 125 {
+			s.tapped = true
+		}
 		return
 	}
 	x, y := s.source.Position()
@@ -83,6 +92,11 @@ func (s *Stroke) Update() {
 // IsReleased returns true if ...
 func (s *Stroke) IsReleased() bool {
 	return s.released
+}
+
+// IsTapped returns true if ...
+func (s *Stroke) IsTapped() bool {
+	return s.tapped
 }
 
 // Position returns the x,y position of the cursor

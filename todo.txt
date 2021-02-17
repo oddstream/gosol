@@ -1,5 +1,11 @@
 $ git branch -m master main
 
-+ keep all positions as int, cast to float64() in Draw()?
-+ go sort instead of bubble
++ Waste, Tableau, Foundation (green outline, Pile needs Draw)
++ Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
+
+x go sort instead of bubble
+x detect tap
+x keep all positions as int, cast to float64() in Draw()?
+x why isn't the top card on top? findCard needs to go backwards
+x 1.16 embed png

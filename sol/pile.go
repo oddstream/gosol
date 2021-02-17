@@ -18,7 +18,7 @@ func (p *Pile) CreateCards(packs int) *Pile {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
 				c.owner = p
-				c.PositionTo(float64(p.X*71), float64(p.Y*96))
+				c.PositionTo(p.X*71, p.Y*96)
 				p.cards = append(p.cards, c)
 			}
 		}
@@ -29,11 +29,27 @@ func (p *Pile) CreateCards(packs int) *Pile {
 
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return p.X * 71, p.Y * 91
+	return p.X * 71, p.Y * 96
+}
+
+// ToFront moves the Card to the top of the Pile (a stack)
+func (p *Pile) ToFront(c *Card) {
+
+}
+
+// Peek topmost Card  of this Pile (a stack)
+func (p *Pile) Peek() *Card {
+	if 0 == len(p.cards) {
+		return nil
+	}
+	return p.cards[len(p.cards)-1]
 }
 
 // Pop a Card off the end of this Pile (a stack)
 func (p *Pile) Pop() *Card {
+	if 0 == len(p.cards) {
+		return nil
+	}
 	c := p.cards[len(p.cards)-1]
 	p.cards = p.cards[:len(p.cards)-1]
 	return c

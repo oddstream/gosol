@@ -24,11 +24,17 @@ func NewBaize() *Baize {
 
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
-	for _, c := range b.stock.cards {
+	for i := len(b.stock.cards) - 1; i >= 0; i-- {
+		c := b.stock.cards[i]
 		if util.InRect(pt, c.Rect) {
 			return c
 		}
 	}
+	// for _, c := range b.stock.cards {
+	// 	if util.InRect(pt, c.Rect) {
+	// 		return c
+	// 	}
+	// }
 	return nil
 }
 
@@ -55,7 +61,7 @@ func (b *Baize) Update() error {
 		if c != nil {
 			b.stroke = s
 			b.stroke.SetDraggingObject(c)
-			// TODO move Card to front
+			// TODO move Card to front?
 		}
 	}
 
@@ -64,11 +70,15 @@ func (b *Baize) Update() error {
 		c := b.stroke.DraggingObject().(*Card)
 		pt := b.stroke.PositionDiff()
 		x, y := c.owner.Position()
-		c.PositionTo(float64(x+pt.X), float64(y+pt.Y))
+		c.PositionTo(x+pt.X, y+pt.Y)
 
 		if b.stroke.IsReleased() {
 			c := b.stroke.DraggingObject().(*Card)
 			c.TransitionBackToPile()
+
+			if b.stroke.IsTapped() {
+				println("tap detected on", c.id)
+			}
 			b.stroke = nil
 		}
 	}

@@ -1,15 +1,26 @@
 package sol
 
 import (
+	// go:embed only allowed in Go files that import "embed"
+	_ "embed"
+
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/util"
 )
+
+// golang gotcha: go:embed cannot apply to var inside func
+
+//go:embed cards71x96.png
+var faceBytes []byte
+
+//go:embed windows_16bit_cards.png
+var backBytes []byte
 
 var (
 	faceImageSheet *ebiten.Image
@@ -36,16 +47,29 @@ func init() {
 	// uses
 	// screen.DrawImage(tilesImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image), op)
 	// i.e. draws the tile direct from a subimage of imagesheet
+	/*
+		var err error
+		faceImageSheet, _, err = ebitenutil.NewImageFromFile("sol/cards71x96.png")
+		if err != nil {
+			log.Fatal("cannot load sol/cards71x96.png")
+		}
+		backImageSheet, _, err = ebitenutil.NewImageFromFile("sol/windows_16bit_cards.png")
+		if err != nil {
+			log.Fatal("cannot load sol/windows_16bit_cards.png")
+		}
+	*/
 
-	var err error
-	faceImageSheet, _, err = ebitenutil.NewImageFromFile("sol/cards71x96.png")
+	img, _, err := image.Decode(bytes.NewReader(faceBytes))
 	if err != nil {
-		log.Fatal("cannot load sol/cards71x96.png")
+		log.Fatal(err)
 	}
-	backImageSheet, _, err = ebitenutil.NewImageFromFile("sol/windows_16bit_cards.png")
+	faceImageSheet = ebiten.NewImageFromImage(img)
+
+	img, _, err = image.Decode(bytes.NewReader(backBytes))
 	if err != nil {
-		log.Fatal("cannot load sol/windows_16bit_cards.png")
+		log.Fatal(err)
 	}
+	backImageSheet = ebiten.NewImageFromImage(img)
 }
 
 // Card object
@@ -58,7 +82,7 @@ type Card struct {
 	color   color.RGBA
 	owner   *Pile
 
-	screenX, screenY float64 // current position on screen
+	screenX, screenY int     // current position on screen
 	srcX, srcY       float64 // smoothstep origin
 	dstX, dstY       float64 // smoothstep destination
 	lerpStep         float64 // current lerp value 0.0 .. 1.0
@@ -73,7 +97,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	} else {
 		c.color = BasicColors["Black"]
 	}
-	c.prone = true
+	c.prone = false
 	c.id = c.String()
 	return c
 }
@@ -97,21 +121,21 @@ func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
 }
 
 // PositionTo sets the position of the Card
-func (c *Card) PositionTo(x, y float64) {
+func (c *Card) PositionTo(x, y int) {
 	c.screenX, c.screenY = x, y
 }
 
 // TransitionTo starts the transition of this Card
-func (c *Card) TransitionTo(x, y float64) {
-	c.srcX, c.srcY = c.screenX, c.screenY
-	c.dstX, c.dstY = x, y
+func (c *Card) TransitionTo(x, y int) {
+	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+	c.dstX, c.dstY = float64(x), float64(y)
 	c.lerpStep = 0
 	c.lerping = true
 }
 
 // TransitionBackToPile starts the transition of this Card back to it's Pile
 func (c *Card) TransitionBackToPile() {
-	c.srcX, c.srcY = c.screenX, c.screenY
+	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
 	x, y := c.owner.Position()
 	c.dstX, c.dstY = float64(x), float64(y)
 	c.lerpStep = 0
@@ -127,11 +151,11 @@ func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (c *Card) Update() error {
 	if c.lerping {
 		if c.lerpStep >= 1 {
-			c.screenX, c.screenY = c.dstX, c.dstY
+			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
 			c.lerping = false
 		} else {
-			c.screenX = util.Smoothstep(c.srcX, c.dstX, c.lerpStep)
-			c.screenY = util.Smoothstep(c.srcY, c.dstY, c.lerpStep)
+			c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
+			c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
 			c.lerpStep += 0.05
 		}
 	}
@@ -141,7 +165,7 @@ func (c *Card) Update() error {
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(c.screenX, c.screenY)
+	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
 	if c.prone {
 		pt := backFrames["JazzCup"]
 		x, y := pt.X, pt.Y
