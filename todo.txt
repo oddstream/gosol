@@ -1,5 +1,6 @@
 $ git branch -m master main
 
++ Draw the Piles and THEN the cards
 + Waste, Tableau, Foundation (green outline, Pile needs Draw)
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
