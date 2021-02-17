@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"oddstream.games/gosol/util"
 )
 
 var (
@@ -55,8 +56,13 @@ type Card struct {
 	prone   bool
 	id      string
 	color   color.RGBA
+	owner   *Pile
 
-	screenX, screenY float64
+	screenX, screenY float64 // current position on screen
+	srcX, srcY       float64 // smoothstep origin
+	dstX, dstY       float64 // smoothstep destination
+	lerpStep         float64 // current lerp value 0.0 .. 1.0
+	lerping          bool    // true if this card is smoothstepping
 }
 
 // NewCard is the factory for Card objects
@@ -81,6 +87,37 @@ func (c *Card) ParseID(id string) {
 
 }
 
+// Rect gives the x,y screen coords of the card's top left and bottom right corners
+func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
+	x0 = int(c.screenX)
+	y0 = int(c.screenY)
+	x1 = x0 + 71
+	y1 = y0 + 96
+	return // using named return parameters
+}
+
+// PositionTo sets the position of the Card
+func (c *Card) PositionTo(x, y float64) {
+	c.screenX, c.screenY = x, y
+}
+
+// TransitionTo starts the transition of this Card
+func (c *Card) TransitionTo(x, y float64) {
+	c.srcX, c.srcY = c.screenX, c.screenY
+	c.dstX, c.dstY = x, y
+	c.lerpStep = 0
+	c.lerping = true
+}
+
+// TransitionBackToPile starts the transition of this Card back to it's Pile
+func (c *Card) TransitionBackToPile() {
+	c.srcX, c.srcY = c.screenX, c.screenY
+	x, y := c.owner.Position()
+	c.dstX, c.dstY = float64(x), float64(y)
+	c.lerpStep = 0
+	c.lerping = true
+}
+
 // Layout implements ebiten.Game's Layout.
 func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -88,10 +125,20 @@ func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update the baize state (transitions, user input)
 func (c *Card) Update() error {
+	if c.lerping {
+		if c.lerpStep >= 1 {
+			c.screenX, c.screenY = c.dstX, c.dstY
+			c.lerping = false
+		} else {
+			c.screenX = util.Smoothstep(c.srcX, c.dstX, c.lerpStep)
+			c.screenY = util.Smoothstep(c.srcY, c.dstY, c.lerpStep)
+			c.lerpStep += 0.05
+		}
+	}
 	return nil
 }
 
-// Draw renders the baize into the screen
+// Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(c.screenX, c.screenY)

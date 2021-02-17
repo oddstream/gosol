@@ -1,41 +1,87 @@
 package sol
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"oddstream.games/gosol/util"
+)
 
 // Baize object describes the baize
 type Baize struct {
-	shoe *Shoe
+	stock  *Stock
+	stroke *Stroke
 }
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{}
-	b.shoe = NewShoe(1)
-	b.shoe.Shuffle()
+	b.stock = NewStock(1, 1, 1)
+	b.stock.Shuffle()
 	return b
 }
 
+// findTileAt finds the tile under the mouse click or touch
+func (b *Baize) findCardAt(pt image.Point) *Card {
+	for _, c := range b.stock.cards {
+		if util.InRect(pt, c.Rect) {
+			return c
+		}
+	}
+	return nil
+}
+
 // Layout implements ebiten.Game's Layout.
-func (g *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
 // Update the baize state (transitions, user input)
-func (g *Baize) Update() error {
+func (b *Baize) Update() error {
+
+	var s *Stroke
+
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		s = NewStroke(&MouseStrokeSource{})
+	}
+	ts := inpututil.JustPressedTouchIDs()
+	if ts != nil && len(ts) == 1 {
+		s = NewStroke(&TouchStrokeSource{ts[0]})
+	}
+
+	if s != nil {
+		c := b.findCardAt(s.Position())
+		if c != nil {
+			b.stroke = s
+			b.stroke.SetDraggingObject(c)
+			// TODO move Card to front
+		}
+	}
+
+	if b.stroke != nil {
+		b.stroke.Update()
+		c := b.stroke.DraggingObject().(*Card)
+		pt := b.stroke.PositionDiff()
+		x, y := c.owner.Position()
+		c.PositionTo(float64(x+pt.X), float64(y+pt.Y))
+
+		if b.stroke.IsReleased() {
+			c := b.stroke.DraggingObject().(*Card)
+			c.TransitionBackToPile()
+			b.stroke = nil
+		}
+	}
+
+	b.stock.Update()
+
 	return nil
 }
 
 // Draw renders the baize into the screen
-func (g *Baize) Draw(screen *ebiten.Image) {
+func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(colorBaize)
 
-	{
-		c := NewCard(0, "Spade", 1)
-		c.screenX, c.screenY = 100, 100
-		c.Draw(screen)
-		c.prone = false
-		c.screenX, c.screenY = 200, 100
-		c.Draw(screen)
-	}
+	b.stock.Draw(screen)
 }

@@ -1,3 +1,5 @@
 $ git branch -m master main
 
-+ Pile, Stock instead of Shoe
++ keep all positions as int, cast to float64() in Draw()?
++ go sort instead of bubble
++ grid X,Y to screenX,screenY func
