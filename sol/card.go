@@ -1,8 +1,7 @@
 package sol
 
 import (
-	// go:embed only allowed in Go files that import "embed"
-	_ "embed"
+	_ "embed" // go:embed only allowed in Go files that import "embed"
 
 	"bytes"
 	"fmt"
@@ -47,17 +46,6 @@ func init() {
 	// uses
 	// screen.DrawImage(tilesImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image), op)
 	// i.e. draws the tile direct from a subimage of imagesheet
-	/*
-		var err error
-		faceImageSheet, _, err = ebitenutil.NewImageFromFile("sol/cards71x96.png")
-		if err != nil {
-			log.Fatal("cannot load sol/cards71x96.png")
-		}
-		backImageSheet, _, err = ebitenutil.NewImageFromFile("sol/windows_16bit_cards.png")
-		if err != nil {
-			log.Fatal("cannot load sol/windows_16bit_cards.png")
-		}
-	*/
 
 	img, _, err := image.Decode(bytes.NewReader(faceBytes))
 	if err != nil {
@@ -89,6 +77,9 @@ type Card struct {
 	dstX, dstY       float64 // smoothstep destination
 	lerpStep         float64 // current lerp value 0.0 .. 1.0
 	lerping          bool    // true if this card is smoothstepping
+
+	flipStep  float64 // if 0, we are not flipping
+	flipWidth float64 // scale of the card width while flipping
 }
 
 // NewCard is the factory for Card objects
@@ -99,7 +90,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	} else {
 		c.color = BasicColors["Black"]
 	}
-	c.prone = false
+	c.prone = true
 	c.id = c.String()
 	return c
 }
@@ -144,6 +135,33 @@ func (c *Card) TransitionBackToPile() {
 	c.lerping = true
 }
 
+// FlipUp flips the card face up
+func (c *Card) FlipUp() {
+	if !c.prone || c.flipStep != 0.0 {
+		return
+	}
+	c.flipStep = -0.1
+	c.flipWidth = 1.0
+}
+
+// FlipDown flips the card face down
+func (c *Card) FlipDown() {
+	if c.prone || c.flipStep != 0.0 {
+		return
+	}
+	c.flipStep = -0.1
+	c.flipWidth = 1.0
+}
+
+// Flip toggles the card
+func (c *Card) Flip() {
+	if c.prone {
+		c.FlipUp()
+	} else {
+		c.FlipDown()
+	}
+}
+
 // Layout implements ebiten.Game's Layout.
 func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -161,6 +179,16 @@ func (c *Card) Update() error {
 			c.lerpStep += 0.05
 		}
 	}
+	if c.flipStep != 0.0 {
+		c.flipWidth += c.flipStep
+		if c.flipWidth <= 0.1 {
+			c.flipStep = 0.1
+			c.prone = !c.prone
+		} else if c.flipWidth >= 1.0 {
+			c.flipWidth = 1.0
+			c.flipStep = 0.0
+		}
+	}
 	return nil
 }
 
@@ -168,6 +196,11 @@ func (c *Card) Update() error {
 func (c *Card) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
+	if c.flipStep != 0 {
+		op.GeoM.Translate(-71*1.5, 0)
+		op.GeoM.Scale(c.flipWidth, 1.0)
+		op.GeoM.Translate(71*1.5, 0)
+	}
 	if c.prone {
 		pt := backFrames["JazzCup"]
 		x, y := pt.X, pt.Y

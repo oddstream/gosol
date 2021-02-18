@@ -1,5 +1,6 @@
 $ git branch -m master main
 
++ Card flipping animation
 + Tableau
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func

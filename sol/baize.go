@@ -51,6 +51,11 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 	return nil
 }
 
+// CardTapped is called when a card has been tapped
+func (b *Baize) CardTapped(c *Card) {
+	c.Flip()
+}
+
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -90,7 +95,7 @@ func (b *Baize) Update() error {
 			c.TransitionBackToPile()
 
 			if b.stroke.IsTapped() {
-				println("tap detected on", c.id)
+				b.CardTapped(c)
 			}
 			b.stroke = nil
 		}

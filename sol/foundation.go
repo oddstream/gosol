@@ -3,11 +3,13 @@ package sol
 // Foundation is the destination for cards
 type Foundation struct {
 	Pile
+
+	Class string
 }
 
 // NewFoundation creates a new Foundation
 func NewFoundation(x, y int) *Foundation {
-	f := &Foundation{Pile{X: x, Y: y}}
+	f := &Foundation{Pile: Pile{X: x, Y: y}, Class: "Foundation"}
 	return f
 }
 

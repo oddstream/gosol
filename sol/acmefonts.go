@@ -3,8 +3,7 @@
 package sol
 
 import (
-	// go:embed only allowed in Go files that import "embed"
-	_ "embed"
+	_ "embed" // go:embed only allowed in Go files that import "embed"
 
 	"log"
 

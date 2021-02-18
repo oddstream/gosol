@@ -9,11 +9,16 @@ import (
 // Stock is the home for all cards
 type Stock struct {
 	Pile
+
+	Class       string
+	TapTarget   string
+	CardsToMove int
+	Recycle     int
 }
 
 // NewStock creates a new Stock with the given number of packs of cards
 func NewStock(packs, x, y int) *Stock {
-	s := &Stock{Pile{X: x, Y: y}}
+	s := &Stock{Pile: Pile{X: x, Y: y}, Class: "Stock", TapTarget: "Waste", CardsToMove: 1, Recycle: 9999}
 	s.CreateCards(packs)
 	println("created", len(s.cards), "cards")
 	return s

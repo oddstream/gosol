@@ -39,9 +39,9 @@ var ExtendedColors = map[string]color.RGBA{
 	"Navy":           {R: 0, G: 0, B: 0x80, A: 0xff},
 	"DarkBlue":       {R: 0, G: 0, B: 0x8b, A: 0xff},
 	"MediumBlue":     {R: 0, G: 0, B: 0xcd, A: 0xff},
-	"Blue":           {R: 0, G: 0, B: 0xff, A: 0xff}, // glows horribly, do not use
+	"Blue":           {R: 0, G: 0, B: 0xff, A: 0xff},
 	"MidnightBlue":   {R: 0x19, G: 0x19, B: 0x70, A: 0xff},
-	"RoyalBlue":      {R: 0x41, G: 0x69, B: 0xe1, A: 0xff}, // glows horribly, do not use
+	"RoyalBlue":      {R: 0x41, G: 0x69, B: 0xe1, A: 0xff},
 	"SteelBlue":      {R: 0x46, G: 0x82, B: 0xb4, A: 0xff},
 	"DodgerBlue":     {R: 0x1e, G: 0x90, B: 0xff, A: 0xff},
 	"DeepSkyBlue":    {R: 0x0, G: 0xbf, B: 0xff, A: 0xff},
