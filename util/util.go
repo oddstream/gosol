@@ -26,6 +26,13 @@ func Smoothstep(A float64, B float64, v float64) float64 {
 	return X
 }
 
+// Smootherstep see http://sol.gfxile.net/interpolation/
+func Smootherstep(A float64, B float64, v float64) float64 {
+	v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10) // smootherstep
+	X := (B * v) + (A * (1.0 - v))
+	return X
+}
+
 // Normalize is the opposite of lerp. Instead of a range and a factor, we give a range and a value to find out the factor.
 func Normalize(start, finish, value float64) float64 {
 	return (value - start) / (finish - start)

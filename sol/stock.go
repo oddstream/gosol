@@ -27,7 +27,8 @@ func (s *Stock) CreateCards(packs int) {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
 				c.owner = s // Stock implements the CardOwner interface
-				c.PositionTo(s.X*71, s.Y*96)
+				x, y := s.Position()
+				c.PositionTo(x, y)
 				s.cards = append(s.cards, c)
 			}
 		}
@@ -40,7 +41,7 @@ func (s *Stock) Shuffle() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	// sort cards in order before sorting
+	// sort cards in order before shuffle (why?)
 	/*
 		swapped := true
 		for swapped {

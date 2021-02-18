@@ -5,11 +5,17 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const (
+	marginX int = 10
+	marginY int = 10
+)
+
 var outline *ebiten.Image
 
 func init() {
 	dc := gg.NewContext(71, 96)
 	dc.SetColor(colorPile)
+	dc.SetLineWidth(4)
 	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
 	dc.Stroke()
 	outline = ebiten.NewImageFromImage(dc.Image())
@@ -21,6 +27,9 @@ type CardOwner interface {
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
+	Update() error
+	Draw(*ebiten.Image)
+	DrawCards(*ebiten.Image)
 }
 
 // Pile is a generic container for cards
@@ -31,7 +40,7 @@ type Pile struct {
 
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return p.X * 71, p.Y * 96
+	return (p.X * marginX) + (p.X * 71), (p.Y * marginY) + (p.Y * 96)
 }
 
 // ToFront moves the Card to the top of the Pile (a stack)
@@ -72,12 +81,14 @@ func (p *Pile) Update() error {
 
 // Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
-
 	op := &ebiten.DrawImageOptions{}
 	x, y := p.Position()
 	op.GeoM.Translate(float64(x), float64(y))
 	screen.DrawImage(outline, op)
+}
 
+// DrawCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawCards(screen *ebiten.Image) {
 	for _, c := range p.cards {
 		c.Draw(screen)
 	}

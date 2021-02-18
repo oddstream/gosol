@@ -13,6 +13,7 @@ type Baize struct {
 	stock       *Stock
 	waste       *Waste
 	foundations []*Foundation
+	owners      []CardOwner
 	stroke      *Stroke
 }
 
@@ -20,12 +21,16 @@ type Baize struct {
 func NewBaize() *Baize {
 	b := &Baize{}
 	b.stock = NewStock(1, 1, 1)
+	b.owners = append(b.owners, b.stock)
 	b.stock.Shuffle()
 
 	b.waste = NewWaste(2, 1)
+	b.owners = append(b.owners, b.waste)
 
 	for i := 0; i < 4; i++ {
-		b.foundations = append(b.foundations, NewFoundation(4+i, 1))
+		f := NewFoundation(4+i, 1)
+		b.foundations = append(b.foundations, f)
+		b.owners = append(b.owners, f)
 	}
 	return b
 }
@@ -104,9 +109,21 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(colorBaize)
 
-	b.stock.Draw(screen)
-	b.waste.Draw(screen)
-	for _, f := range b.foundations {
-		f.Draw(screen)
+	for _, o := range b.owners {
+		o.Draw(screen)
 	}
+	// b.stock.Draw(screen)
+	// b.waste.Draw(screen)
+	// for _, f := range b.foundations {
+	// 	f.Draw(screen)
+	// }
+
+	for _, o := range b.owners {
+		o.DrawCards(screen)
+	}
+	// b.stock.DrawCards(screen)
+	// b.waste.DrawCards(screen)
+	// for _, f := range b.foundations {
+	// 	f.DrawCards(screen)
+	// }
 }

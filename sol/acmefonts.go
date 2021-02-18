@@ -3,11 +3,17 @@
 package sol
 
 import (
+	// go:embed only allowed in Go files that import "embed"
+	_ "embed"
+
 	"log"
 
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 )
+
+//go:embed assets/Acme-Regular.ttf
+var acmeBytes []byte
 
 // AcmeFonts contains references to small, normal, large and huge Acme fonts
 type AcmeFonts struct {
@@ -30,7 +36,7 @@ func NewAcmeFonts() *AcmeFonts {
 	// 	log.Fatal(err)
 	// }
 	// https://pkg.go.dev/golang.org/x/image@v0.0.0-20201208152932-35266b937fa6/font
-	tt, err := truetype.Parse(Acme_ttf)
+	tt, err := truetype.Parse(acmeBytes)
 	if err != nil {
 		log.Fatal(err)
 	}

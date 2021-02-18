@@ -1,10 +1,13 @@
 $ git branch -m master main
 
-+ Draw the Piles and THEN the cards
-+ Waste, Tableau, Foundation (green outline, Pile needs Draw)
++ Tableau
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
+x //go:embed Acme.ttf, raccoon280x180.png
+x sol/assets directory
+x slice of card owners
+x Draw the Piles and THEN the cards
 x go sort instead of bubble
 x detect tap
 x keep all positions as int, cast to float64() in Draw()?

@@ -3,7 +3,9 @@
 package sol
 
 import (
+	// go:embed only allowed in Go files that import "embed"
 	"bytes"
+	_ "embed"
 	"image"
 	"log"
 	"math"
@@ -14,6 +16,9 @@ import (
 
 	"github.com/fogleman/gg"
 )
+
+//go:embed assets/raccoon280x180.png
+var logoBytes []byte
 
 // Splash represents a game state.
 type Splash struct {
@@ -50,7 +55,7 @@ func NewSplash() *Splash {
 	//    This works even on browsers.
 	// 3) Use ebitenutil.NewImageFromFile to create an ebiten.Image directly from a file.
 	//    This also works on browsers.
-	img, _, err := image.Decode(bytes.NewReader(Logo_png))
+	img, _, err := image.Decode(bytes.NewReader(logoBytes))
 	if err != nil {
 		log.Fatal(err)
 	}

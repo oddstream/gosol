@@ -16,10 +16,10 @@ import (
 
 // golang gotcha: go:embed cannot apply to var inside func
 
-//go:embed cards71x96.png
+//go:embed assets/cards71x96.png
 var faceBytes []byte
 
-//go:embed windows_16bit_cards.png
+//go:embed assets/windows_16bit_cards.png
 var backBytes []byte
 
 var (
@@ -64,12 +64,14 @@ func init() {
 		log.Fatal(err)
 	}
 	faceImageSheet = ebiten.NewImageFromImage(img)
+	faceBytes = nil
 
 	img, _, err = image.Decode(bytes.NewReader(backBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
 	backImageSheet = ebiten.NewImageFromImage(img)
+	backBytes = nil
 }
 
 // Card object
@@ -154,8 +156,8 @@ func (c *Card) Update() error {
 			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
 			c.lerping = false
 		} else {
-			c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
-			c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
+			c.screenX = int(util.Smootherstep(c.srcX, c.dstX, c.lerpStep))
+			c.screenY = int(util.Smootherstep(c.srcY, c.dstY, c.lerpStep))
 			c.lerpStep += 0.05
 		}
 	}
