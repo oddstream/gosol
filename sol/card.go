@@ -64,19 +64,21 @@ func init() {
 
 // Card object
 type Card struct {
+	owner CardOwner
+
 	pack    int
 	suit    string
 	ordinal int
 	prone   bool
 	id      string
 	color   color.RGBA
-	owner   CardOwner
 
-	screenX, screenY int     // current position on screen
-	srcX, srcY       float64 // smoothstep origin
-	dstX, dstY       float64 // smoothstep destination
-	lerpStep         float64 // current lerp value 0.0 .. 1.0
-	lerping          bool    // true if this card is smoothstepping
+	screenX, screenY int // current position on screen (after Fan)
+
+	srcX, srcY float64 // smoothstep origin
+	dstX, dstY float64 // smoothstep destination
+	lerpStep   float64 // current lerp value 0.0 .. 1.0
+	lerping    bool    // true if this card is smoothstepping
 
 	flipStep  float64 // if 0, we are not flipping
 	flipWidth float64 // scale of the card width while flipping
@@ -137,20 +139,18 @@ func (c *Card) TransitionBackToPile() {
 
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
-	if !c.prone || c.flipStep != 0.0 {
-		return
+	if c.prone && c.flipStep == 0.0 {
+		c.flipStep = -0.15
+		c.flipWidth = 1.0
 	}
-	c.flipStep = -0.1
-	c.flipWidth = 1.0
 }
 
 // FlipDown flips the card face down
 func (c *Card) FlipDown() {
-	if c.prone || c.flipStep != 0.0 {
-		return
+	if !c.prone && c.flipStep == 0.0 {
+		c.flipStep = -0.15
+		c.flipWidth = 1.0
 	}
-	c.flipStep = -0.1
-	c.flipWidth = 1.0
 }
 
 // Flip toggles the card
@@ -181,8 +181,8 @@ func (c *Card) Update() error {
 	}
 	if c.flipStep != 0.0 {
 		c.flipWidth += c.flipStep
-		if c.flipWidth <= 0.1 {
-			c.flipStep = 0.1
+		if c.flipWidth <= 0.15 {
+			c.flipStep = 0.15
 			c.prone = !c.prone
 		} else if c.flipWidth >= 1.0 {
 			c.flipWidth = 1.0

@@ -10,37 +10,42 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	stock       *Stock
-	waste       *Waste
-	foundations []*Foundation
-	owners      []CardOwner
-	stroke      *Stroke
+	owners []CardOwner // ... just this
+	stroke *Stroke
 }
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{}
-	b.stock = NewStock(1, 1, 1)
-	b.owners = append(b.owners, b.stock)
-	b.stock.Shuffle()
+	stock := NewStock(1, 1, 1)
+	b.owners = append(b.owners, stock)
+	stock.Shuffle()
 
-	b.waste = NewWaste(2, 1)
-	b.owners = append(b.owners, b.waste)
+	waste := NewWaste(2, 1)
+	b.owners = append(b.owners, waste)
 
 	for i := 0; i < 4; i++ {
 		f := NewFoundation(4+i, 1)
-		b.foundations = append(b.foundations, f)
 		b.owners = append(b.owners, f)
 	}
+
+	for i := 0; i < 7; i++ {
+		t := NewTableau(1+i, 2)
+		b.owners = append(b.owners, t)
+	}
+
 	return b
 }
 
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
-	for i := len(b.stock.cards) - 1; i >= 0; i-- {
-		c := b.stock.cards[i]
-		if util.InRect(pt, c.Rect) {
-			return c
+	for _, o := range b.owners {
+		cards := o.Cards()
+		for i := len(cards) - 1; i >= 0; i-- {
+			c := cards[i]
+			if util.InRect(pt, c.Rect) {
+				return c
+			}
 		}
 	}
 	// for _, c := range b.stock.cards {
@@ -101,11 +106,10 @@ func (b *Baize) Update() error {
 		}
 	}
 
-	b.stock.Update()
-	b.waste.Update()
-	for _, f := range b.foundations {
-		f.Update()
+	for _, o := range b.owners {
+		o.Update()
 	}
+
 	return nil
 }
 

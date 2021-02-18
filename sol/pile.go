@@ -23,6 +23,8 @@ func init() {
 
 // CardOwner is an interface to objects that can own cards (Pile and Pile 'subclasses')
 type CardOwner interface {
+	Cards() []*Card
+	Fan() string
 	Position() (int, int)
 	Peek() *Card
 	Pop() *Card
@@ -35,12 +37,23 @@ type CardOwner interface {
 // Pile is a generic container for cards
 type Pile struct {
 	cards []*Card
-	X, Y  int // grid position of Pile
+	x, y  int    // grid position of Pile
+	fan   string // "None", "Down", "Right"
+}
+
+// Cards returns the slice of *Card
+func (p *Pile) Cards() []*Card {
+	return p.cards
+}
+
+// Fan returns the Fan of *Card
+func (p *Pile) Fan() string {
+	return p.fan
 }
 
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return (p.X * marginX) + (p.X * 71), (p.Y * marginY) + (p.Y * 96)
+	return (p.x * marginX) + (p.x * 71), (p.y * marginY) + (p.y * 96)
 }
 
 // ToFront moves the Card to the top of the Pile (a stack)
@@ -69,6 +82,19 @@ func (p *Pile) Pop() *Card {
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
 	p.cards = append(p.cards, c)
+}
+
+// Layout the cards in this Pile
+func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
+	switch p.fan {
+	case "", "None":
+		// do nothing
+	case "Down":
+		// TODO
+	case "Right":
+		// TODO
+	}
+	return outsideWidth, outsideHeight
 }
 
 // Update the Pile state (transitions, user input)

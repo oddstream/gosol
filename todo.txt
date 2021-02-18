@@ -1,10 +1,13 @@
 $ git branch -m master main
 
-+ Card flipping animation
-+ Tableau
++ VariantInfo
++ Deal
++ Fan
+
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
+x Card flipping animation
 x //go:embed Acme.ttf, raccoon280x180.png
 x sol/assets directory
 x slice of card owners
