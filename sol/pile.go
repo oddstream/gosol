@@ -23,13 +23,16 @@ func init() {
 
 // CardOwner is an interface to objects that can own cards (Pile and Pile 'subclasses')
 type CardOwner interface {
+	New(map[string]string)
 	Cards() []*Card
+	Class() string
 	Fan() string
 	Position() (int, int)
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
 	Update() error
+	Layout(int, int) (int, int)
 	Draw(*ebiten.Image)
 	DrawCards(*ebiten.Image)
 }
@@ -86,6 +89,7 @@ func (p *Pile) Push(c *Card) {
 
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
+	// stop if we meet a card that's transitioning
 	switch p.fan {
 	case "", "None":
 		// do nothing

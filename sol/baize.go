@@ -10,29 +10,23 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	owners []CardOwner // ... just this
+	owners []CardOwner
 	stroke *Stroke
 }
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{}
-	stock := NewStock(1, 1, 1)
-	b.owners = append(b.owners, stock)
-	stock.Shuffle()
 
-	waste := NewWaste(2, 1)
-	b.owners = append(b.owners, waste)
-
-	for i := 0; i < 4; i++ {
-		f := NewFoundation(4+i, 1)
-		b.owners = append(b.owners, f)
+	o2, ok := buildVariant("Klondike")
+	if ok {
+		for i, v := range o2 {
+			println(i, v.Class())
+		}
+	} else {
+		println("Klondike not found")
 	}
-
-	for i := 0; i < 7; i++ {
-		t := NewTableau(1+i, 2)
-		b.owners = append(b.owners, t)
-	}
+	b.owners = o2
 
 	return b
 }
@@ -63,6 +57,11 @@ func (b *Baize) CardTapped(c *Card) {
 
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
+
+	for _, o := range b.owners {
+		o.Layout(outsideWidth, outsideHeight)
+	}
+
 	return outsideWidth, outsideHeight
 }
 

@@ -5,6 +5,7 @@ package util
 import (
 	"image"
 	"math"
+	"strconv"
 )
 
 // InRect returns true if px,py is within Rect returned by function parameter
@@ -49,54 +50,23 @@ func Clamp(value, min, max float64) float64 {
 	return math.Min(math.Max(value, min), max)
 }
 
-// https://stackoverflow.com/questions/51626905/drawing-circles-with-two-radius-in-golang
-// https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-// func drawCircle(img *ebiten.Image, x0, y0, r int, c color.Color) {
-// 	x, y, dx, dy := r-1, 0, 1, 1
-// 	err := dx - (r * 2)
-
-// 	for x > y {
-// 		img.Set(x0+x, y0+y, c)
-// 		img.Set(x0+y, y0+x, c)
-// 		img.Set(x0-y, y0+x, c)
-// 		img.Set(x0-x, y0+y, c)
-// 		img.Set(x0-x, y0-y, c)
-// 		img.Set(x0-y, y0-x, c)
-// 		img.Set(x0+y, y0-x, c)
-// 		img.Set(x0+x, y0-y, c)
-
-// 		if err <= 0 {
-// 			y++
-// 			err += dy
-// 			dy += 2
-// 		}
-// 		if err > 0 {
-// 			x--
-// 			dx += 2
-// 			err += dx - (r * 2)
-// 		}
-// 	}
-// }
-
-// Forward returns the direction (0-3)
-func Forward(dir int) int {
-	return dir
+// GetIntFromMap does what it says on the tin
+func GetIntFromMap(info map[string]string, key string) int {
+	str, ok := info[key]
+	if ok {
+		i, err := strconv.Atoi(str)
+		if err == nil {
+			return i
+		}
+	}
+	return 0
 }
 
-// Backward returns the direction (0-3)
-func Backward(dir int) int {
-	d := [4]int{2, 3, 0, 1}
-	return d[dir]
-}
-
-// Leftward returns the direction (0-3)
-func Leftward(dir int) int {
-	d := [4]int{3, 0, 1, 2}
-	return d[dir]
-}
-
-// Rightward returns the direction (0-3)
-func Rightward(dir int) int {
-	d := [4]int{1, 2, 3, 0}
-	return d[dir]
+// GetStringFromMap does what it says on the tin
+func GetStringFromMap(info map[string]string, key string) string {
+	str, ok := info[key]
+	if ok {
+		return str
+	}
+	return ""
 }

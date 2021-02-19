@@ -4,30 +4,49 @@ import (
 	"math/rand"
 	"sort"
 	"time"
+
+	"oddstream.games/gosol/util"
 )
 
 // Stock is the home for all cards
 type Stock struct {
 	Pile
 
-	Class       string
+	class       string
+	packs       int
 	TapTarget   string
 	CardsToMove int
 	Recycle     int
 }
 
-// NewStock creates a new Stock with the given number of packs of cards
-func NewStock(packs, x, y int) *Stock {
-	s := &Stock{Pile: Pile{x: x, y: y, fan: "None"}, Class: "Stock", TapTarget: "Waste", CardsToMove: 1, Recycle: 9999}
-	s.CreateCards(packs)
+// StockInfo contains configuration for all Stock objects
+type StockInfo struct {
+	Recycles int
+}
+
+// New fills in basic information
+func (s *Stock) New(info map[string]string) {
+	s.class = "Stock"
+	s.x = util.GetIntFromMap(info, "x")
+	s.y = util.GetIntFromMap(info, "y")
+	s.fan = util.GetStringFromMap(info, "fan")
+	s.packs = util.GetIntFromMap(info, "packs")
+	s.createCards()
 	println("created", len(s.cards), "cards")
-	return s
+}
+
+// Class returns the class of this Pile
+func (s *Stock) Class() string {
+	return s.class
 }
 
 // CreateCards fills the pile with packs*52 new cards
-func (s *Stock) CreateCards(packs int) {
+func (s *Stock) createCards() {
+	if s.packs == 0 {
+		s.packs = 1
+	}
 	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
-	for pack := 0; pack < packs; pack++ {
+	for pack := 0; pack < s.packs; pack++ {
 		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
