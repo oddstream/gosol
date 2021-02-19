@@ -15,6 +15,8 @@ func (w *Waste) New(info map[string]string) {
 	w.x = util.GetIntFromMap(info, "x")
 	w.y = util.GetIntFromMap(info, "y")
 	w.fan = util.GetStringFromMap(info, "fan")
+
+	w.createImage()
 }
 
 // Class returns the class of this Pile

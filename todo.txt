@@ -1,10 +1,12 @@
 $ git branch -m master main
 
++ moving card from pile to pile
++ dragging >1 card
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
-
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
+x draw Pile accept 
 x Deal
 x Fan none, right, down, waste
 x VariantInfo

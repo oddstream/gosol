@@ -120,16 +120,15 @@ func (b *Baize) Update() error {
 	if b.stroke != nil {
 		b.stroke.Update()
 		c := b.stroke.DraggingObject().(*Card)
-		pt := b.stroke.PositionDiff()
-		x, y := c.owner.Position()
-		c.PositionTo(x+pt.X, y+pt.Y)
-
-		if b.stroke.IsReleased() {
-			c := b.stroke.DraggingObject().(*Card)
-			c.TransitionBackToPile()
-
+		if !b.stroke.IsReleased() {
+			pt := b.stroke.PositionDiff()
+			x, y := c.Position()
+			c.PositionTo(x+pt.X, y+pt.Y)
+		} else {
 			if b.stroke.IsTapped() {
 				b.CardTapped(c)
+			} else {
+				c.TransitionBackToPile()
 			}
 			b.stroke = nil
 		}

@@ -23,6 +23,9 @@ func (s *Stock) New(info map[string]string) {
 	s.y = util.GetIntFromMap(info, "y")
 	s.fan = util.GetStringFromMap(info, "fan")
 	s.packs = util.GetIntFromMap(info, "packs")
+
+	s.createImage()
+
 	s.createCards()
 	println("Stock created", len(s.cards), "cards")
 	s.shuffleCards()

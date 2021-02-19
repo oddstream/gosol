@@ -6,8 +6,7 @@ import "oddstream.games/gosol/util"
 type Tableau struct {
 	Pile
 
-	class  string
-	accept int
+	class string
 }
 
 // New fills in basic information
@@ -18,8 +17,9 @@ func (t *Tableau) New(info map[string]string) {
 	t.y = util.GetIntFromMap(info, "y")
 	t.fan = util.GetStringFromMap(info, "fan")
 	t.deal = util.GetStringFromMap(info, "deal")
-
 	t.accept = util.GetIntFromMap(info, "accept")
+
+	t.createImage()
 }
 
 // Class returns the class of this Pile

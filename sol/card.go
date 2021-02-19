@@ -160,10 +160,15 @@ func parseID(id string) (pack int, suit string, ordinal int) {
 	return // uses named return variables
 }
 
+// Position returns the x,y screen coords of this card
+func (c *Card) Position() (int, int) {
+	return c.screenX, c.screenY
+}
+
 // Rect gives the x,y screen coords of the card's top left and bottom right corners
 func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
-	x0 = int(c.screenX)
-	y0 = int(c.screenY)
+	x0 = c.screenX
+	y0 = c.screenY
 	x1 = x0 + 71
 	y1 = y0 + 96
 	return // using named return parameters
@@ -182,7 +187,7 @@ func (c *Card) TransitionTo(x, y int) {
 	c.lerping = true
 }
 
-// TransitionBackToPile starts the transition of this Card back to it's Pile
+// TransitionBackToPile starts the transition of this Card back to it's Pile TODO broken when fanned
 func (c *Card) TransitionBackToPile() {
 	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
 	x, y := c.owner.Position()
@@ -239,7 +244,7 @@ func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
-// Update the baize state (transitions, user input)
+// Update the card state (transitions)
 func (c *Card) Update() error {
 	if c.lerping {
 		if c.lerpStep >= 1 {
@@ -276,7 +281,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if c.flipStep != 0 {
-		img = ebiten.NewImageFromImage(img)
+		// img = ebiten.NewImageFromImage(img)
 		op.GeoM.Translate(float64(-71/2), 0)
 		op.GeoM.Scale(c.flipWidth, 1.0)
 		op.GeoM.Translate(float64(71/2), 0)

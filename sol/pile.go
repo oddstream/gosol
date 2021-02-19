@@ -12,23 +12,11 @@ const (
 	cardStackFactor  int = 3
 )
 
-var outline *ebiten.Image
-
-func init() {
-	dc := gg.NewContext(71, 96)
-	dc.SetColor(colorPile)
-	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
-	dc.Stroke()
-	outline = ebiten.NewImageFromImage(dc.Image())
-}
-
 // CardOwner is an interface to objects that can own cards (Pile and Pile 'subclasses')
 type CardOwner interface {
 	New(map[string]string)
 	Cards() []*Card
 	Class() string
-	Fan() string
 	Deal() string
 	Position() (int, int)
 	Peek() *Card
@@ -42,14 +30,30 @@ type CardOwner interface {
 
 // Pile is a generic container for cards
 type Pile struct {
-	cards []*Card
-	x, y  int    // grid position of Pile
-	fan   string // "None", "Down", "Right"
-	deal  string
+	cards   []*Card
+	x, y    int // grid position of Pile
+	outline *ebiten.Image
+	fan     string // "None", "Down", "Right"
+	deal    string
+	accept  int // ordinal of card to accept on empty pile, 0 == any (FoundationSpider has it's own rules)
 }
 
 // New fills in a blank Pile object to satify the CardOwner interface
 func (p *Pile) New(map[string]string) {
+}
+
+func (p *Pile) createImage() {
+	dc := gg.NewContext(71, 96)
+	dc.SetColor(colorPile)
+	dc.SetLineWidth(4)
+	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
+	if p.accept > 0 && p.accept <= 13 {
+		var acceptChars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+		dc.SetFontFace(TheAcmeFonts.normal)
+		dc.DrawString(acceptChars[p.accept], 71/7, 96/3)
+	}
+	dc.Stroke()
+	p.outline = ebiten.NewImageFromImage(dc.Image())
 }
 
 // Cards returns the slice of *Card
@@ -60,11 +64,6 @@ func (p *Pile) Cards() []*Card {
 // Class returns the class of *Pile to satify the CardOwner interface
 func (p *Pile) Class() string {
 	return ""
-}
-
-// Fan returns the Fan of *Card
-func (p *Pile) Fan() string {
-	return p.fan
 }
 
 // Deal returns the Deal of *Card
@@ -115,7 +114,12 @@ func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	x, y := p.Position()
 	switch p.fan {
 	case "", "none":
-		// do nothing
+		for _, c := range p.cards {
+			if c.lerping {
+				break
+			}
+			c.PositionTo(x, y)
+		}
 	case "down":
 		for _, c := range p.cards {
 			if c.lerping {
@@ -159,7 +163,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	x, y := p.Position()
 	op.GeoM.Translate(float64(x), float64(y))
-	screen.DrawImage(outline, op)
+	screen.DrawImage(p.outline, op)
 }
 
 // DrawCards renders the Cards in the Pile into the screen

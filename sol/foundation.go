@@ -6,8 +6,7 @@ import "oddstream.games/gosol/util"
 type Foundation struct {
 	Pile
 
-	class  string
-	accept int // ordinal of card to accept on empty pile, 0 == any (FoundationSpider has it's own rules)
+	class string
 }
 
 // New fills in basic information
@@ -17,6 +16,8 @@ func (f *Foundation) New(info map[string]string) {
 	f.y = util.GetIntFromMap(info, "y")
 	f.fan = util.GetStringFromMap(info, "fan")
 	f.accept = util.GetIntFromMap(info, "accept")
+
+	f.createImage()
 }
 
 // Class returns the class of this Pile
