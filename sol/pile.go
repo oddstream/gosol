@@ -6,8 +6,10 @@ import (
 )
 
 const (
-	marginX int = 10
-	marginY int = 10
+	marginX          int = 10
+	marginY          int = 10
+	proneStackFactor int = 5
+	cardStackFactor  int = 3
 )
 
 var outline *ebiten.Image
@@ -27,6 +29,7 @@ type CardOwner interface {
 	Cards() []*Card
 	Class() string
 	Fan() string
+	Deal() string
 	Position() (int, int)
 	Peek() *Card
 	Pop() *Card
@@ -42,6 +45,11 @@ type Pile struct {
 	cards []*Card
 	x, y  int    // grid position of Pile
 	fan   string // "None", "Down", "Right"
+	deal  string
+}
+
+// New fills in a blank Pile object to satify the CardOwner interface
+func (p *Pile) New(map[string]string) {
 }
 
 // Cards returns the slice of *Card
@@ -49,9 +57,19 @@ func (p *Pile) Cards() []*Card {
 	return p.cards
 }
 
+// Class returns the class of *Pile to satify the CardOwner interface
+func (p *Pile) Class() string {
+	return ""
+}
+
 // Fan returns the Fan of *Card
 func (p *Pile) Fan() string {
 	return p.fan
+}
+
+// Deal returns the Deal of *Card
+func (p *Pile) Deal() string {
+	return p.deal
 }
 
 // Position returns the x,y screen coords of this pile
@@ -79,23 +97,50 @@ func (p *Pile) Pop() *Card {
 	}
 	c := p.cards[len(p.cards)-1]
 	p.cards = p.cards[:len(p.cards)-1]
+	c.owner = nil
 	return c
 }
 
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
+	c.owner = p
 	p.cards = append(p.cards, c)
+	x, y := p.Position()
+	c.TransitionTo(x, y)
 }
 
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
-	// stop if we meet a card that's transitioning
+	// TODO stop if we meet a card that's transitioning (or flipping)?
+	x, y := p.Position()
 	switch p.fan {
-	case "", "None":
+	case "", "none":
 		// do nothing
-	case "Down":
-		// TODO
-	case "Right":
+	case "down":
+		for _, c := range p.cards {
+			if c.lerping {
+				break
+			}
+			c.PositionTo(x, y)
+			if c.prone {
+				y = y + 96/proneStackFactor
+			} else {
+				y = y + 96/cardStackFactor
+			}
+		}
+	case "right":
+		for _, c := range p.cards {
+			if c.lerping {
+				break
+			}
+			c.PositionTo(x, y)
+			if c.prone {
+				x = x + 71/proneStackFactor
+			} else {
+				x = x + 96/cardStackFactor
+			}
+		}
+	case "waste":
 		// TODO
 	}
 	return outsideWidth, outsideHeight

@@ -4,6 +4,7 @@ package util
 
 import (
 	"image"
+	"log"
 	"math"
 	"strconv"
 )
@@ -52,20 +53,21 @@ func Clamp(value, min, max float64) float64 {
 
 // GetIntFromMap does what it says on the tin
 func GetIntFromMap(info map[string]string, key string) int {
-	str, ok := info[key]
-	if ok {
+	str, exists := info[key]
+	if exists {
 		i, err := strconv.Atoi(str)
-		if err == nil {
-			return i
+		if err != nil {
+			log.Fatal(str + " is not an int")
 		}
+		return i
 	}
 	return 0
 }
 
 // GetStringFromMap does what it says on the tin
 func GetStringFromMap(info map[string]string, key string) string {
-	str, ok := info[key]
-	if ok {
+	str, exists := info[key]
+	if exists {
 		return str
 	}
 	return ""

@@ -9,11 +9,6 @@ type Waste struct {
 	class string
 }
 
-// WasteInfo contains configuration for all Waste objects
-type WasteInfo struct {
-	// No additional members; X, Y, Fan will do it
-}
-
 // New fills in basic information
 func (w *Waste) New(info map[string]string) {
 	w.class = "Waste"

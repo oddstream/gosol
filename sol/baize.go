@@ -2,6 +2,7 @@ package sol
 
 import (
 	"image"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -19,16 +20,45 @@ func NewBaize() *Baize {
 	b := &Baize{}
 
 	o2, ok := buildVariant("Klondike")
-	if ok {
-		for i, v := range o2 {
-			println(i, v.Class())
-		}
-	} else {
-		println("Klondike not found")
+	if !ok {
+		log.Fatal("Klondike" + " not found")
 	}
 	b.owners = o2
 
+	b.dealCards()
+
 	return b
+}
+
+func (b *Baize) dealCards() {
+	stock := b.findPile("Stock")
+	for _, o := range b.owners {
+		deal := o.Deal()
+		if deal == "" {
+			continue
+		}
+		for _, d := range deal {
+			switch d {
+			case 'u':
+				c := stock.Pop()
+				c.FlipUp()
+				o.Push(c)
+			case 'd':
+				c := stock.Pop()
+				c.FlipDown()
+				o.Push(c)
+			}
+		}
+	}
+}
+
+func (b *Baize) findPile(cls string) CardOwner {
+	for _, o := range b.owners {
+		if o.Class() == cls {
+			return o
+		}
+	}
+	return nil
 }
 
 // findTileAt finds the tile under the mouse click or touch

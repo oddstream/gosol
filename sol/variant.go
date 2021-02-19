@@ -21,26 +21,26 @@ var Variants = map[string]VariantInfo{
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
-			{&Stock{}, map[string]string{"x": "1", "y": "1", "packs": "1"}},
-			{&Waste{}, map[string]string{"x": "2", "y": "1"}},
-			{&Foundation{}, map[string]string{"x": "4", "y": "1", "accept": "1", "fan": "none"}},
-			{&Foundation{}, map[string]string{"x": "5", "y": "1", "accept": "1", "fan": "none"}},
-			{&Foundation{}, map[string]string{"x": "6", "y": "1", "accept": "1", "fan": "none"}},
-			{&Foundation{}, map[string]string{"x": "7", "y": "1", "accept": "1", "fan": "none"}},
-			{&Tableau{}, map[string]string{"x": "1", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "2", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "3", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "4", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "5", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "6", "y": "2", "fan": "down"}},
-			{&Tableau{}, map[string]string{"x": "7", "y": "2", "fan": "down"}},
+			{&Stock{}, map[string]string{"x": "1", "y": "1", "fan": "none", "packs": "1"}},
+			{&Waste{}, map[string]string{"x": "2", "y": "1", "fan": "waste"}},
+			{&Foundation{}, map[string]string{"x": "4", "y": "1", "fan": "none", "accept": "1"}},
+			{&Foundation{}, map[string]string{"x": "5", "y": "1", "fan": "none", "accept": "1"}},
+			{&Foundation{}, map[string]string{"x": "6", "y": "1", "fan": "none", "accept": "1"}},
+			{&Foundation{}, map[string]string{"x": "7", "y": "1", "fan": "none", "accept": "1"}},
+			{&Tableau{}, map[string]string{"x": "1", "y": "2", "fan": "down", "deal": "d"}},
+			{&Tableau{}, map[string]string{"x": "2", "y": "2", "fan": "down", "deal": "du"}},
+			{&Tableau{}, map[string]string{"x": "3", "y": "2", "fan": "down", "deal": "ddu"}},
+			{&Tableau{}, map[string]string{"x": "4", "y": "2", "fan": "down", "deal": "dddu"}},
+			{&Tableau{}, map[string]string{"x": "5", "y": "2", "fan": "down", "deal": "ddddu"}},
+			{&Tableau{}, map[string]string{"x": "6", "y": "2", "fan": "down", "deal": "dddddu"}},
+			{&Tableau{}, map[string]string{"x": "7", "y": "2", "fan": "down", "deal": "ddddddu"}},
 		},
 	},
 }
 
 func buildVariant(v string) ([]CardOwner, bool) {
 	var owners []CardOwner
-	if vi, ok := Variants[v]; ok {
+	if vi, exists := Variants[v]; exists {
 		for _, pi := range vi.Piles {
 			o := pi.pile
 			o.New(pi.info)

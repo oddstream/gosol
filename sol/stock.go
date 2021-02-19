@@ -12,16 +12,8 @@ import (
 type Stock struct {
 	Pile
 
-	class       string
-	packs       int
-	TapTarget   string
-	CardsToMove int
-	Recycle     int
-}
-
-// StockInfo contains configuration for all Stock objects
-type StockInfo struct {
-	Recycles int
+	class string
+	packs int
 }
 
 // New fills in basic information
@@ -32,7 +24,8 @@ func (s *Stock) New(info map[string]string) {
 	s.fan = util.GetStringFromMap(info, "fan")
 	s.packs = util.GetIntFromMap(info, "packs")
 	s.createCards()
-	println("created", len(s.cards), "cards")
+	println("Stock created", len(s.cards), "cards")
+	s.shuffleCards()
 }
 
 // Class returns the class of this Pile
@@ -57,11 +50,9 @@ func (s *Stock) createCards() {
 			}
 		}
 	}
-	// println("created", len(p.cards), "cards")
 }
 
-// Shuffle the cards in the Stock
-func (s *Stock) Shuffle() {
+func (s *Stock) shuffleCards() {
 
 	rand.Seed(time.Now().UnixNano())
 

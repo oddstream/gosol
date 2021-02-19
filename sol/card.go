@@ -2,6 +2,7 @@ package sol
 
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
+	"strconv"
 
 	"bytes"
 	"fmt"
@@ -73,6 +74,8 @@ type Card struct {
 	id      string
 	color   color.RGBA
 
+	faceX, faceY     int // position of this card's image in image sheet
+	backX, backY     int // position of this card's image in image sheet
 	screenX, screenY int // current position on screen (after Fan)
 
 	srcX, srcY float64 // smoothstep origin
@@ -84,7 +87,13 @@ type Card struct {
 	flipWidth float64 // scale of the card width while flipping
 }
 
-// NewCard is the factory for Card objects
+// SaveableCard is a reduced struct for converting to JSON
+type SaveableCard struct {
+	ID    string
+	Prone bool
+}
+
+// NewCard is a factory for Card objects
 func NewCard(pack int, suit string, ordinal int) *Card {
 	c := &Card{pack: pack, suit: suit, ordinal: ordinal}
 	if c.suit == "Heart" || c.suit == "Diamond" {
@@ -94,6 +103,30 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	}
 	c.prone = true
 	c.id = c.String()
+
+	switch c.suit {
+	case "Club":
+		c.faceY = 0
+	case "Diamond":
+		c.faceY = 96
+	case "Heart":
+		c.faceY = 96 + 96
+	case "Spade":
+		c.faceY = 96 + 96 + 96
+	}
+	c.faceX = (c.ordinal - 1) * 71
+
+	pt := backFrames["Castle"]
+	c.backX, c.backY = pt.X, pt.Y
+
+	return c
+}
+
+// NewCardFromSaveable is a factory for Card objects
+func NewCardFromSaveable(sav SaveableCard) *Card {
+	p, s, o := parseID(sav.ID)
+	c := NewCard(p, s, o)
+	c.prone = sav.Prone
 	return c
 }
 
@@ -102,8 +135,29 @@ func (c *Card) String() string {
 }
 
 // ParseID decomposes a string id into Card members pack, suit, ordinal
-func (c *Card) ParseID(id string) {
-
+func parseID(id string) (pack int, suit string, ordinal int) {
+	var err error
+	pack, err = strconv.Atoi(id[0:1])
+	if err != nil || pack > 9 {
+		log.Fatal("error in Card id" + id)
+	}
+	switch id[1:1] {
+	case "C":
+		suit = "Club"
+	case "D":
+		suit = "Diamond"
+	case "H":
+		suit = "Heart"
+	case "S":
+		suit = "Spade"
+	default:
+		log.Fatal("error in Card id" + id)
+	}
+	ordinal, err = strconv.Atoi(id[2:3]) // TODO beware leading 0
+	if err != nil || ordinal < 1 || ordinal > 13 {
+		log.Fatal("error in Card id" + id)
+	}
+	return // uses named return variables
 }
 
 // Rect gives the x,y screen coords of the card's top left and bottom right corners
@@ -137,6 +191,14 @@ func (c *Card) TransitionBackToPile() {
 	c.lerping = true
 }
 
+// Shake starts the transition of this Card left, right, center
+func (c *Card) Shake() {
+	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+	x, y := c.owner.Position()
+	c.dstX, c.dstY = float64(x), float64(y)
+	// TODO
+}
+
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
 	if c.prone && c.flipStep == 0.0 {
@@ -160,6 +222,16 @@ func (c *Card) Flip() {
 	} else {
 		c.FlipDown()
 	}
+}
+
+// MarkMovable sets the movable state
+func (c *Card) MarkMovable(bool) {
+	// TODO
+}
+
+// Saveable returns a reduced object for converting to JSON and saving
+func (c *Card) Saveable() SaveableCard {
+	return SaveableCard{ID: c.id, Prone: c.prone}
 }
 
 // Layout implements ebiten.Game's Layout.
@@ -195,29 +267,22 @@ func (c *Card) Update() error {
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
-	if c.flipStep != 0 {
-		op.GeoM.Translate(-71*1.5, 0)
-		op.GeoM.Scale(c.flipWidth, 1.0)
-		op.GeoM.Translate(71*1.5, 0)
-	}
+
+	var img *ebiten.Image
 	if c.prone {
-		pt := backFrames["JazzCup"]
-		x, y := pt.X, pt.Y
-		screen.DrawImage(backImageSheet.SubImage(image.Rect(x, y, x+71, y+96)).(*ebiten.Image), op)
+		img = backImageSheet.SubImage(image.Rect(c.backX, c.backY, c.backX+71, c.backY+96)).(*ebiten.Image)
 	} else {
-		var x, y int
-		switch c.suit {
-		case "Club":
-			y = 0
-		case "Diamond":
-			y = 96
-		case "Heart":
-			y = 96 + 96
-		case "Spade":
-			y = 96 + 96 + 96
-		}
-		x = (c.ordinal - 1) * 71
-		screen.DrawImage(faceImageSheet.SubImage(image.Rect(x, y, x+71, y+96)).(*ebiten.Image), op)
+		img = faceImageSheet.SubImage(image.Rect(c.faceX, c.faceY, c.faceX+71, c.faceY+96)).(*ebiten.Image)
 	}
+
+	if c.flipStep != 0 {
+		img = ebiten.NewImageFromImage(img)
+		op.GeoM.Translate(float64(-71/2), 0)
+		op.GeoM.Scale(c.flipWidth, 1.0)
+		op.GeoM.Translate(float64(71/2), 0)
+	}
+
+	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
+
+	screen.DrawImage(img, op)
 }

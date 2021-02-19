@@ -6,14 +6,8 @@ import "oddstream.games/gosol/util"
 type Foundation struct {
 	Pile
 
-	class string
-}
-
-// FoundationInfo contains configuration for all Foundation objects
-type FoundationInfo struct {
-	Accept      int    // ordinal of card to accept on empty pile, 0 == any (FoundationSpider has it's own rules)
-	DealOrdinal int    // ordinal of card to deal here, 0 == don't (why isn't this in Deal= parameter?)
-	DealSuit    string // "" == any
+	class  string
+	accept int // ordinal of card to accept on empty pile, 0 == any (FoundationSpider has it's own rules)
 }
 
 // New fills in basic information
@@ -22,6 +16,7 @@ func (f *Foundation) New(info map[string]string) {
 	f.x = util.GetIntFromMap(info, "x")
 	f.y = util.GetIntFromMap(info, "y")
 	f.fan = util.GetStringFromMap(info, "fan")
+	f.accept = util.GetIntFromMap(info, "accept")
 }
 
 // Class returns the class of this Pile

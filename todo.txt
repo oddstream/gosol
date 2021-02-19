@@ -1,12 +1,13 @@
 $ git branch -m master main
 
-+ VariantInfo
-+ Deal
-+ Fan
++ CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
 
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
+x Deal
+x Fan none, right, down, waste
+x VariantInfo
 x Card flipping animation
 x //go:embed Acme.ttf, raccoon280x180.png
 x sol/assets directory

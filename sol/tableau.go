@@ -6,20 +6,20 @@ import "oddstream.games/gosol/util"
 type Tableau struct {
 	Pile
 
-	class string
-}
-
-// TableauInfo contains configuration for all Tableau objects
-type TableauInfo struct {
-	Accept int // ordinal of card to accept on empty pile, 0 == any
+	class  string
+	accept int
 }
 
 // New fills in basic information
 func (t *Tableau) New(info map[string]string) {
 	t.class = "Tableau"
+
 	t.x = util.GetIntFromMap(info, "x")
 	t.y = util.GetIntFromMap(info, "y")
 	t.fan = util.GetStringFromMap(info, "fan")
+	t.deal = util.GetStringFromMap(info, "deal")
+
+	t.accept = util.GetIntFromMap(info, "accept")
 }
 
 // Class returns the class of this Pile
