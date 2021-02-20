@@ -2,6 +2,7 @@ package sol
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -25,7 +26,7 @@ type CardOwner interface {
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
-	Fan()
+	CanAcceptCard(*Card) bool
 	Update() error
 	Layout(int, int) (int, int)
 	Draw(*ebiten.Image)
@@ -65,9 +66,10 @@ func (p *Pile) Cards() []*Card {
 	return p.cards
 }
 
-// Class returns the class of *Pile to satify the CardOwner interface
+// Class returns the type of this Pile
 func (p *Pile) Class() string {
-	return ""
+	// can't use this generic Class() for all subtypes; they each need their own Class()
+	return reflect.TypeOf(*p).Name() // .String() returns "sol.Stock"
 }
 
 // Deal returns the Deal of *Card
@@ -112,6 +114,11 @@ func (p *Pile) Push(c *Card) {
 	CTQ.Add(c, x, y)
 }
 
+// CanAcceptCard returns true if this Pile can accept the Card
+func (p *Pile) CanAcceptCard(*Card) bool {
+	return false
+}
+
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
 func (p *Pile) PushedFannedPosition() (int, int) {
 	x, y := p.Position()
@@ -141,48 +148,35 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 }
 
 // Fan lays out the cards according to the Pile's fan attribute
-func (p *Pile) Fan() {
-	// TODO stop if we meet a card that's transitioning (or flipping)?
-	x, y := p.Position()
-	switch p.fan {
-	case "", "none":
-		for _, c := range p.cards {
-			CTQ.Add(c, x, y)
-			// if c.lerping {
-			// 	break
-			// }
-			// c.SetPosition(x, y)
-		}
-	case "down":
-		for _, c := range p.cards {
-			// if c.lerping {
-			// 	break
-			// }
-			// c.SetPosition(x, y)
-			CTQ.Add(c, x, y)
-			if c.prone {
-				y = y + 96/proneStackFactor
-			} else {
-				y = y + 96/cardStackFactor
-			}
-		}
-	case "right":
-		for _, c := range p.cards {
-			// if c.lerping {
-			// 	break
-			// }
-			// c.SetPosition(x, y)
-			CTQ.Add(c, x, y)
-			if c.prone {
-				x = x + 71/proneStackFactor
-			} else {
-				x = x + 96/cardStackFactor
-			}
-		}
-	case "waste":
-		// TODO
-	}
-}
+// func (p *Pile) Fan() {
+// 	x, y := p.Position()
+// 	switch p.fan {
+// 	case "", "none":
+// 		for _, c := range p.cards {
+// 			CTQ.Add(c, x, y)
+// 		}
+// 	case "down":
+// 		for _, c := range p.cards {
+// 			CTQ.Add(c, x, y)
+// 			if c.prone {
+// 				y = y + 96/proneStackFactor
+// 			} else {
+// 				y = y + 96/cardStackFactor
+// 			}
+// 		}
+// 	case "right":
+// 		for _, c := range p.cards {
+// 			CTQ.Add(c, x, y)
+// 			if c.prone {
+// 				x = x + 71/proneStackFactor
+// 			} else {
+// 				x = x + 96/cardStackFactor
+// 			}
+// 		}
+// 	case "waste":
+// 		// TODO
+// 	}
+// }
 
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {

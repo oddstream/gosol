@@ -1,6 +1,5 @@
 $ git branch -m master main
 
-+ remove image.Point from stroke
 + draw lerping card last so it appears on top
 + moving card from pile to pile
 + dragging >1 card
@@ -9,7 +8,9 @@ $ git branch -m master main
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
-x draw Pile accept 
+x CTQ
+x remove image.Point from stroke
+x draw Pile accept
 x Deal
 x Fan none, right, down, waste
 x VariantInfo

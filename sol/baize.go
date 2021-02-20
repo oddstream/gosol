@@ -82,6 +82,26 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
+	type HasTapTarget interface {
+		TapTarget() string
+	}
+
+	typ, ok := c.owner.(HasTapTarget)
+	if !ok {
+		return
+	}
+	targetClass := typ.TapTarget()
+	if targetClass == "" {
+		return
+	}
+	for _, o := range b.owners {
+		if targetClass == o.Class() {
+			println("found a", o.Class())
+			if o.CanAcceptCard(c) {
+				println(o.Class(), "can accept", c.id)
+			}
+		}
+	}
 	c.Flip()
 }
 

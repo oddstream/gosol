@@ -193,9 +193,9 @@ func (c *Card) TransitionTo(x, y int) {
 }
 
 // IsBusy returns true of this card is lerping, flipping or being dragged
-func (c *Card) IsBusy() bool {
-	return c.lerping || c.dragging || c.flipStep != 0
-}
+// func (c *Card) IsBusy() bool {
+// 	return c.lerping || c.dragging || c.flipStep != 0
+// }
 
 // TransitionBackToPile starts the transition of this Card back to it's Pile TODO broken when fanned
 // func (c *Card) TransitionBackToPile() {

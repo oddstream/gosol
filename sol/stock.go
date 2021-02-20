@@ -2,6 +2,7 @@ package sol
 
 import (
 	"math/rand"
+	"reflect"
 	"sort"
 	"time"
 
@@ -12,17 +13,19 @@ import (
 type Stock struct {
 	Pile
 
-	class string
-	packs int
+	packs     int
+	tapTarget string
 }
 
 // New fills in basic information
 func (s *Stock) New(info map[string]string) {
-	s.class = "Stock"
+
 	s.x = util.GetIntFromMap(info, "x")
 	s.y = util.GetIntFromMap(info, "y")
 	s.fan = util.GetStringFromMap(info, "fan")
-	s.packs = util.GetIntFromMap(info, "packs")
+
+	s.packs = util.GetIntFromMap(info, "Packs")
+	s.tapTarget = util.GetStringFromMap(info, "TapTarget")
 
 	s.createImage()
 
@@ -31,9 +34,14 @@ func (s *Stock) New(info map[string]string) {
 	s.shuffleCards()
 }
 
-// Class returns the class of this Pile
+// Class returns the type of this Pile
 func (s *Stock) Class() string {
-	return s.class
+	return reflect.TypeOf(*s).Name() // .String() returns "sol.Stock"
+}
+
+// TapTarget returns the Stock's tapTarget (a class, usually "Waste")
+func (s *Stock) TapTarget() string {
+	return s.tapTarget
 }
 
 // CreateCards fills the pile with packs*52 new cards

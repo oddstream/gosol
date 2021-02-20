@@ -1,17 +1,18 @@
 package sol
 
-import "oddstream.games/gosol/util"
+import (
+	"reflect"
+
+	"oddstream.games/gosol/util"
+)
 
 // Foundation is the destination for cards
 type Foundation struct {
 	Pile
-
-	class string
 }
 
 // New fills in basic information
 func (f *Foundation) New(info map[string]string) {
-	f.class = "Foundation"
 	f.x = util.GetIntFromMap(info, "x")
 	f.y = util.GetIntFromMap(info, "y")
 	f.fan = util.GetStringFromMap(info, "fan")
@@ -20,9 +21,9 @@ func (f *Foundation) New(info map[string]string) {
 	f.createImage()
 }
 
-// Class returns the class of this Pile
+// Class returns the type of this Pile
 func (f *Foundation) Class() string {
-	return f.class
+	return reflect.TypeOf(*f).Name() // .String() returns "sol.Stock"
 }
 
 // Pop here does not allow cards to be moved from Foundation
