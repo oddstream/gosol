@@ -48,7 +48,7 @@ func (s *Stock) createCards() {
 				c := NewCard(pack, suit, ord)
 				c.owner = s // Stock implements the CardOwner interface
 				x, y := s.Position()
-				c.PositionTo(x, y)
+				c.SetPosition(x, y)
 				s.cards = append(s.cards, c)
 			}
 		}

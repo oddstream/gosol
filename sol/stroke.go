@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"image"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -47,10 +46,10 @@ type Stroke struct {
 	source StrokeSource
 
 	// init X,Y represents the position when dragging starts.
-	init image.Point
+	initX, initY int
 
 	// current X,Y represents the current position
-	current image.Point
+	currX, currY int
 
 	startTime time.Time
 
@@ -66,8 +65,10 @@ func NewStroke(source StrokeSource) *Stroke {
 	cx, cy := source.Position()
 	return &Stroke{
 		source:    source,
-		init:      image.Point{X: cx, Y: cy},
-		current:   image.Point{X: cx, Y: cy},
+		initX:     cx,
+		initY:     cy,
+		currX:     cx,
+		currY:     cy,
 		startTime: time.Now(),
 	}
 }
@@ -77,16 +78,15 @@ func (s *Stroke) Update() {
 	if s.released {
 		return
 	}
+
+	x, y := s.source.Position()
+	s.currX, s.currY = x, y
+
 	if s.source.IsJustReleased() {
 		s.released = true
 		elapsed := time.Since(s.startTime) / 1000 / 1000 // convert nano- to milli- seconds
-		if elapsed < 125 {
-			s.tapped = true
-		}
-		return
+		s.tapped = elapsed < 125
 	}
-	x, y := s.source.Position()
-	s.current = image.Point{X: x, Y: y}
 }
 
 // IsReleased returns true if ...
@@ -100,13 +100,13 @@ func (s *Stroke) IsTapped() bool {
 }
 
 // Position returns the x,y position of the cursor
-func (s *Stroke) Position() image.Point {
-	return s.current
+func (s *Stroke) Position() (int, int) {
+	return s.currX, s.currY
 }
 
 // PositionDiff returns the x,y difference between the start of the stroke and the stoke's current position
-func (s *Stroke) PositionDiff() image.Point {
-	return s.current.Sub(s.init) // current - init
+func (s *Stroke) PositionDiff() (int, int) {
+	return s.currX - s.initX, s.currY - s.initY
 }
 
 // DraggingObject returns a reference to the object currently being dragged

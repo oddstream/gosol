@@ -83,6 +83,9 @@ type Card struct {
 	lerpStep   float64 // current lerp value 0.0 .. 1.0
 	lerping    bool    // true if this card is smoothstepping
 
+	dragging               bool // true if this card is being dragged
+	dragStartX, dragStartY int  // starting point for dragging
+
 	flipStep  float64 // if 0, we are not flipping
 	flipWidth float64 // scale of the card width while flipping
 }
@@ -174,8 +177,8 @@ func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
 	return // using named return parameters
 }
 
-// PositionTo sets the position of the Card
-func (c *Card) PositionTo(x, y int) {
+// SetPosition sets the position of the Card
+func (c *Card) SetPosition(x, y int) {
 	c.screenX, c.screenY = x, y
 }
 
@@ -187,20 +190,50 @@ func (c *Card) TransitionTo(x, y int) {
 	c.lerping = true
 }
 
+// IsBusy returns true of this card is lerping, flipping or being dragged
+func (c *Card) IsBusy() bool {
+	return c.lerping || c.dragging || c.flipStep != 0
+}
+
 // TransitionBackToPile starts the transition of this Card back to it's Pile TODO broken when fanned
-func (c *Card) TransitionBackToPile() {
-	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	x, y := c.owner.Position()
-	c.dstX, c.dstY = float64(x), float64(y)
-	c.lerpStep = 0
-	c.lerping = true
+// func (c *Card) TransitionBackToPile() {
+// 	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+// 	x, y := c.owner.Position()
+// 	c.dstX, c.dstY = float64(x), float64(y)
+// 	c.lerpStep = 0
+// 	c.lerping = true
+// }
+
+// StartDrag informs card that it is being dragged
+func (c *Card) StartDrag() {
+	c.dragStartX, c.dragStartY = c.screenX, c.screenY
+	c.dragging = true
+	println("start drag", c.id, "start", c.dragStartX, c.dragStartY)
+}
+
+// DragStartPosition returns the x,y screen coords of this card before dragging started
+func (c *Card) DragStartPosition() (int, int) {
+	return c.dragStartX, c.dragStartY
+}
+
+// StopDrag informs card that it is no longer being dragged
+func (c *Card) StopDrag() {
+	println("stop drag", c.id)
+	c.dragging = false
+}
+
+// CancelDrag informs card that it is no longer being dragged
+func (c *Card) CancelDrag() {
+	println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
+	c.TransitionTo(c.dragStartX, c.dragStartY)
+	c.dragging = false
 }
 
 // Shake starts the transition of this Card left, right, center
 func (c *Card) Shake() {
-	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	x, y := c.owner.Position()
-	c.dstX, c.dstY = float64(x), float64(y)
+	// c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+	// x, y := c.owner.Position()
+	// c.dstX, c.dstY = float64(x), float64(y)
 	// TODO
 }
 
@@ -251,8 +284,8 @@ func (c *Card) Update() error {
 			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
 			c.lerping = false
 		} else {
-			c.screenX = int(util.Smootherstep(c.srcX, c.dstX, c.lerpStep))
-			c.screenY = int(util.Smootherstep(c.srcY, c.dstY, c.lerpStep))
+			c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
+			c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
 			c.lerpStep += 0.05
 		}
 	}

@@ -27,7 +27,7 @@ var Variants = map[string]VariantInfo{
 			{&Foundation{}, map[string]string{"x": "5", "y": "1", "fan": "none", "accept": "1"}},
 			{&Foundation{}, map[string]string{"x": "6", "y": "1", "fan": "none", "accept": "1"}},
 			{&Foundation{}, map[string]string{"x": "7", "y": "1", "fan": "none", "accept": "1"}},
-			{&Tableau{}, map[string]string{"x": "1", "y": "2", "fan": "down", "accept": "13", "deal": "d"}},
+			{&Tableau{}, map[string]string{"x": "1", "y": "2", "fan": "down", "accept": "13", "deal": "u"}},
 			{&Tableau{}, map[string]string{"x": "2", "y": "2", "fan": "down", "accept": "13", "deal": "du"}},
 			{&Tableau{}, map[string]string{"x": "3", "y": "2", "fan": "down", "accept": "13", "deal": "ddu"}},
 			{&Tableau{}, map[string]string{"x": "4", "y": "2", "fan": "down", "accept": "13", "deal": "dddu"}},

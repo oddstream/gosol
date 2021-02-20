@@ -49,6 +49,7 @@ func (b *Baize) dealCards() {
 				o.Push(c)
 			}
 		}
+		o.Fan()
 	}
 }
 
@@ -98,39 +99,41 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
-	var s *Stroke
+	if b.stroke == nil {
+		var s *Stroke
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		s = NewStroke(&MouseStrokeSource{})
-	}
-	ts := inpututil.JustPressedTouchIDs()
-	if ts != nil && len(ts) == 1 {
-		s = NewStroke(&TouchStrokeSource{ts[0]})
-	}
-
-	if s != nil {
-		c := b.findCardAt(s.Position())
-		if c != nil {
-			b.stroke = s
-			b.stroke.SetDraggingObject(c)
-			// TODO move Card to front?
+		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+			s = NewStroke(&MouseStrokeSource{})
 		}
-	}
+		ts := inpututil.JustPressedTouchIDs()
+		if ts != nil && len(ts) == 1 {
+			s = NewStroke(&TouchStrokeSource{ts[0]})
+		}
 
-	if b.stroke != nil {
+		if s != nil {
+			cx, cy := s.Position()
+			c := b.findCardAt(image.Point{X: cx, Y: cy})
+			if c != nil {
+				b.stroke = s
+				b.stroke.SetDraggingObject(c)
+				c.StartDrag()
+			}
+		}
+	} else {
 		b.stroke.Update()
 		c := b.stroke.DraggingObject().(*Card)
-		if !b.stroke.IsReleased() {
-			pt := b.stroke.PositionDiff()
-			x, y := c.Position()
-			c.PositionTo(x+pt.X, y+pt.Y)
-		} else {
+		if b.stroke.IsReleased() {
 			if b.stroke.IsTapped() {
+				c.StopDrag()
 				b.CardTapped(c)
 			} else {
-				c.TransitionBackToPile()
+				c.CancelDrag()
 			}
 			b.stroke = nil
+		} else {
+			x, y := c.DragStartPosition()
+			dx, dy := b.stroke.PositionDiff()
+			c.SetPosition(x+dx, y+dy)
 		}
 	}
 

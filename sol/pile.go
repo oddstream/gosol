@@ -1,8 +1,11 @@
 package sol
 
 import (
+	"fmt"
+
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -22,6 +25,7 @@ type CardOwner interface {
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
+	Fan()
 	Update() error
 	Layout(int, int) (int, int)
 	Draw(*ebiten.Image)
@@ -105,11 +109,12 @@ func (p *Pile) Push(c *Card) {
 	c.owner = p
 	p.cards = append(p.cards, c)
 	x, y := p.Position()
-	c.TransitionTo(x, y)
+	// c.TransitionTo(x, y)
+	c.SetPosition(x, y)
 }
 
-// Layout the cards in this Pile
-func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
+// Fan lays out the cards according to the Pile's fan attribute
+func (p *Pile) Fan() {
 	// TODO stop if we meet a card that's transitioning (or flipping)?
 	x, y := p.Position()
 	switch p.fan {
@@ -118,14 +123,14 @@ func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 			if c.lerping {
 				break
 			}
-			c.PositionTo(x, y)
+			c.SetPosition(x, y)
 		}
 	case "down":
 		for _, c := range p.cards {
 			if c.lerping {
 				break
 			}
-			c.PositionTo(x, y)
+			c.SetPosition(x, y)
 			if c.prone {
 				y = y + 96/proneStackFactor
 			} else {
@@ -137,7 +142,7 @@ func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 			if c.lerping {
 				break
 			}
-			c.PositionTo(x, y)
+			c.SetPosition(x, y)
 			if c.prone {
 				x = x + 71/proneStackFactor
 			} else {
@@ -147,6 +152,10 @@ func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	case "waste":
 		// TODO
 	}
+}
+
+// Layout the cards in this Pile
+func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
@@ -160,15 +169,26 @@ func (p *Pile) Update() error {
 
 // Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	x, y := p.Position()
-	op.GeoM.Translate(float64(x), float64(y))
-	screen.DrawImage(p.outline, op)
+	if p.outline != nil {
+		op := &ebiten.DrawImageOptions{}
+		x, y := p.Position()
+		op.GeoM.Translate(float64(x), float64(y))
+		screen.DrawImage(p.outline, op)
+	}
 }
 
 // DrawCards renders the Cards in the Pile into the screen
 func (p *Pile) DrawCards(screen *ebiten.Image) {
+	// draw dragging/lerping cards last so they appear on top
 	for _, c := range p.cards {
-		c.Draw(screen)
+		if c.dragging == false {
+			c.Draw(screen)
+		}
+	}
+	for _, c := range p.cards {
+		if c.dragging == true {
+			ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
+			c.Draw(screen)
+		}
 	}
 }

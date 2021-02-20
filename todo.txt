@@ -1,8 +1,11 @@
 $ git branch -m master main
 
++ remove image.Point from stroke
++ draw lerping card last so it appears on top
 + moving card from pile to pile
 + dragging >1 card
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
+  ... but can flip and lerp at the same time
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 
