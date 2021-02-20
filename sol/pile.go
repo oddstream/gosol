@@ -107,10 +107,37 @@ func (p *Pile) Pop() *Card {
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
 	c.owner = p
+	x, y := p.PushedFannedPosition()
 	p.cards = append(p.cards, c)
+	CTQ.Add(c, x, y)
+}
+
+// PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
+func (p *Pile) PushedFannedPosition() (int, int) {
 	x, y := p.Position()
-	// c.TransitionTo(x, y)
-	c.SetPosition(x, y)
+	switch p.fan {
+	case "", "none":
+		// do nothing
+	case "down":
+		for _, c := range p.cards {
+			if c.prone {
+				y = y + 96/proneStackFactor
+			} else {
+				y = y + 96/cardStackFactor
+			}
+		}
+	case "right":
+		for _, c := range p.cards {
+			if c.prone {
+				x = x + 71/proneStackFactor
+			} else {
+				x = x + 96/cardStackFactor
+			}
+		}
+	case "waste":
+		// TODO
+	}
+	return x, y
 }
 
 // Fan lays out the cards according to the Pile's fan attribute
@@ -120,17 +147,19 @@ func (p *Pile) Fan() {
 	switch p.fan {
 	case "", "none":
 		for _, c := range p.cards {
-			if c.lerping {
-				break
-			}
-			c.SetPosition(x, y)
+			CTQ.Add(c, x, y)
+			// if c.lerping {
+			// 	break
+			// }
+			// c.SetPosition(x, y)
 		}
 	case "down":
 		for _, c := range p.cards {
-			if c.lerping {
-				break
-			}
-			c.SetPosition(x, y)
+			// if c.lerping {
+			// 	break
+			// }
+			// c.SetPosition(x, y)
+			CTQ.Add(c, x, y)
 			if c.prone {
 				y = y + 96/proneStackFactor
 			} else {
@@ -139,10 +168,11 @@ func (p *Pile) Fan() {
 		}
 	case "right":
 		for _, c := range p.cards {
-			if c.lerping {
-				break
-			}
-			c.SetPosition(x, y)
+			// if c.lerping {
+			// 	break
+			// }
+			// c.SetPosition(x, y)
+			CTQ.Add(c, x, y)
 			if c.prone {
 				x = x + 71/proneStackFactor
 			} else {

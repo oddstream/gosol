@@ -184,10 +184,12 @@ func (c *Card) SetPosition(x, y int) {
 
 // TransitionTo starts the transition of this Card
 func (c *Card) TransitionTo(x, y int) {
-	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	c.dstX, c.dstY = float64(x), float64(y)
-	c.lerpStep = 0
-	c.lerping = true
+	if x != c.screenX || y != c.screenY {
+		c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+		c.dstX, c.dstY = float64(x), float64(y)
+		c.lerpStep = 0
+		c.lerping = true
+	}
 }
 
 // IsBusy returns true of this card is lerping, flipping or being dragged
@@ -225,7 +227,8 @@ func (c *Card) StopDrag() {
 // CancelDrag informs card that it is no longer being dragged
 func (c *Card) CancelDrag() {
 	println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
-	c.TransitionTo(c.dragStartX, c.dragStartY)
+	// c.TransitionTo(c.dragStartX, c.dragStartY)
+	CTQ.Add(c, c.dragStartX, c.dragStartY)
 	c.dragging = false
 }
 

@@ -21,6 +21,9 @@ var (
 // GSM provides global access to the game state manager
 var GSM *GameStateManager = &GameStateManager{}
 
+// CTQ provides global access to the Card Transition Queue
+var CTQ *CardTransitionQueue = &CardTransitionQueue{}
+
 // TheAcmeFonts provides access to small, normal, large, huge Acme fonts
 var TheAcmeFonts *AcmeFonts = NewAcmeFonts()
 
@@ -32,7 +35,7 @@ func NewGame() (*Game, error) {
 	g := &Game{}
 	// println("LevelData", len(LevelData))
 
-//	TheUserData.Load()
+	//	TheUserData.Load()
 
 	GSM.Switch(NewSplash())
 

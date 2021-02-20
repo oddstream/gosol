@@ -49,7 +49,6 @@ func (b *Baize) dealCards() {
 				o.Push(c)
 			}
 		}
-		o.Fan()
 	}
 }
 
@@ -140,6 +139,8 @@ func (b *Baize) Update() error {
 	for _, o := range b.owners {
 		o.Update()
 	}
+
+	CTQ.Update()
 
 	return nil
 }
