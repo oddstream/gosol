@@ -61,6 +61,16 @@ func (b *Baize) findPile(cls string) CardOwner {
 	return nil
 }
 
+// findPileAt finds the pile under the mouse click or touch
+func (b *Baize) findPileAt(pt image.Point) CardOwner {
+	for _, o := range b.owners {
+		if util.InRect(pt, o.Rect) {
+			return o
+		}
+	}
+	return nil
+}
+
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
 	for _, o := range b.owners {
@@ -78,6 +88,11 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 	// 	}
 	// }
 	return nil
+}
+
+// PileTapped is called when a pile has been tapped
+func (b *Baize) PileTapped(o CardOwner) {
+	println(o.Class(), "tapped")
 }
 
 // CardTapped is called when a card has been tapped
@@ -136,23 +151,41 @@ func (b *Baize) Update() error {
 				b.stroke = s
 				b.stroke.SetDraggingObject(c)
 				c.StartDrag()
+			} else {
+				o := b.findPileAt(image.Point{X: cx, Y: cy})
+				if o != nil {
+					b.stroke = s
+					b.stroke.SetDraggingObject(o)
+				}
 			}
 		}
 	} else {
 		b.stroke.Update()
-		c := b.stroke.DraggingObject().(*Card)
-		if b.stroke.IsReleased() {
-			if b.stroke.IsTapped() {
-				c.StopDrag()
-				b.CardTapped(c)
+		c, ok := b.stroke.DraggingObject().(*Card)
+		if ok {
+			if b.stroke.IsReleased() {
+				if b.stroke.IsTapped() {
+					c.StopDrag()
+					b.CardTapped(c)
+				} else {
+					c.CancelDrag()
+				}
+				b.stroke = nil
 			} else {
-				c.CancelDrag()
+				x, y := c.DragStartPosition()
+				dx, dy := b.stroke.PositionDiff()
+				c.SetPosition(x+dx, y+dy)
 			}
-			b.stroke = nil
 		} else {
-			x, y := c.DragStartPosition()
-			dx, dy := b.stroke.PositionDiff()
-			c.SetPosition(x+dx, y+dy)
+			o, ok := b.stroke.DraggingObject().(CardOwner)
+			if ok {
+				if b.stroke.IsReleased() {
+					if b.stroke.IsTapped() {
+						b.PileTapped(o)
+					}
+					b.stroke = nil
+				}
+			}
 		}
 	}
 

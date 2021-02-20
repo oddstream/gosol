@@ -23,6 +23,7 @@ type CardOwner interface {
 	Class() string
 	Deal() string
 	Position() (int, int)
+	Rect() (int, int, int, int)
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
@@ -80,6 +81,14 @@ func (p *Pile) Deal() string {
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
 	return (p.x * marginX) + (p.x * 71), (p.y * marginY) + (p.y * 96)
+}
+
+// Rect gives the x,y screen coords of the pile's top left and bottom right corners
+func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0 = p.Position()
+	x1 = x0 + 71
+	y1 = y0 + 96
+	return // using named return parameters
 }
 
 // ToFront moves the Card to the top of the Pile (a stack)
