@@ -28,7 +28,7 @@ var CTQ *CardTransitionQueue = &CardTransitionQueue{}
 var TheAcmeFonts *AcmeFonts = NewAcmeFonts()
 
 // TheUserData holds serialized game progress data
-var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire"}
+var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", CardBack: "Roses"}
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {

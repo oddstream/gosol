@@ -1,15 +1,21 @@
 $ git branch -m master main
 
++ determine Case of attribute names and values
++ auto FlipUp of exposed tableau (all?) cards
 + should CardOwner be *CardOwner?
 + tap on empty stock
-+ moving card from pile to pile
-+ draw lerping card last so it appears on top
 + dragging >1 card
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
++ undo stack
++ scale cards from 71x96
++ orientation change
++ UI (Fyne?)
 
++ draw dragging cards last so they appear on top
+x moving card from pile to pile
 x pile method probe with type assertion on dumy interface
 x CTQ
 x remove image.Point from stroke

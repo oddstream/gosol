@@ -64,7 +64,7 @@ func (b *Baize) findPile(cls string) CardOwner {
 // findPileAt finds the pile under the mouse click or touch
 func (b *Baize) findPileAt(pt image.Point) CardOwner {
 	for _, o := range b.owners {
-		if util.InRect(pt, o.Rect) {
+		if util.InRect(pt, o.FannedRect) {
 			return o
 		}
 	}
@@ -82,17 +82,12 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 			}
 		}
 	}
-	// for _, c := range b.stock.cards {
-	// 	if util.InRect(pt, c.Rect) {
-	// 		return c
-	// 	}
-	// }
 	return nil
 }
 
 // PileTapped is called when a pile has been tapped
 func (b *Baize) PileTapped(o CardOwner) {
-	println(o.Class(), "tapped")
+	println("pile", o.Class(), "tapped")
 }
 
 // CardTapped is called when a card has been tapped
@@ -111,13 +106,42 @@ func (b *Baize) CardTapped(c *Card) {
 	}
 	for _, o := range b.owners {
 		if targetClass == o.Class() {
-			println("found a", o.Class())
+			// println("found a", o.Class())
 			if o.CanAcceptCard(c) {
-				println(o.Class(), "can accept", c.id)
+				// println(o.Class(), "can accept", c.id)
+				moveCards0(c.owner, o, 1)
 			}
 		}
 	}
-	c.Flip()
+}
+
+func moveCards0(src, dst CardOwner, nCards int) int {
+	var nMoved int = 0
+
+	if nCards == 1 && len(src.Cards()) > 0 {
+		c := src.Pop()
+		if src.Class() == "Stock" {
+			c.FlipUp()
+		}
+		dst.Push(c)
+		nMoved = 1
+	} else if nCards > 1 {
+		var tmp []*Card
+		for n := nCards; n > 0 && len(src.Cards()) > 0; n-- {
+			c := src.Pop()
+			if src.Class() == "Stock" {
+				c.FlipUp()
+			}
+			tmp = append(tmp, c)
+		}
+		for len(tmp) > 0 {
+			c := tmp[len(tmp)-1]
+			tmp = tmp[:len(tmp)-1]
+			dst.Push(c)
+			nMoved++
+		}
+	}
+	return nMoved
 }
 
 // Layout implements ebiten.Game's Layout.
@@ -145,14 +169,18 @@ func (b *Baize) Update() error {
 		}
 
 		if s != nil {
-			cx, cy := s.Position()
-			c := b.findCardAt(image.Point{X: cx, Y: cy})
+			sx, sy := s.Position()
+			// maybe user is tapping or starting to drag a card
+			c := b.findCardAt(image.Point{X: sx, Y: sy})
 			if c != nil {
 				b.stroke = s
 				b.stroke.SetDraggingObject(c)
-				c.StartDrag()
+				c.owner.StartDrag(c)
+				// Pile.StartDrag(Card*)
+				// TODO this card and the rest in the pile are being dragged
 			} else {
-				o := b.findPileAt(image.Point{X: cx, Y: cy})
+				// maybe user is tapping an empty pile (eg to recycle waste to stock)
+				o := b.findPileAt(image.Point{X: sx, Y: sy})
 				if o != nil {
 					b.stroke = s
 					b.stroke.SetDraggingObject(o)
@@ -161,31 +189,59 @@ func (b *Baize) Update() error {
 		}
 	} else {
 		b.stroke.Update()
-		c, ok := b.stroke.DraggingObject().(*Card)
-		if ok {
+		switch v := b.stroke.DraggingObject().(type) {
+		case *Card:
+			c := v
 			if b.stroke.IsReleased() {
 				if b.stroke.IsTapped() {
-					c.StopDrag()
+					c.owner.StopDrag(c)
 					b.CardTapped(c)
 				} else {
-					c.CancelDrag()
+					sx, sy := b.stroke.Position()
+					o := b.findPileAt(image.Point{X: sx, Y: sy})
+					if o == nil {
+						println("no pile found")
+						c.owner.CancelDrag(c)
+					}
+					if o != nil {
+						println("found pile", o.Class())
+						if o.CanAcceptCard(c) {
+							c.owner.StopDrag(c)
+							moveCards0(c.owner, o, 1)
+						} else {
+							c.owner.CancelDrag(c)
+						}
+					}
 				}
 				b.stroke = nil
 			} else {
-				x, y := c.DragStartPosition()
+				// would have used https://golang.org/ref/spec#Method_expressions
+				// but couldn't figure out the syntax
+				// so using a standalone loop instead
+				// or could have (*Pile) DragTailBy(c, int, int) method
 				dx, dy := b.stroke.PositionDiff()
-				c.SetPosition(x+dx, y+dy)
-			}
-		} else {
-			o, ok := b.stroke.DraggingObject().(CardOwner)
-			if ok {
-				if b.stroke.IsReleased() {
-					if b.stroke.IsTapped() {
-						b.PileTapped(o)
+				cards := c.owner.Cards()
+				marking := false
+				for i := 0; i < len(cards); i++ {
+					ci := cards[i]
+					if !marking && ci == c {
+						marking = true
 					}
-					b.stroke = nil
+					if marking {
+						ci.DragBy(dx, dy)
+					}
 				}
 			}
+		case CardOwner:
+			o := v
+			if b.stroke.IsReleased() {
+				if b.stroke.IsTapped() {
+					b.PileTapped(o)
+				}
+				b.stroke = nil
+			}
+		default:
+			log.Fatal("unknown type of dragging object")
 		}
 	}
 
@@ -206,18 +262,10 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, o := range b.owners {
 		o.Draw(screen)
 	}
-	// b.stock.Draw(screen)
-	// b.waste.Draw(screen)
-	// for _, f := range b.foundations {
-	// 	f.Draw(screen)
-	// }
-
 	for _, o := range b.owners {
 		o.DrawCards(screen)
 	}
-	// b.stock.DrawCards(screen)
-	// b.waste.DrawCards(screen)
-	// for _, f := range b.foundations {
-	// 	f.DrawCards(screen)
-	// }
+	for _, o := range b.owners {
+		o.DrawMovingCards(screen)
+	}
 }

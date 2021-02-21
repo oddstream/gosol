@@ -119,7 +119,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	}
 	c.faceX = (c.ordinal - 1) * 71
 
-	pt := backFrames["Castle"]
+	pt := backFrames[TheUserData.CardBack]
 	c.backX, c.backY = pt.X, pt.Y
 
 	return c
@@ -210,7 +210,12 @@ func (c *Card) TransitionTo(x, y int) {
 func (c *Card) StartDrag() {
 	c.dragStartX, c.dragStartY = c.screenX, c.screenY
 	c.dragging = true
-	println("start drag", c.id, "start", c.dragStartX, c.dragStartY)
+	// println("start drag", c.id, "start", c.dragStartX, c.dragStartY)
+}
+
+// DragBy repositions the card by the distance it has been dragged
+func (c *Card) DragBy(dx, dy int) {
+	c.SetPosition(c.dragStartX+dx, c.dragStartY+dy)
 }
 
 // DragStartPosition returns the x,y screen coords of this card before dragging started
@@ -220,13 +225,13 @@ func (c *Card) DragStartPosition() (int, int) {
 
 // StopDrag informs card that it is no longer being dragged
 func (c *Card) StopDrag() {
-	println("stop drag", c.id)
+	// println("stop drag", c.id)
 	c.dragging = false
 }
 
 // CancelDrag informs card that it is no longer being dragged
 func (c *Card) CancelDrag() {
-	println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
+	// println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
 	// c.TransitionTo(c.dragStartX, c.dragStartY)
 	CTQ.Add(c, c.dragStartX, c.dragStartY)
 	c.dragging = false

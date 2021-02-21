@@ -27,3 +27,19 @@ func (t *Tableau) New(info map[string]string) {
 func (t *Tableau) Class() string {
 	return reflect.TypeOf(*t).Name() // .String() returns "sol.Stock"
 }
+
+// CanAcceptCard returns true if this Pile can accept the Card
+func (t *Tableau) CanAcceptCard(c *Card) bool {
+	if len(t.cards) == 0 {
+		if c.ordinal == t.accept {
+			return true
+		}
+	} else {
+		// TODO build rules
+		ct := t.Peek()
+		if ct.color != c.color && ct.ordinal-1 == c.ordinal {
+			return true
+		}
+	}
+	return false
+}

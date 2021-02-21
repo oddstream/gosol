@@ -30,3 +30,19 @@ func (f *Foundation) Class() string {
 func (f *Foundation) Pop() *Card {
 	return nil
 }
+
+// CanAcceptCard returns true if this Pile can accept the Card
+func (f *Foundation) CanAcceptCard(c *Card) bool {
+	if len(f.cards) == 0 {
+		if c.ordinal == f.accept {
+			return true
+		}
+	} else {
+		// TODO build rules
+		cf := f.Peek()
+		if cf.suit == c.suit && cf.ordinal+1 == c.ordinal {
+			return true
+		}
+	}
+	return false
+}

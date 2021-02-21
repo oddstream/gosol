@@ -1,12 +1,10 @@
 package sol
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -24,6 +22,10 @@ type CardOwner interface {
 	Deal() string
 	Position() (int, int)
 	Rect() (int, int, int, int)
+	FannedRect() (int, int, int, int)
+	StartDrag(*Card)
+	CancelDrag(*Card)
+	StopDrag(*Card)
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
@@ -32,6 +34,7 @@ type CardOwner interface {
 	Layout(int, int) (int, int)
 	Draw(*ebiten.Image)
 	DrawCards(*ebiten.Image)
+	DrawMovingCards(*ebiten.Image)
 }
 
 // Pile is a generic container for cards
@@ -91,12 +94,24 @@ func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
 	return // using named return parameters
 }
 
-// ToFront moves the Card to the top of the Pile (a stack)
-func (p *Pile) ToFront(c *Card) {
-
+// FannedRect gives the x,y screen coords of the pile's top left and bottom right corners
+func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0, x1, y1 = p.Rect()
+	if len(p.cards) > 1 {
+		x, y := p.Peek().Position()
+		switch p.fan {
+		case "", "None":
+			// do nothing
+		case "Right":
+			x1 = x + 71
+		case "Down":
+			y1 = y + 96
+		}
+	}
+	return // using named return parameters
 }
 
-// Peek topmost Card  of this Pile (a stack)
+// Peek topmost Card of this Pile (a stack)
 func (p *Pile) Peek() *Card {
 	if 0 == len(p.cards) {
 		return nil
@@ -132,9 +147,9 @@ func (p *Pile) CanAcceptCard(*Card) bool {
 func (p *Pile) PushedFannedPosition() (int, int) {
 	x, y := p.Position()
 	switch p.fan {
-	case "", "none":
+	case "", "None":
 		// do nothing
-	case "down":
+	case "Down":
 		for _, c := range p.cards {
 			if c.prone {
 				y = y + 96/proneStackFactor
@@ -142,7 +157,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 				y = y + 96/cardStackFactor
 			}
 		}
-	case "right":
+	case "Right":
 		for _, c := range p.cards {
 			if c.prone {
 				x = x + 71/proneStackFactor
@@ -150,8 +165,34 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 				x = x + 96/cardStackFactor
 			}
 		}
-	case "waste":
-		// TODO
+	case "Waste":
+		x0, y0 := p.Position()
+		x1 := x0 + 71/cardStackFactor
+		x2 := x1 + 71/cardStackFactor
+		switch len(p.cards) {
+		case 0:
+			// do nothing, incoming card will be at x,y
+		case 1:
+			// incoming card will be at slot [1]
+			x = x1
+		case 2:
+			// incoming card will be at slot [2]
+			x = x2
+		default: // >=3 cards
+			// incoming card will be at slot [2]
+			x = x2
+			// card below needs to transition from slot[2] to slot[1]
+			c := p.cards[len(p.cards)-1]
+			CTQ.Add(c, x1, y0)
+			// card below that needs to transition from slot[1] to slot[0]
+			c = p.cards[len(p.cards)-2]
+			CTQ.Add(c, x0, y0)
+			// all other cards will be at pile x,y
+			for i := 0; i < len(p.cards)-2; i++ {
+				c = p.cards[i]
+				c.SetPosition(x0, y0)
+			}
+		}
 	}
 	return x, y
 }
@@ -187,6 +228,38 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 // 	}
 // }
 
+// StartDrag this card and all the others after it in the stack
+func (p *Pile) StartDrag(c *Card) {
+	p.ApplyToTail(c, (*Card).StartDrag)
+}
+
+// StopDrag this card and all the others after it in the stack
+func (p *Pile) StopDrag(c *Card) {
+	p.ApplyToTail(c, (*Card).StopDrag)
+}
+
+// CancelDrag this card and all the others after it in the stack
+func (p *Pile) CancelDrag(c *Card) {
+	p.ApplyToTail(c, (*Card).CancelDrag)
+}
+
+// https://golang.org/ref/spec#Method_expressions
+// (*Card).CancelDrag yields a function with the signature func(*Card)
+
+// ApplyToTail applies a method func to this card and all the others after it in the stack
+func (p *Pile) ApplyToTail(c *Card, fn func(*Card)) {
+	marking := false
+	for i := 0; i < len(p.cards); i++ {
+		pci := p.cards[i]
+		if !marking && pci == c {
+			marking = true
+		}
+		if marking {
+			fn(pci)
+		}
+	}
+}
+
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -214,13 +287,17 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 func (p *Pile) DrawCards(screen *ebiten.Image) {
 	// draw dragging/lerping cards last so they appear on top
 	for _, c := range p.cards {
-		if c.dragging == false {
+		if c.dragging == false && c.lerping == false {
 			c.Draw(screen)
 		}
 	}
+}
+
+// DrawMovingCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawMovingCards(screen *ebiten.Image) {
 	for _, c := range p.cards {
-		if c.dragging == true {
-			ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
+		if c.dragging == true || c.lerping == true {
+			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
 			c.Draw(screen)
 		}
 	}
