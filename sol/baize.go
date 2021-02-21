@@ -87,7 +87,39 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 
 // PileTapped is called when a pile has been tapped
 func (b *Baize) PileTapped(o CardOwner) {
-	println("pile", o.Class(), "tapped")
+	type HasRecycles interface {
+		Recycles() int
+	}
+	type HasSetrecycles interface {
+		SetRecycles(int)
+	}
+
+	if o.Class() != "Stock" {
+		return
+	}
+
+	typr, ok := o.(HasRecycles)
+	if !ok {
+		return
+	}
+	recycles := typr.Recycles()
+	if recycles > 0 {
+		waste := b.findPile("Waste")
+		if waste == nil || len(waste.Cards()) == 0 {
+			return
+		}
+		stock := b.findPile("Stock")
+		for len(waste.Cards()) > 0 {
+			c := waste.Pop()
+			stock.Push(c)
+		}
+
+		typs, ok := o.(HasSetrecycles)
+		if ok {
+			typs.SetRecycles(recycles - 1)
+		}
+	}
+	// println("pile", o.Class(), "tapped")
 }
 
 // CardTapped is called when a card has been tapped
@@ -103,10 +135,12 @@ func (b *Baize) CardTapped(c *Card) {
 
 	typ, ok := c.owner.(HasTapTarget)
 	if !ok {
+		println(c.owner.Class(), "has no TapTarget")
 		return
 	}
 	targetClass := typ.TapTarget()
 	if targetClass == "" {
+		println(c.owner.Class(), "has empty TapTarget")
 		return
 	}
 	for _, o := range b.owners {

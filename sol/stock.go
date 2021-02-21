@@ -15,6 +15,7 @@ type Stock struct {
 
 	packs     int
 	tapTarget string
+	recycles  int
 }
 
 // New fills in basic information
@@ -26,6 +27,7 @@ func (s *Stock) New(info map[string]string) {
 
 	s.packs = util.GetIntFromMap(info, "Packs")
 	s.tapTarget = util.GetStringFromMap(info, "TapTarget")
+	s.recycles = util.GetIntFromMap(info, "Recycles")
 
 	s.createImage()
 
@@ -42,6 +44,16 @@ func (s *Stock) Class() string {
 // TapTarget returns the Stock's tapTarget (a class, usually "Waste")
 func (s *Stock) TapTarget() string {
 	return s.tapTarget
+}
+
+// Recycles returns number of times the Stock can be refilled from Waste
+func (s *Stock) Recycles() int {
+	return s.recycles
+}
+
+// SetRecycles sets the number of times the Stock can be refilled from Waste
+func (s *Stock) SetRecycles(num int) {
+	s.recycles = num
 }
 
 // CreateCards fills the pile with packs*52 new cards

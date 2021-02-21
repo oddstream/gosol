@@ -21,7 +21,7 @@ var Variants = map[string]VariantInfo{
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
-			{&Stock{}, map[string]string{"x": "1", "y": "1", "fan": "None", "Packs": "1", "TapTarget": "Waste"}},
+			{&Stock{}, map[string]string{"x": "1", "y": "1", "fan": "None", "Packs": "1", "TapTarget": "Waste", "Recycles": "9999"}},
 			{&Waste{}, map[string]string{"x": "2", "y": "1", "fan": "Waste"}},
 			{&Foundation{}, map[string]string{"x": "4", "y": "1", "fan": "None", "accept": "1"}},
 			{&Foundation{}, map[string]string{"x": "5", "y": "1", "fan": "None", "accept": "1"}},

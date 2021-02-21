@@ -1,9 +1,15 @@
 $ git branch -m master main
 
++ retire CardOwner interface; you're abusing interfaces and getting confused by them
+  have one Pile type (with a Class member)
+  createCards, shuffleCards become classless helper functions
+  keep variant attributes as Pile.attributes map 
+
 + determine Case of attribute names and values
-+ auto FlipUp of exposed tableau (all?) cards
-+ should CardOwner be *CardOwner?
-+ tap on empty stock
++ does Pile.Cards() return a reference?
++ Baize.CardTapped() on Stock.Card not working after recycle
+  Pile has no TapTarget
++ Don't expose Stock card after tap
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + Card.color doesn't need to be a color
@@ -13,6 +19,9 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?)
 
++ should CardOwner be *CardOwner? No, interfaces are different.
+x simpler card mover
+x auto FlipUp of exposed tableau (all?) cards
 x dragging >1 card
 x draw dragging cards last so they appear on top
 x moving card from pile to pile
