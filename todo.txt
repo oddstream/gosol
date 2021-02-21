@@ -4,7 +4,6 @@ $ git branch -m master main
 + auto FlipUp of exposed tableau (all?) cards
 + should CardOwner be *CardOwner?
 + tap on empty stock
-+ dragging >1 card
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + Card.color doesn't need to be a color
@@ -14,7 +13,8 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?)
 
-+ draw dragging cards last so they appear on top
+x dragging >1 card
+x draw dragging cards last so they appear on top
 x moving card from pile to pile
 x pile method probe with type assertion on dumy interface
 x CTQ

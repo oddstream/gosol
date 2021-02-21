@@ -127,6 +127,12 @@ func (p *Pile) Pop() *Card {
 	c := p.cards[len(p.cards)-1]
 	p.cards = p.cards[:len(p.cards)-1]
 	c.owner = nil
+
+	// experimental turn over exposed card here
+	// if len(p.cards) > 0 {
+	// 	p.cards[len(p.cards)-1].FlipUp()
+	// }
+
 	return c
 }
 

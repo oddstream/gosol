@@ -96,6 +96,11 @@ func (b *Baize) CardTapped(c *Card) {
 		TapTarget() string
 	}
 
+	// can only tap top card
+	if c != c.owner.Peek() {
+		return
+	}
+
 	typ, ok := c.owner.(HasTapTarget)
 	if !ok {
 		return
@@ -109,39 +114,89 @@ func (b *Baize) CardTapped(c *Card) {
 			// println("found a", o.Class())
 			if o.CanAcceptCard(c) {
 				// println(o.Class(), "can accept", c.id)
-				moveCards0(c.owner, o, 1)
+				moveCards(c, o)
 			}
 		}
 	}
 }
 
-func moveCards0(src, dst CardOwner, nCards int) int {
-	var nMoved int = 0
+// func moveCards0(src, dst CardOwner, nCards int) int {
+// 	var nMoved int = 0
 
-	if nCards == 1 && len(src.Cards()) > 0 {
-		c := src.Pop()
-		if src.Class() == "Stock" {
-			c.FlipUp()
-		}
-		dst.Push(c)
-		nMoved = 1
-	} else if nCards > 1 {
-		var tmp []*Card
-		for n := nCards; n > 0 && len(src.Cards()) > 0; n-- {
-			c := src.Pop()
-			if src.Class() == "Stock" {
-				c.FlipUp()
-			}
-			tmp = append(tmp, c)
-		}
-		for len(tmp) > 0 {
-			c := tmp[len(tmp)-1]
-			tmp = tmp[:len(tmp)-1]
-			dst.Push(c)
-			nMoved++
+// 	if nCards == 1 && len(src.Cards()) > 0 {
+// 		c := src.Pop()
+// 		if src.Class() == "Stock" {
+// 			c.FlipUp()
+// 		}
+// 		dst.Push(c)
+// 		nMoved = 1
+// 	} else if nCards > 1 {
+// 		var tmp []*Card
+// 		for n := nCards; n > 0 && len(src.Cards()) > 0; n-- {
+// 			c := src.Pop()
+// 			if src.Class() == "Stock" {
+// 				c.FlipUp()
+// 			}
+// 			tmp = append(tmp, c)
+// 		}
+// 		for len(tmp) > 0 {
+// 			c := tmp[len(tmp)-1]
+// 			tmp = tmp[:len(tmp)-1]
+// 			dst.Push(c)
+// 			nMoved++
+// 		}
+// 	}
+
+// 	{
+// 		cards := src.Cards()
+// 		if len(cards) > 0 {
+// 			cards[len(cards)-1].FlipUp()
+// 		}
+// 	}
+
+// 	return nMoved
+// }
+
+func moveCards(c *Card, dst CardOwner) {
+
+	src := c.owner
+	cards := src.Cards() // beware this is a copy not a reference
+	moveFrom := len(cards)
+	tmp := make([]*Card, 0)
+
+	// find the index of the first card we will move
+	for i, sc := range cards {
+		if sc == c {
+			moveFrom = i
+			break
 		}
 	}
-	return nMoved
+
+	if moveFrom == len(cards) {
+		log.Fatal("moveCards could not find card in source")
+	}
+
+	// pop the tail off the source and push onto temp stack
+	for i := len(cards) - 1; i >= moveFrom; i-- {
+		sc := src.Pop()
+		if src.Class() == "Stock" {
+			sc.FlipUp()
+		}
+		tmp = append(tmp, sc)
+	}
+
+	// pop cards off the temp stack and onto the destination
+	for len(tmp) > 0 {
+		dc := tmp[len(tmp)-1]
+		tmp = tmp[:len(tmp)-1]
+		dst.Push(dc)
+	}
+
+	// flip up an exposed source card
+	tc := src.Peek()
+	if tc != nil {
+		tc.FlipUp()
+	}
 }
 
 // Layout implements ebiten.Game's Layout.
@@ -200,14 +255,14 @@ func (b *Baize) Update() error {
 					sx, sy := b.stroke.Position()
 					o := b.findPileAt(image.Point{X: sx, Y: sy})
 					if o == nil {
-						println("no pile found")
+						// println("no pile found")
 						c.owner.CancelDrag(c)
 					}
 					if o != nil {
-						println("found pile", o.Class())
+						// println("found pile", o.Class())
 						if o.CanAcceptCard(c) {
 							c.owner.StopDrag(c)
-							moveCards0(c.owner, o, 1)
+							moveCards(c, o)
 						} else {
 							c.owner.CancelDrag(c)
 						}
