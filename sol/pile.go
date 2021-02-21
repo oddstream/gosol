@@ -1,7 +1,8 @@
 package sol
 
 import (
-	"reflect"
+	"log"
+	"strconv"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,41 +15,43 @@ const (
 	cardStackFactor  int = 3
 )
 
-// CardOwner is an interface to objects that can own cards (Pile and Pile 'subclasses')
-type CardOwner interface {
-	New(map[string]string)
-	Cards() []*Card
-	Class() string
-	Deal() string
-	Position() (int, int)
-	Rect() (int, int, int, int)
-	FannedRect() (int, int, int, int)
-	StartDrag(*Card)
-	CancelDrag(*Card)
-	StopDrag(*Card)
-	Peek() *Card
-	Pop() *Card
-	Push(*Card)
-	CanAcceptCard(*Card) bool
-	Update() error
-	Layout(int, int) (int, int)
-	Draw(*ebiten.Image)
-	DrawCards(*ebiten.Image)
-	DrawMovingCards(*ebiten.Image)
-}
-
 // Pile is a generic container for cards
 type Pile struct {
-	cards   []*Card
-	x, y    int // grid position of Pile
-	outline *ebiten.Image
-	fan     string // "None", "Down", "Right"
-	deal    string
-	accept  int // ordinal of card to accept on empty pile, 0 == any (FoundationSpider has it's own rules)
+	Class      string
+	X, Y       int
+	Fan        string
+	Attributes map[string]string
+	Cards      []*Card
+	outline    *ebiten.Image
 }
 
-// New fills in a blank Pile object to satify the CardOwner interface
-func (p *Pile) New(map[string]string) {
+// NewPile create and fills in a Pile object
+func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
+	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
+	p.createImage()
+	return p
+}
+
+// GetIntAttribute gets an integer Pile attribute, or zero
+func (p *Pile) GetIntAttribute(key string) int {
+	str, exists := p.Attributes[key]
+	if exists {
+		i, err := strconv.Atoi(str)
+		if err != nil {
+			log.Fatal(str + " is not an int")
+		}
+		return i
+	}
+	return 0
+}
+
+// GetStringAttribute gets a string Pile attribute
+func (p *Pile) GetStringAttribute(key string) string {
+	str, exists := p.Attributes[key]
+	if exists {
+		return str
+	}
+	return ""
 }
 
 func (p *Pile) createImage() {
@@ -56,34 +59,19 @@ func (p *Pile) createImage() {
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(4)
 	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
-	if p.accept > 0 && p.accept <= 13 {
+	accept := p.GetIntAttribute("Accept")
+	if accept > 0 && accept <= 13 {
 		var acceptChars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 		dc.SetFontFace(TheAcmeFonts.normal)
-		dc.DrawString(acceptChars[p.accept], 71/7, 96/3)
+		dc.DrawString(acceptChars[accept], 71/7, 96/3)
 	}
 	dc.Stroke()
 	p.outline = ebiten.NewImageFromImage(dc.Image())
 }
 
-// Cards returns the slice of *Card
-func (p *Pile) Cards() []*Card {
-	return p.cards
-}
-
-// Class returns the type of this Pile
-func (p *Pile) Class() string {
-	// can't use this generic Class() for all subtypes; they each need their own Class()
-	return reflect.TypeOf(*p).Name() // .String() returns "sol.Stock"
-}
-
-// Deal returns the Deal of *Card
-func (p *Pile) Deal() string {
-	return p.deal
-}
-
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return (p.x * marginX) + (p.x * 71), (p.y * marginY) + (p.y * 96)
+	return (p.X * marginX) + (p.X * 71), (p.Y * marginY) + (p.Y * 96)
 }
 
 // Rect gives the x,y screen coords of the pile's top left and bottom right corners
@@ -97,9 +85,9 @@ func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
 // FannedRect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0, x1, y1 = p.Rect()
-	if len(p.cards) > 1 {
+	if len(p.Cards) > 1 {
 		x, y := p.Peek().Position()
-		switch p.fan {
+		switch p.Fan {
 		case "", "None":
 			// do nothing
 		case "Right":
@@ -113,19 +101,19 @@ func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 
 // Peek topmost Card of this Pile (a stack)
 func (p *Pile) Peek() *Card {
-	if 0 == len(p.cards) {
+	if 0 == len(p.Cards) {
 		return nil
 	}
-	return p.cards[len(p.cards)-1]
+	return p.Cards[len(p.Cards)-1]
 }
 
 // Pop a Card off the end of this Pile (a stack)
 func (p *Pile) Pop() *Card {
-	if 0 == len(p.cards) {
+	if 0 == len(p.Cards) {
 		return nil
 	}
-	c := p.cards[len(p.cards)-1]
-	p.cards = p.cards[:len(p.cards)-1]
+	c := p.Cards[len(p.Cards)-1]
+	p.Cards = p.Cards[:len(p.Cards)-1]
 	c.owner = nil
 
 	// experimental turn over exposed card here
@@ -140,23 +128,25 @@ func (p *Pile) Pop() *Card {
 func (p *Pile) Push(c *Card) {
 	c.owner = p
 	x, y := p.PushedFannedPosition()
-	p.cards = append(p.cards, c)
+	p.Cards = append(p.Cards, c)
 	CTQ.Add(c, x, y)
 }
 
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(*Card) bool {
+	// accept := p.GetIntAttribute("Accept")
+	// TODO
 	return false
 }
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
 func (p *Pile) PushedFannedPosition() (int, int) {
 	x, y := p.Position()
-	switch p.fan {
+	switch p.Fan {
 	case "", "None":
 		// do nothing
 	case "Down":
-		for _, c := range p.cards {
+		for _, c := range p.Cards {
 			if c.prone {
 				y = y + 96/proneStackFactor
 			} else {
@@ -164,7 +154,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			}
 		}
 	case "Right":
-		for _, c := range p.cards {
+		for _, c := range p.Cards {
 			if c.prone {
 				x = x + 71/proneStackFactor
 			} else {
@@ -175,7 +165,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 		x0, y0 := p.Position()
 		x1 := x0 + 71/cardStackFactor
 		x2 := x1 + 71/cardStackFactor
-		switch len(p.cards) {
+		switch len(p.Cards) {
 		case 0:
 			// do nothing, incoming card will be at x,y
 		case 1:
@@ -188,14 +178,14 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// incoming card will be at slot [2]
 			x = x2
 			// card below needs to transition from slot[2] to slot[1]
-			c := p.cards[len(p.cards)-1]
+			c := p.Cards[len(p.Cards)-1]
 			CTQ.Add(c, x1, y0)
 			// card below that needs to transition from slot[1] to slot[0]
-			c = p.cards[len(p.cards)-2]
+			c = p.Cards[len(p.Cards)-2]
 			CTQ.Add(c, x0, y0)
 			// all other cards will be at pile x,y
-			for i := 0; i < len(p.cards)-2; i++ {
-				c = p.cards[i]
+			for i := 0; i < len(p.Cards)-2; i++ {
+				c = p.Cards[i]
 				c.SetPosition(x0, y0)
 			}
 		}
@@ -255,8 +245,8 @@ func (p *Pile) CancelDrag(c *Card) {
 // ApplyToTail applies a method func to this card and all the others after it in the stack
 func (p *Pile) ApplyToTail(c *Card, fn func(*Card)) {
 	marking := false
-	for i := 0; i < len(p.cards); i++ {
-		pci := p.cards[i]
+	for i := 0; i < len(p.Cards); i++ {
+		pci := p.Cards[i]
 		if !marking && pci == c {
 			marking = true
 		}
@@ -273,7 +263,7 @@ func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update the Pile state (transitions, user input)
 func (p *Pile) Update() error {
-	for _, c := range p.cards {
+	for _, c := range p.Cards {
 		c.Update()
 	}
 	return nil
@@ -292,7 +282,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 // DrawCards renders the Cards in the Pile into the screen
 func (p *Pile) DrawCards(screen *ebiten.Image) {
 	// draw dragging/lerping cards last so they appear on top
-	for _, c := range p.cards {
+	for _, c := range p.Cards {
 		if c.dragging == false && c.lerping == false {
 			c.Draw(screen)
 		}
@@ -301,7 +291,7 @@ func (p *Pile) DrawCards(screen *ebiten.Image) {
 
 // DrawMovingCards renders the Cards in the Pile into the screen
 func (p *Pile) DrawMovingCards(screen *ebiten.Image) {
-	for _, c := range p.cards {
+	for _, c := range p.Cards {
 		if c.dragging == true || c.lerping == true {
 			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
 			c.Draw(screen)

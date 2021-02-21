@@ -11,7 +11,7 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	owners []CardOwner
+	piles  []*Pile
 	stroke *Stroke
 }
 
@@ -19,11 +19,15 @@ type Baize struct {
 func NewBaize() *Baize {
 	b := &Baize{}
 
-	o2, ok := buildVariant("Klondike")
+	piles, ok := buildVariantPiles("Klondike")
 	if !ok {
 		log.Fatal("Klondike" + " not found")
 	}
-	b.owners = o2
+	b.piles = piles
+
+	stock := b.findPile("Stock")
+	createCards(stock)
+	shuffleCards(stock)
 
 	b.dealCards()
 
@@ -32,8 +36,8 @@ func NewBaize() *Baize {
 
 func (b *Baize) dealCards() {
 	stock := b.findPile("Stock")
-	for _, o := range b.owners {
-		deal := o.Deal()
+	for _, p := range b.piles {
+		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
 			continue
 		}
@@ -42,28 +46,28 @@ func (b *Baize) dealCards() {
 			case 'u':
 				c := stock.Pop()
 				c.FlipUp()
-				o.Push(c)
+				p.Push(c)
 			case 'd':
 				c := stock.Pop()
 				c.FlipDown()
-				o.Push(c)
+				p.Push(c)
 			}
 		}
 	}
 }
 
-func (b *Baize) findPile(cls string) CardOwner {
-	for _, o := range b.owners {
-		if o.Class() == cls {
-			return o
+func (b *Baize) findPile(cls string) *Pile {
+	for _, p := range b.piles {
+		if p.Class == cls {
+			return p
 		}
 	}
 	return nil
 }
 
 // findPileAt finds the pile under the mouse click or touch
-func (b *Baize) findPileAt(pt image.Point) CardOwner {
-	for _, o := range b.owners {
+func (b *Baize) findPileAt(pt image.Point) *Pile {
+	for _, o := range b.piles {
 		if util.InRect(pt, o.FannedRect) {
 			return o
 		}
@@ -73,10 +77,9 @@ func (b *Baize) findPileAt(pt image.Point) CardOwner {
 
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
-	for _, o := range b.owners {
-		cards := o.Cards()
-		for i := len(cards) - 1; i >= 0; i-- {
-			c := cards[i]
+	for _, p := range b.piles {
+		for i := len(p.Cards) - 1; i >= 0; i-- {
+			c := p.Cards[i]
 			if util.InRect(pt, c.Rect) {
 				return c
 			}
@@ -86,69 +89,48 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 }
 
 // PileTapped is called when a pile has been tapped
-func (b *Baize) PileTapped(o CardOwner) {
-	type HasRecycles interface {
-		Recycles() int
-	}
-	type HasSetrecycles interface {
-		SetRecycles(int)
-	}
+func (b *Baize) PileTapped(p *Pile) {
 
-	if o.Class() != "Stock" {
+	if p.Class != "Stock" {
 		return
 	}
 
-	typr, ok := o.(HasRecycles)
-	if !ok {
-		return
-	}
-	recycles := typr.Recycles()
+	recycles := p.GetIntAttribute("Recycles")
 	if recycles > 0 {
 		waste := b.findPile("Waste")
-		if waste == nil || len(waste.Cards()) == 0 {
+		if waste == nil || len(waste.Cards) == 0 {
 			return
 		}
 		stock := b.findPile("Stock")
-		for len(waste.Cards()) > 0 {
+		for len(waste.Cards) > 0 {
 			c := waste.Pop()
 			stock.Push(c)
 		}
 
-		typs, ok := o.(HasSetrecycles)
-		if ok {
-			typs.SetRecycles(recycles - 1)
-		}
+		// TODO decrement p.Recycles (will need to add special key to p.Attributes)
 	}
-	// println("pile", o.Class(), "tapped")
+	// println("pile", p.Class, "tapped")
 }
 
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
-	type HasTapTarget interface {
-		TapTarget() string
-	}
 
 	// can only tap top card
 	if c != c.owner.Peek() {
 		return
 	}
 
-	typ, ok := c.owner.(HasTapTarget)
-	if !ok {
-		println(c.owner.Class(), "has no TapTarget")
-		return
-	}
-	targetClass := typ.TapTarget()
+	targetClass := c.owner.GetStringAttribute("TapTarget")
 	if targetClass == "" {
-		println(c.owner.Class(), "has empty TapTarget")
+		println(c.owner.Class, "has empty TapTarget")
 		return
 	}
-	for _, o := range b.owners {
-		if targetClass == o.Class() {
-			// println("found a", o.Class())
-			if o.CanAcceptCard(c) {
-				// println(o.Class(), "can accept", c.id)
-				moveCards(c, o)
+	for _, p := range b.piles {
+		if targetClass == p.Class {
+			// println("found a", p.Class)
+			if p.CanAcceptCard(c) {
+				// println(p.Class, "can accept", c.id)
+				moveCards(c, p)
 			}
 		}
 	}
@@ -191,29 +173,28 @@ func (b *Baize) CardTapped(c *Card) {
 // 	return nMoved
 // }
 
-func moveCards(c *Card, dst CardOwner) {
+func moveCards(c *Card, dst *Pile) {
 
 	src := c.owner
-	cards := src.Cards() // beware this is a copy not a reference
-	moveFrom := len(cards)
+	moveFrom := len(src.Cards)
 	tmp := make([]*Card, 0)
 
 	// find the index of the first card we will move
-	for i, sc := range cards {
+	for i, sc := range src.Cards {
 		if sc == c {
 			moveFrom = i
 			break
 		}
 	}
 
-	if moveFrom == len(cards) {
+	if moveFrom == len(src.Cards) {
 		log.Fatal("moveCards could not find card in source")
 	}
 
 	// pop the tail off the source and push onto temp stack
-	for i := len(cards) - 1; i >= moveFrom; i-- {
+	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
 		sc := src.Pop()
-		if src.Class() == "Stock" {
+		if src.Class == "Stock" {
 			sc.FlipUp()
 		}
 		tmp = append(tmp, sc)
@@ -236,8 +217,8 @@ func moveCards(c *Card, dst CardOwner) {
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
-	for _, o := range b.owners {
-		o.Layout(outsideWidth, outsideHeight)
+	for _, p := range b.piles {
+		p.Layout(outsideWidth, outsideHeight)
 	}
 
 	return outsideWidth, outsideHeight
@@ -269,10 +250,10 @@ func (b *Baize) Update() error {
 				// TODO this card and the rest in the pile are being dragged
 			} else {
 				// maybe user is tapping an empty pile (eg to recycle waste to stock)
-				o := b.findPileAt(image.Point{X: sx, Y: sy})
-				if o != nil {
+				p := b.findPileAt(image.Point{X: sx, Y: sy})
+				if p != nil {
 					b.stroke = s
-					b.stroke.SetDraggingObject(o)
+					b.stroke.SetDraggingObject(p)
 				}
 			}
 		}
@@ -309,10 +290,9 @@ func (b *Baize) Update() error {
 				// so using a standalone loop instead
 				// or could have (*Pile) DragTailBy(c, int, int) method
 				dx, dy := b.stroke.PositionDiff()
-				cards := c.owner.Cards()
 				marking := false
-				for i := 0; i < len(cards); i++ {
-					ci := cards[i]
+				for i := 0; i < len(c.owner.Cards); i++ {
+					ci := c.owner.Cards[i]
 					if !marking && ci == c {
 						marking = true
 					}
@@ -321,11 +301,11 @@ func (b *Baize) Update() error {
 					}
 				}
 			}
-		case CardOwner:
-			o := v
+		case *Pile:
+			p := v
 			if b.stroke.IsReleased() {
 				if b.stroke.IsTapped() {
-					b.PileTapped(o)
+					b.PileTapped(p)
 				}
 				b.stroke = nil
 			}
@@ -334,8 +314,8 @@ func (b *Baize) Update() error {
 		}
 	}
 
-	for _, o := range b.owners {
-		o.Update()
+	for _, p := range b.piles {
+		p.Update()
 	}
 
 	CTQ.Update()
@@ -348,13 +328,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(colorBaize)
 
-	for _, o := range b.owners {
-		o.Draw(screen)
+	for _, p := range b.piles {
+		p.Draw(screen)
 	}
-	for _, o := range b.owners {
-		o.DrawCards(screen)
+	for _, p := range b.piles {
+		p.DrawCards(screen)
 	}
-	for _, o := range b.owners {
-		o.DrawMovingCards(screen)
+	for _, p := range b.piles {
+		p.DrawMovingCards(screen)
 	}
 }

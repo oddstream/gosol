@@ -4,6 +4,7 @@ $ git branch -m master main
   have one Pile type (with a Class member)
   createCards, shuffleCards become classless helper functions
   keep variant attributes as Pile.attributes map 
+  PileInfo contains Class, X, Y, Fan, attributes map
 
 + determine Case of attribute names and values
 + does Pile.Cards() return a reference?

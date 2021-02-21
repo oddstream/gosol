@@ -65,7 +65,7 @@ func init() {
 
 // Card object
 type Card struct {
-	owner CardOwner
+	owner *Pile
 
 	pack    int
 	suit    string
