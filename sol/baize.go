@@ -96,8 +96,8 @@ func (b *Baize) PileTapped(p *Pile) {
 		return
 	}
 
-	recycles := p.GetIntAttribute("Recycles")
-	if recycles > 0 {
+	recycles, ok := p.GetIntAttribute("Recycles")
+	if ok && recycles > 0 {
 		waste := b.findPile("Waste")
 		if waste == nil || len(waste.Cards) == 0 {
 			return
@@ -220,6 +220,21 @@ func moveCards(c *Card, dst *Pile) {
 	}
 }
 
+func (b *Baize) largestIntersection(c *Card) *Pile {
+	var largest int = 0
+	var pile *Pile = nil
+	cx0, cy0, cx1, cy1 := c.Rect()
+	for _, p := range b.piles {
+		px0, py0, px1, py1 := p.FannedRect()
+		i := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
+		if i > largest {
+			largest = i
+			pile = p
+		}
+	}
+	return pile
+}
+
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
@@ -274,14 +289,12 @@ func (b *Baize) Update() error {
 					c.owner.StopDrag(c)
 					b.CardTapped(c)
 				} else {
-					sx, sy := b.stroke.Position()
-					p := b.findPileAt(image.Point{X: sx, Y: sy})
+					// sx, sy := b.stroke.Position()
+					// p := b.findPileAt(image.Point{X: sx, Y: sy})
+					p := b.largestIntersection(c)
 					if p == nil {
-						// TODO use biggest intersection of this card's rect and pile rects (OverlapsTheMost)
-						// println("no pile found")
 						c.owner.CancelDrag(c)
-					}
-					if p != nil {
+					} else {
 						// println("found pile", o.Class())
 						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)

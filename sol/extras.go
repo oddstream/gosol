@@ -11,8 +11,8 @@ import (
 
 func createCards(stock *Pile) {
 
-	packs := stock.GetIntAttribute("Packs")
-	if packs == 0 {
+	packs, ok := stock.GetIntAttribute("Packs")
+	if !ok || packs == 0 {
 		packs = 1
 	}
 	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries

@@ -15,35 +15,53 @@ const (
 	faceFanFactor int = 3
 )
 
+// var DefaultBuild = map[string]int{
+// 	"Cell":       0,
+// 	"Foundation": 21,
+// 	"Reserve":    0,
+// 	"Stock":      0,
+// 	"Tableau":    42,
+// 	"Waste":      15,
+// }
+
+// var DefaultMove = map[string]int{
+// 	"Cell":       0,
+// 	"Foundation": 0,
+// 	"Reserve":    0,
+// 	"Stock":      0,
+// 	"Tableau":    42,
+// 	"Waste":      15,
+// }
+
 // Pile is a generic container for cards
 type Pile struct {
-	Class      string
-	X, Y       int
-	Fan        string
-	Attributes map[string]string
-	Cards      []*Card
-	Tail       []*Card
-	outline    *ebiten.Image
+	Class           string
+	X, Y            int
+	Fan             string
+	Attributes      map[string]string
+	Cards           []*Card
+	Tail            []*Card
+	backgroundImage *ebiten.Image
 }
 
 // NewPile create and fills in a Pile object
 func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
 	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
-	p.createImage()
+	p.createBackgroundImage()
 	return p
 }
 
-// GetIntAttribute gets an integer Pile attribute, or zero
-func (p *Pile) GetIntAttribute(key string) int {
+// GetIntAttribute gets an integer Pile attribute
+func (p *Pile) GetIntAttribute(key string) (int, bool) {
 	str, exists := p.Attributes[key]
-	if exists {
-		i, err := strconv.Atoi(str)
-		if err != nil {
-			log.Fatal(str + " is not an int")
-		}
-		return i
+	if !exists {
+		return 0, false
 	}
-	return 0
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		log.Fatal(str + " is not an int")
+	}
+	return i, true
 }
 
 // GetStringAttribute gets a string Pile attribute
@@ -55,19 +73,27 @@ func (p *Pile) GetStringAttribute(key string) string {
 	return ""
 }
 
-func (p *Pile) createImage() {
+func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(71, 96)
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(4)
 	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
-	accept := p.GetIntAttribute("Accept")
-	if accept > 0 && accept <= 13 {
+	accept, ok := p.GetIntAttribute("Accept")
+	if ok && accept > 0 && accept <= 13 {
 		var acceptChars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 		dc.SetFontFace(TheAcmeFonts.normal)
 		dc.DrawString(acceptChars[accept], 71/7, 96/3)
 	}
+	recycles, ok := p.GetIntAttribute("Recycles")
+	if ok {
+		if recycles == 0 {
+			// TODO red no entry
+		} else if recycles < 10 {
+			// TODO green recycle glyph
+		}
+	}
 	dc.Stroke()
-	p.outline = ebiten.NewImageFromImage(dc.Image())
+	p.backgroundImage = ebiten.NewImageFromImage(dc.Image())
 }
 
 // Position returns the x,y screen coords of this pile
@@ -135,14 +161,20 @@ func (p *Pile) Push(c *Card) {
 
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
-	accept := p.GetIntAttribute("Accept")
-	build := p.GetIntAttribute("Build")
+	accept, ok := p.GetIntAttribute("Accept")
+	if !ok {
+		accept = 0 // won't match any card
+	}
+	build, ok := p.GetIntAttribute("Build")
+	if !ok {
+		log.Fatal("no Build rules for Pile " + p.Class)
+	}
 
 	switch p.Class {
 	case "Stock":
-		return false
+		return false // user cannot move card to stock
 	case "Waste":
-		return c.owner.Class == "Stock"
+		return c.owner.Class == "Stock" // user can only move card to waste from stock
 	case "Foundation", "Tableau":
 		if len(p.Cards) == 0 {
 			return c.ordinal == accept
@@ -159,30 +191,46 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		log.Fatal("CanAcceptTail with empty tail")
 	}
 
-	c := Tail[0]
-	accept := p.GetIntAttribute("Accept")
-	build := p.GetIntAttribute("Build")
-	move := p.GetIntAttribute("Move")
+	accept, ok := p.GetIntAttribute("Accept")
+	if !ok {
+		accept = 0
+	}
+	buildRules, ok := p.GetIntAttribute("Build")
+	if !ok {
+		log.Fatal("No Build attribute for Pile " + p.Class)
+	}
 
+	c := Tail[0]
 	switch p.Class {
 	case "Stock":
-		return false
+		return false // user cannot drag cards to stock
+
 	case "Waste":
-		return c.owner.Class == "Stock"
+		return c.owner.Class == "Stock" // user can drag a card from stock to waste
+
+	case "FoundationSpider":
+		if len(Tail) != 13 {
+			return false
+		}
+		if len(p.Cards) > 0 {
+			return false
+		}
+		return isConformant(buildRules, Tail)
+
 	case "Foundation":
-		if len(Tail) != 1 { // TODO Spider needs 13 Cards
+		if len(Tail) != 1 {
 			return false
 		}
 		if len(p.Cards) == 0 {
 			return c.ordinal == accept
 		}
-		return isConformant0(build, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c)
 
 	case "Tableau":
 		if len(p.Cards) == 0 {
 			return c.ordinal == accept
 		}
-		return isConformant0(move, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c)
 	}
 	return false
 }
@@ -274,7 +322,11 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(c *Card) bool {
-	p.Tail = nil
+	if c.owner.Class == "Foundation" || c.owner.Class == "FoundationSpider" {
+		return false // cannot take cards off foundation
+	}
+
+	p.Tail = nil // append works on a nil slice, yay
 	marking := false
 	for i := 0; i < len(p.Cards); i++ {
 		pci := p.Cards[i]
@@ -285,8 +337,11 @@ func (p *Pile) StartDrag(c *Card) bool {
 			p.Tail = append(p.Tail, pci)
 		}
 	}
-	move := p.GetIntAttribute("Move")
-	if !isConformant(move, p.Tail) {
+	dragRules, ok := p.GetIntAttribute("Drag")
+	if !ok {
+		log.Fatal("No Drag attribute for Pile " + p.Class)
+	}
+	if !isConformant(dragRules, p.Tail) {
 		p.Tail = nil
 		return false
 	}
@@ -347,6 +402,23 @@ func (p *Pile) DragTailBy(dx, dy int) {
 	// }
 }
 
+// IsComplete returns true if this Pile is complete
+func (p *Pile) IsComplete() bool {
+	// a game is complete when all piles except foundations are empty
+
+	cw, ok := p.GetIntAttribute("CompleteWhen")
+	if ok {
+		return len(p.Cards) == cw
+	}
+
+	switch p.Class {
+	case "Foundation":
+	default:
+		return len(p.Cards) == 0
+	}
+	return true
+}
+
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -362,11 +434,11 @@ func (p *Pile) Update() error {
 
 // Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
-	if p.outline != nil {
+	if p.backgroundImage != nil {
 		op := &ebiten.DrawImageOptions{}
 		x, y := p.Position()
 		op.GeoM.Translate(float64(x), float64(y))
-		screen.DrawImage(p.outline, op)
+		screen.DrawImage(p.backgroundImage, op)
 	}
 }
 

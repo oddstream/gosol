@@ -59,6 +59,29 @@ func Abs(x int) int {
 	return x
 }
 
+// Max returns the largest of of it's two int parameters
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// Min returns the largest of of it's two int parameters
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// OverlapArea returns the intersection of two rectangles
+func OverlapArea(x1, y1, x2, y2, X1, Y1, X2, Y2 int) int {
+	xOverlap := Max(0, Min(x2, X2)-Max(x1, X1))
+	yOverlap := Max(0, Min(y2, Y2)-Max(y1, Y1))
+	return xOverlap * yOverlap
+}
+
 // GetIntFromMap does what it says on the tin
 func GetIntFromMap(info map[string]string, key string) int {
 	str, exists := info[key]

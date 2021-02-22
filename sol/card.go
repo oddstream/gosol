@@ -312,6 +312,8 @@ func (c *Card) Update() error {
 
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
+	// TODO draw a shadow rect if c.dragging == true || c.lerping == true
+
 	op := &ebiten.DrawImageOptions{}
 
 	var img *ebiten.Image

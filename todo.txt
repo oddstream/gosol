@@ -1,5 +1,10 @@
 $ git branch -m master main
 
++ currently can drag Tail off Foundation, inspite of Move=0
++ map of default Build, Move for Pile Classes, Build/Move methods
++ CompleteWhen attribute, default 0, 13 for Foundations
+  "a game is complete when all piles except foundations are empty"
+  other rules for Poker, GrandfathersClock
 + method goes in Baize if it needs access to Baize.Piles
   method goes in Pile if it needs access to Pile.Cards
 + build/move rules (rank, suit, rankwrap)
@@ -19,6 +24,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?)
 
+x GetIntAttribute needs to return int, bool
 x make a Pile.tail []*Card slice when dragging starts?
 x Don't expose Stock card after tap
 x determine Case of attribute names and values (use PascalCase) (https://en.wikipedia.org/wiki/Naming_convention_(programming))

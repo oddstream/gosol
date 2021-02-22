@@ -21,8 +21,8 @@ import (
 
 func init() {
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
-	flag.IntVar(&sol.WindowWidth, "width", 1920/2, "width of window in pixels")
-	flag.IntVar(&sol.WindowHeight, "height", 1080/2, "height of window in pixels")
+	flag.IntVar(&sol.WindowWidth, "width", 1080, "width of window in pixels")
+	flag.IntVar(&sol.WindowHeight, "height", 1080, "height of window in pixels")
 }
 
 func main() {
