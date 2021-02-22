@@ -19,9 +19,9 @@ type Baize struct {
 func NewBaize() *Baize {
 	b := &Baize{}
 
-	piles, ok := buildVariantPiles("Klondike")
+	piles, ok := buildVariantPiles(TheUserData.Variant)
 	if !ok {
-		log.Fatal("Klondike" + " not found")
+		log.Fatal(TheUserData.Variant + " not found")
 	}
 	b.piles = piles
 
@@ -91,6 +91,7 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 // PileTapped is called when a pile has been tapped
 func (b *Baize) PileTapped(p *Pile) {
 
+	// this method is in Baize because it needs access to Baize.findPile()
 	if p.Class != "Stock" {
 		return
 	}
@@ -104,6 +105,7 @@ func (b *Baize) PileTapped(p *Pile) {
 		stock := b.findPile("Stock")
 		for len(waste.Cards) > 0 {
 			c := waste.Pop()
+			c.FlipDown()
 			stock.Push(c)
 		}
 
@@ -120,20 +122,22 @@ func (b *Baize) CardTapped(c *Card) {
 		return
 	}
 
+	// Tap on a Stock card to send it to Waste
+	// TODO fudge to send three cards
 	targetClass := c.owner.GetStringAttribute("TapTarget")
-	if targetClass == "" {
-		println(c.owner.Class, "has empty TapTarget")
-		return
-	}
-	for _, p := range b.piles {
-		if targetClass == p.Class {
-			// println("found a", p.Class)
-			if p.CanAcceptCard(c) {
-				// println(p.Class, "can accept", c.id)
-				moveCards(c, p)
+	if targetClass != "" {
+		for _, p := range b.piles {
+			if targetClass == p.Class {
+				// println("found a", p.Class)
+				if p.CanAcceptCard(c) {
+					// println(p.Class, "can accept", c.id)
+					moveCards(c, p)
+				}
 			}
 		}
 	}
+
+	// TODO else test other piles to see if this card is accepted?
 }
 
 // func moveCards0(src, dst CardOwner, nCards int) int {
@@ -208,9 +212,11 @@ func moveCards(c *Card, dst *Pile) {
 	}
 
 	// flip up an exposed source card
-	tc := src.Peek()
-	if tc != nil {
-		tc.FlipUp()
+	if src.Class != "Stock" {
+		tc := src.Peek()
+		if tc != nil {
+			tc.FlipUp()
+		}
 	}
 }
 
@@ -243,11 +249,12 @@ func (b *Baize) Update() error {
 			// maybe user is tapping or starting to drag a card
 			c := b.findCardAt(image.Point{X: sx, Y: sy})
 			if c != nil {
-				b.stroke = s
-				b.stroke.SetDraggingObject(c)
-				c.owner.StartDrag(c)
-				// Pile.StartDrag(Card*)
-				// TODO this card and the rest in the pile are being dragged
+				if c.owner.StartDrag(c) {
+					b.stroke = s
+					b.stroke.SetDraggingObject(c)
+				} else {
+					println("Cannot drag those cards")
+				}
 			} else {
 				// maybe user is tapping an empty pile (eg to recycle waste to stock)
 				p := b.findPileAt(image.Point{X: sx, Y: sy})
@@ -268,16 +275,17 @@ func (b *Baize) Update() error {
 					b.CardTapped(c)
 				} else {
 					sx, sy := b.stroke.Position()
-					o := b.findPileAt(image.Point{X: sx, Y: sy})
-					if o == nil {
+					p := b.findPileAt(image.Point{X: sx, Y: sy})
+					if p == nil {
+						// TODO use biggest intersection of this card's rect and pile rects (OverlapsTheMost)
 						// println("no pile found")
 						c.owner.CancelDrag(c)
 					}
-					if o != nil {
+					if p != nil {
 						// println("found pile", o.Class())
-						if o.CanAcceptCard(c) {
+						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)
-							moveCards(c, o)
+							moveCards(c, p)
 						} else {
 							c.owner.CancelDrag(c)
 						}
@@ -285,21 +293,8 @@ func (b *Baize) Update() error {
 				}
 				b.stroke = nil
 			} else {
-				// would have used https://golang.org/ref/spec#Method_expressions
-				// but couldn't figure out the syntax
-				// so using a standalone loop instead
-				// or could have (*Pile) DragTailBy(c, int, int) method
 				dx, dy := b.stroke.PositionDiff()
-				marking := false
-				for i := 0; i < len(c.owner.Cards); i++ {
-					ci := c.owner.Cards[i]
-					if !marking && ci == c {
-						marking = true
-					}
-					if marking {
-						ci.DragBy(dx, dy)
-					}
-				}
+				c.owner.DragTailBy(dx, dy)
 			}
 		case *Pile:
 			p := v

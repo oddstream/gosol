@@ -5,6 +5,7 @@ type UserData struct {
 	// Capitals to emit to json
 	Copyright       string
 	Game            string
+	Variant         string
 	CardBack        string
 	CompletedLevels int
 }

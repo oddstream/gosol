@@ -51,6 +51,14 @@ func Clamp(value, min, max float64) float64 {
 	return math.Min(math.Max(value, min), max)
 }
 
+// Abs returns the absolute value of x.
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
 // GetIntFromMap does what it says on the tin
 func GetIntFromMap(info map[string]string, key string) int {
 	str, exists := info[key]

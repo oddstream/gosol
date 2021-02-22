@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	marginX          int = 10
-	marginY          int = 10
-	proneStackFactor int = 5
-	cardStackFactor  int = 3
+	marginX       int = 10
+	marginY       int = 10
+	backFanFactor int = 5
+	faceFanFactor int = 3
 )
 
 // Pile is a generic container for cards
@@ -22,6 +22,7 @@ type Pile struct {
 	Fan        string
 	Attributes map[string]string
 	Cards      []*Card
+	Tail       []*Card
 	outline    *ebiten.Image
 }
 
@@ -133,9 +134,56 @@ func (p *Pile) Push(c *Card) {
 }
 
 // CanAcceptCard returns true if this Pile can accept the Card
-func (p *Pile) CanAcceptCard(*Card) bool {
-	// accept := p.GetIntAttribute("Accept")
-	// TODO
+func (p *Pile) CanAcceptCard(c *Card) bool {
+	accept := p.GetIntAttribute("Accept")
+	build := p.GetIntAttribute("Build")
+
+	switch p.Class {
+	case "Stock":
+		return false
+	case "Waste":
+		return c.owner.Class == "Stock"
+	case "Foundation", "Tableau":
+		if len(p.Cards) == 0 {
+			return c.ordinal == accept
+		}
+		return isConformant0(build, p.Peek(), c)
+	}
+	return false
+}
+
+// CanAcceptTail returns true if this Pile can accept the tail of Cards from another Pile
+func (p *Pile) CanAcceptTail(Tail []*Card) bool {
+
+	if Tail == nil || len(Tail) == 0 {
+		log.Fatal("CanAcceptTail with empty tail")
+	}
+
+	c := Tail[0]
+	accept := p.GetIntAttribute("Accept")
+	build := p.GetIntAttribute("Build")
+	move := p.GetIntAttribute("Move")
+
+	switch p.Class {
+	case "Stock":
+		return false
+	case "Waste":
+		return c.owner.Class == "Stock"
+	case "Foundation":
+		if len(Tail) != 1 { // TODO Spider needs 13 Cards
+			return false
+		}
+		if len(p.Cards) == 0 {
+			return c.ordinal == accept
+		}
+		return isConformant0(build, p.Peek(), c)
+
+	case "Tableau":
+		if len(p.Cards) == 0 {
+			return c.ordinal == accept
+		}
+		return isConformant0(move, p.Peek(), c)
+	}
 	return false
 }
 
@@ -148,23 +196,23 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	case "Down":
 		for _, c := range p.Cards {
 			if c.prone {
-				y = y + 96/proneStackFactor
+				y = y + 96/backFanFactor
 			} else {
-				y = y + 96/cardStackFactor
+				y = y + 96/faceFanFactor
 			}
 		}
 	case "Right":
 		for _, c := range p.Cards {
 			if c.prone {
-				x = x + 71/proneStackFactor
+				x = x + 71/backFanFactor
 			} else {
-				x = x + 96/cardStackFactor
+				x = x + 96/faceFanFactor
 			}
 		}
 	case "Waste":
 		x0, y0 := p.Position()
-		x1 := x0 + 71/cardStackFactor
-		x2 := x1 + 71/cardStackFactor
+		x1 := x0 + 71/faceFanFactor
+		x2 := x1 + 71/faceFanFactor
 		switch len(p.Cards) {
 		case 0:
 			// do nothing, incoming card will be at x,y
@@ -225,25 +273,8 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 // }
 
 // StartDrag this card and all the others after it in the stack
-func (p *Pile) StartDrag(c *Card) {
-	p.ApplyToTail(c, (*Card).StartDrag)
-}
-
-// StopDrag this card and all the others after it in the stack
-func (p *Pile) StopDrag(c *Card) {
-	p.ApplyToTail(c, (*Card).StopDrag)
-}
-
-// CancelDrag this card and all the others after it in the stack
-func (p *Pile) CancelDrag(c *Card) {
-	p.ApplyToTail(c, (*Card).CancelDrag)
-}
-
-// https://golang.org/ref/spec#Method_expressions
-// (*Card).CancelDrag yields a function with the signature func(*Card)
-
-// ApplyToTail applies a method func to this card and all the others after it in the stack
-func (p *Pile) ApplyToTail(c *Card, fn func(*Card)) {
+func (p *Pile) StartDrag(c *Card) bool {
+	p.Tail = nil
 	marking := false
 	for i := 0; i < len(p.Cards); i++ {
 		pci := p.Cards[i]
@@ -251,9 +282,69 @@ func (p *Pile) ApplyToTail(c *Card, fn func(*Card)) {
 			marking = true
 		}
 		if marking {
-			fn(pci)
+			p.Tail = append(p.Tail, pci)
 		}
 	}
+	move := p.GetIntAttribute("Move")
+	if !isConformant(move, p.Tail) {
+		p.Tail = nil
+		return false
+	}
+	p.ApplyToTail((*Card).StartDrag)
+	return true
+}
+
+// StopDrag this card and all the others after it in the stack
+func (p *Pile) StopDrag(c *Card) {
+	p.ApplyToTail((*Card).StopDrag)
+	p.Tail = nil
+}
+
+// CancelDrag this card and all the others after it in the stack
+func (p *Pile) CancelDrag(c *Card) {
+	p.ApplyToTail((*Card).CancelDrag)
+	p.Tail = nil
+}
+
+// https://golang.org/ref/spec#Method_expressions
+// (*Card).CancelDrag yields a function with the signature func(*Card)
+
+// ApplyToTail applies a method func to this card and all the others after it in the stack
+func (p *Pile) ApplyToTail(fn func(*Card)) {
+	for _, tc := range p.Tail {
+		fn(tc)
+	}
+	// marking := false
+	// for i := 0; i < len(p.Cards); i++ {
+	// 	pci := p.Cards[i]
+	// 	if !marking && pci == c {
+	// 		marking = true
+	// 	}
+	// 	if marking {
+	// 		fn(pci)
+	// 	}
+	// }
+}
+
+// DragTailBy repositions all the cards in the tail (from c inclusive)
+func (p *Pile) DragTailBy(dx, dy int) {
+	// would have used https://golang.org/ref/spec#Method_expressions
+	// but couldn't figure out the syntax
+	// so using a standalone loop instead
+	for _, tc := range p.Tail {
+		tc.DragBy(dx, dy)
+	}
+
+	// marking := false
+	// for i := 0; i < len(p.Cards); i++ {
+	// 	ci := p.Cards[i]
+	// 	if !marking && ci == c {
+	// 		marking = true
+	// 	}
+	// 	if marking {
+	// 		ci.DragBy(dx, dy)
+	// 	}
+	// }
 }
 
 // Layout the cards in this Pile

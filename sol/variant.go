@@ -8,7 +8,7 @@ type VariantInfo struct {
 	Piles       []PileInfo
 }
 
-// PileInfo contains the CardOwner object and a lookup table for it's attributes
+// PileInfo contains the basic Pile members and a lookup table for it's attributes
 type PileInfo struct {
 	Class      string
 	X, Y       int
@@ -25,17 +25,17 @@ var Variants = map[string]VariantInfo{
 		Piles: []PileInfo{
 			{"Stock", 1, 1, "None", map[string]string{"Packs": "1", "TapTarget": "Waste", "Recycles": "9999"}},
 			{"Waste", 2, 1, "Waste", map[string]string{}},
-			{"Foundation", 4, 1, "None", map[string]string{"Accept": "1"}},
-			{"Foundation", 5, 1, "None", map[string]string{"Accept": "1"}},
-			{"Foundation", 6, 1, "None", map[string]string{"Accept": "1"}},
-			{"Foundation", 7, 1, "None", map[string]string{"Accept": "1"}},
-			{"Tableau", 1, 2, "Down", map[string]string{"Accept": "13", "Deal": "u"}},
-			{"Tableau", 2, 2, "Down", map[string]string{"Accept": "13", "Deal": "du"}},
-			{"Tableau", 3, 2, "Down", map[string]string{"Accept": "13", "Deal": "ddu"}},
-			{"Tableau", 4, 2, "Down", map[string]string{"Accept": "13", "Deal": "dddu"}},
-			{"Tableau", 5, 2, "Down", map[string]string{"Accept": "13", "Deal": "ddddu"}},
-			{"Tableau", 6, 2, "Down", map[string]string{"Accept": "13", "Deal": "dddddu"}},
-			{"Tableau", 7, 2, "Down", map[string]string{"Accept": "13", "Deal": "ddddddu"}},
+			{"Foundation", 4, 1, "None", map[string]string{"Accept": "1", "Build": "21"}},
+			{"Foundation", 5, 1, "None", map[string]string{"Accept": "1", "Build": "21"}},
+			{"Foundation", 6, 1, "None", map[string]string{"Accept": "1", "Build": "21"}},
+			{"Foundation", 7, 1, "None", map[string]string{"Accept": "1", "Build": "21"}},
+			{"Tableau", 1, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "u"}},
+			{"Tableau", 2, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "du"}},
+			{"Tableau", 3, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "ddu"}},
+			{"Tableau", 4, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "dddu"}},
+			{"Tableau", 5, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "ddddu"}},
+			{"Tableau", 6, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "dddddu"}},
+			{"Tableau", 7, 2, "Down", map[string]string{"Accept": "13", "Build": "42", "Move": "42", "Deal": "ddddddu"}},
 		},
 	},
 }
