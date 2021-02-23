@@ -1,6 +1,11 @@
 $ git branch -m master main
 
-+ currently can drag Tail off Foundation, inspite of Move=0
++ undo
++ Tableau Tail=true, Powermoves=true, (extra Drag=numbers+bit flags), Hidden=true (can be infered from X,Y)
+  per-class bit flags?
+  Drag mod 100 = rules
+  Drag / 100 = flags
++ Accept might be '1' (Martha) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Move for Pile Classes, Build/Move methods
 + CompleteWhen attribute, default 0, 13 for Foundations
   "a game is complete when all piles except foundations are empty"
@@ -24,6 +29,11 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?)
 
+x Flip animation shows wrong face for first half, draw refers to a state, not prone flag
+x Shake state 0 (rest), 1 (moving left), 2 (moving right), 3 (moving to center)
+x Can drag from stock to tableau; TapTarget := generic Target
+x shadow under moving card
+x currently can drag Tail off Foundation, inspite of Move=0
 x GetIntAttribute needs to return int, bool
 x make a Pile.tail []*Card slice when dragging starts?
 x Don't expose Stock card after tap

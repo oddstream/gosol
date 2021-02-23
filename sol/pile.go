@@ -73,6 +73,15 @@ func (p *Pile) GetStringAttribute(key string) string {
 	return ""
 }
 
+// GetBoolAttribute gets a boolean Pile attribute
+func (p *Pile) GetBoolAttribute(key string) bool {
+	str, exists := p.Attributes[key]
+	if exists {
+		return str == "true" || str == "True" || str == "T" || str == "1"
+	}
+	return false
+}
+
 func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(71, 96)
 	dc.SetColor(colorPile)
@@ -163,7 +172,7 @@ func (p *Pile) Push(c *Card) {
 func (p *Pile) CanAcceptCard(c *Card) bool {
 	accept, ok := p.GetIntAttribute("Accept")
 	if !ok {
-		accept = 0 // won't match any card
+		accept = 0 // accept any card
 	}
 	build, ok := p.GetIntAttribute("Build")
 	if !ok {
@@ -175,11 +184,23 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		return false // user cannot move card to stock
 	case "Waste":
 		return c.owner.Class == "Stock" // user can only move card to waste from stock
-	case "Foundation", "Tableau":
+	case "Foundation":
 		if len(p.Cards) == 0 {
-			return c.ordinal == accept
+			if accept > 0 {
+				return c.ordinal == accept
+			}
+			return true
 		}
 		return isConformant0(build, p.Peek(), c)
+	case "Tableau":
+		if len(p.Cards) == 0 {
+			if accept > 0 {
+				return c.ordinal == accept
+			}
+			return true
+		}
+		return isConformant0(build, p.Peek(), c)
+		// TODO PowerMoves flag here
 	}
 	return false
 }
@@ -191,22 +212,36 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		log.Fatal("CanAcceptTail with empty tail")
 	}
 
+	c0 := Tail[0]
+
+	if c0.owner == p {
+		println("Cannot drag cards to yourself")
+		return false
+	}
+
+	targetClass := c0.owner.GetStringAttribute("Target")
+	if targetClass != "" {
+		if targetClass != p.Class {
+			println("Cards from", c0.owner.Class, "can only be dragged to", targetClass, "not to", p.Class)
+			return false
+		}
+	}
+
 	accept, ok := p.GetIntAttribute("Accept")
 	if !ok {
-		accept = 0
+		accept = 0 // accept any card
 	}
 	buildRules, ok := p.GetIntAttribute("Build")
 	if !ok {
 		log.Fatal("No Build attribute for Pile " + p.Class)
 	}
 
-	c := Tail[0]
 	switch p.Class {
 	case "Stock":
 		return false // user cannot drag cards to stock
 
 	case "Waste":
-		return c.owner.Class == "Stock" // user can drag a card from stock to waste
+		return c0.owner.Class == "Stock" // user can drag a card from stock to waste
 
 	case "FoundationSpider":
 		if len(Tail) != 13 {
@@ -222,15 +257,21 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 			return false
 		}
 		if len(p.Cards) == 0 {
-			return c.ordinal == accept
+			if accept > 0 {
+				return c0.ordinal == accept
+			}
+			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c0)
 
 	case "Tableau":
 		if len(p.Cards) == 0 {
-			return c.ordinal == accept
+			if accept > 0 {
+				return c0.ordinal == accept
+			}
+			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c0)
 	}
 	return false
 }
@@ -322,9 +363,11 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(c *Card) bool {
-	if c.owner.Class == "Foundation" || c.owner.Class == "FoundationSpider" {
-		return false // cannot take cards off foundation
-	}
+
+	// no need for this with Foundation Drag=0
+	// if strings.HasPrefix(c.owner.Class, "Foundation") {
+	// 	return false // cannot take cards off foundation
+	// }
 
 	p.Tail = nil // append works on a nil slice, yay
 	marking := false
@@ -337,11 +380,21 @@ func (p *Pile) StartDrag(c *Card) bool {
 			p.Tail = append(p.Tail, pci)
 		}
 	}
-	dragRules, ok := p.GetIntAttribute("Drag")
+	d, ok := p.GetIntAttribute("Drag")
 	if !ok {
 		log.Fatal("No Drag attribute for Pile " + p.Class)
 	}
+	dragRules := d % 100
+	dragFlags := d / 100 // 1=single card only (no tail)
+	if dragFlags&1 == 1 && len(p.Tail) > 1 {
+		println(p.Class, "can only drag a single card")
+		p.ApplyToTail((*Card).Shake)
+		p.Tail = nil
+		return false
+	}
 	if !isConformant(dragRules, p.Tail) {
+		println("non-conformant drag")
+		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
 	}

@@ -10,8 +10,25 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/util"
+)
+
+const (
+	// FLIPSTEP is the amount we shrink/grow the flipping card width every tick
+	FLIPSTEP = 0.1
+	// SHAKEAMOUNT the number of pixels to shake a card by
+	SHAKEAMOUNT = 2
+)
+
+type shakeState int
+
+const (
+	notShaking shakeState = iota
+	shakingLeft
+	shakingRight
+	shakingCenter
 )
 
 // golang gotcha: go:embed cannot apply to var inside func
@@ -23,6 +40,7 @@ var faceBytes []byte
 var backBytes []byte
 
 var (
+	shadowImage    *ebiten.Image
 	faceImageSheet *ebiten.Image
 	backImageSheet *ebiten.Image
 	backFrames     = map[string]image.Point{
@@ -61,6 +79,14 @@ func init() {
 	}
 	backImageSheet = ebiten.NewImageFromImage(img)
 	backBytes = nil
+
+	dc := gg.NewContext(71, 96)
+	dc.SetColor(BasicColors["Black"])
+	dc.SetLineWidth(2)
+	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
+	dc.Fill()
+	dc.Stroke()
+	shadowImage = ebiten.NewImageFromImage(dc.Image())
 }
 
 // Card object
@@ -88,6 +114,8 @@ type Card struct {
 
 	flipStep  float64 // if 0, we are not flipping
 	flipWidth float64 // scale of the card width while flipping
+
+	shake shakeState
 }
 
 // SaveableCard is a reduced struct for converting to JSON
@@ -239,16 +267,23 @@ func (c *Card) CancelDrag() {
 
 // Shake starts the transition of this Card left, right, center
 func (c *Card) Shake() {
-	// c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	// x, y := c.owner.Position()
-	// c.dstX, c.dstY = float64(x), float64(y)
-	// TODO
+	if c.shake != notShaking {
+		return
+	}
+	if c.lerping || c.dragging {
+		return
+	}
+	// hijack the lerping src, dst positions
+	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+	c.dstX, c.dstY = float64(c.screenX-SHAKEAMOUNT), float64(c.screenY)
+	c.shake = shakingLeft
 }
 
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
 	if c.prone && c.flipStep == 0.0 {
-		c.flipStep = -0.15
+		c.prone = false        // card is immediately face up, else fan isn't correct
+		c.flipStep = -FLIPSTEP // start by making card narrower
 		c.flipWidth = 1.0
 	}
 }
@@ -256,7 +291,8 @@ func (c *Card) FlipUp() {
 // FlipDown flips the card face down
 func (c *Card) FlipDown() {
 	if !c.prone && c.flipStep == 0.0 {
-		c.flipStep = -0.15
+		c.prone = true         // card is immediately face down, else fan isn't correct
+		c.flipStep = -FLIPSTEP // start by making card narrower
 		c.flipWidth = 1.0
 	}
 }
@@ -300,11 +336,35 @@ func (c *Card) Update() error {
 	if c.flipStep != 0.0 {
 		c.flipWidth += c.flipStep
 		if c.flipWidth <= 0.15 {
-			c.flipStep = 0.15
-			c.prone = !c.prone
+			c.flipStep = FLIPSTEP // now make card wider
+			// c.prone = !c.prone
 		} else if c.flipWidth >= 1.0 {
 			c.flipWidth = 1.0
 			c.flipStep = 0.0
+		}
+	}
+	if c.shake != notShaking {
+		switch c.shake {
+		case shakingLeft:
+			if float64(c.screenX) > c.dstX {
+				c.screenX--
+			} else {
+				c.dstX = c.srcX + SHAKEAMOUNT
+				c.shake = shakingRight
+			}
+		case shakingRight:
+			if float64(c.screenX) < c.dstX {
+				c.screenX++
+			} else {
+				c.dstX = c.srcX
+				c.shake = shakingCenter
+			}
+		case shakingCenter:
+			if float64(c.screenX) > c.dstX {
+				c.screenX--
+			} else {
+				c.shake = notShaking
+			}
 		}
 	}
 	return nil
@@ -312,15 +372,25 @@ func (c *Card) Update() error {
 
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
-	// TODO draw a shadow rect if c.dragging == true || c.lerping == true
 
 	op := &ebiten.DrawImageOptions{}
 
 	var img *ebiten.Image
-	if c.prone {
-		img = backImageSheet.SubImage(image.Rect(c.backX, c.backY, c.backX+71, c.backY+96)).(*ebiten.Image)
+	// card prone has already been set to destination state
+	if c.flipStep < 0 {
+		if c.prone {
+			// card is getting narrower, and it's going to show face down, but show face up
+			img = faceImageSheet.SubImage(image.Rect(c.faceX, c.faceY, c.faceX+71, c.faceY+96)).(*ebiten.Image)
+		} else {
+			// card is getting narrower, and it's going to show face up, but show face down
+			img = backImageSheet.SubImage(image.Rect(c.backX, c.backY, c.backX+71, c.backY+96)).(*ebiten.Image)
+		}
 	} else {
-		img = faceImageSheet.SubImage(image.Rect(c.faceX, c.faceY, c.faceX+71, c.faceY+96)).(*ebiten.Image)
+		if c.prone {
+			img = backImageSheet.SubImage(image.Rect(c.backX, c.backY, c.backX+71, c.backY+96)).(*ebiten.Image)
+		} else {
+			img = faceImageSheet.SubImage(image.Rect(c.faceX, c.faceY, c.faceX+71, c.faceY+96)).(*ebiten.Image)
+		}
 	}
 
 	if c.flipStep != 0 {
@@ -331,6 +401,12 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
+
+	if c.flipStep == 0 && (c.lerping == true || c.dragging == true) {
+		op.GeoM.Translate(2, 2)
+		screen.DrawImage(shadowImage, op)
+		op.GeoM.Translate(-2, -2)
+	}
 
 	screen.DrawImage(img, op)
 }

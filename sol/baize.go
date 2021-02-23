@@ -117,14 +117,19 @@ func (b *Baize) PileTapped(p *Pile) {
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
+	println("tapped", c.id)
+
 	// can only tap top card
 	if c != c.owner.Peek() {
+		c.Shake()
 		return
 	}
 
+	moved := false
+
 	// Tap on a Stock card to send it to Waste
 	// TODO fudge to send three cards
-	targetClass := c.owner.GetStringAttribute("TapTarget")
+	targetClass := c.owner.GetStringAttribute("Target")
 	if targetClass != "" {
 		for _, p := range b.piles {
 			if targetClass == p.Class {
@@ -132,9 +137,14 @@ func (b *Baize) CardTapped(c *Card) {
 				if p.CanAcceptCard(c) {
 					// println(p.Class, "can accept", c.id)
 					moveCards(c, p)
+					moved = true
 				}
 			}
 		}
+	}
+
+	if !moved {
+		c.Shake()
 	}
 
 	// TODO else test other piles to see if this card is accepted?
