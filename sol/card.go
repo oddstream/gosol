@@ -81,7 +81,7 @@ func init() {
 	backBytes = nil
 
 	dc := gg.NewContext(71, 96)
-	dc.SetColor(BasicColors["Black"])
+	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
 	dc.SetLineWidth(2)
 	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
 	dc.Fill()
@@ -118,12 +118,6 @@ type Card struct {
 	shake shakeState
 }
 
-// SaveableCard is a reduced struct for converting to JSON
-type SaveableCard struct {
-	ID    string
-	Prone bool
-}
-
 // NewCard is a factory for Card objects
 func NewCard(pack int, suit string, ordinal int) *Card {
 	c := &Card{pack: pack, suit: suit, ordinal: ordinal}
@@ -150,14 +144,6 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 	pt := backFrames[TheUserData.CardBack]
 	c.backX, c.backY = pt.X, pt.Y
 
-	return c
-}
-
-// NewCardFromSaveable is a factory for Card objects
-func NewCardFromSaveable(sav SaveableCard) *Card {
-	p, s, o := parseID(sav.ID)
-	c := NewCard(p, s, o)
-	c.prone = sav.Prone
 	return c
 }
 
@@ -306,14 +292,20 @@ func (c *Card) Flip() {
 	}
 }
 
+// Animating returns true if this card is lerping, dragging or flipping
+func (c *Card) Animating() bool {
+	if c.lerping || c.dragging {
+		return true
+	}
+	if c.flipStep != 0 {
+		return true
+	}
+	return false
+}
+
 // MarkMovable sets the movable state
 func (c *Card) MarkMovable(bool) {
 	// TODO
-}
-
-// Saveable returns a reduced object for converting to JSON and saving
-func (c *Card) Saveable() SaveableCard {
-	return SaveableCard{ID: c.id, Prone: c.prone}
 }
 
 // Layout implements ebiten.Game's Layout.

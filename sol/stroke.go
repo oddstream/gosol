@@ -85,7 +85,7 @@ func (s *Stroke) Update() {
 	if s.source.IsJustReleased() {
 		s.released = true
 		elapsed := time.Since(s.startTime) / 1000 / 1000 // convert nano- to milli- seconds
-		s.tapped = elapsed < 125
+		s.tapped = elapsed < 150
 	}
 }
 

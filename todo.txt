@@ -1,6 +1,6 @@
 $ git branch -m master main
 
-+ undo
++ titlebar hamburger, variant, undo
 + Tableau Tail=true, Powermoves=true, (extra Drag=numbers+bit flags), Hidden=true (can be infered from X,Y)
   per-class bit flags?
   Drag mod 100 = rules
@@ -19,16 +19,16 @@ $ git branch -m master main
   why build+move? name a variant Australian, Creepy Crawly,
   Foundation, Tableau uses Build
   Pile uses Move (CanGrab)
-
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
-+ undo stack
 + scale cards from 71x96
 + orientation change
 + UI (Fyne?)
 
+x undo
+x Pile localAccept, localRecycles
 x Flip animation shows wrong face for first half, draw refers to a state, not prone flag
 x Shake state 0 (rest), 1 (moving left), 2 (moving right), 3 (moving to center)
 x Can drag from stock to tableau; TapTarget := generic Target

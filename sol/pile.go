@@ -38,6 +38,8 @@ type Pile struct {
 	Class           string
 	X, Y            int
 	Fan             string
+	localAccept     int
+	localRecycles   int
 	Attributes      map[string]string
 	Cards           []*Card
 	Tail            []*Card
@@ -47,6 +49,8 @@ type Pile struct {
 // NewPile create and fills in a Pile object
 func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
 	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
+	p.localAccept, _ = p.GetIntAttribute("Accept")
+	p.localRecycles, _ = p.GetIntAttribute("Recycles")
 	p.createBackgroundImage()
 	return p
 }
@@ -93,13 +97,10 @@ func (p *Pile) createBackgroundImage() {
 		dc.SetFontFace(TheAcmeFonts.normal)
 		dc.DrawString(acceptChars[accept], 71/7, 96/3)
 	}
-	recycles, ok := p.GetIntAttribute("Recycles")
-	if ok {
-		if recycles == 0 {
-			// TODO red no entry
-		} else if recycles < 10 {
-			// TODO green recycle glyph
-		}
+	if p.localRecycles == 0 {
+		// TODO red no entry, but will appear on all piles :-/
+	} else if p.localRecycles < 10 {
+		// TODO green recycle glyph
 	}
 	dc.Stroke()
 	p.backgroundImage = ebiten.NewImageFromImage(dc.Image())
@@ -170,10 +171,7 @@ func (p *Pile) Push(c *Card) {
 
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
-	accept, ok := p.GetIntAttribute("Accept")
-	if !ok {
-		accept = 0 // accept any card
-	}
+
 	build, ok := p.GetIntAttribute("Build")
 	if !ok {
 		log.Fatal("no Build rules for Pile " + p.Class)
@@ -186,16 +184,16 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		return c.owner.Class == "Stock" // user can only move card to waste from stock
 	case "Foundation":
 		if len(p.Cards) == 0 {
-			if accept > 0 {
-				return c.ordinal == accept
+			if p.localAccept > 0 {
+				return c.ordinal == p.localAccept
 			}
 			return true
 		}
 		return isConformant0(build, p.Peek(), c)
 	case "Tableau":
 		if len(p.Cards) == 0 {
-			if accept > 0 {
-				return c.ordinal == accept
+			if p.localAccept > 0 {
+				return c.ordinal == p.localAccept
 			}
 			return true
 		}
@@ -499,16 +497,16 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 func (p *Pile) DrawCards(screen *ebiten.Image) {
 	// draw dragging/lerping cards last so they appear on top
 	for _, c := range p.Cards {
-		if c.dragging == false && c.lerping == false {
+		if !c.Animating() {
 			c.Draw(screen)
 		}
 	}
 }
 
-// DrawMovingCards renders the Cards in the Pile into the screen
-func (p *Pile) DrawMovingCards(screen *ebiten.Image) {
+// DrawAnimatingCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawAnimatingCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
-		if c.dragging == true || c.lerping == true {
+		if c.Animating() {
 			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
 			c.Draw(screen)
 		}

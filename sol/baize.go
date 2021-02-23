@@ -11,8 +11,9 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	piles  []*Pile
-	stroke *Stroke
+	Piles     []*Pile
+	stroke    *Stroke
+	UndoStack []SaveableBaize
 }
 
 // NewBaize is the factory func for Baize object
@@ -23,7 +24,17 @@ func NewBaize() *Baize {
 	if !ok {
 		log.Fatal(TheUserData.Variant + " not found")
 	}
-	b.piles = piles
+	b.Piles = piles
+
+	{
+		maxX := 0
+		for _, p := range b.Piles {
+			if p.X > maxX {
+				maxX = p.X
+			}
+		}
+		ebiten.SetWindowSize((maxX+2)*(71+10), WindowHeight)
+	}
 
 	stock := b.findPile("Stock")
 	createCards(stock)
@@ -36,7 +47,7 @@ func NewBaize() *Baize {
 
 func (b *Baize) dealCards() {
 	stock := b.findPile("Stock")
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
 			continue
@@ -57,7 +68,7 @@ func (b *Baize) dealCards() {
 }
 
 func (b *Baize) findPile(cls string) *Pile {
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		if p.Class == cls {
 			return p
 		}
@@ -67,7 +78,7 @@ func (b *Baize) findPile(cls string) *Pile {
 
 // findPileAt finds the pile under the mouse click or touch
 func (b *Baize) findPileAt(pt image.Point) *Pile {
-	for _, o := range b.piles {
+	for _, o := range b.Piles {
 		if util.InRect(pt, o.FannedRect) {
 			return o
 		}
@@ -77,7 +88,7 @@ func (b *Baize) findPileAt(pt image.Point) *Pile {
 
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		for i := len(p.Cards) - 1; i >= 0; i-- {
 			c := p.Cards[i]
 			if util.InRect(pt, c.Rect) {
@@ -96,8 +107,7 @@ func (b *Baize) PileTapped(p *Pile) {
 		return
 	}
 
-	recycles, ok := p.GetIntAttribute("Recycles")
-	if ok && recycles > 0 {
+	if p.localRecycles > 0 {
 		waste := b.findPile("Waste")
 		if waste == nil || len(waste.Cards) == 0 {
 			return
@@ -108,8 +118,7 @@ func (b *Baize) PileTapped(p *Pile) {
 			c.FlipDown()
 			stock.Push(c)
 		}
-
-		// TODO decrement p.Recycles (will need to add special key to p.Attributes)
+		p.localRecycles--
 	}
 	// println("pile", p.Class, "tapped")
 }
@@ -117,7 +126,7 @@ func (b *Baize) PileTapped(p *Pile) {
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
-	println("tapped", c.id)
+	// println("card",c.id,"tapped")
 
 	// can only tap top card
 	if c != c.owner.Peek() {
@@ -131,12 +140,12 @@ func (b *Baize) CardTapped(c *Card) {
 	// TODO fudge to send three cards
 	targetClass := c.owner.GetStringAttribute("Target")
 	if targetClass != "" {
-		for _, p := range b.piles {
+		for _, p := range b.Piles {
 			if targetClass == p.Class {
 				// println("found a", p.Class)
 				if p.CanAcceptCard(c) {
 					// println(p.Class, "can accept", c.id)
-					moveCards(c, p)
+					b.MoveCards(c, p)
 					moved = true
 				}
 			}
@@ -187,7 +196,8 @@ func (b *Baize) CardTapped(c *Card) {
 // 	return nMoved
 // }
 
-func moveCards(c *Card, dst *Pile) {
+// MoveCards from one pile to another, always from card downwards (inclusive)
+func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
 	src := c.owner
 	moveFrom := len(src.Cards)
@@ -202,8 +212,12 @@ func moveCards(c *Card, dst *Pile) {
 	}
 
 	if moveFrom == len(src.Cards) {
-		log.Fatal("moveCards could not find card in source")
+		log.Fatal("MoveCards could not find card in source")
 	}
+
+	b.UndoPush()
+
+	oldSrcLen := len(src.Cards)
 
 	// pop the tail off the source and push onto temp stack
 	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
@@ -221,12 +235,43 @@ func moveCards(c *Card, dst *Pile) {
 		dst.Push(dc)
 	}
 
-	// flip up an exposed source card
-	if src.Class != "Stock" {
-		tc := src.Peek()
-		if tc != nil {
-			tc.FlipUp()
+	if oldSrcLen == len(src.Cards) {
+		b.UndoPop() // discard return values
+	} else {
+		// flip up an exposed source card
+		if src.Class != "Stock" {
+			tc := src.Peek()
+			if tc != nil {
+				tc.FlipUp()
+			}
 		}
+	}
+}
+
+// UndoPush pushes the current state onto the undo stack
+func (b *Baize) UndoPush() {
+	b.UndoStack = append(b.UndoStack, b.Saveable())
+}
+
+// UndoPop pops a state off the undo stack
+func (b *Baize) UndoPop() (SaveableBaize, bool) {
+	if len(b.UndoStack) > 0 {
+		sav := b.UndoStack[len(b.UndoStack)-1]
+		b.UndoStack = b.UndoStack[:len(b.UndoStack)-1]
+		return sav, true
+	}
+	return SaveableBaize{}, false
+}
+
+// Undo reverts the Baize state to it's previous state
+func (b *Baize) Undo() {
+	if len(b.UndoStack) == 0 {
+		println("Nothing to undo")
+		return
+	}
+	sav, ok := b.UndoPop()
+	if ok {
+		b.UpdateFromSaveable(sav)
 	}
 }
 
@@ -234,7 +279,7 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 	var largest int = 0
 	var pile *Pile = nil
 	cx0, cy0, cx1, cy1 := c.Rect()
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		px0, py0, px1, py1 := p.FannedRect()
 		i := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
 		if i > largest {
@@ -248,7 +293,7 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		p.Layout(outsideWidth, outsideHeight)
 	}
 
@@ -257,6 +302,11 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
+
+	if inpututil.IsKeyJustReleased(ebiten.KeyU) {
+		b.Undo()
+		return nil
+	}
 
 	if b.stroke == nil {
 		var s *Stroke
@@ -308,7 +358,7 @@ func (b *Baize) Update() error {
 						// println("found pile", o.Class())
 						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)
-							moveCards(c, p)
+							b.MoveCards(c, p)
 						} else {
 							c.owner.CancelDrag(c)
 						}
@@ -332,7 +382,7 @@ func (b *Baize) Update() error {
 		}
 	}
 
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		p.Update()
 	}
 
@@ -346,13 +396,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(colorBaize)
 
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		p.Draw(screen)
 	}
-	for _, p := range b.piles {
+	for _, p := range b.Piles {
 		p.DrawCards(screen)
 	}
-	for _, p := range b.piles {
-		p.DrawMovingCards(screen)
+	for _, p := range b.Piles {
+		p.DrawAnimatingCards(screen)
 	}
 }
