@@ -5,6 +5,7 @@ import "log"
 // SaveableBaize is a reduced struct for converting to JSON
 type SaveableBaize struct {
 	Variant string
+	Seed    int64
 	Piles   []SaveablePile
 }
 
@@ -24,7 +25,7 @@ type SaveableCard struct {
 
 // Saveable creates a saveable version of the current state
 func (b *Baize) Saveable() SaveableBaize {
-	sav := SaveableBaize{Variant: TheUserData.Variant}
+	sav := SaveableBaize{Variant: b.Variant, Seed: b.Seed}
 	for _, p := range b.Piles {
 		sav.Piles = append(sav.Piles, p.Saveable())
 	}

@@ -1,10 +1,14 @@
 package sol
 
 import (
+	"fmt"
 	"image"
 	"log"
+	"runtime"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gosol/util"
 )
@@ -12,17 +16,34 @@ import (
 // Baize object describes the baize
 type Baize struct {
 	Piles     []*Pile
-	stroke    *Stroke
+	Variant   string
+	Seed      int64
 	UndoStack []SaveableBaize
+	stroke    *Stroke
 }
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
-	b := &Baize{}
+	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	b.StartGame()
+	return b
+}
 
-	piles, ok := buildVariantPiles(TheUserData.Variant)
+// Reset the Baize
+func (b *Baize) Reset() {
+	b.Piles = nil
+	b.UndoStack = nil
+	b.Variant = TheUserData.Variant
+	b.Seed = time.Now().UnixNano()
+	b.stroke = nil
+}
+
+// StartGame given existing variant and seed
+func (b *Baize) StartGame() {
+
+	piles, ok := buildVariantPiles(b.Variant)
 	if !ok {
-		log.Fatal(TheUserData.Variant + " not found")
+		log.Fatal(b.Variant + " not found")
 	}
 	b.Piles = piles
 
@@ -38,11 +59,34 @@ func NewBaize() *Baize {
 
 	stock := b.findPile("Stock")
 	createCards(stock)
-	shuffleCards(stock)
+	shuffleCards(stock, b.Seed)
 
 	b.dealCards()
+}
 
-	return b
+// RestartGame resets Baize and restarts current variant with same seed
+func (b *Baize) RestartGame() {
+	v := b.Variant
+	s := b.Seed
+	b.Reset()
+	b.Variant = v
+	b.Seed = s
+	b.StartGame()
+}
+
+// NewGame resets Baize and restarts current variant with a new seed
+func (b *Baize) NewGame() {
+	v := b.Variant
+	b.Reset()
+	b.Variant = v
+	b.StartGame()
+}
+
+// NewVariant resets Baize and starts a new game with a new variant and seed
+func (b *Baize) NewVariant(v string) {
+	b.Reset()
+	b.Variant = v
+	b.StartGame()
 }
 
 func (b *Baize) dealCards() {
@@ -303,6 +347,14 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
+	if inpututil.IsKeyJustReleased(ebiten.KeyN) {
+		b.NewGame()
+		return nil
+	}
+	if inpututil.IsKeyJustReleased(ebiten.KeyR) {
+		b.RestartGame()
+		return nil
+	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyU) {
 		b.Undo()
 		return nil
@@ -404,5 +456,10 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	}
 	for _, p := range b.Piles {
 		p.DrawAnimatingCards(screen)
+	}
+	if DebugMode {
+		var ms runtime.MemStats
+		runtime.ReadMemStats(&ms)
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v", ms.NumGC))
 	}
 }

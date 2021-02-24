@@ -1,11 +1,12 @@
 $ git branch -m master main
 
++ test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
 + titlebar hamburger, variant, undo
-+ Tableau Tail=true, Powermoves=true, (extra Drag=numbers+bit flags), Hidden=true (can be infered from X,Y)
++ Tableau PowerMoves=3xx in Move=, Hidden can be infered from X,Y
   per-class bit flags?
   Drag mod 100 = rules
   Drag / 100 = flags
-+ Accept might be '1' (Martha) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
++ Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 1/A) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Move for Pile Classes, Build/Move methods
 + CompleteWhen attribute, default 0, 13 for Foundations
   "a game is complete when all piles except foundations are empty"
@@ -27,6 +28,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?)
 
+x Seed, RestartGame(), NewGame(), NewVariant()
 x undo
 x Pile localAccept, localRecycles
 x Flip animation shows wrong face for first half, draw refers to a state, not prone flag

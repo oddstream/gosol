@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": ["-debug","-v=Klondike"],
+      "args": ["-debug","-v=Limited"],
       "buildFlags": "-tags desktop"
     }
   ]

@@ -4,7 +4,6 @@ import (
 	"log"
 	"math/rand"
 	"sort"
-	"time"
 
 	"oddstream.games/gosol/util"
 )
@@ -29,9 +28,9 @@ func createCards(stock *Pile) {
 	}
 }
 
-func shuffleCards(stock *Pile) {
+func shuffleCards(stock *Pile, seed int64) {
 
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(seed)
 
 	// sort cards in order before shuffle (why?)
 	/*
