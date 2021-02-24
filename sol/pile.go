@@ -3,6 +3,7 @@ package sol
 import (
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -152,6 +153,7 @@ func (p *Pile) Pop() *Card {
 	c := p.Cards[len(p.Cards)-1]
 	p.Cards = p.Cards[:len(p.Cards)-1]
 	c.owner = nil
+	c.FlipUp()
 
 	// experimental turn over exposed card here
 	// if len(p.cards) > 0 {
@@ -163,6 +165,9 @@ func (p *Pile) Pop() *Card {
 
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
+	if strings.HasPrefix(p.Class, "Stock") {
+		c.FlipDown()
+	}
 	c.owner = p
 	x, y := p.PushedFannedPosition()
 	p.Cards = append(p.Cards, c)
@@ -198,7 +203,8 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			return true
 		}
 		return isConformant0(build, p.Peek(), c)
-		// TODO PowerMoves flag here
+	case "Cell":
+		return len(p.Cards) == 0
 	}
 	return false
 }
@@ -270,6 +276,9 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 			return true
 		}
 		return isConformant0(buildRules, p.Peek(), c0)
+
+	case "Cell":
+		return len(Tail) == 1 && len(p.Cards) == 0
 	}
 	return false
 }
@@ -360,7 +369,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 // }
 
 // StartDrag this card and all the others after it in the stack
-func (p *Pile) StartDrag(c *Card) bool {
+func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 
 	// no need for this with Foundation Drag=0
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
@@ -383,12 +392,22 @@ func (p *Pile) StartDrag(c *Card) bool {
 		log.Fatal("No Drag attribute for Pile " + p.Class)
 	}
 	dragRules := d % 100
-	dragFlags := d / 100 // 1=single card only (no tail)
+	dragFlags := d / 100 // 1=single card only (no tail) 2=powerMoves
 	if dragFlags&1 == 1 && len(p.Tail) > 1 {
 		println(p.Class, "can only drag a single card")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
+	}
+	if dragFlags&2 == 2 {
+		if len(p.Tail) <= powerMoves(piles, p) && isConformant(dragRules, p.Tail) {
+			// that's ok
+		} else {
+			println("non-conformant powerMoves drag")
+			p.ApplyToTail((*Card).Shake)
+			p.Tail = nil
+			return false
+		}
 	}
 	if !isConformant(dragRules, p.Tail) {
 		println("non-conformant drag")

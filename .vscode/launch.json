@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": ["-debug","-v=Limited"],
+      "args": ["-debug","-v=Freecell"],
       "buildFlags": "-tags desktop"
     }
   ]

@@ -75,6 +75,11 @@ func Min(a, b int) int {
 	return b
 }
 
+// Pow returns x ** y
+func Pow(x, y int) int {
+	return int(math.Pow(float64(x), float64(y)))
+}
+
 // OverlapArea returns the intersection of two rectangles
 func OverlapArea(x1, y1, x2, y2, X1, Y1, X2, Y2 int) int {
 	xOverlap := Max(0, Min(x2, X2)-Max(x1, X1))

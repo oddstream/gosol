@@ -267,30 +267,32 @@ func (c *Card) Shake() {
 
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
-	if c.prone && c.flipStep == 0.0 {
+	if c.prone {
 		c.prone = false        // card is immediately face up, else fan isn't correct
 		c.flipStep = -FLIPSTEP // start by making card narrower
 		c.flipWidth = 1.0
 	}
+	// c.prone = false
 }
 
 // FlipDown flips the card face down
 func (c *Card) FlipDown() {
-	if !c.prone && c.flipStep == 0.0 {
+	if !c.prone {
 		c.prone = true         // card is immediately face down, else fan isn't correct
 		c.flipStep = -FLIPSTEP // start by making card narrower
 		c.flipWidth = 1.0
 	}
+	// c.prone = true
 }
 
 // Flip toggles the card
-func (c *Card) Flip() {
-	if c.prone {
-		c.FlipUp()
-	} else {
-		c.FlipDown()
-	}
-}
+// func (c *Card) Flip() {
+// 	if c.prone {
+// 		c.FlipUp()
+// 	} else {
+// 		c.FlipDown()
+// 	}
+// }
 
 // Animating returns true if this card is lerping, dragging or flipping
 func (c *Card) Animating() bool {
@@ -329,7 +331,6 @@ func (c *Card) Update() error {
 		c.flipWidth += c.flipStep
 		if c.flipWidth <= 0.15 {
 			c.flipStep = FLIPSTEP // now make card wider
-			// c.prone = !c.prone
 		} else if c.flipWidth >= 1.0 {
 			c.flipWidth = 1.0
 			c.flipStep = 0.0

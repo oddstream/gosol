@@ -83,7 +83,11 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	for _, cSaved := range sav.Cards {
 		c := findCardInCache(cSaved.ID)
 		if cSaved.Prone != c.prone { // TODO copy this back to Opsole
-			c.Flip()
+			if cSaved.Prone {
+				c.FlipDown()
+			} else {
+				c.FlipUp()
+			}
 		}
 		p.Push(c)
 	}

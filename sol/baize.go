@@ -5,6 +5,7 @@ import (
 	"image"
 	"log"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -57,7 +58,10 @@ func (b *Baize) StartGame() {
 		ebiten.SetWindowSize((maxX+2)*(71+10), WindowHeight)
 	}
 
-	stock := b.findPile("Stock")
+	stock := b.findPilePrefix("Stock")
+	if stock == nil {
+		log.Fatal("Cannot find stock pile to create cards with")
+	}
 	createCards(stock)
 	shuffleCards(stock, b.Seed)
 
@@ -90,7 +94,7 @@ func (b *Baize) NewVariant(v string) {
 }
 
 func (b *Baize) dealCards() {
-	stock := b.findPile("Stock")
+	stock := b.findPilePrefix("Stock")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
@@ -99,12 +103,11 @@ func (b *Baize) dealCards() {
 		for _, d := range deal {
 			switch d {
 			case 'u':
-				c := stock.Pop()
-				c.FlipUp()
+				c := stock.Pop() // this will flip card up
 				p.Push(c)
 			case 'd':
-				c := stock.Pop()
-				c.FlipDown()
+				c := stock.Pop() // this will flip card up
+				c.FlipDown()     // don't use CTQ
 				p.Push(c)
 			}
 		}
@@ -114,6 +117,15 @@ func (b *Baize) dealCards() {
 func (b *Baize) findPile(cls string) *Pile {
 	for _, p := range b.Piles {
 		if p.Class == cls {
+			return p
+		}
+	}
+	return nil
+}
+
+func (b *Baize) findPilePrefix(cls string) *Pile {
+	for _, p := range b.Piles {
+		if strings.HasPrefix(p.Class, cls) {
 			return p
 		}
 	}
@@ -159,8 +171,8 @@ func (b *Baize) PileTapped(p *Pile) {
 		stock := b.findPile("Stock")
 		for len(waste.Cards) > 0 {
 			c := waste.Pop()
-			c.FlipDown()
-			stock.Push(c)
+			// CTQ.AddFlipDown(c)
+			stock.Push(c) // this will flip card down
 		}
 		p.localRecycles--
 	}
@@ -172,18 +184,25 @@ func (b *Baize) CardTapped(c *Card) {
 
 	// println("card",c.id,"tapped")
 
+	pSrc := c.owner
+
 	// can only tap top card
-	if c != c.owner.Peek() {
+	if c != pSrc.Peek() {
 		c.Shake()
 		return
 	}
 
+	targetClass := c.owner.GetStringAttribute("Target")
+
 	moved := false
 
-	// Tap on a Stock card to send it to Waste
-	// TODO fudge to send three cards
-	targetClass := c.owner.GetStringAttribute("Target")
-	if targetClass != "" {
+	switch pSrc.Class {
+	case "Stock":
+		// Tap on a Stock card to send it to Waste
+		// TODO fudge to send three cards
+		if targetClass == "" {
+			targetClass = "Waste"
+		}
 		for _, p := range b.Piles {
 			if targetClass == p.Class {
 				// println("found a", p.Class)
@@ -194,10 +213,32 @@ func (b *Baize) CardTapped(c *Card) {
 				}
 			}
 		}
+	case "StockSpider":
+		// TODO check empty tableaux
+		if targetClass == "" {
+			targetClass = "Tableau"
+		}
+		b.UndoPush()
+		for _, p := range b.Piles {
+			if p.Class == targetClass {
+				b.MoveCards(c, p)
+				c.prone = false
+				c = pSrc.Peek()
+				// all these should count as one move, so pop this move from undo stack
+				b.UndoPop()
+			}
+			if c == nil {
+				break
+			}
+		}
+	default:
+		println("Clueless when tapping on a", pSrc.Class, "card")
 	}
 
 	if !moved {
-		c.Shake()
+		if c != nil {
+			c.Shake()
+		}
 	}
 
 	// TODO else test other piles to see if this card is accepted?
@@ -266,9 +307,9 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	// pop the tail off the source and push onto temp stack
 	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
 		sc := src.Pop()
-		if src.Class == "Stock" {
-			sc.FlipUp()
-		}
+		// if src.Class == "Stock" {
+		// 	CTQ.AddFlipUp(sc)
+		// }
 		tmp = append(tmp, sc)
 	}
 
@@ -280,10 +321,11 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	if oldSrcLen == len(src.Cards) {
+		println("MoveCards - nothing happened")
 		b.UndoPop() // discard return values
 	} else {
 		// flip up an exposed source card
-		if src.Class != "Stock" {
+		if !strings.HasPrefix(src.Class, "Stock") {
 			tc := src.Peek()
 			if tc != nil {
 				tc.FlipUp()
@@ -376,7 +418,7 @@ func (b *Baize) Update() error {
 			// maybe user is tapping or starting to drag a card
 			c := b.findCardAt(image.Point{X: sx, Y: sy})
 			if c != nil {
-				if c.owner.StartDrag(c) {
+				if c.owner.StartDrag(b.Piles, c) {
 					b.stroke = s
 					b.stroke.SetDraggingObject(c)
 				} else {

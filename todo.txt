@@ -1,5 +1,19 @@
 $ git branch -m master main
 
++ Can Flip be handled only by Pop & Push (except during Deal())
+  Copy Flip from Opsole, at least it works:
+  Just a flip() command, which changes .prone *before* animation
+  ignore flip in Foundation.Push, it's just for geezer
+  deal flips up/down cards taken from stock
+  flip up cards when complete for physics frippery
+  UpdateFromSaved corrects flip
+  reserve and tableau Pop flips card if it becomes exposed by Pop (by peeking stack after pop)
+  stock push flips cards down
+  stock pop flips cards up
+
++ StockSpider checks for empty tableaux
++ len(p.Cards) := p.CardCount()
++ tap card to move to foundation
 + test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
 + titlebar hamburger, variant, undo
 + Tableau PowerMoves=3xx in Move=, Hidden can be infered from X,Y

@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"sort"
+	"strings"
 
 	"oddstream.games/gosol/util"
 )
@@ -14,9 +15,18 @@ func createCards(stock *Pile) {
 	if !ok || packs == 0 {
 		packs = 1
 	}
+
+	var createSuits []string
+	attribSuits := stock.GetStringAttribute("Suits")
+	if attribSuits != "" {
+		createSuits = strings.Split(attribSuits, ",")
+	} else {
+		createSuits = []string{"Club", "Diamond", "Heart", "Spade"}
+	}
+
 	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
 	for pack := 0; pack < packs; pack++ {
-		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
+		for _, suit := range createSuits {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
 				c.owner = stock
@@ -168,4 +178,37 @@ func isConformant(rules int, cards []*Card) bool {
 		cPrev = cThis
 	}
 	return true
+}
+
+func powerMoves(piles []*Pile, pDragging *Pile) int {
+	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
+	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
+	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
+	// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
+	emptyCells := 0
+	emptyCols := 0
+	for _, p := range piles {
+		switch p.Class {
+		case "Cell":
+			if 0 == len(p.Cards) {
+				emptyCells++
+			}
+		case "Tableau":
+			if pDragging != nil {
+				if p == pDragging && 0 == len(pDragging.Cards) {
+					// empty column doesn't count
+				} else if 0 == len(p.Cards) {
+					emptyCols++
+				}
+			} else {
+				if 0 == len(p.Cards) {
+					emptyCols++
+				}
+			}
+		}
+	}
+	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
+	n := (1 + emptyCells) * util.Pow(2, emptyCols)
+	println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
+	return n
 }
