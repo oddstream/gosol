@@ -1,27 +1,11 @@
 # Gosol
 
-Don't copy Opsole design (which is shaky and not fully understood)
+Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg. It's an adaptation of my Lua/Solar2D retained mode engine used in the Android game (which was itself an adaptation of my messy vanilla JavaScript/SVG engine used for the online game). The intention is that this version will replace both of those.
 
-Choice between using completely flat hierarchy (just Pile class) and depth-1 hierarchy (Pile, then Stock Waste &c).
-Flat would mean lots of rules
-Depth-1 is kinda supported by Go's struct embedding and interfaces
+It currently only plays a few variants (Klondike, Freecell, Limited, Spider1, Spider2). Use a command line flag (eg -v=Limited) to set the variant.
 
-Classes should be dumb and all the game logic handled by Baize. Eg don't tell a card it's been tapped; tell Baize.
+It currently has no user interface other than U - undo, N - new deal, R - restart deal.
 
-Each variant has
-(1) Top level attributes (name, description, wikipedia)
-(2) Attributes common to all classes (X, Y, Fan, BuildRule?, MoveRule?) (No, don't use this)
-(3) Per-pile attributes (Accept, Deal, SuitFilter, Packs &c)
-These are loaded from a reference table/db and stored in the class
+It currently doesn't detect a completed game, or do any fancy highlighting of moveable cards, or automoving of cards.
 
-Levels of card movement
-(1) directed by the engine. Eg put cards in stock after creation.
-(2) directed by the engine, animation required. Eg deal, move to foundation, return after unsucessful drag.
-(3) directed by the user, animation required.
-(4) Dragged by user.
-
-Card transition queue (CTQ)
-Create a New() queue
-Add {*Card, X, Y} to queue
-If card is alreay in queue, update record
-Every tick, Update takes head off queue and trigger card's transition
+Had a fight with using Go's embedded structs and interfaces, but we've resolved our differences and are getting on much better now.
