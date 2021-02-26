@@ -91,11 +91,11 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 			return false
 		}
 	case 3: // in color
-		if cPrev.color != cThis.color {
+		if cPrev.red != cThis.red {
 			return false
 		}
 	case 4: // in alternate color
-		if cPrev.color == cThis.color {
+		if cPrev.red == cThis.red {
 			return false
 		}
 	case 5: // in any suit but it's own
@@ -190,18 +190,18 @@ func powerMoves(piles []*Pile, pDragging *Pile) int {
 	for _, p := range piles {
 		switch p.Class {
 		case "Cell":
-			if 0 == len(p.Cards) {
+			if 0 == p.CardCount() {
 				emptyCells++
 			}
 		case "Tableau":
 			if pDragging != nil {
 				if p == pDragging && 0 == len(pDragging.Cards) {
 					// empty column doesn't count
-				} else if 0 == len(p.Cards) {
+				} else if 0 == p.CardCount() {
 					emptyCols++
 				}
 			} else {
-				if 0 == len(p.Cards) {
+				if 0 == p.CardCount() {
 					emptyCols++
 				}
 			}

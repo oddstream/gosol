@@ -26,6 +26,7 @@ type Baize struct {
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	LoadScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	b.StartGame()
 	return b
 }
@@ -55,7 +56,7 @@ func (b *Baize) StartGame() {
 				maxX = p.X
 			}
 		}
-		ebiten.SetWindowSize((maxX+2)*(71+10), WindowHeight)
+		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
 	}
 
 	stock := b.findPilePrefix("Stock")
@@ -145,7 +146,7 @@ func (b *Baize) findPileAt(pt image.Point) *Pile {
 // findTileAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(pt image.Point) *Card {
 	for _, p := range b.Piles {
-		for i := len(p.Cards) - 1; i >= 0; i-- {
+		for i := p.CardCount() - 1; i >= 0; i-- {
 			c := p.Cards[i]
 			if util.InRect(pt, c.Rect) {
 				return c
@@ -153,6 +154,20 @@ func (b *Baize) findCardAt(pt image.Point) *Card {
 		}
 	}
 	return nil
+}
+
+func (b *Baize) countPiles(cls string) (total, count int) {
+	total = 0
+	count = 0
+	for _, p := range b.Piles {
+		if p.Class == cls {
+			total++
+			if 0 == p.CardCount() {
+				count++
+			}
+		}
+	}
+	return
 }
 
 // PileTapped is called when a pile has been tapped
@@ -203,18 +218,38 @@ func (b *Baize) CardTapped(c *Card) {
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
+		cardsToMove, _ := pSrc.GetIntAttribute("CardsToMove")
+		if cardsToMove == 0 {
+			cardsToMove = 1
+		}
 		for _, p := range b.Piles {
 			if targetClass == p.Class {
 				// println("found a", p.Class)
 				if p.CanAcceptCard(c) {
 					// println(p.Class, "can accept", c.id)
-					b.MoveCards(c, p)
-					moved = true
+					b.UndoPush()
+					for cardsToMove > 0 && c != nil {
+						cardsToMove--
+						b.MoveCards(c, p)
+						c = pSrc.Peek()
+						// all these should count as one move, so pop this move from undo stack
+						b.UndoPop()
+						moved = true
+					}
 				}
 			}
 		}
 	case "StockSpider":
-		// TODO check empty tableaux
+		_, empty := b.countPiles("Tableau")
+		if empty > 0 {
+			stock := b.findPilePrefix("Stock")
+			if stock.CardCount() > empty {
+				println("all tableaux spaces must be filled before dealing a new row")
+				break
+			}
+		}
+		fallthrough
+	case "StockScorpion":
 		if targetClass == "" {
 			targetClass = "Tableau"
 		}
@@ -229,6 +264,16 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 			if c == nil {
 				break
+			}
+		}
+	case "Tableau", "Waste":
+		for _, p := range b.Piles {
+			if p.Class == "Foundation" {
+				if p.CanAcceptCard(c) {
+					b.MoveCards(c, p)
+					moved = true
+					break
+				}
 			}
 		}
 	default:

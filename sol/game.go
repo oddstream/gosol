@@ -16,6 +16,14 @@ var (
 	WindowWidth int
 	// WindowHeight of main window in pixels
 	WindowHeight int
+	// CardWidth CardHeight of cards
+	CardWidth int = 71
+	// CardHeight of cards
+	CardHeight int = 96
+	// PileMarginX the horzontal gaps between piles
+	PileMarginX int = 10
+	// PileMarginY the vertical gap between piles
+	PileMarginY int = 10
 )
 
 // GSM provides global access to the game state manager
@@ -24,11 +32,11 @@ var GSM *GameStateManager = &GameStateManager{}
 // CTQ provides global access to the Card Transition Queue
 var CTQ *CardTransitionQueue = &CardTransitionQueue{}
 
-// TheAcmeFonts provides access to small, normal, large, huge Acme fonts
-var TheAcmeFonts *AcmeFonts = NewAcmeFonts()
+// TheCardFonts provides access to small, normal, large, huge Acme fonts
+var TheCardFonts *CardFonts = NewCardFonts()
 
 // TheUserData holds serialized game progress data
-var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue"}
+var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {

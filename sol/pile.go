@@ -7,11 +7,10 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/util"
 )
 
 const (
-	marginX       int = 10
-	marginY       int = 10
 	backFanFactor int = 5
 	faceFanFactor int = 3
 )
@@ -88,15 +87,14 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 }
 
 func (p *Pile) createBackgroundImage() {
-	dc := gg.NewContext(71, 96)
+	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(0, 0, float64(71), float64(96), 4)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 4)
 	accept, ok := p.GetIntAttribute("Accept")
 	if ok && accept > 0 && accept <= 13 {
-		var acceptChars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
-		dc.SetFontFace(TheAcmeFonts.normal)
-		dc.DrawString(acceptChars[accept], 71/7, 96/3)
+		dc.SetFontFace(TheCardFonts.regular)
+		dc.DrawString(util.OrdinalToChar(accept), float64(CardWidth)/7, float64(CardHeight)/3)
 	}
 	if p.localRecycles == 0 {
 		// TODO red no entry, but will appear on all piles :-/
@@ -109,49 +107,54 @@ func (p *Pile) createBackgroundImage() {
 
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return (p.X * marginX) + (p.X * 71), (p.Y * marginY) + (p.Y * 96)
+	return (p.X * PileMarginX) + (p.X * CardWidth), (p.Y * PileMarginY) + (p.Y * CardHeight)
 }
 
 // Rect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0 = p.Position()
-	x1 = x0 + 71
-	y1 = y0 + 96
+	x1 = x0 + CardWidth
+	y1 = y0 + CardHeight
 	return // using named return parameters
 }
 
 // FannedRect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0, x1, y1 = p.Rect()
-	if len(p.Cards) > 1 {
+	if p.CardCount() > 1 {
 		x, y := p.Peek().Position()
 		switch p.Fan {
 		case "", "None":
 			// do nothing
 		case "Right":
-			x1 = x + 71
+			x1 = x + CardWidth
 		case "Down":
-			y1 = y + 96
+			y1 = y + CardHeight
 		}
 	}
 	return // using named return parameters
 }
 
+// CardCount returns the number of cards in this Pile
+func (p *Pile) CardCount() int {
+	return len(p.Cards)
+}
+
 // Peek topmost Card of this Pile (a stack)
 func (p *Pile) Peek() *Card {
-	if 0 == len(p.Cards) {
+	if 0 == p.CardCount() {
 		return nil
 	}
-	return p.Cards[len(p.Cards)-1]
+	return p.Cards[p.CardCount()-1]
 }
 
 // Pop a Card off the end of this Pile (a stack)
 func (p *Pile) Pop() *Card {
-	if 0 == len(p.Cards) {
+	if 0 == p.CardCount() {
 		return nil
 	}
-	c := p.Cards[len(p.Cards)-1]
-	p.Cards = p.Cards[:len(p.Cards)-1]
+	c := p.Cards[p.CardCount()-1]
+	p.Cards = p.Cards[:p.CardCount()-1]
 	c.owner = nil
 	c.FlipUp()
 
@@ -188,7 +191,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 	case "Waste":
 		return c.owner.Class == "Stock" // user can only move card to waste from stock
 	case "Foundation":
-		if len(p.Cards) == 0 {
+		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
 				return c.ordinal == p.localAccept
 			}
@@ -196,7 +199,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		}
 		return isConformant0(build, p.Peek(), c)
 	case "Tableau":
-		if len(p.Cards) == 0 {
+		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
 				return c.ordinal == p.localAccept
 			}
@@ -204,7 +207,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		}
 		return isConformant0(build, p.Peek(), c)
 	case "Cell":
-		return len(p.Cards) == 0
+		return p.CardCount() == 0
 	}
 	return false
 }
@@ -251,7 +254,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		if len(Tail) != 13 {
 			return false
 		}
-		if len(p.Cards) > 0 {
+		if p.CardCount() > 0 {
 			return false
 		}
 		return isConformant(buildRules, Tail)
@@ -260,7 +263,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		if len(Tail) != 1 {
 			return false
 		}
-		if len(p.Cards) == 0 {
+		if p.CardCount() == 0 {
 			if accept > 0 {
 				return c0.ordinal == accept
 			}
@@ -269,7 +272,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		return isConformant0(buildRules, p.Peek(), c0)
 
 	case "Tableau":
-		if len(p.Cards) == 0 {
+		if p.CardCount() == 0 {
 			if accept > 0 {
 				return c0.ordinal == accept
 			}
@@ -278,7 +281,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		return isConformant0(buildRules, p.Peek(), c0)
 
 	case "Cell":
-		return len(Tail) == 1 && len(p.Cards) == 0
+		return len(Tail) == 1 && p.CardCount() == 0
 	}
 	return false
 }
@@ -292,24 +295,24 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	case "Down":
 		for _, c := range p.Cards {
 			if c.prone {
-				y = y + 96/backFanFactor
+				y = y + CardHeight/backFanFactor
 			} else {
-				y = y + 96/faceFanFactor
+				y = y + CardHeight/faceFanFactor
 			}
 		}
 	case "Right":
 		for _, c := range p.Cards {
 			if c.prone {
-				x = x + 71/backFanFactor
+				x = x + CardWidth/backFanFactor
 			} else {
-				x = x + 96/faceFanFactor
+				x = x + CardHeight/faceFanFactor
 			}
 		}
 	case "Waste":
 		x0, y0 := p.Position()
-		x1 := x0 + 71/faceFanFactor
-		x2 := x1 + 71/faceFanFactor
-		switch len(p.Cards) {
+		x1 := x0 + CardWidth/faceFanFactor
+		x2 := x1 + CardWidth/faceFanFactor
+		switch p.CardCount() {
 		case 0:
 			// do nothing, incoming card will be at x,y
 		case 1:
@@ -322,13 +325,13 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// incoming card will be at slot [2]
 			x = x2
 			// card below needs to transition from slot[2] to slot[1]
-			c := p.Cards[len(p.Cards)-1]
+			c := p.Cards[p.CardCount()-1]
 			CTQ.Add(c, x1, y0)
 			// card below that needs to transition from slot[1] to slot[0]
-			c = p.Cards[len(p.Cards)-2]
+			c = p.Cards[p.CardCount()-2]
 			CTQ.Add(c, x0, y0)
 			// all other cards will be at pile x,y
-			for i := 0; i < len(p.Cards)-2; i++ {
+			for i := 0; i < p.CardCount()-2; i++ {
 				c = p.Cards[i]
 				c.SetPosition(x0, y0)
 			}
@@ -349,18 +352,18 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 // 		for _, c := range p.cards {
 // 			CTQ.Add(c, x, y)
 // 			if c.prone {
-// 				y = y + 96/proneStackFactor
+// 				y = y + CardHeight/proneStackFactor
 // 			} else {
-// 				y = y + 96/cardStackFactor
+// 				y = y + CardHeight/cardStackFactor
 // 			}
 // 		}
 // 	case "right":
 // 		for _, c := range p.cards {
 // 			CTQ.Add(c, x, y)
 // 			if c.prone {
-// 				x = x + 71/proneStackFactor
+// 				x = x + CardWidth/proneStackFactor
 // 			} else {
-// 				x = x + 96/cardStackFactor
+// 				x = x + CardHeight/cardStackFactor
 // 			}
 // 		}
 // 	case "waste":
@@ -378,7 +381,7 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 
 	p.Tail = nil // append works on a nil slice, yay
 	marking := false
-	for i := 0; i < len(p.Cards); i++ {
+	for i := 0; i < p.CardCount(); i++ {
 		pci := p.Cards[i]
 		if !marking && pci == c {
 			marking = true
@@ -440,7 +443,7 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 		fn(tc)
 	}
 	// marking := false
-	// for i := 0; i < len(p.Cards); i++ {
+	// for i := 0; i < p.CardCount(); i++ {
 	// 	pci := p.Cards[i]
 	// 	if !marking && pci == c {
 	// 		marking = true
@@ -461,7 +464,7 @@ func (p *Pile) DragTailBy(dx, dy int) {
 	}
 
 	// marking := false
-	// for i := 0; i < len(p.Cards); i++ {
+	// for i := 0; i < p.CardCount(); i++ {
 	// 	ci := p.Cards[i]
 	// 	if !marking && ci == c {
 	// 		marking = true
@@ -478,13 +481,13 @@ func (p *Pile) IsComplete() bool {
 
 	cw, ok := p.GetIntAttribute("CompleteWhen")
 	if ok {
-		return len(p.Cards) == cw
+		return p.CardCount() == cw
 	}
 
 	switch p.Class {
 	case "Foundation":
 	default:
-		return len(p.Cards) == 0
+		return p.CardCount() == 0
 	}
 	return true
 }

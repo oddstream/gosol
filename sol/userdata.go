@@ -7,6 +7,8 @@ type UserData struct {
 	Game            string
 	Variant         string
 	CardBack        string
+	CardStyle       string
+	BackColor       string
 	CompletedLevels int
 }
 

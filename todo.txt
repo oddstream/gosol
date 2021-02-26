@@ -1,6 +1,40 @@
 $ git branch -m master main
 
-+ Can Flip be handled only by Pop & Push (except during Deal())
++ recycle graphics
++ EasyWin variant
++ map[VariantName]english string
++ weird delay during StockSpider undo
++ test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
++ titlebar hamburger, variant, undo
++ Tableau PowerMoves=2xx in Drag=, Hidden can be infered from X,Y
+  per-class bit flags?
+  Drag mod 100 = rules
+  Drag / 100 = flags
++ Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 1/A) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
++ map of default Build, Drag for Pile Classes, Build/Drag methods?
++ CompleteWhen attribute, default 0, 13 for Foundations
+  "a game is complete when all piles except foundations are empty"
+  other rules for Poker, GrandfathersClock
++ method goes in Baize if it needs access to Baize.Piles
+  method goes in Pile if it needs access to Pile.Cards
++ CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
+  ... but can flip and lerp at the same time
++ Card.color doesn't need to be a color
++ grid X,Y to screenX,screenY func
++ orientation change
++ UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
+
+x replace acmefonts with scaled cardFonts (regular and large)
+x func init() in card.go and scalable.go run before setting CardWidth,Height
+x bitmap cards do not scale well, draw cards using fogleman/gg
+  96/71 = 1.352112676 for retro
+  135/100 default for scalable
+x StockSpider check for empty tableaux
+x separate settle Card transition? Just go faster if distance < card diagonal
+x Australian (diff Build/Drag rules)
+x tap card to move to foundation
+x len(p.Cards) := p.CardCount()
+x Can Flip be handled only by Pop & Push (except during Deal())
   Copy Flip from Opsole, at least it works:
   Just a flip() command, which changes .prone *before* animation
   ignore flip in Foundation.Push, it's just for geezer
@@ -10,38 +44,6 @@ $ git branch -m master main
   reserve and tableau Pop flips card if it becomes exposed by Pop (by peeking stack after pop)
   stock push flips cards down
   stock pop flips cards up
-
-+ StockSpider checks for empty tableaux
-+ len(p.Cards) := p.CardCount()
-+ tap card to move to foundation
-+ test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
-+ titlebar hamburger, variant, undo
-+ Tableau PowerMoves=3xx in Move=, Hidden can be infered from X,Y
-  per-class bit flags?
-  Drag mod 100 = rules
-  Drag / 100 = flags
-+ Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 1/A) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
-+ map of default Build, Move for Pile Classes, Build/Move methods
-+ CompleteWhen attribute, default 0, 13 for Foundations
-  "a game is complete when all piles except foundations are empty"
-  other rules for Poker, GrandfathersClock
-+ method goes in Baize if it needs access to Baize.Piles
-  method goes in Pile if it needs access to Pile.Cards
-+ build/move rules (rank, suit, rankwrap)
-  42 mod 10 = 2
-  42 / 10 = 4.2
-  42/100 = 0.42
-  why build+move? name a variant Australian, Creepy Crawly,
-  Foundation, Tableau uses Build
-  Pile uses Move (CanGrab)
-+ CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
-  ... but can flip and lerp at the same time
-+ Card.color doesn't need to be a color
-+ grid X,Y to screenX,screenY func
-+ scale cards from 71x96
-+ orientation change
-+ UI (Fyne?)
-
 x Seed, RestartGame(), NewGame(), NewVariant()
 x undo
 x Pile localAccept, localRecycles
