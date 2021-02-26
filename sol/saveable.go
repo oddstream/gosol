@@ -1,12 +1,16 @@
 package sol
 
-import "log"
+import (
+	"hash/crc32"
+	"log"
+)
 
 // SaveableBaize is a reduced struct for converting to JSON
 type SaveableBaize struct {
-	Variant string
-	Seed    int64
-	Piles   []SaveablePile
+	Checksum uint32
+	Variant  string
+	Seed     int64
+	Piles    []SaveablePile
 }
 
 // SaveablePile is a reduced struct for converting to JSON
@@ -23,12 +27,25 @@ type SaveableCard struct {
 	Prone bool
 }
 
+// Checksum creates checksum for the current state
+func (b *Baize) Checksum() uint32 {
+	// https://golang.org/src/hash/crc32/example_test.go
+	var lens []byte
+	// crc32q := crc32.MakeTable(0xD5828281)
+	for _, p := range b.Piles {
+		lens = append(lens, byte(p.CardCount()))
+	}
+	// return crc32.Checksum(lens, crc32q)
+	return crc32.ChecksumIEEE(lens)
+}
+
 // Saveable creates a saveable version of the current state
 func (b *Baize) Saveable() SaveableBaize {
-	sav := SaveableBaize{Variant: b.Variant, Seed: b.Seed}
+	sav := SaveableBaize{Checksum: b.Checksum(), Variant: b.Variant, Seed: b.Seed}
 	for _, p := range b.Piles {
 		sav.Piles = append(sav.Piles, p.Saveable())
 	}
+	// println("Checksum", sav.Checksum)
 	return sav
 }
 
@@ -47,6 +64,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		pile := b.Piles[i]
 		savedPile := sav.Piles[i]
 		if len(pile.Cards) != len(savedPile.Cards) {
+			println("updating pile", pile.Class)
 			pile.UpdateFromSaved(cardCache, savedPile)
 		}
 	}

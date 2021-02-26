@@ -28,6 +28,7 @@ func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	LoadScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	b.StartGame()
+	b.UndoPush()
 	return b
 }
 
@@ -191,6 +192,8 @@ func (b *Baize) PileTapped(p *Pile) {
 		}
 		p.localRecycles--
 	}
+
+	b.AfterUserMove()
 	// println("pile", p.Class, "tapped")
 }
 
@@ -227,13 +230,10 @@ func (b *Baize) CardTapped(c *Card) {
 				// println("found a", p.Class)
 				if p.CanAcceptCard(c) {
 					// println(p.Class, "can accept", c.id)
-					b.UndoPush()
 					for cardsToMove > 0 && c != nil {
 						cardsToMove--
 						b.MoveCards(c, p)
 						c = pSrc.Peek()
-						// all these should count as one move, so pop this move from undo stack
-						b.UndoPop()
 						moved = true
 					}
 				}
@@ -253,14 +253,11 @@ func (b *Baize) CardTapped(c *Card) {
 		if targetClass == "" {
 			targetClass = "Tableau"
 		}
-		b.UndoPush()
 		for _, p := range b.Piles {
 			if p.Class == targetClass {
 				b.MoveCards(c, p)
 				c.prone = false
 				c = pSrc.Peek()
-				// all these should count as one move, so pop this move from undo stack
-				b.UndoPop()
 			}
 			if c == nil {
 				break
@@ -277,13 +274,15 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 		}
 	default:
-		println("Clueless when tapping on a", pSrc.Class, "card")
+		println("clueless when tapping on a", pSrc.Class, "card")
 	}
 
 	if !moved {
 		if c != nil {
 			c.Shake()
 		}
+	} else {
+		b.AfterUserMove()
 	}
 
 	// TODO else test other piles to see if this card is accepted?
@@ -345,8 +344,6 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		log.Fatal("MoveCards could not find card in source")
 	}
 
-	b.UndoPush()
-
 	oldSrcLen := len(src.Cards)
 
 	// pop the tail off the source and push onto temp stack
@@ -367,7 +364,6 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
 	if oldSrcLen == len(src.Cards) {
 		println("MoveCards - nothing happened")
-		b.UndoPop() // discard return values
 	} else {
 		// flip up an exposed source card
 		if !strings.HasPrefix(src.Class, "Stock") {
@@ -377,6 +373,56 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 			}
 		}
 	}
+}
+
+// AutoMoves performs post user-moves
+func (b *Baize) AutoMoves() {
+
+	// TODO move cards to Foundations
+	// TODO any moves here should count as belonging to undo state on top of undo stack?
+
+	for _, p := range b.Piles {
+		if p.CardCount() == 0 {
+			amf := p.GetStringAttribute("AutoMoveFrom")
+			if amf != "" {
+				src := b.findPile(amf)
+				if src != nil {
+					c := src.Peek()
+					if c != nil {
+						b.MoveCards(c, p)
+					}
+				}
+			}
+		}
+	}
+
+}
+
+// AfterUserMove runs after the user has made a move
+func (b *Baize) AfterUserMove() {
+
+	// b.AutoMoves()
+
+	var oldChecksum, newChecksum uint32
+	var ok bool
+
+	//
+
+	if len(b.UndoStack) == 0 {
+		log.Fatal("undo stack is empty in AfterUserMove()")
+	} else {
+		oldChecksum, ok = b.UndoPeekChecksum()
+		if !ok {
+			log.Fatal("error peeking undo stack checksum")
+		}
+	}
+	newChecksum = b.Checksum()
+	println(oldChecksum, newChecksum)
+	if oldChecksum != newChecksum {
+		b.UndoPush()
+	}
+
+	// check game complete
 }
 
 // UndoPush pushes the current state onto the undo stack
@@ -394,16 +440,32 @@ func (b *Baize) UndoPop() (SaveableBaize, bool) {
 	return SaveableBaize{}, false
 }
 
+// UndoPeekChecksum peeks the state at the top of the undo stack
+func (b *Baize) UndoPeekChecksum() (uint32, bool) {
+	if len(b.UndoStack) > 0 {
+		sav := b.UndoStack[len(b.UndoStack)-1]
+		return sav.Checksum, true
+	}
+	return 0, false
+}
+
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
-	if len(b.UndoStack) == 0 {
-		println("Nothing to undo")
+	if len(b.UndoStack) < 2 {
+		println("nothing to undo")
 		return
 	}
-	sav, ok := b.UndoPop()
-	if ok {
-		b.UpdateFromSaveable(sav)
+	sav, ok := b.UndoPop() // removes current state
+	if !ok {
+		log.Fatal("error popping current state from undo stack")
 	}
+
+	sav, ok = b.UndoPop() // removes previous state for examination
+	if !ok {
+		log.Fatal("error popping second from undo stack")
+	}
+	b.UpdateFromSaveable(sav)
+	b.UndoPush() // replace current state
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
@@ -498,6 +560,7 @@ func (b *Baize) Update() error {
 						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)
 							b.MoveCards(c, p)
+							b.AfterUserMove()
 						} else {
 							c.owner.CancelDrag(c)
 						}
@@ -547,6 +610,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v", ms.NumGC))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d", ms.NumGC, len(b.UndoStack)))
 	}
 }
