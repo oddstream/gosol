@@ -302,43 +302,6 @@ func (b *Baize) CardTapped(c *Card) {
 	// TODO else test other piles to see if this card is accepted?
 }
 
-// func moveCards0(src, dst CardOwner, nCards int) int {
-// 	var nMoved int = 0
-
-// 	if nCards == 1 && len(src.Cards()) > 0 {
-// 		c := src.Pop()
-// 		if src.Class() == "Stock" {
-// 			c.FlipUp()
-// 		}
-// 		dst.Push(c)
-// 		nMoved = 1
-// 	} else if nCards > 1 {
-// 		var tmp []*Card
-// 		for n := nCards; n > 0 && len(src.Cards()) > 0; n-- {
-// 			c := src.Pop()
-// 			if src.Class() == "Stock" {
-// 				c.FlipUp()
-// 			}
-// 			tmp = append(tmp, c)
-// 		}
-// 		for len(tmp) > 0 {
-// 			c := tmp[len(tmp)-1]
-// 			tmp = tmp[:len(tmp)-1]
-// 			dst.Push(c)
-// 			nMoved++
-// 		}
-// 	}
-
-// 	{
-// 		cards := src.Cards()
-// 		if len(cards) > 0 {
-// 			cards[len(cards)-1].FlipUp()
-// 		}
-// 	}
-
-// 	return nMoved
-// }
-
 // MoveCards from one pile to another, always from card downwards (inclusive)
 func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
@@ -363,9 +326,6 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	// pop the tail off the source and push onto temp stack
 	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
 		sc := src.Pop()
-		// if src.Class == "Stock" {
-		// 	CTQ.AddFlipUp(sc)
-		// }
 		tmp = append(tmp, sc)
 	}
 
@@ -407,7 +367,6 @@ func (b *Baize) AutoMoves() {
 				}
 			}
 		}
-
 	}
 
 }
@@ -416,6 +375,8 @@ func (b *Baize) AutoMoves() {
 func (b *Baize) AfterUserMove() {
 
 	b.AutoMoves()
+
+	//
 
 	var oldChecksum, newChecksum uint32
 	var ok bool
@@ -434,9 +395,22 @@ func (b *Baize) AfterUserMove() {
 	println(oldChecksum, newChecksum)
 	if oldChecksum != newChecksum {
 		b.UndoPush()
+	} else {
+		println("not pushing to undo because checksums match")
 	}
 
-	// check game complete
+	//
+
+	complete := true
+	for _, p := range b.Piles {
+		if !p.IsComplete() {
+			complete = false
+			break
+		}
+	}
+	if complete {
+		println(b.Variant, "complete")
+	}
 }
 
 // UndoPush pushes the current state onto the undo stack

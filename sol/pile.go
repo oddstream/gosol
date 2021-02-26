@@ -249,7 +249,13 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		return false // user cannot drag cards to stock
 
 	case "Waste":
-		return c0.owner.Class == "Stock" // user can drag a card from stock to waste
+		if c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
+			ctm := c0.owner.GetStringAttribute("CardsToMove")
+			if ctm == "" || ctm == "1" {
+				return true
+			}
+		}
+		return false
 
 	case "FoundationSpider":
 		if len(Tail) != 13 {

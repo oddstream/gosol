@@ -1,5 +1,6 @@
 $ git branch -m master main
 
++ Waste fanning is horrible, especially during undo
 + recycle graphics
 + EasyWin variant
 + map[VariantName]english string
@@ -24,6 +25,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x bug: can drag 1 card from stock to waste when CardsToMove = 3
 x Canfield, AutoFillFrom, RankWrap, FoundationCanfield/SetAccept()
 x New Undo mechanism based on >1 undo stack, AfteruserMove() and crc32 checksum
 x replace acmefonts with scaled cardFonts (regular and large)
