@@ -28,7 +28,6 @@ func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	LoadScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	b.StartGame()
-	b.UndoPush()
 	return b
 }
 
@@ -66,8 +65,8 @@ func (b *Baize) StartGame() {
 	}
 	createCards(stock)
 	shuffleCards(stock, b.Seed)
-
 	b.dealCards()
+	b.UndoPush()
 }
 
 // RestartGame resets Baize and restarts current variant with same seed
@@ -114,6 +113,21 @@ func (b *Baize) dealCards() {
 			}
 		}
 	}
+
+	for _, p := range b.Piles {
+		if p.Class == "Foundation" && p.CardCount() == 1 {
+			afp := p.GetBoolAttribute("AcceptFirstPush")
+			if afp {
+				ord := p.Peek().ordinal
+				for _, fp := range b.Piles {
+					if fp.Class == "Foundation" {
+						fp.SetAccept(ord)
+					}
+				}
+			}
+		}
+	}
+
 }
 
 func (b *Baize) findPile(cls string) *Pile {
@@ -263,7 +277,7 @@ func (b *Baize) CardTapped(c *Card) {
 				break
 			}
 		}
-	case "Tableau", "Waste":
+	case "Tableau", "Waste", "Cell":
 		for _, p := range b.Piles {
 			if p.Class == "Foundation" {
 				if p.CanAcceptCard(c) {
@@ -379,11 +393,10 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 func (b *Baize) AutoMoves() {
 
 	// TODO move cards to Foundations
-	// TODO any moves here should count as belonging to undo state on top of undo stack?
 
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
-			amf := p.GetStringAttribute("AutoMoveFrom")
+			amf := p.GetStringAttribute("AutoFillFrom")
 			if amf != "" {
 				src := b.findPile(amf)
 				if src != nil {
@@ -394,6 +407,7 @@ func (b *Baize) AutoMoves() {
 				}
 			}
 		}
+
 	}
 
 }
@@ -401,7 +415,7 @@ func (b *Baize) AutoMoves() {
 // AfterUserMove runs after the user has made a move
 func (b *Baize) AfterUserMove() {
 
-	// b.AutoMoves()
+	b.AutoMoves()
 
 	var oldChecksum, newChecksum uint32
 	var ok bool

@@ -20,6 +20,7 @@ import (
 )
 
 func init() {
+	println("processing command line flags")
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.IntVar(&sol.WindowWidth, "width", 1100, "width of window in pixels")
 	flag.IntVar(&sol.WindowHeight, "height", 700, "height of window in pixels")

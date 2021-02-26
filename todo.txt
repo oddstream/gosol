@@ -1,6 +1,5 @@
 $ git branch -m master main
 
-+ Canfield, AutoFillFrom, RankWrap, FoundationCanfield/SetAccept()
 + recycle graphics
 + EasyWin variant
 + map[VariantName]english string
@@ -25,6 +24,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x Canfield, AutoFillFrom, RankWrap, FoundationCanfield/SetAccept()
 x New Undo mechanism based on >1 undo stack, AfteruserMove() and crc32 checksum
 x replace acmefonts with scaled cardFonts (regular and large)
 x func init() in card.go and scalable.go run before setting CardWidth,Height

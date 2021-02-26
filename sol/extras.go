@@ -80,7 +80,11 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 		return false
 	}
 
-	localSuit := rules / 10
+	buildRules := rules % 100
+	buildFlags := rules / 100 // 1==rank wrap
+
+	localSuit := buildRules / 10
+	localRank := buildRules % 10
 
 	switch localSuit {
 	case 0: // may not build or move
@@ -104,10 +108,7 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 		}
 	}
 
-	localRank := rules % 10
-	rankWrap := false // TODO
-
-	if rankWrap {
+	if buildFlags&1 == 1 { // rank wrap == true
 		switch localRank {
 		case 0: // may not build or move
 			return false
@@ -137,7 +138,7 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 			}
 		case 5: // regardless of rank
 		}
-	} else { // rankWrap == false
+	} else { // rank wrap == false
 		switch localRank {
 		case 0: // may not build or move
 			return false

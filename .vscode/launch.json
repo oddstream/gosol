@@ -11,7 +11,7 @@
       "mode": "debug",
       "program": "${workspaceFolder}",
       // "args": ["-debug","-v=Klondike", "-c=scalable", "-cw=90", "-ch=130"],
-      "args": ["-debug", "-v=Klondike"],
+      "args": ["-debug", "-v=Freecell"],
       "buildFlags": "-tags desktop"
     }
   ]

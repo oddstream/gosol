@@ -9,11 +9,7 @@ import (
 )
 
 func init() {
-	println("scalable init")
-	println("Heart", string(rune(9829)))
-	println("Diamond", string(rune(9830)))
-	println("Spade", string(rune(9824)))
-	println("Club", string(rune(9827)))
+	println("Heart", string(rune(9829)), "Diamond", string(rune(9830)), "Spade", string(rune(9824)), "Club", string(rune(9827)))
 }
 
 func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image {

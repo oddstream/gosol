@@ -91,10 +91,9 @@ func (p *Pile) createBackgroundImage() {
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(4)
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 4)
-	accept, ok := p.GetIntAttribute("Accept")
-	if ok && accept > 0 && accept <= 13 {
+	if p.localAccept > 0 && p.localAccept <= 13 {
 		dc.SetFontFace(TheCardFonts.regular)
-		dc.DrawString(util.OrdinalToChar(accept), float64(CardWidth)/7, float64(CardHeight)/3)
+		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/7, float64(CardHeight)/3)
 	}
 	if p.localRecycles == 0 {
 		// TODO red no entry, but will appear on all piles :-/
@@ -133,6 +132,12 @@ func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 		}
 	}
 	return // using named return parameters
+}
+
+// SetAccept updates the Accept for this pile and updates the background image
+func (p *Pile) SetAccept(ord int) {
+	p.localAccept = ord
+	p.createBackgroundImage()
 }
 
 // CardCount returns the number of cards in this Pile
@@ -234,10 +239,6 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		}
 	}
 
-	accept, ok := p.GetIntAttribute("Accept")
-	if !ok {
-		accept = 0 // accept any card
-	}
 	buildRules, ok := p.GetIntAttribute("Build")
 	if !ok {
 		log.Fatal("No Build attribute for Pile " + p.Class)
@@ -264,8 +265,8 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 			return false
 		}
 		if p.CardCount() == 0 {
-			if accept > 0 {
-				return c0.ordinal == accept
+			if p.localAccept > 0 {
+				return c0.ordinal == p.localAccept
 			}
 			return true
 		}
@@ -273,8 +274,8 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 
 	case "Tableau":
 		if p.CardCount() == 0 {
-			if accept > 0 {
-				return c0.ordinal == accept
+			if p.localAccept > 0 {
+				return c0.ordinal == p.localAccept
 			}
 			return true
 		}
@@ -322,19 +323,22 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// incoming card will be at slot [2]
 			x = x2
 		default: // >=3 cards
-			// incoming card will be at slot [2]
-			x = x2
-			// card below needs to transition from slot[2] to slot[1]
-			c := p.Cards[p.CardCount()-1]
-			CTQ.Add(c, x1, y0)
-			// card below that needs to transition from slot[1] to slot[0]
-			c = p.Cards[p.CardCount()-2]
-			CTQ.Add(c, x0, y0)
-			// all other cards will be at pile x,y
+			// most cards will be at pile x,y
 			for i := 0; i < p.CardCount()-2; i++ {
-				c = p.Cards[i]
+				c := p.Cards[i]
+				// CTQ.Add(c, x0, y0)
 				c.SetPosition(x0, y0)
 			}
+			// mid card needs to transition from slot[1] to slot[0]
+			c := p.Cards[p.CardCount()-2]
+			// CTQ.Add(c, x0, y0)
+			c.SetPosition(x0, y0)
+			// top card needs to transition from slot[2] to slot[1]
+			c = p.Cards[p.CardCount()-1]
+			CTQ.Add(c, x1, y0)
+			// c.SetPosition(x1, y0)
+			// incoming card will be at slot [2]
+			x = x2
 		}
 	}
 	return x, y
