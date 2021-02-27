@@ -97,7 +97,7 @@ func (p *Pile) createBackgroundImage() {
 
 	if p.localAccept > 0 && p.localAccept <= 13 {
 		dc.SetFontFace(TheCardFonts.acmeRegular)
-		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/8, float64(CardHeight)/3.5)
+		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/8, float64(CardHeight)/3)
 		// dc.DrawStringAnchored(util.OrdinalToChar(p.localAccept), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		dc.Stroke()
 	}
@@ -109,7 +109,7 @@ func (p *Pile) createBackgroundImage() {
 			// dc.SetFontFace(TheCardFonts.large)
 			// dc.DrawStringAnchored("O", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 			// dc.DrawStringAnchored("/", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
-		} else if p.localRecycles < 10 {
+		} else {
 			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		}
 		dc.Stroke()
@@ -141,7 +141,7 @@ func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 		} else {
 			// x, y = p.PushedFannedPosition() // this fudge is an approximation
 			// do not include cards being dragged, stop before Tail[0]
-			for i := 0; i < p.CardCount(); i++ {
+			for i := 1; i < p.CardCount(); i++ {
 				if p.Cards[i] == p.Tail[0] {
 					if i > 0 {
 						x, y = p.Cards[i-1].Position()
@@ -213,7 +213,8 @@ func (p *Pile) Push(c *Card) {
 	c.owner = p
 	x, y := p.PushedFannedPosition()
 	p.Cards = append(p.Cards, c)
-	CTQ.Add(c, x, y)
+	// CTQ.Add(c, x, y)
+	c.TransitionTo(x, y)
 }
 
 // CanAcceptCard returns true if this Pile can accept the Card
@@ -363,22 +364,18 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// incoming card will be at slot [2]
 			x = x2
 		default: // >=3 cards
-			// most cards will be at pile x,y
-			for i := 0; i < p.CardCount()-2; i++ {
-				c := p.Cards[i]
-				// CTQ.Add(c, x0, y0)
-				c.SetPosition(x0, y0)
-			}
-			// mid card needs to transition from slot[1] to slot[0]
-			c := p.Cards[p.CardCount()-2]
-			// CTQ.Add(c, x0, y0)
-			c.SetPosition(x0, y0)
-			// top card needs to transition from slot[2] to slot[1]
-			c = p.Cards[p.CardCount()-1]
-			CTQ.Add(c, x1, y0)
-			// c.SetPosition(x1, y0)
 			// incoming card will be at slot [2]
 			x = x2
+			// top card needs to transition from slot[2] to slot[1]
+			i := p.CardCount() - 1
+			p.Cards[i].TransitionTo(x1, y0)
+			// mid card needs to transition from slot[1] to slot[0]
+			i--
+			p.Cards[i].TransitionTo(x0, y0)
+			// most cards will be at pile x0,y0
+			for ; i >= 0; i-- {
+				p.Cards[i].SetPosition(x0, y0)
+			}
 		}
 	}
 	return x, y

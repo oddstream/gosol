@@ -28,8 +28,9 @@ func (ctq *CardTransitionQueue) Add(c *Card, x, y int) {
 	// 	}
 	// }
 	// if !found {
-	ctq.q = append(ctq.q, qItem{c: c, x: x, y: y, action: ctqTransition})
+	// ctq.q = append(ctq.q, qItem{c: c, x: x, y: y, action: ctqTransition})
 	// }
+	c.TransitionTo(x, y)
 }
 
 // AddFlipUp puts a Card transition request into the queue

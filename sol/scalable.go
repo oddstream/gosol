@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	println("Heart", string(rune(9829)), "Diamond", string(rune(9830)), "Spade", string(rune(9824)), "Club", string(rune(9827)))
+	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
 }
 
 func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image {
@@ -40,14 +40,14 @@ func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image 
 	// https://github.com/fogleman/gg/blob/v1.3.0/context.go#L679
 	var r rune
 	switch suit {
-	case "H":
-		r = 9829 //0x2665
-	case "D":
-		r = 9830 // 0x2666
-	case "S":
-		r = 9824 // 0x2660
-	case "C":
+	case "Club":
 		r = 9827 //0x2663
+	case "Diamond":
+		r = 9830 // 0x2666
+	case "Heart":
+		r = 9829 //0x2665
+	case "Spade":
+		r = 9824 // 0x2660
 	}
 	dc.DrawString(string(r), float64(CardWidth)/1.75, float64(CardHeight)/3.5)
 	dc.Stroke()

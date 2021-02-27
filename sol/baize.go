@@ -25,7 +25,7 @@ type Baize struct {
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
-	LoadScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
+	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	b.StartGame()
 	return b
 }
@@ -206,13 +206,12 @@ func (b *Baize) PileTapped(p *Pile) {
 		stock := b.findPile("Stock")
 		for len(waste.Cards) > 0 {
 			c := waste.Pop()
-			// CTQ.AddFlipDown(c)
 			stock.Push(c) // this will flip card down
 		}
 		p.SetRecycles(p.localRecycles - 1)
+		b.AfterUserMove()
 	}
 
-	b.AfterUserMove()
 	// println("pile", p.Class, "tapped")
 }
 
@@ -236,7 +235,6 @@ func (b *Baize) CardTapped(c *Card) {
 	switch pSrc.Class {
 	case "Stock":
 		// Tap on a Stock card to send it to Waste
-		// TODO fudge to send three cards
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
@@ -283,7 +281,7 @@ func (b *Baize) CardTapped(c *Card) {
 				break
 			}
 		}
-	case "Tableau", "Waste", "Cell":
+	case "Tableau", "Waste", "Cell", "Reserve":
 		for _, p := range b.Piles {
 			if p.Class == "Foundation" {
 				if p.CanAcceptCard(c) {
@@ -358,7 +356,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 // AutoMoves performs post user-moves
 func (b *Baize) AutoMoves() {
 
-	// TODO move cards to Foundations
+	// TODO move cards to Foundations, using Opsole safe logic
 
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
@@ -553,9 +551,6 @@ func (b *Baize) Update() error {
 						// println("found pile", o.Class())
 						if p == c.owner {
 							println("baize cannot drag cards to owning pile")
-							println(c.Rect())
-							println(c.owner.FannedRect())
-							println(p.FannedRect())
 						}
 						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)
@@ -588,7 +583,7 @@ func (b *Baize) Update() error {
 		p.Update()
 	}
 
-	CTQ.Update()
+	// CTQ.Update()
 
 	return nil
 }

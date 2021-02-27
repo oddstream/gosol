@@ -22,8 +22,8 @@ import (
 func init() {
 	println("processing command line flags")
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
-	flag.IntVar(&sol.WindowWidth, "width", 1100, "width of window in pixels")
-	flag.IntVar(&sol.WindowHeight, "height", 700, "height of window in pixels")
+	flag.IntVar(&sol.WindowWidth, "width", 1000, "width of window in pixels")
+	flag.IntVar(&sol.WindowHeight, "height", 800, "height of window in pixels")
 	flag.IntVar(&sol.CardWidth, "cw", 71, "width of a card in pixels")
 	flag.IntVar(&sol.CardHeight, "ch", 96, "height of a card in pixels")
 	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")

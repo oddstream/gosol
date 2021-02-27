@@ -30,7 +30,7 @@ var (
 var GSM *GameStateManager = &GameStateManager{}
 
 // CTQ provides global access to the Card Transition Queue
-var CTQ *CardTransitionQueue = &CardTransitionQueue{}
+//var CTQ *CardTransitionQueue = &CardTransitionQueue{}
 
 // TheCardFonts provides access to small, normal, large, huge Acme fonts
 var TheCardFonts *CardFonts = NewCardFonts()

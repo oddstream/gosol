@@ -1,15 +1,14 @@
 $ git branch -m master main
 
-+ bug: cannot drag cards to yourself when src pile is above dst pile
-+ undo a spider stock tap: tableau cards are flipped THEN transitioned, why?
-+ Waste fanning is horrible, especially during undo
++ undo on a waste with cards > 4 still isn't right
++ enum constants for suits, functions to turn into String eg Heart and Char eg H
++ Limited powerMoves too generous, but seem right for Freecell
 + compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
   pack 1..16, 4 bits
   ordinal 1..16, 4 bits
   suit 1..4 (maybe more later) (fuck it, give it 4 bits)
   prone 1 bit
   = 13 bits
-+ EasyWin variant
 + map[VariantName]english string
 + test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
 + titlebar hamburger, variant, undo
@@ -26,11 +25,16 @@ $ git branch -m master main
   method goes in Pile if it needs access to Pile.Cards
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
-+ Card.color doesn't need to be a color
 + grid X,Y to screenX,screenY func
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x undo a spider stock tap: tableau cards are flipped THEN transitioned, why?
+x Waste fanning is horrible, especially during undo
+x EasyWin variant
+x added separate ordinal and symbol fonts
+x bug: cannot drag cards to yourself when src pile is above dst pile
+x Card.color doesn't need to be a color
 x recycle graphic ♲ U+2672
 x bug: can drag 1 card from stock to waste when CardsToMove = 3
 x Canfield, AutoFillFrom, RankWrap, FoundationCanfield/SetAccept()
