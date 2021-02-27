@@ -23,14 +23,17 @@ func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image 
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
 	dc.SetColor(textColor)
-	dc.SetFontFace(TheCardFonts.regular)
+	dc.SetFontFace(TheCardFonts.acmeRegular)
 
 	if ord == 10 {
-		dc.DrawString("X", float64(CardWidth)/8, float64(CardHeight)/3.5)
-		// dc.DrawString(util.OrdinalToChar(ord), float64(CardWidth)/12, float64(CardHeight)/3.5)
+		// dc.DrawString("X", float64(CardWidth)/8, float64(CardHeight)/3.5)
+		dc.DrawString(util.OrdinalToChar(ord), float64(CardWidth)/12, float64(CardHeight)/3.5)
 	} else {
 		dc.DrawString(util.OrdinalToChar(ord), float64(CardWidth)/8, float64(CardHeight)/3.5)
 	}
+	dc.Stroke()
+
+	dc.SetFontFace(TheCardFonts.symbolRegular)
 	// https://unicodelookup.com/#club/1
 	// https://www.fileformat.info/info/unicode/char/2665/index.htm
 	// https://www.fileformat.info/info/unicode/char/2665/fontsupport.htm
@@ -47,8 +50,9 @@ func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image 
 		r = 9827 //0x2663
 	}
 	dc.DrawString(string(r), float64(CardWidth)/1.75, float64(CardHeight)/3.5)
+	dc.Stroke()
 
-	dc.SetFontFace(TheCardFonts.large)
+	dc.SetFontFace(TheCardFonts.symbolLarge)
 	dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
 
 	dc.Stroke()

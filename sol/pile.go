@@ -1,12 +1,14 @@
 package sol
 
 import (
+	"image/color"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/util"
 )
 
@@ -89,18 +91,29 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
-	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 4)
-	if p.localAccept > 0 && p.localAccept <= 13 {
-		dc.SetFontFace(TheCardFonts.regular)
-		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/7, float64(CardHeight)/3)
-	}
-	if p.localRecycles == 0 {
-		// TODO red no entry, but will appear on all piles :-/
-	} else if p.localRecycles < 10 {
-		// TODO green recycle glyph
-	}
+	dc.SetLineWidth(2)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
 	dc.Stroke()
+
+	if p.localAccept > 0 && p.localAccept <= 13 {
+		dc.SetFontFace(TheCardFonts.acmeRegular)
+		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/8, float64(CardHeight)/3.5)
+		// dc.DrawStringAnchored(util.OrdinalToChar(p.localAccept), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+		dc.Stroke()
+	}
+	if strings.HasPrefix(p.Class, "Stock") {
+		dc.SetFontFace(TheCardFonts.symbolLarge)
+		if p.localRecycles == 0 {
+			// anything put here either doesn't render (0x1F6AB) or looks ugly
+			// dc.SetColor(BasicColors["Red"])
+			// dc.SetFontFace(TheCardFonts.large)
+			// dc.DrawStringAnchored("O", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+			// dc.DrawStringAnchored("/", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+		} else if p.localRecycles < 10 {
+			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+		}
+		dc.Stroke()
+	}
 	p.backgroundImage = ebiten.NewImageFromImage(dc.Image())
 }
 
@@ -119,9 +132,24 @@ func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
 
 // FannedRect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
+	// cannot use position of top card, in case it's being dragged
 	x0, y0, x1, y1 = p.Rect()
 	if p.CardCount() > 1 {
-		x, y := p.Peek().Position()
+		var x, y int
+		if p.Tail == nil {
+			x, y = p.Peek().Position()
+		} else {
+			// x, y = p.PushedFannedPosition() // this fudge is an approximation
+			// do not include cards being dragged, stop before Tail[0]
+			for i := 0; i < p.CardCount(); i++ {
+				if p.Cards[i] == p.Tail[0] {
+					if i > 0 {
+						x, y = p.Cards[i-1].Position()
+					}
+					break
+				}
+			}
+		}
 		switch p.Fan {
 		case "", "None":
 			// do nothing
@@ -137,6 +165,12 @@ func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
 // SetAccept updates the Accept for this pile and updates the background image
 func (p *Pile) SetAccept(ord int) {
 	p.localAccept = ord
+	p.createBackgroundImage()
+}
+
+// SetRecycles updates the Recycles for this pile and updates the background image
+func (p *Pile) SetRecycles(n int) {
+	p.localRecycles = n
 	p.createBackgroundImage()
 }
 
@@ -221,27 +255,27 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 
 	if Tail == nil || len(Tail) == 0 {
-		log.Fatal("CanAcceptTail with empty tail")
+		log.Fatal("empty tail passed to CanAcceptTail")
 	}
 
 	c0 := Tail[0]
 
 	if c0.owner == p {
-		println("Cannot drag cards to yourself")
+		println("cannot drag cards to yourself")
 		return false
 	}
 
 	targetClass := c0.owner.GetStringAttribute("Target")
 	if targetClass != "" {
 		if targetClass != p.Class {
-			println("Cards from", c0.owner.Class, "can only be dragged to", targetClass, "not to", p.Class)
+			println("cards from", c0.owner.Class, "can only be dragged to", targetClass, "not to", p.Class)
 			return false
 		}
 	}
 
 	buildRules, ok := p.GetIntAttribute("Build")
 	if !ok {
-		log.Fatal("No Build attribute for Pile " + p.Class)
+		log.Fatal("no Build attribute for Pile " + p.Class)
 	}
 
 	switch p.Class {
@@ -349,37 +383,6 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	}
 	return x, y
 }
-
-// Fan lays out the cards according to the Pile's fan attribute
-// func (p *Pile) Fan() {
-// 	x, y := p.Position()
-// 	switch p.fan {
-// 	case "", "none":
-// 		for _, c := range p.cards {
-// 			CTQ.Add(c, x, y)
-// 		}
-// 	case "down":
-// 		for _, c := range p.cards {
-// 			CTQ.Add(c, x, y)
-// 			if c.prone {
-// 				y = y + CardHeight/proneStackFactor
-// 			} else {
-// 				y = y + CardHeight/cardStackFactor
-// 			}
-// 		}
-// 	case "right":
-// 		for _, c := range p.cards {
-// 			CTQ.Add(c, x, y)
-// 			if c.prone {
-// 				x = x + CardWidth/proneStackFactor
-// 			} else {
-// 				x = x + CardHeight/cardStackFactor
-// 			}
-// 		}
-// 	case "waste":
-// 		// TODO
-// 	}
-// }
 
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
@@ -522,6 +525,10 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		x, y := p.Position()
 		op.GeoM.Translate(float64(x), float64(y))
 		screen.DrawImage(p.backgroundImage, op)
+	}
+	if DebugMode {
+		x1, y1, x2, y2 := p.FannedRect()
+		ebitenutil.DrawRect(screen, float64(x1), float64(y1), float64(x2-x1), float64(y2-y1), color.RGBA{0, 0, 0, 0x40})
 	}
 }
 

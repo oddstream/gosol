@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"image"
 	"log"
 	"runtime"
 	"strings"
@@ -105,10 +104,16 @@ func (b *Baize) dealCards() {
 			switch d {
 			case 'u':
 				c := stock.Pop() // this will flip card up
+				if c == nil {
+					log.Fatal("out of cards during deal")
+				}
 				p.Push(c)
 			case 'd':
 				c := stock.Pop() // this will flip card up
-				c.FlipDown()     // don't use CTQ
+				if c == nil {
+					log.Fatal("out of cards during deal")
+				}
+				c.FlipDown() // don't use CTQ
 				p.Push(c)
 			}
 		}
@@ -149,21 +154,21 @@ func (b *Baize) findPilePrefix(cls string) *Pile {
 }
 
 // findPileAt finds the pile under the mouse click or touch
-func (b *Baize) findPileAt(pt image.Point) *Pile {
+func (b *Baize) findPileAt(x, y int) *Pile {
 	for _, o := range b.Piles {
-		if util.InRect(pt, o.FannedRect) {
+		if util.InRect(x, y, o.FannedRect) {
 			return o
 		}
 	}
 	return nil
 }
 
-// findTileAt finds the tile under the mouse click or touch
-func (b *Baize) findCardAt(pt image.Point) *Card {
+// findCardAt finds the tile under the mouse click or touch
+func (b *Baize) findCardAt(x, y int) *Card {
 	for _, p := range b.Piles {
 		for i := p.CardCount() - 1; i >= 0; i-- {
 			c := p.Cards[i]
-			if util.InRect(pt, c.Rect) {
+			if util.InRect(x, y, c.Rect) {
 				return c
 			}
 		}
@@ -204,7 +209,7 @@ func (b *Baize) PileTapped(p *Pile) {
 			// CTQ.AddFlipDown(c)
 			stock.Push(c) // this will flip card down
 		}
-		p.localRecycles--
+		p.SetRecycles(p.localRecycles - 1)
 	}
 
 	b.AfterUserMove()
@@ -270,6 +275,7 @@ func (b *Baize) CardTapped(c *Card) {
 		for _, p := range b.Piles {
 			if p.Class == targetClass {
 				b.MoveCards(c, p)
+				moved = true
 				c.prone = false
 				c = pSrc.Peek()
 			}
@@ -392,7 +398,7 @@ func (b *Baize) AfterUserMove() {
 		}
 	}
 	newChecksum = b.Checksum()
-	println(oldChecksum, newChecksum)
+	// println(oldChecksum, newChecksum)
 	if oldChecksum != newChecksum {
 		b.UndoPush()
 	} else {
@@ -511,17 +517,17 @@ func (b *Baize) Update() error {
 		if s != nil {
 			sx, sy := s.Position()
 			// maybe user is tapping or starting to drag a card
-			c := b.findCardAt(image.Point{X: sx, Y: sy})
+			c := b.findCardAt(sx, sy)
 			if c != nil {
 				if c.owner.StartDrag(b.Piles, c) {
 					b.stroke = s
 					b.stroke.SetDraggingObject(c)
 				} else {
-					println("Cannot drag those cards")
+					println("cannot drag those cards")
 				}
 			} else {
 				// maybe user is tapping an empty pile (eg to recycle waste to stock)
-				p := b.findPileAt(image.Point{X: sx, Y: sy})
+				p := b.findPileAt(sx, sy)
 				if p != nil {
 					b.stroke = s
 					b.stroke.SetDraggingObject(p)
@@ -539,12 +545,18 @@ func (b *Baize) Update() error {
 					b.CardTapped(c)
 				} else {
 					// sx, sy := b.stroke.Position()
-					// p := b.findPileAt(image.Point{X: sx, Y: sy})
+					// p := b.findPileAt(sx, sy)
 					p := b.largestIntersection(c)
 					if p == nil {
 						c.owner.CancelDrag(c)
 					} else {
 						// println("found pile", o.Class())
+						if p == c.owner {
+							println("baize cannot drag cards to owning pile")
+							println(c.Rect())
+							println(c.owner.FannedRect())
+							println(p.FannedRect())
+						}
 						if p.CanAcceptTail(c.owner.Tail) {
 							c.owner.StopDrag(c)
 							b.MoveCards(c, p)

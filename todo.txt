@@ -1,10 +1,16 @@
 $ git branch -m master main
 
++ bug: cannot drag cards to yourself when src pile is above dst pile
++ undo a spider stock tap: tableau cards are flipped THEN transitioned, why?
 + Waste fanning is horrible, especially during undo
-+ recycle graphics
++ compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
+  pack 1..16, 4 bits
+  ordinal 1..16, 4 bits
+  suit 1..4 (maybe more later) (fuck it, give it 4 bits)
+  prone 1 bit
+  = 13 bits
 + EasyWin variant
 + map[VariantName]english string
-+ weird delay during StockSpider undo
 + test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
 + titlebar hamburger, variant, undo
 + Tableau PowerMoves=2xx in Drag=, Hidden can be infered from X,Y
@@ -25,6 +31,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x recycle graphic ♲ U+2672
 x bug: can drag 1 card from stock to waste when CardsToMove = 3
 x Canfield, AutoFillFrom, RankWrap, FoundationCanfield/SetAccept()
 x New Undo mechanism based on >1 undo stack, AfteruserMove() and crc32 checksum

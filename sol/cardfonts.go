@@ -11,17 +11,24 @@ import (
 	"golang.org/x/image/font"
 )
 
+//go:embed assets/Acme-Regular.ttf
+var acmeFontBytes []byte
+
 //go:embed assets/DejaVuSans-Bold.ttf
-var cardFontBytes []byte
+var symbolFontBytes []byte
 
 // CardFonts contains references to regular and large fonts used on cards and piles
 type CardFonts struct {
-	regular font.Face
-	large   font.Face
+	acmeRegular   font.Face
+	acmeLarge     font.Face
+	symbolRegular font.Face
+	symbolLarge   font.Face
 }
 
 // NewCardFonts loads some fonts and returns a pointer to an object referencing them
 func NewCardFonts() *CardFonts {
+
+	cf := &CardFonts{}
 
 	// path, err := filepath.Abs("/home/gilbert/Tetra/assets/Acme-Regular.ttf")
 	// if err != nil {
@@ -33,19 +40,34 @@ func NewCardFonts() *CardFonts {
 	// 	log.Fatal(err)
 	// }
 	// https://pkg.go.dev/golang.org/x/image@v0.0.0-20201208152932-35266b937fa6/font
-	tt, err := truetype.Parse(cardFontBytes)
+
+	tt, err := truetype.Parse(symbolFontBytes)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cf := &CardFonts{}
-
-	cf.regular = truetype.NewFace(tt, &truetype.Options{
+	cf.symbolRegular = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(CardWidth) / 2,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
-	cf.large = truetype.NewFace(tt, &truetype.Options{
+	cf.symbolLarge = truetype.NewFace(tt, &truetype.Options{
+		Size:    float64(CardWidth),
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+
+	tt, err = truetype.Parse(acmeFontBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cf.acmeRegular = truetype.NewFace(tt, &truetype.Options{
+		Size:    float64(CardWidth) / 2,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+	cf.acmeLarge = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(CardWidth),
 		DPI:     72,
 		Hinting: font.HintingFull,
