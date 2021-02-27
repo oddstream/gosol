@@ -29,6 +29,7 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x 3 char Card.ID, uses base-16 for pack and ordinal
 x undo a spider stock tap: tableau cards are flipped THEN transitioned, why?
 x Waste fanning is horrible, especially during undo
 x EasyWin variant

@@ -6,7 +6,7 @@
 // "You cannot import "syscall/js" without GOOS=js/GOARCH=wasm"
 // https://github.com/golang/tools/blob/master/gopls/doc/settings.md
 
-package maze
+package sol
 
 import (
 	"encoding/json"

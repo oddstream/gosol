@@ -126,7 +126,7 @@ func BuildScalableCardImages() {
 
 	for ord := 1; ord < 14; ord++ {
 		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
-			id := fmt.Sprintf("%c%02d", suit[0], ord)
+			id := fmt.Sprintf("%c%x", suit[0], ord)
 			scalableFaceImages[id] = createFaceImage(suit, ord, suitColors[suit])
 		}
 	}
@@ -192,7 +192,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 		c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
 
 	case "scalable":
-		subid := c.id[1:]
+		subid := c.id[1:] // take the pack off (first char) leaving suit and hexadecimal ordinal
 		c.faceImg = scalableFaceImages[subid]
 		c.backImg = scalableBackImage
 	}
@@ -201,13 +201,14 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 }
 
 func (c *Card) String() string {
-	return fmt.Sprintf("%d%c%02d", c.pack, c.suit[0], c.ordinal)
+	// %x = lowercase hexadecimal, %c = character
+	return fmt.Sprintf("%x%c%x", c.pack, c.suit[0], c.ordinal)
 }
 
 // ParseID decomposes a string id into Card members pack, suit, ordinal
 func parseID(id string) (pack int, suit string, ordinal int) {
-	var err error
-	pack, err = strconv.Atoi(id[0:1])
+	i64, err := strconv.ParseInt(string(id[0]), 16, 0)
+	pack = int(i64)
 	if err != nil || pack > 9 {
 		log.Fatal("error in Card id" + id)
 	}
@@ -223,7 +224,8 @@ func parseID(id string) (pack int, suit string, ordinal int) {
 	default:
 		log.Fatal("error in Card id" + id)
 	}
-	ordinal, err = strconv.Atoi(id[2:3]) // TODO beware leading 0
+	i64, err = strconv.ParseInt(string(id[2]), 16, 0)
+	ordinal = int(i64)
 	if err != nil || ordinal < 1 || ordinal > 13 {
 		log.Fatal("error in Card id" + id)
 	}
@@ -246,6 +248,10 @@ func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
 
 // SetPosition sets the position of the Card
 func (c *Card) SetPosition(x, y int) {
+	if c.lerping {
+		println("card", c.id, "stopping lerp")
+		c.lerping = false
+	}
 	c.screenX, c.screenY = x, y
 }
 

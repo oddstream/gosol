@@ -369,11 +369,14 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// top card needs to transition from slot[2] to slot[1]
 			i := p.CardCount() - 1
 			p.Cards[i].TransitionTo(x1, y0)
+			// p.Cards[i].SetPosition(x1, y0)
 			// mid card needs to transition from slot[1] to slot[0]
 			i--
 			p.Cards[i].TransitionTo(x0, y0)
+			// p.Cards[i].SetPosition(x0, y0)
 			// most cards will be at pile x0,y0
 			for ; i >= 0; i-- {
+				// p.Cards[i].TransitionTo(x0, y0)
 				p.Cards[i].SetPosition(x0, y0)
 			}
 		}
