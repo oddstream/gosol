@@ -1,9 +1,8 @@
 $ git branch -m master main
 
-+ use lerpStep < 1.0 instead of lerping
++ if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly
+  ban tapping on an Animating card? didn't work.
 + by convention Baize.Pile[0] is always the stock
-+ animate move pile cards back to stock when restarting game/starting new game (Pile.Reset())
-  needs a separate thread?
 + bury/disinter cards
 + scrunch
 + Deal A123456789XJQK
@@ -35,6 +34,9 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x animate move pile cards back to stock when restarting game/starting new game (Pile.Reset())
+  needs a separate thread?
+x use lerpStep < 1.0 instead of lerping
 x 3 char Card.ID, uses base-16 for pack and ordinal
 x Card.SetPosition() now terminates an ongoing lerp
 x undo on a waste with cards > 4 still isn't right

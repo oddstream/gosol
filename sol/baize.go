@@ -284,6 +284,11 @@ func (b *Baize) CardTapped(c *Card) {
 
 	// println("card",c.id,"tapped")
 
+	if c.Animating() {
+		println("cannot tap an animating card")
+		return
+	}
+
 	pSrc := c.owner
 
 	// can only tap top card
