@@ -26,7 +26,7 @@ type Baize struct {
 func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
-	b.StartGame()
+	b.NewVariant(TheUserData.Variant)
 	return b
 }
 
@@ -39,12 +39,78 @@ func (b *Baize) Reset() {
 	b.stroke = nil
 }
 
+// Restart the Baize without changing variant or seed
+func (b *Baize) Restart() {
+	stock := b.findPilePrefix("Stock")
+	if stock == nil {
+		log.Fatal("cannot find stock pile to recall cards with")
+	}
+
+	for _, p := range b.Piles {
+		p.Reset() // stock needs resetting, too
+		if p == stock {
+			continue
+		}
+		if p.CardCount() > 0 {
+			b.MoveCards(p.Cards[0], stock)
+		}
+		// if p.CardCount() != 0 {
+		// 	log.Fatal(p.Class, " still contains ", p.CardCount(), " cards")
+		// }
+	}
+
+	// if DebugMode {
+	// 	println("cards recalled to stock, now contains", stock.CardCount(), "cards")
+	// 	for _, c := range stock.Cards {
+	// 		if !c.prone {
+	// 			log.Fatal("face up card found in stock")
+	// 		}
+	// 		if c.owner != stock {
+	// 			log.Fatal("card in stock belongs to", c.owner.Class)
+	// 		}
+	// 	}
+	// }
+
+	// TODO wait for lerping back to stock to finish before shuffling, for now use c.SetPosition() to cancel lerping
+	// x, y := stock.Position()
+	// for _, c := range stock.Cards {
+	// 	c.SetPosition(x, y)
+	// }
+
+	shuffleCards(stock, b.Seed)
+
+	b.UndoStack = nil // StartGame will deal cards then do initial UndoPush()
+	b.stroke = nil
+}
+
 // StartGame given existing variant and seed
 func (b *Baize) StartGame() {
+	b.dealCards()
+	b.UndoPush()
+}
+
+// RestartGame resets Baize and restarts current variant with same seed
+func (b *Baize) RestartGame() {
+	b.Restart()
+	b.StartGame()
+}
+
+// NewGame resets Baize and restarts current variant with a new seed
+func (b *Baize) NewGame() {
+	b.Restart()
+	b.Seed = time.Now().UnixNano()
+	b.StartGame()
+}
+
+// NewVariant resets Baize and starts a new game with a new variant and seed
+func (b *Baize) NewVariant(v string) {
+	b.Reset()
+	b.Variant = v
+	b.Seed = time.Now().UnixNano()
 
 	piles, ok := buildVariantPiles(b.Variant)
 	if !ok {
-		log.Fatal(b.Variant + " not found")
+		log.Fatal("unknown variant", b.Variant)
 	}
 	b.Piles = piles
 
@@ -64,34 +130,29 @@ func (b *Baize) StartGame() {
 	}
 	createCards(stock)
 	shuffleCards(stock, b.Seed)
-	b.dealCards()
-	b.UndoPush()
-}
 
-// RestartGame resets Baize and restarts current variant with same seed
-func (b *Baize) RestartGame() {
-	v := b.Variant
-	s := b.Seed
-	b.Reset()
-	b.Variant = v
-	b.Seed = s
 	b.StartGame()
 }
 
-// NewGame resets Baize and restarts current variant with a new seed
-func (b *Baize) NewGame() {
-	v := b.Variant
-	b.Reset()
-	b.Variant = v
-	b.StartGame()
-}
-
-// NewVariant resets Baize and starts a new game with a new variant and seed
-func (b *Baize) NewVariant(v string) {
-	b.Reset()
-	b.Variant = v
-	b.StartGame()
-}
+// doesn't work because time.Sleep suspends the whole thread, not allowing Ebiten to breathe
+// func (b *Baize) waitForCards() {
+// 	for {
+// 		ani := 0
+// 		for _, p := range b.Piles {
+// 			for _, c := range p.Cards {
+// 				if c.Animating() {
+// 					ani++
+// 				}
+// 			}
+// 		}
+// 		if ani == 0 {
+// 			break
+// 		}
+// 		println("waiting for", ani, "cards")
+// 		b.Update()
+// 			time.Sleep(time.Second)
+// 	}
+// }
 
 func (b *Baize) dealCards() {
 	stock := b.findPilePrefix("Stock")
@@ -104,6 +165,9 @@ func (b *Baize) dealCards() {
 			switch d {
 			case 'u':
 				c := stock.Pop() // this will flip card up
+				if c.prone {
+					log.Fatal("popped a face down card from stock")
+				}
 				if c == nil {
 					log.Fatal("out of cards during deal")
 				}
@@ -113,7 +177,7 @@ func (b *Baize) dealCards() {
 				if c == nil {
 					log.Fatal("out of cards during deal")
 				}
-				c.FlipDown() // don't use CTQ
+				c.FlipDown()
 				p.Push(c)
 			}
 		}

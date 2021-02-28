@@ -63,7 +63,7 @@ func NewCardFonts() *CardFonts {
 	}
 
 	cf.acmeRegular = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(CardWidth) / 2,
+		Size:    float64(CardWidth) / 1.75,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})

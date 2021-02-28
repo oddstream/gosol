@@ -149,8 +149,7 @@ type Card struct {
 
 	srcX, srcY float64 // smoothstep origin
 	dstX, dstY float64 // smoothstep destination
-	lerpStep   float64 // current lerp value 0.0 .. 1.0
-	lerping    bool    // true if this card is smoothstepping
+	lerpStep   float64 // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
 
 	dragging               bool // true if this card is being dragged
 	dragStartX, dragStartY int  // starting point for dragging
@@ -197,6 +196,8 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 		c.backImg = scalableBackImage
 	}
 
+	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()
+
 	return c
 }
 
@@ -212,7 +213,7 @@ func parseID(id string) (pack int, suit string, ordinal int) {
 	if err != nil || pack > 9 {
 		log.Fatal("error in Card id" + id)
 	}
-	switch id[1:1] {
+	switch string(id[1]) {
 	case "C":
 		suit = "Club"
 	case "D":
@@ -248,20 +249,21 @@ func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
 
 // SetPosition sets the position of the Card
 func (c *Card) SetPosition(x, y int) {
-	if c.lerping {
-		println("card", c.id, "stopping lerp")
-		c.lerping = false
-	}
 	c.screenX, c.screenY = x, y
+	c.lerpStep = 1.0 // stop any current lerp
 }
 
 // TransitionTo starts the transition of this Card
 func (c *Card) TransitionTo(x, y int) {
-	if x != c.screenX || y != c.screenY {
+	// if c.lerpStep < 1.0 {
+	// 	println(c.id, "already lerping")
+	// }
+	if x == c.screenX && y == c.screenY {
+		c.SetPosition(x, y)
+	} else {
 		c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
 		c.dstX, c.dstY = float64(x), float64(y)
-		c.lerpStep = 0
-		c.lerping = true
+		c.lerpStep = 0.0 // trigger a lerp
 	}
 }
 
@@ -291,8 +293,8 @@ func (c *Card) StopDrag() {
 // CancelDrag informs card that it is no longer being dragged
 func (c *Card) CancelDrag() {
 	// println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
-	// CTQ.Add(c, c.dragStartX, c.dragStartY)
 	c.TransitionTo(c.dragStartX, c.dragStartY)
+	// TODO should go back to Pile.PushedFannedPosition in case of a mis-drag
 	c.dragging = false
 }
 
@@ -301,7 +303,7 @@ func (c *Card) Shake() {
 	if c.shake != notShaking {
 		return
 	}
-	if c.lerping || c.dragging {
+	if c.lerpStep < 1.0 || c.dragging {
 		return
 	}
 	// hijack the lerping src, dst positions
@@ -341,7 +343,10 @@ func (c *Card) FlipDown() {
 
 // Animating returns true if this card is lerping, dragging or flipping
 func (c *Card) Animating() bool {
-	if c.lerping || c.dragging {
+	if c.lerpStep < 1.0 {
+		return true
+	}
+	if c.dragging {
 		return true
 	}
 	if c.flipStep != 0 {
@@ -362,19 +367,15 @@ func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update the card state (transitions)
 func (c *Card) Update() error {
-	if c.lerping {
-		if c.lerpStep >= 1 {
+	if c.lerpStep < 1.0 {
+		c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
+		c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
+		// make Card settle faster when already close to it's destination
+		// if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
+		// 	c.lerpStep += LERPSTEP * 2
+		c.lerpStep += LERPSTEP
+		if c.lerpStep >= 1.0 {
 			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
-			c.lerping = false
-		} else {
-			c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
-			c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
-			// make Card settle faster when already close to it's destination
-			// if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
-			// 	c.lerpStep += LERPSTEP * 2
-			// } else {
-			c.lerpStep += LERPSTEP
-			// }
 		}
 	}
 	if c.flipStep != 0.0 {
@@ -445,7 +446,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
 
-	if c.flipStep == 0 && (c.lerping == true || c.dragging == true) {
+	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging == true) {
 		op.GeoM.Translate(2, 2)
 		screen.DrawImage(shadowImage, op)
 		op.GeoM.Translate(-2, -2)

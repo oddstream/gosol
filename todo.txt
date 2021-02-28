@@ -1,6 +1,13 @@
 $ git branch -m master main
 
-+ undo on a waste with cards > 4 still isn't right
++ use lerpStep < 1.0 instead of lerping
++ by convention Baize.Pile[0] is always the stock
++ animate move pile cards back to stock when restarting game/starting new game (Pile.Reset())
+  needs a separate thread?
++ bury/disinter cards
++ scrunch
++ Deal A123456789XJQK
+  only need create cards when setting variant
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
 + Limited powerMoves too generous, but seem right for Freecell
 + compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
@@ -10,7 +17,6 @@ $ git branch -m master main
   prone 1 bit
   = 13 bits
 + map[VariantName]english string
-+ test for game over after MoveCards(), possible AfterMoveCards() if MoveCards() gets used elsewhere
 + titlebar hamburger, variant, undo
 + Tableau PowerMoves=2xx in Drag=, Hidden can be infered from X,Y
   per-class bit flags?
@@ -30,6 +36,8 @@ $ git branch -m master main
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
 x 3 char Card.ID, uses base-16 for pack and ordinal
+x Card.SetPosition() now terminates an ongoing lerp
+x undo on a waste with cards > 4 still isn't right
 x undo a spider stock tap: tableau cards are flipped THEN transitioned, why?
 x Waste fanning is horrible, especially during undo
 x EasyWin variant

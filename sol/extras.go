@@ -72,6 +72,7 @@ func shuffleCards(stock *Pile, seed int64) {
 	// for i, c := range sh.cards {
 	// 	println(i, c.id)
 	// }
+
 }
 
 func isConformant0(rules int, cPrev, cThis *Card) bool {

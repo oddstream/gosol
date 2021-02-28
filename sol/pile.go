@@ -51,10 +51,15 @@ type Pile struct {
 // NewPile create and fills in a Pile object
 func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
 	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
+	p.Reset()
+	return p
+}
+
+// Reset the pile
+func (p *Pile) Reset() {
 	p.localAccept, _ = p.GetIntAttribute("Accept")
 	p.localRecycles, _ = p.GetIntAttribute("Recycles")
 	p.createBackgroundImage()
-	return p
 }
 
 // GetIntAttribute gets an integer Pile attribute
@@ -211,10 +216,8 @@ func (p *Pile) Push(c *Card) {
 		c.FlipDown()
 	}
 	c.owner = p
-	x, y := p.PushedFannedPosition()
+	c.TransitionTo(p.PushedFannedPosition()) // do this BEFORE appending card to pile
 	p.Cards = append(p.Cards, c)
-	// CTQ.Add(c, x, y)
-	c.TransitionTo(x, y)
 }
 
 // CanAcceptCard returns true if this Pile can accept the Card
