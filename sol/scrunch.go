@@ -59,56 +59,85 @@ func (p *Pile) fannedWidth(scrunchPercent int) int {
 	return x
 }
 
-func (p *Pile) scrunchCardsDown(s int) {
-	var currHeight = p.fannedHeight(p.scrunchPercentage)
-	var maxHeight = s * CardHeight
+// func (p *Pile) scrunchCardsDown(s int) {
+// 	var currHeight = p.fannedHeight(p.scrunchPercentage)
+// 	var maxHeight = s * CardHeight
+
+// 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
+// 	var scrunchRequired bool = (currHeight > maxHeight) || (p.scrunchPercentage < 100)
+// 	if !scrunchRequired {
+// 		return
+// 	}
+
+// 	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
+// 	var percent int
+// 	for percent = 100; percent > 50; percent -= 5 {
+// 		testHeight := p.fannedHeight(percent)
+// 		println(percent, testHeight, maxHeight)
+// 		if testHeight <= maxHeight {
+// 			break
+// 		}
+// 	}
+// 	if percent != p.scrunchPercentage {
+// 		p.scrunchPercentage = percent
+// 		tmp := p.popAllWithoutFlip()
+// 		println("scrunchPercentage now ", p.scrunchPercentage)
+// 		p.pushAllWithoutFlip(tmp)
+// 	}
+// }
+
+// func (p *Pile) scrunchCardsRight(s int) {
+// 	var currWidth = p.fannedWidth(p.scrunchPercentage)
+// 	var maxWidth = s * CardWidth
+
+// 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
+// 	var scrunchRequired bool = (currWidth > maxWidth) || (p.scrunchPercentage < 100)
+// 	if !scrunchRequired {
+// 		return
+// 	}
+
+// 	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
+// 	var percent int
+// 	for percent = 100; percent > 50; percent -= 5 {
+// 		testHeight := p.fannedWidth(percent)
+// 		println(percent, testHeight, maxWidth)
+// 		if testHeight <= maxWidth {
+// 			break
+// 		}
+// 	}
+// 	if percent != p.scrunchPercentage {
+// 		p.scrunchPercentage = percent
+// 		tmp := p.popAllWithoutFlip()
+// 		println("scrunchPercentage now ", p.scrunchPercentage)
+// 		p.pushAllWithoutFlip(tmp)
+// 	}
+// }
+
+func (p *Pile) scrunchCardsDownOrRight(maxSize int, fnCalcSize func(int) int) {
+	// https://stackoverflow.com/questions/38897529/pass-method-argument-to-function
+	// https://golang.org/ref/spec#Method_values
+	// fnCalcSize has implicit receiver value of p *Pile, because it was passed as p.fannedWidth/Height
+	var currSize = fnCalcSize(p.scrunchPercentage)
 
 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
-	var scrunchRequired bool = (currHeight > maxHeight) || (p.scrunchPercentage < 100)
+	var scrunchRequired bool = (currSize > maxSize) || (p.scrunchPercentage < 100)
 	if !scrunchRequired {
 		return
 	}
 
-	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
+	// println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
 	var percent int
 	for percent = 100; percent > 50; percent -= 5 {
-		testHeight := p.fannedHeight(percent)
-		println(percent, testHeight, maxHeight)
-		if testHeight <= maxHeight {
+		testSize := fnCalcSize(percent)
+		// println(percent, testSize, maxSize)
+		if testSize <= maxSize {
 			break
 		}
 	}
 	if percent != p.scrunchPercentage {
 		p.scrunchPercentage = percent
 		tmp := p.popAllWithoutFlip()
-		println("scrunchPercentage now ", p.scrunchPercentage)
-		p.pushAllWithoutFlip(tmp)
-	}
-}
-
-func (p *Pile) scrunchCardsRight(s int) {
-	var currWidth = p.fannedWidth(p.scrunchPercentage)
-	var maxWidth = s * CardWidth
-
-	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
-	var scrunchRequired bool = (currWidth > maxWidth) || (p.scrunchPercentage < 100)
-	if !scrunchRequired {
-		return
-	}
-
-	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
-	var percent int
-	for percent = 100; percent > 50; percent -= 5 {
-		testHeight := p.fannedWidth(percent)
-		println(percent, testHeight, maxWidth)
-		if testHeight <= maxWidth {
-			break
-		}
-	}
-	if percent != p.scrunchPercentage {
-		p.scrunchPercentage = percent
-		tmp := p.popAllWithoutFlip()
-		println("scrunchPercentage now ", p.scrunchPercentage)
+		// println("scrunchPercentage now ", p.scrunchPercentage)
 		p.pushAllWithoutFlip(tmp)
 	}
 }
@@ -125,8 +154,10 @@ func (p *Pile) ScrunchCards() {
 	}
 	switch p.Fan {
 	case "Down":
-		p.scrunchCardsDown(s)
+		// p.scrunchCardsDown(s)
+		p.scrunchCardsDownOrRight(s*CardHeight, p.fannedHeight) // method value
 	case "Right":
-		p.scrunchCardsRight(s)
+		// p.scrunchCardsRight(s)
+		p.scrunchCardsDownOrRight(s*CardWidth, p.fannedWidth) // method value
 	}
 }

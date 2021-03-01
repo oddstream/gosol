@@ -1,4 +1,8 @@
 $ git branch -m master main
+? https://pkg.go.dev/fmt#hdr-Printing
+? https://golang.org/pkg/builtin/
+? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
+? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
 + if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly
   ban tapping on an Animating card? didn't work.
