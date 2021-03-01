@@ -372,15 +372,12 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			// top card needs to transition from slot[2] to slot[1]
 			i := p.CardCount() - 1
 			p.Cards[i].TransitionTo(x1, y0)
-			// p.Cards[i].SetPosition(x1, y0)
 			// mid card needs to transition from slot[1] to slot[0]
 			i--
-			p.Cards[i].TransitionTo(x0, y0)
-			// p.Cards[i].SetPosition(x0, y0)
+			// p.Cards[i].TransitionTo(x0, y0) not needed will be done by loop below
 			// most cards will be at pile x0,y0
 			for ; i >= 0; i-- {
-				// p.Cards[i].TransitionTo(x0, y0)
-				p.Cards[i].SetPosition(x0, y0)
+				p.Cards[i].TransitionTo(x0, y0)
 			}
 		}
 	}
@@ -500,11 +497,10 @@ func (p *Pile) IsComplete() bool {
 		return p.CardCount() == cw
 	}
 
-	switch p.Class {
-	case "Foundation":
-	default:
+	if !strings.HasPrefix(p.Class, "Foundation") {
 		return p.CardCount() == 0
 	}
+
 	return true
 }
 
