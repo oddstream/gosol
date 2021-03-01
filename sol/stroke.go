@@ -79,8 +79,7 @@ func (s *Stroke) Update() {
 		return
 	}
 
-	x, y := s.source.Position()
-	s.currX, s.currY = x, y
+	s.currX, s.currY = s.source.Position()
 
 	if s.source.IsJustReleased() {
 		s.released = true

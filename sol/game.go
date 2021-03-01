@@ -24,6 +24,8 @@ var (
 	PileMarginX int = 10
 	// PileMarginY the vertical gap between piles
 	PileMarginY int = 10
+	// TopMargin the gap between top pile and top of baize
+	TopMargin int = CardHeight / 3
 )
 
 // GSM provides global access to the game state manager

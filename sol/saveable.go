@@ -18,6 +18,7 @@ type SaveablePile struct {
 	Class    string // for readability and sanity checks
 	Accept   int    // local, mutable copy of Accept
 	Recycles int    // local, mutable copy of Recycles
+	Scrunch  int    // copy of scrunch percentage
 	Cards    []SaveableCard
 }
 
@@ -75,7 +76,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 
 // Saveable returns a reduced object for converting to JSON and saving
 func (p *Pile) Saveable() SaveablePile {
-	sav := SaveablePile{Class: p.Class, Accept: p.localAccept, Recycles: p.localRecycles}
+	sav := SaveablePile{Class: p.Class, Accept: p.localAccept, Recycles: p.localRecycles, Scrunch: p.scrunchPercentage}
 	for _, c := range p.Cards {
 		sav.Cards = append(sav.Cards, c.Saveable())
 	}
@@ -97,6 +98,7 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	p.Cards = nil
 	p.localAccept = sav.Accept
 	p.localRecycles = sav.Recycles
+	p.scrunchPercentage = sav.Scrunch
 	for _, cSaved := range sav.Cards {
 		c := findCardInCache(cSaved.ID)
 		p.Push(c)

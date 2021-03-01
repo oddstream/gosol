@@ -1,6 +1,5 @@
 $ git branch -m master main
 
-+ scrunchPercentage int (100=no scrunch 10=max scrunch)
 + if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly
   ban tapping on an Animating card? didn't work.
 + by convention Baize.Pile[0] is always the stock
@@ -34,6 +33,8 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x scrunchPercentage int (100=no scrunch 10=max scrunch)
+x SimpleSimon
 x No complete notification for Wasp
 x animate move pile cards back to stock when restarting game/starting new game (Pile.Reset())
   needs a separate thread?

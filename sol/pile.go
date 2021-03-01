@@ -37,15 +37,16 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class           string
-	X, Y            int
-	Fan             string
-	localAccept     int
-	localRecycles   int
-	Attributes      map[string]string
-	Cards           []*Card
-	Tail            []*Card
-	backgroundImage *ebiten.Image
+	Class             string
+	X, Y              int
+	Fan               string
+	localAccept       int
+	localRecycles     int
+	Attributes        map[string]string
+	Cards             []*Card
+	Tail              []*Card
+	scrunchPercentage int
+	backgroundImage   *ebiten.Image
 }
 
 // NewPile create and fills in a Pile object
@@ -59,6 +60,7 @@ func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pil
 func (p *Pile) Reset() {
 	p.localAccept, _ = p.GetIntAttribute("Accept")
 	p.localRecycles, _ = p.GetIntAttribute("Recycles")
+	p.scrunchPercentage = 100
 	p.createBackgroundImage()
 }
 
@@ -124,7 +126,7 @@ func (p *Pile) createBackgroundImage() {
 
 // Position returns the x,y screen coords of this pile
 func (p *Pile) Position() (int, int) {
-	return (p.X * PileMarginX) + (p.X * CardWidth), (p.Y * PileMarginY) + (p.Y * CardHeight)
+	return (p.X * PileMarginX) + (p.X * CardWidth), TopMargin + (p.Y * PileMarginY) + (p.Y * CardHeight)
 }
 
 // Rect gives the x,y screen coords of the pile's top left and bottom right corners
@@ -340,17 +342,17 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	case "Down":
 		for _, c := range p.Cards {
 			if c.prone {
-				y = y + CardHeight/backFanFactor
+				y = y + (CardHeight / backFanFactor * p.scrunchPercentage / 100)
 			} else {
-				y = y + CardHeight/faceFanFactor
+				y = y + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
 			}
 		}
 	case "Right":
 		for _, c := range p.Cards {
 			if c.prone {
-				x = x + CardWidth/backFanFactor
+				x = x + (CardWidth / backFanFactor * p.scrunchPercentage / 100)
 			} else {
-				x = x + CardHeight/faceFanFactor
+				x = x + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
 			}
 		}
 	case "Waste":
@@ -526,8 +528,40 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		screen.DrawImage(p.backgroundImage, op)
 	}
 	if DebugMode {
-		x1, y1, x2, y2 := p.FannedRect()
-		ebitenutil.DrawRect(screen, float64(x1), float64(y1), float64(x2-x1), float64(y2-y1), color.RGBA{0, 0, 0, 0x40})
+		// x1, y1, x2, y2 := p.FannedRect()
+		// ebitenutil.DrawRect(screen, float64(x1), float64(y1), float64(x2-x1), float64(y2-y1), color.RGBA{0, 0, 0, 0x40})
+		if p.CardCount() < 3 {
+			return
+		}
+		s, ok := p.GetIntAttribute("Scrunch")
+		if !ok {
+			return
+		}
+		// var currWidth, currHeight int
+		var maxWidth, maxHeight int
+		switch p.Fan {
+		case "", "None", "Waste":
+			return
+		case "Down":
+			// currHeight = p.fannedHeight(p.scrunchPercentage)
+			maxHeight = s * CardHeight
+		case "Right":
+			// currWidth = p.fannedWidth(p.scrunchPercentage)
+			maxWidth = s * CardWidth
+		}
+		x0, y0 := p.Position()
+		if maxWidth > 0 {
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x40})
+		}
+		if maxHeight > 0 {
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x40})
+		}
+		// if currWidth > 0 {
+		// 	ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(currWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x40})
+		// }
+		// if currHeight > 0 {
+		// 	ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(currHeight), color.RGBA{0, 0, 0, 0x40})
+		// }
 	}
 }
 

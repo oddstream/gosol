@@ -23,7 +23,7 @@ func (ud *UserData) Load() {
 	}
 
 	localStorage := js.Global().Get("window").Get("localStorage")
-	v := localStorage.Get("gomaze")
+	v := localStorage.Get("gosol")
 	// println(v.String())
 	bytes := []byte(v.String())
 	if len(bytes) > 0 {
@@ -48,5 +48,5 @@ func (ud *UserData) Save() {
 	str := string(bytes[:])
 	localStorage := js.Global().Get("window").Get("localStorage")
 	// localStorage.Set("CompletedLevels", strconv.Itoa(ud.CompletedLevels))
-	localStorage.Set("gomaze", str)
+	localStorage.Set("gosol", str)
 }

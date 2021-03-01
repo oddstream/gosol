@@ -114,6 +114,7 @@ func (b *Baize) NewVariant(v string) {
 	}
 	b.Piles = piles
 
+	// temporary fudge to set window width to center cards on baize
 	{
 		maxX := 0
 		for _, p := range b.Piles {
@@ -122,6 +123,8 @@ func (b *Baize) NewVariant(v string) {
 			}
 		}
 		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
+
+		TopMargin = CardHeight / 3
 	}
 
 	stock := b.findPilePrefix("Stock")
@@ -411,15 +414,17 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
 	if oldSrcLen == len(src.Cards) {
 		println("MoveCards - nothing happened")
-	} else {
-		// flip up an exposed source card
-		if !strings.HasPrefix(src.Class, "Stock") {
-			tc := src.Peek()
-			if tc != nil {
-				tc.FlipUp()
-			}
+		return
+	}
+	// flip up an exposed source card
+	if !strings.HasPrefix(src.Class, "Stock") {
+		tc := src.Peek()
+		if tc != nil {
+			tc.FlipUp()
 		}
 	}
+	src.ScrunchCards()
+	dst.ScrunchCards()
 }
 
 // AutoMoves performs post user-moves
