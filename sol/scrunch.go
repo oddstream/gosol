@@ -6,7 +6,6 @@ func (p *Pile) popWithoutFlip() *Card {
 	}
 	c := p.Cards[p.CardCount()-1]
 	p.Cards = p.Cards[:p.CardCount()-1]
-	c.owner = nil
 	return c
 }
 
@@ -20,7 +19,6 @@ func (p *Pile) popAllWithoutFlip() []*Card {
 }
 
 func (p *Pile) pushWithoutFlip(c *Card) {
-	c.owner = p
 	c.TransitionTo(p.PushedFannedPosition()) // do this BEFORE appending card to pile
 	p.Cards = append(p.Cards, c)
 }
@@ -72,16 +70,16 @@ func (p *Pile) scrunchCardsDown(s int) {
 	}
 
 	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
-	var pc int
-	for pc = 100; pc > 50; pc -= 5 {
-		testHeight := p.fannedHeight(pc)
-		println(pc, testHeight, maxHeight)
+	var percent int
+	for percent = 100; percent > 50; percent -= 5 {
+		testHeight := p.fannedHeight(percent)
+		println(percent, testHeight, maxHeight)
 		if testHeight <= maxHeight {
 			break
 		}
 	}
-	if pc != p.scrunchPercentage {
-		p.scrunchPercentage = pc
+	if percent != p.scrunchPercentage {
+		p.scrunchPercentage = percent
 		tmp := p.popAllWithoutFlip()
 		println("scrunchPercentage now ", p.scrunchPercentage)
 		p.pushAllWithoutFlip(tmp)
@@ -91,10 +89,28 @@ func (p *Pile) scrunchCardsDown(s int) {
 func (p *Pile) scrunchCardsRight(s int) {
 	var currWidth = p.fannedWidth(p.scrunchPercentage)
 	var maxWidth = s * CardWidth
-	if currWidth < maxWidth {
+
+	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
+	var scrunchRequired bool = (currWidth > maxWidth) || (p.scrunchPercentage < 100)
+	if !scrunchRequired {
 		return
 	}
-	println(p.Class, "needs scrunching")
+
+	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
+	var percent int
+	for percent = 100; percent > 50; percent -= 5 {
+		testHeight := p.fannedWidth(percent)
+		println(percent, testHeight, maxWidth)
+		if testHeight <= maxWidth {
+			break
+		}
+	}
+	if percent != p.scrunchPercentage {
+		p.scrunchPercentage = percent
+		tmp := p.popAllWithoutFlip()
+		println("scrunchPercentage now ", p.scrunchPercentage)
+		p.pushAllWithoutFlip(tmp)
+	}
 }
 
 // ScrunchCards alters the fan so that cards overlap more to fit in view
