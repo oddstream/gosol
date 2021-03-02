@@ -4,6 +4,7 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
 + bury/disinter cards
 + Deal A123456789XJQK
@@ -32,8 +33,9 @@ $ git branch -m master main
   ... but can flip and lerp at the same time
 + grid X,Y to screenX,screenY func
 + orientation change
-+ UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
++ UI (https://ebitenui.github.io/) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x bug fix, NewGame() was setting new seed AFTER shuffling cards
 x powerMoves should be in Pile.CanAcceptTail(), because number of moves available is not known until destination pile is known
   that makes power moves flag a build attribute, not a drag attribute
 x if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly

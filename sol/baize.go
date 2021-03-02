@@ -91,14 +91,15 @@ func (b *Baize) StartGame() {
 
 // RestartGame resets Baize and restarts current variant with same seed
 func (b *Baize) RestartGame() {
+	// could load first entry on undo stack, start game will push initial state
 	b.Restart()
 	b.StartGame()
 }
 
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
-	b.Restart()
 	b.Seed = time.Now().UnixNano()
+	b.Restart()
 	b.StartGame()
 }
 
@@ -297,6 +298,7 @@ func (b *Baize) CardTapped(c *Card) {
 	pSrc := c.owner
 
 	// can only tap top card
+	// TODO might be playing Spider &c
 	if c != pSrc.Peek() {
 		c.Shake()
 		return
@@ -364,6 +366,19 @@ func (b *Baize) CardTapped(c *Card) {
 					break
 				}
 			}
+			// if p.Class == "FoundationSpider" {
+			// 	// fake a drag
+			// 	if c.owner.StartDrag(c) {
+			// 		if p.CanAcceptTail(b.Piles, c.owner.Tail) {
+			// 			b.MoveCards(c, p)
+			// 			moved = true
+			// 		}
+			// 		p.CancelDrag(c)
+			// 	}
+			// 	if moved {
+			// 		break
+			// 	}
+			// }
 		}
 	default:
 		println("clueless when tapping on a", pSrc.Class, "card")
@@ -385,7 +400,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
 	src := c.owner
 	moveFrom := len(src.Cards)
-	tmp := make([]*Card, 0)
+	tmp := make([]*Card, 0, cap(src.Cards))
 
 	// find the index of the first card we will move
 	for i, sc := range src.Cards {
@@ -593,11 +608,9 @@ func (b *Baize) Update() error {
 			// maybe user is tapping or starting to drag a card
 			c := b.findCardAt(sx, sy)
 			if c != nil {
-				if c.owner.StartDrag(b.Piles, c) {
+				if c.owner.StartDrag(c) {
 					b.stroke = s
 					b.stroke.SetDraggingObject(c)
-				} else {
-					println("cannot drag those cards")
 				}
 			} else {
 				// maybe user is tapping an empty pile (eg to recycle waste to stock)
@@ -618,16 +631,11 @@ func (b *Baize) Update() error {
 					c.owner.StopDrag(c)
 					b.CardTapped(c)
 				} else {
-					// sx, sy := b.stroke.Position()
-					// p := b.findPileAt(sx, sy)
+					// p := b.findPileAt(b.stroke.Position())
 					p := b.largestIntersection(c)
-					if p == nil {
+					if p == nil || p == c.owner {
 						c.owner.CancelDrag(c)
 					} else {
-						// println("found pile", o.Class())
-						if p == c.owner {
-							println("baize cannot drag cards to owning pile")
-						}
 						if p.CanAcceptTail(b.Piles, c.owner.Tail) {
 							c.owner.StopDrag(c)
 							b.MoveCards(c, p)
@@ -639,8 +647,7 @@ func (b *Baize) Update() error {
 				}
 				b.stroke = nil
 			} else {
-				dx, dy := b.stroke.PositionDiff()
-				c.owner.DragTailBy(dx, dy)
+				c.owner.DragTailBy(b.stroke.PositionDiff())
 			}
 		case *Pile:
 			p := v

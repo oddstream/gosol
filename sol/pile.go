@@ -398,8 +398,23 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	return x, y
 }
 
+func (p *Pile) makeTail(c *Card) []*Card {
+	var tail []*Card // append works on a nil slice, yay
+	marking := false
+	for i := 0; i < p.CardCount(); i++ {
+		pci := p.Cards[i]
+		if !marking && pci == c {
+			marking = true
+		}
+		if marking {
+			tail = append(tail, pci)
+		}
+	}
+	return tail
+}
+
 // StartDrag this card and all the others after it in the stack
-func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
+func (p *Pile) StartDrag(c *Card) bool {
 
 	// no need for this with Foundation Drag=0
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
@@ -410,20 +425,22 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 		return false
 	}
 
-	p.Tail = nil // append works on a nil slice, yay
-	marking := false
-	for i := 0; i < p.CardCount(); i++ {
-		pci := p.Cards[i]
-		if !marking && pci == c {
-			marking = true
-		}
-		if marking {
-			p.Tail = append(p.Tail, pci)
-		}
-	}
+	// p.Tail = nil // append works on a nil slice, yay
+	// marking := false
+	// for i := 0; i < p.CardCount(); i++ {
+	// 	pci := p.Cards[i]
+	// 	if !marking && pci == c {
+	// 		marking = true
+	// 	}
+	// 	if marking {
+	// 		p.Tail = append(p.Tail, pci)
+	// 	}
+	// }
+	p.Tail = p.makeTail(c)
+
 	d, ok := p.GetIntAttribute("Drag")
 	if !ok {
-		log.Fatal("No Drag attribute for Pile " + p.Class)
+		log.Fatal("no Drag attribute for Pile " + p.Class)
 	}
 	dragRules := d % 100
 	dragFlags := d / 100 // 1=single card only (no tail)
@@ -433,17 +450,6 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 		p.Tail = nil
 		return false
 	}
-	// need to know destination pile before knowing power moves
-	// if dragFlags&2 == 2 {
-	// 	if len(p.Tail) <= powerMoves(piles, p) && isConformant(dragRules, p.Tail) {
-	// 		// that's ok
-	// 	} else {
-	// 		println("non-conformant powerMoves drag")
-	// 		p.ApplyToTail((*Card).Shake)
-	// 		p.Tail = nil
-	// 		return false
-	// 	}
-	// }
 	if !isConformant(dragRules, p.Tail) {
 		println("non-conformant drag")
 		p.ApplyToTail((*Card).Shake)
@@ -451,17 +457,20 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 		return false
 	}
 	p.ApplyToTail((*Card).StartDrag)
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 	return true
 }
 
 // StopDrag this card and all the others after it in the stack
 func (p *Pile) StopDrag(c *Card) {
+	ebiten.SetCursorMode(ebiten.CursorModeVisible)
 	p.ApplyToTail((*Card).StopDrag)
 	p.Tail = nil
 }
 
 // CancelDrag this card and all the others after it in the stack
 func (p *Pile) CancelDrag(c *Card) {
+	ebiten.SetCursorMode(ebiten.CursorModeVisible)
 	p.ApplyToTail((*Card).CancelDrag)
 	p.Tail = nil
 }
@@ -474,16 +483,6 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 	for _, tc := range p.Tail {
 		fn(tc)
 	}
-	// marking := false
-	// for i := 0; i < p.CardCount(); i++ {
-	// 	pci := p.Cards[i]
-	// 	if !marking && pci == c {
-	// 		marking = true
-	// 	}
-	// 	if marking {
-	// 		fn(pci)
-	// 	}
-	// }
 }
 
 // DragTailBy repositions all the cards in the tail (from c inclusive)
@@ -494,17 +493,6 @@ func (p *Pile) DragTailBy(dx, dy int) {
 	for _, tc := range p.Tail {
 		tc.DragBy(dx, dy)
 	}
-
-	// marking := false
-	// for i := 0; i < p.CardCount(); i++ {
-	// 	ci := p.Cards[i]
-	// 	if !marking && ci == c {
-	// 		marking = true
-	// 	}
-	// 	if marking {
-	// 		ci.DragBy(dx, dy)
-	// 	}
-	// }
 }
 
 // IsComplete returns true if this Pile is complete

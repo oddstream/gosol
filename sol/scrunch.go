@@ -10,7 +10,7 @@ func (p *Pile) popWithoutFlip() *Card {
 }
 
 func (p *Pile) popAllWithoutFlip() []*Card {
-	var tmp []*Card
+	tmp := make([]*Card, 0, cap(p.Cards))
 	for p.CardCount() > 0 {
 		c := p.popWithoutFlip()
 		tmp = append(tmp, c)
