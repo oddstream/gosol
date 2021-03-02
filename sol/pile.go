@@ -225,10 +225,12 @@ func (p *Pile) Push(c *Card) {
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
 
-	build, ok := p.GetIntAttribute("Build")
+	br, ok := p.GetIntAttribute("Build")
 	if !ok {
 		log.Fatal("no Build rules for Pile " + p.Class)
 	}
+	buildRules := br % 100
+	// buildFlags := br / 100 // 1=power moves allowed
 
 	switch p.Class {
 	case "Stock":
@@ -242,7 +244,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(build, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c)
 	case "Tableau":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
@@ -250,7 +252,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(build, p.Peek(), c)
+		return isConformant0(buildRules, p.Peek(), c)
 	case "Cell":
 		return p.CardCount() == 0
 	}
@@ -258,7 +260,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 }
 
 // CanAcceptTail returns true if this Pile can accept the tail of Cards from another Pile
-func (p *Pile) CanAcceptTail(Tail []*Card) bool {
+func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 
 	if Tail == nil || len(Tail) == 0 {
 		log.Fatal("empty tail passed to CanAcceptTail")
@@ -279,10 +281,12 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		}
 	}
 
-	buildRules, ok := p.GetIntAttribute("Build")
+	br, ok := p.GetIntAttribute("Build")
 	if !ok {
 		log.Fatal("no Build attribute for Pile " + p.Class)
 	}
+	buildRules := br % 100
+	buildFlags := br / 100 // 1=power moves allowed
 
 	switch p.Class {
 	case "Stock":
@@ -319,6 +323,14 @@ func (p *Pile) CanAcceptTail(Tail []*Card) bool {
 		return isConformant0(buildRules, p.Peek(), c0)
 
 	case "Tableau":
+		if buildFlags&1 == 1 {
+			pm := powerMoves(piles, p)
+			if len(Tail) > pm {
+				println("cannot drag", len(Tail), "cards")
+				return false
+			}
+			println("can drag", len(Tail), "cards")
+		}
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
 				return c0.ordinal == p.localAccept
@@ -393,6 +405,10 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
 	// 	return false // cannot take cards off foundation
 	// }
+	if c.Animating() {
+		println("unwise to drag an animating card")
+		return false
+	}
 
 	p.Tail = nil // append works on a nil slice, yay
 	marking := false
@@ -410,23 +426,24 @@ func (p *Pile) StartDrag(piles []*Pile, c *Card) bool {
 		log.Fatal("No Drag attribute for Pile " + p.Class)
 	}
 	dragRules := d % 100
-	dragFlags := d / 100 // 1=single card only (no tail) 2=powerMoves
+	dragFlags := d / 100 // 1=single card only (no tail)
 	if dragFlags&1 == 1 && len(p.Tail) > 1 {
 		println(p.Class, "can only drag a single card")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
 	}
-	if dragFlags&2 == 2 {
-		if len(p.Tail) <= powerMoves(piles, p) && isConformant(dragRules, p.Tail) {
-			// that's ok
-		} else {
-			println("non-conformant powerMoves drag")
-			p.ApplyToTail((*Card).Shake)
-			p.Tail = nil
-			return false
-		}
-	}
+	// need to know destination pile before knowing power moves
+	// if dragFlags&2 == 2 {
+	// 	if len(p.Tail) <= powerMoves(piles, p) && isConformant(dragRules, p.Tail) {
+	// 		// that's ok
+	// 	} else {
+	// 		println("non-conformant powerMoves drag")
+	// 		p.ApplyToTail((*Card).Shake)
+	// 		p.Tail = nil
+	// 		return false
+	// 	}
+	// }
 	if !isConformant(dragRules, p.Tail) {
 		println("non-conformant drag")
 		p.ApplyToTail((*Card).Shake)

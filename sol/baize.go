@@ -116,6 +116,8 @@ func (b *Baize) NewVariant(v string) {
 
 	// temporary fudge to set window width to center cards on baize
 	{
+		ebiten.SetWindowTitle(v)
+
 		maxX := 0
 		for _, p := range b.Piles {
 			if p.X > maxX {
@@ -626,7 +628,7 @@ func (b *Baize) Update() error {
 						if p == c.owner {
 							println("baize cannot drag cards to owning pile")
 						}
-						if p.CanAcceptTail(c.owner.Tail) {
+						if p.CanAcceptTail(b.Piles, c.owner.Tail) {
 							c.owner.StopDrag(c)
 							b.MoveCards(c, p)
 							b.AfterUserMove()

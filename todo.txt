@@ -4,14 +4,11 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly
-  ban tapping on an Animating card? didn't work.
 + by convention Baize.Pile[0] is always the stock
 + bury/disinter cards
 + Deal A123456789XJQK
   only need create cards when setting variant
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
-+ Limited powerMoves too generous, but seem right for Freecell
 + compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
   pack 1..16, 4 bits
   ordinal 1..16, 4 bits
@@ -37,6 +34,11 @@ $ git branch -m master main
 + orientation change
 + UI (Fyne?) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x powerMoves should be in Pile.CanAcceptTail(), because number of moves available is not known until destination pile is known
+  that makes power moves flag a build attribute, not a drag attribute
+x if a card starts shaking while lerping or being dragged, it doesn't settle onto the pile properly
+  ban tapping on an Animating card? didn't work!
+  ban starting a drag on an animating card
 x scrunchPercentage int (100=no scrunch 10=max scrunch)
 x SimpleSimon
 x No complete notification for Wasp

@@ -371,9 +371,11 @@ func (c *Card) Update() error {
 		c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
 		c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
 		// make Card settle faster when already close to it's destination
-		// if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
-		// 	c.lerpStep += LERPSTEP * 2
-		c.lerpStep += LERPSTEP
+		if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
+			c.lerpStep += LERPSTEP * 2
+		} else {
+			c.lerpStep += LERPSTEP
+		}
 		if c.lerpStep >= 1.0 {
 			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
 		}

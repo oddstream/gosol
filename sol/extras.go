@@ -181,13 +181,11 @@ func isConformant(rules int, cards []*Card) bool {
 	return true
 }
 
-func powerMoves(piles []*Pile, pDragging *Pile) int {
+func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
 	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
 	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
-	// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
-	emptyCells := 0
-	emptyCols := 0
+	var emptyCells, emptyCols int
 	for _, p := range piles {
 		switch p.Class {
 		case "Cell":
@@ -195,21 +193,16 @@ func powerMoves(piles []*Pile, pDragging *Pile) int {
 				emptyCells++
 			}
 		case "Tableau":
-			if pDragging != nil {
-				if p == pDragging && 0 == len(pDragging.Cards) {
-					// empty column doesn't count
-				} else if 0 == p.CardCount() {
-					emptyCols++
-				}
-			} else {
-				if 0 == p.CardCount() {
-					emptyCols++
-				}
+			// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
+			if p == pDraggingTo && 0 == pDraggingTo.CardCount() {
+				// empty column doesn't count
+			} else if 0 == p.CardCount() {
+				emptyCols++
 			}
 		}
 	}
 	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
 	n := (1 + emptyCells) * util.Pow(2, emptyCols)
-	// println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
+	println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
 	return n
 }

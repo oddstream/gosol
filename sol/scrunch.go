@@ -59,64 +59,12 @@ func (p *Pile) fannedWidth(scrunchPercent int) int {
 	return x
 }
 
-// func (p *Pile) scrunchCardsDown(s int) {
-// 	var currHeight = p.fannedHeight(p.scrunchPercentage)
-// 	var maxHeight = s * CardHeight
-
-// 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
-// 	var scrunchRequired bool = (currHeight > maxHeight) || (p.scrunchPercentage < 100)
-// 	if !scrunchRequired {
-// 		return
-// 	}
-
-// 	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
-// 	var percent int
-// 	for percent = 100; percent > 50; percent -= 5 {
-// 		testHeight := p.fannedHeight(percent)
-// 		println(percent, testHeight, maxHeight)
-// 		if testHeight <= maxHeight {
-// 			break
-// 		}
-// 	}
-// 	if percent != p.scrunchPercentage {
-// 		p.scrunchPercentage = percent
-// 		tmp := p.popAllWithoutFlip()
-// 		println("scrunchPercentage now ", p.scrunchPercentage)
-// 		p.pushAllWithoutFlip(tmp)
-// 	}
-// }
-
-// func (p *Pile) scrunchCardsRight(s int) {
-// 	var currWidth = p.fannedWidth(p.scrunchPercentage)
-// 	var maxWidth = s * CardWidth
-
-// 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
-// 	var scrunchRequired bool = (currWidth > maxWidth) || (p.scrunchPercentage < 100)
-// 	if !scrunchRequired {
-// 		return
-// 	}
-
-// 	println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
-// 	var percent int
-// 	for percent = 100; percent > 50; percent -= 5 {
-// 		testHeight := p.fannedWidth(percent)
-// 		println(percent, testHeight, maxWidth)
-// 		if testHeight <= maxWidth {
-// 			break
-// 		}
-// 	}
-// 	if percent != p.scrunchPercentage {
-// 		p.scrunchPercentage = percent
-// 		tmp := p.popAllWithoutFlip()
-// 		println("scrunchPercentage now ", p.scrunchPercentage)
-// 		p.pushAllWithoutFlip(tmp)
-// 	}
-// }
-
-func (p *Pile) scrunchCardsDownOrRight(maxSize int, fnCalcSize func(int) int) {
+func (p *Pile) scrunch(maxSize int, fnCalcSize func(int) int) {
 	// https://stackoverflow.com/questions/38897529/pass-method-argument-to-function
 	// https://golang.org/ref/spec#Method_values
-	// fnCalcSize has implicit receiver value of p *Pile, because it was passed as p.fannedWidth/Height
+	// https://play.google.com/books/reader?id=SJHvCgAAQBAJ&pg=GBS.PT217
+	// fnCalcSize has implicit receiver value of p *Pile, via a kind of closure, because it was passed as p.fannedWidth/Height
+	// could make it explicit with a method expression
 	var currSize = fnCalcSize(p.scrunchPercentage)
 
 	// check scrunch if curr height > max height (need more scrunch) or percent scrunch is < 100 (may need less scrunch)
@@ -154,10 +102,13 @@ func (p *Pile) ScrunchCards() {
 	}
 	switch p.Fan {
 	case "Down":
-		// p.scrunchCardsDown(s)
-		p.scrunchCardsDownOrRight(s*CardHeight, p.fannedHeight) // method value
+		// p.fannedheight is a method value, a function that binds a method (Pile.fannedHeight) to a specific receiver value (p)
+		// this function can then be invoked without the receiver value; it needs only the non-receiver arguments
+		// it's a kind of closure
+		// a method expression would be Pile.fannedHeight or (*Pile).fannedHeight
+		// which yields a function value with a regular first parameter taking the place of the receiver
+		p.scrunch(s*CardHeight, p.fannedHeight) // method value
 	case "Right":
-		// p.scrunchCardsRight(s)
-		p.scrunchCardsDownOrRight(s*CardWidth, p.fannedWidth) // method value
+		p.scrunch(s*CardWidth, p.fannedWidth) // method value
 	}
 }
