@@ -4,7 +4,6 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ should Canfield, Storehouse tableaux have rank wrap?
 + Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
 + bury/disinter cards
@@ -35,6 +34,8 @@ $ git branch -m master main
 + orientation change
 + UI (https://ebitenui.github.io/) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x BUG buildFlags 1xx used for both rank wrap AND power moves!!
+x should Canfield, Storehouse tableaux have rank wrap?
 x investigate nasty panic when using uppercase Card.id
   probably because BuildScalableCardImages() still using lowercase
 x Deal string to parse 123456789abcd

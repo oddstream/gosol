@@ -16,4 +16,4 @@ I'm currently eyeing up [Ebiten UI](https://ebitenui.github.io/) for the Materia
 
 It currently doesn't do anything after detecting a completed game, or do any fancy highlighting of moveable cards, or recording of the player's statistics.
 
-It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has simplified scalable cards, set via a command line flag -c=retro or -c=scalable, and -cw and ch to set the card width and height; -cw=90 -ch=130 looks good).
+It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has simplified scalable cards, set via a command line flag -c=scalable, and -cw and -ch to set the card width and height; -cw=90 -ch=130 looks good.

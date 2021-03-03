@@ -50,7 +50,7 @@ func (b *Baize) SavePosition() {
 	b.SavedPosition = len(b.UndoStack)
 }
 
-// LoadPosition loads a previosly saved Baize state
+// LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.SavedPosition == 0 {
 		println("no saved position")
@@ -63,7 +63,7 @@ func (b *Baize) LoadPosition() {
 	var sav SaveableBaize
 	var ok bool
 	for len(b.UndoStack)+1 > b.SavedPosition {
-		sav, ok = b.UndoPop() // removes previous state for examination
+		sav, ok = b.UndoPop()
 		if !ok {
 			log.Fatal("error popping from undo stack")
 		}

@@ -97,7 +97,7 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 	}
 
 	buildRules := rules % 100
-	buildFlags := rules / 100 // 1==rank wrap
+	buildFlags := rules / 100 // 1=rank wrap, 2=power moves
 
 	localSuit := buildRules / 10
 	localRank := buildRules % 10

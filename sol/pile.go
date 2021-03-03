@@ -239,7 +239,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		log.Fatal("no Build rules for Pile " + p.Class)
 	}
 	buildRules := br % 100
-	// buildFlags := br / 100 // 1=power moves allowed
+	// buildFlags := br / 100 // 1=rank wrap 2=power moves
 
 	switch p.Class {
 	case "Stock":
@@ -295,7 +295,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		log.Fatal("no Build attribute for Pile " + p.Class)
 	}
 	buildRules := br % 100
-	buildFlags := br / 100 // 1=power moves allowed
+	buildFlags := br / 100 // 1=rank wrap 2=power moves
 
 	switch p.Class {
 	case "Stock":
@@ -332,7 +332,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		return isConformant0(buildRules, p.Peek(), c0)
 
 	case "Tableau":
-		if buildFlags&1 == 1 {
+		if buildFlags&2 == 2 {
 			pm := powerMoves(piles, p)
 			if len(Tail) > pm {
 				println("cannot drag", len(Tail), "cards")
@@ -410,15 +410,6 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 func (p *Pile) makeTail(c *Card) []*Card {
 	var tail []*Card // append works on a nil slice, yay
 	marking := false
-	// for i := 0; i < p.CardCount(); i++ {
-	// 	pci := p.Cards[i]
-	// 	if !marking && pci == c {
-	// 		marking = true
-	// 	}
-	// 	if marking {
-	// 		tail = append(tail, pci)
-	// 	}
-	// }
 	for _, pc := range p.Cards {
 		if !marking && pc == c {
 			marking = true
@@ -442,17 +433,6 @@ func (p *Pile) StartDrag(c *Card) bool {
 		return false
 	}
 
-	// p.Tail = nil // append works on a nil slice, yay
-	// marking := false
-	// for i := 0; i < p.CardCount(); i++ {
-	// 	pci := p.Cards[i]
-	// 	if !marking && pci == c {
-	// 		marking = true
-	// 	}
-	// 	if marking {
-	// 		p.Tail = append(p.Tail, pci)
-	// 	}
-	// }
 	p.Tail = p.makeTail(c)
 
 	d, ok := p.GetIntAttribute("Drag")
@@ -492,11 +472,11 @@ func (p *Pile) CancelDrag(c *Card) {
 	p.Tail = nil
 }
 
-// https://golang.org/ref/spec#Method_expressions
-// (*Card).CancelDrag yields a function with the signature func(*Card)
-
 // ApplyToTail applies a method func to this card and all the others after it in the stack
 func (p *Pile) ApplyToTail(fn func(*Card)) {
+	// https://golang.org/ref/spec#Method_expressions
+	// (*Card).CancelDrag yields a function with the signature func(*Card)
+	// fn passed as a method expression so add the receiver explicitly
 	for _, tc := range p.Tail {
 		fn(tc)
 	}
