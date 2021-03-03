@@ -185,6 +185,14 @@ func (b *Baize) dealCards() {
 				}
 				c.FlipDown()
 				p.Push(c)
+			case '2': // Storehouse Canfield
+				idx, ok := findCard(stock.Cards, d)
+				if ok {
+					c := stock.Cards[idx]
+					stock.Cards = append(stock.Cards[:idx], stock.Cards[idx+1:]...)
+					c.FlipUp()
+					p.Push(c)
+				}
 			}
 		}
 	}

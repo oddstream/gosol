@@ -11,8 +11,8 @@
       "mode": "debug",
       "program": "${workspaceFolder}",
       // "args": ["-debug", "-v=Australian", "-c=scalable", "-cw=90", "-ch=130"],
-      // "args": ["-debug", "-v=Canfield"],
-      "args": ["-debug", "-v=EasyWin"],
+      // "args": ["-debug", "-v=Canfield", "-c=scalable", "-cw=90", "-ch=130"],
+      // "args": ["-debug", "-v=EasyWin"],
       // "args": ["-debug", "-v=Freecell", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug","-v=Klondike", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug","-v=Klondike3", "-c=scalable", "-cw=90", "-ch=130"],
@@ -22,6 +22,7 @@
       // "args": ["-debug","-v=SimpleSimon", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug", "-v=Spider1"],
       // "args": ["-debug", "-v=Spider2"],
+      "args": ["-debug", "-v=Storehouse", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug","-v=Wasp", "-c=scalable", "-cw=90", "-ch=130"],
       "buildFlags": "-tags desktop"
     }

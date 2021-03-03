@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"sort"
+	"strconv"
 	"strings"
 
 	"oddstream.games/gosol/util"
@@ -72,6 +73,21 @@ func shuffleCards(stock *Pile, seed int64) {
 	// 	println(i, c.id)
 	// }
 
+}
+
+func findCard(cards []*Card, card rune) (int, bool) {
+	// card should be 123456789abcd
+	i64, err := strconv.ParseInt(string(card), 16, 0)
+	if err != nil {
+		log.Fatal("cannot parse", card)
+	}
+	ordinal := int(i64)
+	for i, c := range cards {
+		if c.ordinal == ordinal {
+			return i, true
+		}
+	}
+	return 0, false
 }
 
 func isConformant0(rules int, cPrev, cThis *Card) bool {

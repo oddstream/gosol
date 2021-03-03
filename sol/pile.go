@@ -401,13 +401,21 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 func (p *Pile) makeTail(c *Card) []*Card {
 	var tail []*Card // append works on a nil slice, yay
 	marking := false
-	for i := 0; i < p.CardCount(); i++ {
-		pci := p.Cards[i]
-		if !marking && pci == c {
+	// for i := 0; i < p.CardCount(); i++ {
+	// 	pci := p.Cards[i]
+	// 	if !marking && pci == c {
+	// 		marking = true
+	// 	}
+	// 	if marking {
+	// 		tail = append(tail, pci)
+	// 	}
+	// }
+	for _, pc := range p.Cards {
+		if !marking && pc == c {
 			marking = true
 		}
 		if marking {
-			tail = append(tail, pci)
+			tail = append(tail, pc)
 		}
 	}
 	return tail

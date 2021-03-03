@@ -4,10 +4,10 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ should Canfield, Storehouse tableaux have rank wrap?
 + Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
 + bury/disinter cards
-+ Deal A123456789XJQK
   only need create cards when setting variant
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
 + compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
@@ -35,6 +35,10 @@ $ git branch -m master main
 + orientation change
 + UI (https://ebitenui.github.io/) titlebar, statusbar, toast, slideout menu, dialogs, FAB
 
+x Deal string to parse 123456789abcd
+x Storehouse (or Thirteen Up), in which one should remove the deuces (twos) and place them on the foundations.
+  The reserve and the cards on the tableau are then dealt. The stock is dealt one card at a time, and it can be used only twice.
+  Furthermore, the method of building in this game is by suit. The Storehouse variant makes the game easier than Canfield.
 x bug fix, NewGame() was setting new seed AFTER shuffling cards
 x powerMoves should be in Pile.CanAcceptTail(), because number of moves available is not known until destination pile is known
   that makes power moves flag a build attribute, not a drag attribute
