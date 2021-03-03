@@ -76,7 +76,7 @@ func shuffleCards(stock *Pile, seed int64) {
 }
 
 func findCard(cards []*Card, card rune) (int, bool) {
-	// card should be 123456789abcd
+	// card should be one of 123456789ABCD
 	i64, err := strconv.ParseInt(string(card), 16, 0)
 	if err != nil {
 		log.Fatal("cannot parse", card)

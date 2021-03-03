@@ -192,7 +192,11 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 
 	case "scalable":
 		subid := c.id[1:] // take the pack off (first char) leaving suit and hexadecimal ordinal
-		c.faceImg = scalableFaceImages[subid]
+		var ok bool
+		c.faceImg, ok = scalableFaceImages[subid]
+		if !ok {
+			log.Fatal(subid, "not in scalableFaceImages")
+		}
 		c.backImg = scalableBackImage
 	}
 

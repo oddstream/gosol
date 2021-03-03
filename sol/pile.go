@@ -222,6 +222,15 @@ func (p *Pile) Push(c *Card) {
 	p.Cards = append(p.Cards, c)
 }
 
+// Extract a Card from the Pile
+func (p *Pile) Extract(idx int) *Card {
+	c := p.Cards[idx]
+	p.Cards = append(p.Cards[:idx], p.Cards[idx+1:]...)
+	c.owner = nil
+	c.FlipUp()
+	return c
+}
+
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
 

@@ -15,11 +15,12 @@ import (
 
 // Baize object describes the baize
 type Baize struct {
-	Piles     []*Pile
-	Variant   string
-	Seed      int64
-	UndoStack []SaveableBaize
-	stroke    *Stroke
+	Piles         []*Pile
+	Variant       string
+	Seed          int64
+	UndoStack     []SaveableBaize
+	SavedPosition int
+	stroke        *Stroke
 }
 
 // NewBaize is the factory func for Baize object
@@ -34,6 +35,7 @@ func NewBaize() *Baize {
 func (b *Baize) Reset() {
 	b.Piles = nil
 	b.UndoStack = nil
+	b.SavedPosition = 0
 	b.Variant = TheUserData.Variant
 	b.Seed = time.Now().UnixNano()
 	b.stroke = nil
@@ -80,6 +82,7 @@ func (b *Baize) Restart() {
 	shuffleCards(stock, b.Seed)
 
 	b.UndoStack = nil // StartGame will deal cards then do initial UndoPush()
+	b.SavedPosition = 0
 	b.stroke = nil
 }
 
@@ -185,12 +188,10 @@ func (b *Baize) dealCards() {
 				}
 				c.FlipDown()
 				p.Push(c)
-			case '2': // Storehouse Canfield
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D':
 				idx, ok := findCard(stock.Cards, d)
 				if ok {
-					c := stock.Cards[idx]
-					stock.Cards = append(stock.Cards[:idx], stock.Cards[idx+1:]...)
-					c.FlipUp()
+					c := stock.Extract(idx)
 					p.Push(c)
 				}
 			}
@@ -516,49 +517,6 @@ func (b *Baize) AfterUserMove() {
 	}
 }
 
-// UndoPush pushes the current state onto the undo stack
-func (b *Baize) UndoPush() {
-	b.UndoStack = append(b.UndoStack, b.Saveable())
-}
-
-// UndoPop pops a state off the undo stack
-func (b *Baize) UndoPop() (SaveableBaize, bool) {
-	if len(b.UndoStack) > 0 {
-		sav := b.UndoStack[len(b.UndoStack)-1]
-		b.UndoStack = b.UndoStack[:len(b.UndoStack)-1]
-		return sav, true
-	}
-	return SaveableBaize{}, false
-}
-
-// UndoPeekChecksum peeks the state at the top of the undo stack
-func (b *Baize) UndoPeekChecksum() (uint32, bool) {
-	if len(b.UndoStack) > 0 {
-		sav := b.UndoStack[len(b.UndoStack)-1]
-		return sav.Checksum, true
-	}
-	return 0, false
-}
-
-// Undo reverts the Baize state to it's previous state
-func (b *Baize) Undo() {
-	if len(b.UndoStack) < 2 {
-		println("nothing to undo")
-		return
-	}
-	sav, ok := b.UndoPop() // removes current state
-	if !ok {
-		log.Fatal("error popping current state from undo stack")
-	}
-
-	sav, ok = b.UndoPop() // removes previous state for examination
-	if !ok {
-		log.Fatal("error popping second from undo stack")
-	}
-	b.UpdateFromSaveable(sav)
-	b.UndoPush() // replace current state
-}
-
 func (b *Baize) largestIntersection(c *Card) *Pile {
 	var largest int = 0
 	var pile *Pile = nil
@@ -597,6 +555,14 @@ func (b *Baize) Update() error {
 	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyU) {
 		b.Undo()
+		return nil
+	}
+	if inpututil.IsKeyJustReleased(ebiten.KeyS) {
+		b.SavePosition()
+		return nil
+	}
+	if inpututil.IsKeyJustReleased(ebiten.KeyL) {
+		b.LoadPosition()
 		return nil
 	}
 
