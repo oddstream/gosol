@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-func fullPath() (string, error) {
+func fullPath(jsonFname string) (string, error) {
 	// os.Getenv("HOME") == "" on WASM
 	// could use something like errors.New("math: square root of negative number")
 	userConfigDir, err := os.UserConfigDir()
@@ -19,7 +19,7 @@ func fullPath() (string, error) {
 		return "", err
 	}
 	// println("UserConfigDir", userConfigDir) // /home/gilbert/.config
-	return path.Join(userConfigDir, "oddstream.games", "solitaire", "userdata.json"), nil
+	return path.Join(userConfigDir, "oddstream.games", "solitaire", jsonFname), nil
 }
 
 func makeConfigDir() {
@@ -43,7 +43,7 @@ func (ud *UserData) Load() {
 		log.Fatal("WASM detected")
 	}
 
-	path, err := fullPath()
+	path, err := fullPath("userdata.json")
 	if err != nil {
 		return
 	}
@@ -79,7 +79,70 @@ func (ud *UserData) Save() {
 		log.Fatal(err)
 	}
 
-	path, err := fullPath()
+	path, err := fullPath("userdata.json")
+	if err != nil {
+		return
+	}
+
+	makeConfigDir()
+
+	file, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+// Load statistics for all variants from JSON to an already-created Statistics object
+func (s *Statistics) Load() {
+
+	if runtime.GOARCH == "wasm" {
+		log.Fatal("WASM detected")
+	}
+
+	path, err := fullPath("statistics.json")
+	if err != nil {
+		return
+	}
+	file, err := os.Open(path)
+	if err == nil && file != nil {
+		defer file.Close()
+
+		bytes := make([]byte, 256)
+		var count int
+		count, err = file.Read(bytes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if count > 0 {
+			// golang gotcha reslice buffer to number of bytes actually read
+			err = json.Unmarshal(bytes[:count], s)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+}
+
+// Save writes the Statistics object to file
+func (s *Statistics) Save() {
+
+	if runtime.GOARCH == "wasm" {
+		log.Fatal("WASM detected")
+	}
+
+	bytes, err := json.Marshal(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	path, err := fullPath("statistics.json")
 	if err != nil {
 		return
 	}

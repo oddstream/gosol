@@ -4,9 +4,11 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ card font scaling could use some love to remove majic numbers
++ save game to json when closing (will need way to specify and switch variant)
++ browser statistics load/save (interface?)
++ card font scaling could use some more love to remove majic numbers
   includes position of accept symbol
-
++ Yukon One Suit, Yukon Cells, Russian?
 + tap a scrunched card to show it in full
   hover won't work on mobiles
   in Yukon, you can just drag away the card(s) on top of it
@@ -21,7 +23,7 @@ $ git branch -m master main
   prone 1 bit
   = 13 bits
 + map[VariantName]english string
-+ Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 1/A) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
++ Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 + CompleteWhen attribute, default 0, 13 for Foundations
   "a game is complete when all piles except foundations are empty"
@@ -33,7 +35,10 @@ $ git branch -m master main
 + grid X,Y to screenX,screenY func
 + orientation change
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
+  either use package or roll-your-own using ebitenui as a guide
 
+x statistics (copied from Opsole), Baize.state
+x 
 x BUG buildFlags 1xx used for both rank wrap AND power moves!!
 x should Canfield, Storehouse tableaux have rank wrap?
 x investigate nasty panic when using uppercase Card.id

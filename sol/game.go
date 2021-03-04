@@ -40,6 +40,9 @@ var TheCardFonts *CardFonts
 // TheUserData holds serialized game progress data
 var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
 
+// TheStatistics holds statistics for all variants
+var TheStatistics *Statistics
+
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	g := &Game{}
@@ -48,6 +51,7 @@ func NewGame() (*Game, error) {
 	//	TheUserData.Load()
 
 	TheCardFonts = NewCardFonts() // CardWidth/Height have now been set
+	TheStatistics = NewStatistics()
 
 	GSM.Switch(NewSplash())
 
