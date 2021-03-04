@@ -46,6 +46,7 @@ func main() {
 	ebiten.SetWindowTitle("Solitaire")                      // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetWindowSize(sol.WindowWidth, sol.WindowHeight) // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetWindowResizable(true)                         // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetScreenClearedEveryFrame(false)
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}

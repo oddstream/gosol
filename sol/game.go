@@ -35,7 +35,7 @@ var GSM *GameStateManager = &GameStateManager{}
 //var CTQ *CardTransitionQueue = &CardTransitionQueue{}
 
 // TheCardFonts provides access to small, normal, large, huge Acme fonts
-var TheCardFonts *CardFonts = NewCardFonts()
+var TheCardFonts *CardFonts
 
 // TheUserData holds serialized game progress data
 var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
@@ -46,6 +46,8 @@ func NewGame() (*Game, error) {
 	// println("LevelData", len(LevelData))
 
 	//	TheUserData.Load()
+
+	TheCardFonts = NewCardFonts() // CardWidth/Height have now been set
 
 	GSM.Switch(NewSplash())
 

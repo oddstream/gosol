@@ -28,6 +28,8 @@ type CardFonts struct {
 // NewCardFonts loads some fonts and returns a pointer to an object referencing them
 func NewCardFonts() *CardFonts {
 
+	println("NewCardFonts with Width", CardWidth)
+
 	cf := &CardFonts{}
 
 	// path, err := filepath.Abs("/home/gilbert/Tetra/assets/Acme-Regular.ttf")
@@ -47,12 +49,12 @@ func NewCardFonts() *CardFonts {
 	}
 
 	cf.symbolRegular = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(CardWidth) / 2,
+		Size:    float64(CardWidth) / 2.5,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
 	cf.symbolLarge = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(CardWidth),
+		Size:    float64(CardWidth) / 1.25,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
@@ -63,7 +65,7 @@ func NewCardFonts() *CardFonts {
 	}
 
 	cf.acmeRegular = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(CardWidth) / 1.75,
+		Size:    float64(CardWidth) / 2.25,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})

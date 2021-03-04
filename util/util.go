@@ -101,8 +101,8 @@ func OverlapAreaFloat64(x1, y1, x2, y2, X1, Y1, X2, Y2 float64) float64 {
 	return xOverlap * yOverlap
 }
 
-// OrdinalToChar converts an ordinal (1..13) to a single character (A .. K)
-func OrdinalToChar(ord int) string {
+// OrdinalToShortString converts an ordinal (1..13) to a single(ish) character (A .. K)
+func OrdinalToShortString(ord int) string {
 	var chars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 	return chars[ord]
 }

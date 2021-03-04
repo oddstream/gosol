@@ -8,9 +8,9 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-func init() {
-	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
-}
+// func init() {
+// 	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
+// }
 
 func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
@@ -24,13 +24,7 @@ func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image 
 
 	dc.SetColor(textColor)
 	dc.SetFontFace(TheCardFonts.acmeRegular)
-
-	if ord == 10 {
-		// dc.DrawString("X", float64(CardWidth)/8, float64(CardHeight)/3.5)
-		dc.DrawString(util.OrdinalToChar(ord), float64(CardWidth)/12, float64(CardHeight)/3.5)
-	} else {
-		dc.DrawString(util.OrdinalToChar(ord), float64(CardWidth)/8, float64(CardHeight)/3.5)
-	}
+	dc.DrawStringAnchored(util.OrdinalToShortString(ord), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
 	dc.Stroke()
 
 	dc.SetFontFace(TheCardFonts.symbolRegular)
@@ -49,7 +43,8 @@ func createFaceImage(suit string, ord int, textColor *color.RGBA) *ebiten.Image 
 	case "Spade":
 		r = 9824 // 0x2660
 	}
-	dc.DrawString(string(r), float64(CardWidth)/1.75, float64(CardHeight)/3.5)
+	// to make the symbols align with the ordinal short string, draw it down a little, hence /6 instead of /6.666
+	dc.DrawStringAnchored(string(r), float64(CardWidth)-float64(CardWidth)/(3.333), float64(CardHeight)/6, 0.5, 0.5)
 	dc.Stroke()
 
 	dc.SetFontFace(TheCardFonts.symbolLarge)

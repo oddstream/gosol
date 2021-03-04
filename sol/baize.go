@@ -212,6 +212,11 @@ func (b *Baize) dealCards() {
 		}
 	}
 
+	if DebugMode {
+		if stock.Y < 0 {
+			println(stock.CardCount(), "cards remaining in hidden stock")
+		}
+	}
 }
 
 func (b *Baize) findPile(cls string) *Pile {

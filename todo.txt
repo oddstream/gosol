@@ -4,10 +4,15 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ card font scaling could use some love to remove majic numbers
+  includes position of accept symbol
+
++ tap a scrunched card to show it in full
+  hover won't work on mobiles
+  in Yukon, you can just drag away the card(s) on top of it
 + Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
 + bury/disinter cards
-  only need create cards when setting variant
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
 + compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
   pack 1..16, 4 bits
@@ -16,11 +21,6 @@ $ git branch -m master main
   prone 1 bit
   = 13 bits
 + map[VariantName]english string
-+ titlebar hamburger, variant, undo
-+ Tableau PowerMoves=2xx in Drag=, Hidden can be infered from X,Y
-  per-class bit flags?
-  Drag mod 100 = rules
-  Drag / 100 = flags
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 1/A) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 + CompleteWhen attribute, default 0, 13 for Foundations
@@ -32,7 +32,7 @@ $ git branch -m master main
   ... but can flip and lerp at the same time
 + grid X,Y to screenX,screenY func
 + orientation change
-+ UI (https://ebitenui.github.io/) titlebar, statusbar, toast, slideout menu, dialogs, FAB
++ UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
 
 x BUG buildFlags 1xx used for both rank wrap AND power moves!!
 x should Canfield, Storehouse tableaux have rank wrap?

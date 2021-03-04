@@ -98,14 +98,16 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
-	dc.SetLineWidth(2)
+	dc.SetLineWidth(4)
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
 	dc.Stroke()
 
 	if p.localAccept > 0 && p.localAccept <= 13 {
 		dc.SetFontFace(TheCardFonts.acmeRegular)
-		dc.DrawString(util.OrdinalToChar(p.localAccept), float64(CardWidth)/8, float64(CardHeight)/3)
-		// dc.DrawStringAnchored(util.OrdinalToChar(p.localAccept), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+		dc.DrawStringAnchored(util.OrdinalToShortString(p.localAccept), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
+		dc.SetLineWidth(1)
+		// dc.DrawLine(0, float64(CardHeight)/6.666, float64(CardWidth), float64(CardHeight)/6.666)
+		// dc.DrawLine(float64(CardWidth)/3.333, 0, float64(CardWidth)/3.333, float64(CardHeight))
 		dc.Stroke()
 	}
 	if strings.HasPrefix(p.Class, "Stock") {
