@@ -113,12 +113,15 @@ func (s *Statistics) Load() {
 	file, err := os.Open(path)
 	if err == nil && file != nil {
 		defer file.Close()
-
-		bytes := make([]byte, 256)
+		fi, err := file.Stat()
+		if err != nil {
+			log.Fatal("error getting FileInfo for ", path)
+		}
+		bytes := make([]byte, fi.Size()+8)
 		var count int
 		count, err = file.Read(bytes)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(path, err)
 		}
 		if count > 0 {
 			// golang gotcha reslice buffer to number of bytes actually read

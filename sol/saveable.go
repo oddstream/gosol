@@ -10,7 +10,7 @@ type SaveableBaize struct {
 	Checksum uint32
 	Variant  string
 	Seed     int64
-	State    string
+	State    BaizeState
 	Piles    []SaveablePile
 }
 
@@ -43,7 +43,7 @@ func (b *Baize) Checksum() uint32 {
 
 // Saveable creates a saveable version of the current state
 func (b *Baize) Saveable() SaveableBaize {
-	sav := SaveableBaize{Checksum: b.Checksum(), Variant: b.Variant, Seed: b.Seed, State: b.state}
+	sav := SaveableBaize{Checksum: b.Checksum(), Variant: b.Variant, Seed: b.Seed, State: b.State}
 	for _, p := range b.Piles {
 		sav.Piles = append(sav.Piles, p.Saveable())
 	}
@@ -74,7 +74,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		}
 	}
 
-	b.state = sav.State
+	b.State = sav.State
 }
 
 // Saveable returns a reduced object for converting to JSON and saving

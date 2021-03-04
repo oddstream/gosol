@@ -14,6 +14,16 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+// BaizeState is either Virgin, Started or Complete
+type BaizeState int
+
+// Virgin, Started or Complete
+const (
+	Virgin BaizeState = iota
+	Started
+	Complete
+)
+
 // Baize object describes the baize
 type Baize struct {
 	Piles         []*Pile
@@ -22,7 +32,7 @@ type Baize struct {
 	UndoStack     []SaveableBaize
 	SavedPosition int
 	totalCards    int
-	state         string // "virgin" | "started" | "complete"
+	State         BaizeState
 	stroke        *Stroke
 }
 
@@ -41,7 +51,7 @@ func (b *Baize) Reset() {
 	b.SavedPosition = 0
 	b.Variant = TheUserData.Variant
 	b.Seed = time.Now().UnixNano()
-	b.state = "virgin"
+	b.State = Virgin
 	b.stroke = nil
 }
 
@@ -87,7 +97,7 @@ func (b *Baize) Restart() {
 
 	b.UndoStack = nil // StartGame will deal cards then do initial UndoPush()
 	b.SavedPosition = 0
-	b.state = "virgin"
+	b.State = Virgin
 	b.stroke = nil
 }
 
@@ -95,14 +105,14 @@ func (b *Baize) Restart() {
 func (b *Baize) StartGame() {
 	b.dealCards()
 	b.UndoPush()
-	TheStatistics.startGame(b.Variant)
 	TheStatistics.welcomeToast(b.Variant)
 }
 
 // RestartGame resets Baize and restarts current variant with same seed
 func (b *Baize) RestartGame() {
 	// could load first entry on undo stack, start game will push initial state
-	if b.state == "started" {
+	switch b.State {
+	case Started:
 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
 	}
 	b.Restart()
@@ -111,7 +121,8 @@ func (b *Baize) RestartGame() {
 
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
-	if b.state == "started" {
+	switch b.State {
+	case Started:
 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
 	}
 	b.Seed = time.Now().UnixNano()
@@ -122,7 +133,8 @@ func (b *Baize) NewGame() {
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant(v string) {
 
-	if b.state == "started" {
+	switch b.State {
+	case Started:
 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
 	}
 
@@ -475,7 +487,11 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 	src.ScrunchCards()
 	dst.ScrunchCards()
-	b.state = "started"
+
+	if b.State == Virgin {
+		TheStatistics.startGame(b.Variant)
+		b.State = Started
+	}
 }
 
 // AutoMoves performs post user-moves
@@ -539,7 +555,7 @@ func (b *Baize) AfterUserMove() {
 	}
 	if complete {
 		println(b.Variant, "complete")
-		b.state = "complete"
+		b.State = Complete
 		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 	}
 }
@@ -601,6 +617,10 @@ func (b *Baize) Update() error {
 	if inpututil.IsKeyJustReleased(ebiten.KeyL) {
 		b.LoadPosition()
 		return nil
+	}
+
+	if b.State == Complete {
+		goto LabelCompleted
 	}
 
 	if b.stroke == nil {
@@ -673,11 +693,10 @@ func (b *Baize) Update() error {
 		}
 	}
 
+LabelCompleted:
 	for _, p := range b.Piles {
 		p.Update()
 	}
-
-	// CTQ.Update()
 
 	return nil
 }
@@ -699,6 +718,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, Percent %d", ms.NumGC, len(b.UndoStack), b.calcPercentComplete()))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
 	}
 }

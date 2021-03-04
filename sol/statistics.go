@@ -38,7 +38,7 @@ func (s *Statistics) startGame(v string) {
 func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		log.Fatal("unknown variant ", v)
+		log.Fatal("recordWonGame unknown variant ", v)
 	}
 
 	stats.Won = stats.Won + 1
@@ -65,7 +65,7 @@ func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
 func (s *Statistics) recordLostGame(v string, percent int) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		log.Fatal("unknown variant ", v)
+		log.Fatal("recordLostGame unknown variant ", v)
 	}
 
 	// don't see that currStreak can ever be zero
@@ -89,7 +89,9 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 func (s *Statistics) welcomeToast(v string) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		log.Fatal("unknown variant ", v)
+		println("You have not played", v, "before")
+		return
+		// log.Fatal("welcomeToast unknown variant ", v)
 	}
 	if stats.Played == 0 {
 		println("You have not played", v, "before")
