@@ -40,6 +40,7 @@ type Baize struct {
 func NewBaize() *Baize {
 	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
+	// TODO try to load saved.json
 	b.NewVariant(TheUserData.Variant)
 	return b
 }
@@ -546,14 +547,7 @@ func (b *Baize) AfterUserMove() {
 
 	//
 
-	complete := true
-	for _, p := range b.Piles {
-		if !p.IsComplete() {
-			complete = false
-			break
-		}
-	}
-	if complete {
+	if b.Complete() {
 		println(b.Variant, "complete")
 		b.State = Complete
 		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
@@ -598,6 +592,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
+	if inpututil.IsKeyJustReleased(ebiten.KeyC) {
+		b.Collect()
+		return nil
+	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyN) {
 		b.NewGame()
 		return nil

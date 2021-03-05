@@ -31,6 +31,9 @@ func init() {
 }
 
 func main() {
+
+	sol.TheUserData.Load()
+
 	flag.Parse()
 
 	if sol.DebugMode {
@@ -47,6 +50,12 @@ func main() {
 	ebiten.SetWindowSize(sol.WindowWidth, sol.WindowHeight) // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetWindowResizable(true)                         // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetScreenClearedEveryFrame(false)
+
+	defer func() {
+		println("cleanup")
+		sol.TheUserData.Save()
+	}()
+
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}

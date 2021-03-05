@@ -90,17 +90,14 @@ func findCard(cards []*Card, card rune) (int, bool) {
 	return 0, false
 }
 
-func isConformant0(rules int, cPrev, cThis *Card) bool {
+func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 	if cPrev.prone || cThis.prone {
 		println("prone cards are not conformant")
 		return false
 	}
 
-	buildRules := rules % 100
-	buildFlags := rules / 100 // 1=rank wrap, 2=power moves
-
-	localSuit := buildRules / 10
-	localRank := buildRules % 10
+	localSuit := rules / 10
+	localRank := rules % 10
 
 	switch localSuit {
 	case 0: // may not build or move
@@ -124,7 +121,7 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 		}
 	}
 
-	if buildFlags&1 == 1 { // rank wrap == true
+	if flags&1 == 1 { // rank wrap == true
 		switch localRank {
 		case 0: // may not build or move
 			return false
@@ -179,7 +176,7 @@ func isConformant0(rules int, cPrev, cThis *Card) bool {
 	return true
 }
 
-func isConformant(rules int, cards []*Card) bool {
+func isConformant(rules, flags int, cards []*Card) bool {
 	if nil == cards || len(cards) == 0 {
 		log.Fatal("isConformant passed empty tail")
 	}
@@ -189,7 +186,7 @@ func isConformant(rules int, cards []*Card) bool {
 	cPrev := cards[0]
 	for n := 1; n < len(cards); n++ {
 		cThis := cards[n]
-		if !isConformant0(rules, cPrev, cThis) {
+		if !isConformant0(rules, flags, cPrev, cThis) {
 			return false
 		}
 		cPrev = cThis

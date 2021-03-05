@@ -36,131 +36,124 @@ func makeConfigDir() {
 	// if path is already a directory, MkdirAll does nothing and returns nil
 }
 
-// Load an already existing UserData object from file
-func (ud *UserData) Load() {
+func loadBytesFromFile(jsonFname string) ([]byte, int, error) {
 
 	if runtime.GOARCH == "wasm" {
 		log.Fatal("WASM detected")
 	}
 
-	path, err := fullPath("userdata.json")
+	path, err := fullPath(jsonFname)
 	if err != nil {
-		return
+		return nil, 0, err
 	}
+
 	file, err := os.Open(path)
 	if err == nil && file != nil {
-		defer file.Close()
 
-		bytes := make([]byte, 256)
+		fi, err := file.Stat()
+		if err != nil {
+			log.Fatal("error getting FileInfo for ", path)
+		}
+		bytes := make([]byte, fi.Size()+8)
+
 		var count int
 		count, err = file.Read(bytes)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if count > 0 {
-			// golang gotcha reslice buffer to number of bytes actually read
-			err = json.Unmarshal(bytes[:count], ud)
-			if err != nil {
-				log.Fatal(err)
-			}
+		err = file.Close()
+		if err != nil {
+			log.Fatal(err)
 		}
+		println("loaded", path)
+		return bytes, count, nil
 	}
+	println(path, "does not exist")
+	return nil, 0, nil // file does not exist (which is ok)
 }
 
-// Save writes the UserData object to file
-func (ud *UserData) Save() {
+func saveBytesToFile(bytes []byte, jsonFname string) {
 
 	if runtime.GOARCH == "wasm" {
 		log.Fatal("WASM detected")
 	}
+
+	path, err := fullPath(jsonFname)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	makeConfigDir()
+
+	file, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = file.Write(bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	println("saved", path)
+}
+
+// Load an already existing UserData object from file
+func (ud *UserData) Load() {
+
+	bytes, count, err := loadBytesFromFile("userdata.json")
+	if err != nil || count == 0 {
+		return
+	}
+
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes[:count], ud)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+// Save writes the UserData object to file
+func (ud *UserData) Save() {
 
 	bytes, err := json.Marshal(ud)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	path, err := fullPath("userdata.json")
-	if err != nil {
-		return
-	}
-
-	makeConfigDir()
-
-	file, err := os.Create(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	_, err = file.Write(bytes)
-	if err != nil {
-		log.Fatal(err)
-	}
+	saveBytesToFile(bytes, "userdata.json")
 
 }
 
 // Load statistics for all variants from JSON to an already-created Statistics object
 func (s *Statistics) Load() {
 
-	if runtime.GOARCH == "wasm" {
-		log.Fatal("WASM detected")
-	}
-
-	path, err := fullPath("statistics.json")
-	if err != nil {
+	bytes, count, err := loadBytesFromFile("statistics.json")
+	if err != nil || count == 0 {
 		return
 	}
-	file, err := os.Open(path)
-	if err == nil && file != nil {
-		defer file.Close()
-		fi, err := file.Stat()
-		if err != nil {
-			log.Fatal("error getting FileInfo for ", path)
-		}
-		bytes := make([]byte, fi.Size()+8)
-		var count int
-		count, err = file.Read(bytes)
-		if err != nil {
-			log.Fatal(path, err)
-		}
-		if count > 0 {
-			// golang gotcha reslice buffer to number of bytes actually read
-			err = json.Unmarshal(bytes[:count], s)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes[:count], s)
+	if err != nil {
+		log.Fatal(err)
 	}
+
 }
 
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
-
-	if runtime.GOARCH == "wasm" {
-		log.Fatal("WASM detected")
-	}
 
 	bytes, err := json.Marshal(s)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	path, err := fullPath("statistics.json")
-	if err != nil {
-		return
-	}
-
-	makeConfigDir()
-
-	file, err := os.Create(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	_, err = file.Write(bytes)
-	if err != nil {
-		log.Fatal(err)
-	}
+	saveBytesToFile(bytes, "statistics.json")
 
 }

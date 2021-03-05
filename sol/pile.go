@@ -45,6 +45,10 @@ type Pile struct {
 	Attributes        map[string]string
 	Cards             []*Card
 	Tail              []*Card
+	buildRules        int
+	buildFlags        int
+	dragRules         int
+	dragFlags         int
 	scrunchPercentage int
 	backgroundImage   *ebiten.Image
 }
@@ -52,6 +56,21 @@ type Pile struct {
 // NewPile create and fills in a Pile object
 func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
 	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
+
+	br, ok := p.GetIntAttribute("Build")
+	if !ok {
+		log.Fatal("no Build rules for Pile " + p.Class)
+	}
+	p.buildRules = br % 100
+	p.buildFlags = br / 100 // 1=rank wrap 2=power moves
+
+	d, ok := p.GetIntAttribute("Drag")
+	if !ok {
+		log.Fatal("no Drag attribute for Pile " + p.Class)
+	}
+	p.dragRules = d % 100
+	p.dragFlags = d / 100 // 1=single card only (no tail)
+
 	p.Reset()
 	return p
 }
@@ -236,13 +255,6 @@ func (p *Pile) Extract(idx int) *Card {
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
 
-	br, ok := p.GetIntAttribute("Build")
-	if !ok {
-		log.Fatal("no Build rules for Pile " + p.Class)
-	}
-	buildRules := br % 100
-	// buildFlags := br / 100 // 1=rank wrap 2=power moves
-
 	switch p.Class {
 	case "Stock":
 		return false // user cannot move card to stock
@@ -255,7 +267,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c)
+		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c)
 	case "Tableau":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
@@ -263,7 +275,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c)
+		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c)
 	case "Cell":
 		return p.CardCount() == 0
 	}
@@ -292,13 +304,6 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		}
 	}
 
-	br, ok := p.GetIntAttribute("Build")
-	if !ok {
-		log.Fatal("no Build attribute for Pile " + p.Class)
-	}
-	buildRules := br % 100
-	buildFlags := br / 100 // 1=rank wrap 2=power moves
-
 	switch p.Class {
 	case "Stock":
 		return false // user cannot drag cards to stock
@@ -319,7 +324,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		if p.CardCount() > 0 {
 			return false
 		}
-		return isConformant(buildRules, Tail)
+		return isConformant(p.buildRules, p.buildFlags, Tail)
 
 	case "Foundation":
 		if len(Tail) != 1 {
@@ -331,10 +336,10 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 			}
 			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c0)
+		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
 
 	case "Tableau":
-		if buildFlags&2 == 2 {
+		if p.buildFlags&2 == 2 {
 			pm := powerMoves(piles, p)
 			if len(Tail) > pm {
 				println("cannot drag", len(Tail), "cards")
@@ -348,7 +353,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 			}
 			return true
 		}
-		return isConformant0(buildRules, p.Peek(), c0)
+		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
 
 	case "Cell":
 		return len(Tail) == 1 && p.CardCount() == 0
@@ -437,19 +442,13 @@ func (p *Pile) StartDrag(c *Card) bool {
 
 	p.Tail = p.makeTail(c)
 
-	d, ok := p.GetIntAttribute("Drag")
-	if !ok {
-		log.Fatal("no Drag attribute for Pile " + p.Class)
-	}
-	dragRules := d % 100
-	dragFlags := d / 100 // 1=single card only (no tail)
-	if dragFlags&1 == 1 && len(p.Tail) > 1 {
+	if p.dragFlags&1 == 1 && len(p.Tail) > 1 {
 		println(p.Class, "can only drag a single card")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
 	}
-	if !isConformant(dragRules, p.Tail) {
+	if !isConformant(p.dragRules, p.dragFlags, p.Tail) {
 		println("non-conformant drag")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil

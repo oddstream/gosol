@@ -4,6 +4,8 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ detect game exit
++ Pile iterator eg Baize.IteratePiles("Foundation")
 + save game to json when closing (will need way to specify and switch variant)
 + browser statistics load/save (interface?)
 + card font scaling could use some more love to remove majic numbers
@@ -37,8 +39,10 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
-x statistics (copied from Opsole), Baize.state
-x 
+x Collect should work with FoundationSpider
+x get Build and Drag rules when pile is created
+x collect (triggered by command)
+x statistics (copied from Opsole), Baize.state 
 x BUG buildFlags 1xx used for both rank wrap AND power moves!!
 x should Canfield, Storehouse tableaux have rank wrap?
 x investigate nasty panic when using uppercase Card.id
