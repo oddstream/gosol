@@ -4,10 +4,9 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ detect game exit
 + Pile iterator eg Baize.IteratePiles("Foundation")
 + save game to json when closing (will need way to specify and switch variant)
-+ browser statistics load/save (interface?)
++ cleaner desktop/browser userdata/statistics load/save (interface?)
 + card font scaling could use some more love to remove majic numbers
   includes position of accept symbol
 + Yukon One Suit, Yukon Cells, Russian?
@@ -39,6 +38,8 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x Spider Scrunch 5
+x detect game exit
 x Collect should work with FoundationSpider
 x get Build and Drag rules when pile is created
 x collect (triggered by command)

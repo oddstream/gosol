@@ -3,11 +3,14 @@
 package sol
 
 import (
+	"github.com/blizzy78/ebitenui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Game represents a game state.
-type Game struct{}
+type Game struct {
+	ui *ebitenui.UI
+}
 
 var (
 	// DebugMode is a boolean set by command line flag -debug

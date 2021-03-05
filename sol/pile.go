@@ -554,10 +554,10 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		}
 		x0, y0 := p.Position()
 		if maxWidth > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x40})
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
 		}
 		if maxHeight > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x40})
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
 		}
 		// if currWidth > 0 {
 		// 	ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(currWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x40})
