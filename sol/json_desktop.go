@@ -157,3 +157,37 @@ func (s *Statistics) Save() {
 	saveBytesToFile(bytes, "statistics.json")
 
 }
+
+// Save the entire undo stack to file
+func (b *Baize) Save() {
+
+	if len(b.UndoStack) == 0 {
+		return
+	}
+
+	// push an extra state; this will be popped after a Load() and used to populate the baize
+
+	bytes, err := json.MarshalIndent(b.UndoStack, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	saveBytesToFile(bytes, b.Variant+".json")
+
+}
+
+// Load the entire undo stack from file
+func (b *Baize) Load(v string) bool {
+
+	bytes, count, err := loadBytesFromFile(v + ".json")
+	if err != nil || count == 0 {
+		return false
+	}
+
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes[:count], &b.UndoStack)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return b.UndoStack != nil && len(b.UndoStack) > 0
+}

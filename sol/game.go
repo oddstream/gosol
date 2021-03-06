@@ -46,6 +46,9 @@ var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", G
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics
 
+// TheBaize points to the Baize, so that main can see it
+var TheBaize *Baize
+
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	g := &Game{}

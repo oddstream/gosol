@@ -53,6 +53,7 @@ func main() {
 
 	defer func() {
 		println("cleanup")
+		sol.TheBaize.Save()
 		sol.TheUserData.Save()
 	}()
 

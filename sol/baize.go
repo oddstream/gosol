@@ -38,11 +38,14 @@ type Baize struct {
 
 // NewBaize is the factory func for Baize object
 func NewBaize() *Baize {
-	b := &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	// TheUserData may have been injected from command line flags
+	log.Printf("%v", TheUserData)
+	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
-	// TODO try to load saved.json
-	b.NewVariant(TheUserData.Variant)
-	return b
+	if !TheBaize.LoadVariant(TheBaize.Variant) {
+		TheBaize.NewVariant(TheBaize.Variant)
+	}
+	return TheBaize // ugly global-setting kludge
 }
 
 // Reset the Baize
@@ -173,6 +176,51 @@ func (b *Baize) NewVariant(v string) {
 	shuffleCards(stock, b.Seed)
 
 	b.StartGame()
+}
+
+// LoadVariant tries to load a game from json resets Baize and continues an old game
+func (b *Baize) LoadVariant(v string) bool {
+
+	if !b.Load(v) {
+		return false
+	}
+
+	sav, ok := b.UndoPop() // removes extra pushed state
+	if !ok {
+		log.Fatal("error popping extra state from undo stack")
+	}
+
+	piles, ok := buildVariantPiles(b.Variant)
+	if !ok {
+		log.Fatal("unknown variant", b.Variant)
+	}
+	b.Piles = piles
+	stock := b.findPilePrefix("Stock")
+	if stock == nil {
+		log.Fatal("Cannot find stock pile to create cards with")
+	}
+	createCards(stock)
+	b.totalCards = stock.CardCount()
+
+	b.UpdateFromSaveable(sav)
+	// b.UndoPush() // replace current state?
+
+	// temporary fudge to set window width to center cards on baize
+	{
+		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
+
+		maxX := 0
+		for _, p := range b.Piles {
+			if p.X > maxX {
+				maxX = p.X
+			}
+		}
+		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
+
+		TopMargin = CardHeight / 3
+	}
+
+	return true
 }
 
 // doesn't work because time.Sleep suspends the whole thread, not allowing Ebiten to breathe
@@ -627,6 +675,10 @@ func (b *Baize) Update() error {
 	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyL) {
 		b.LoadPosition()
+		return nil
+	}
+	if inpututil.IsKeyJustReleased(ebiten.KeyV) {
+		b.Save()
 		return nil
 	}
 

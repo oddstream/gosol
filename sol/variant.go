@@ -41,7 +41,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"BakersDozen": {
 		DisplayName: "Baker's Dozen",
-		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen",
+		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 1, -2, "None", map[string]string{"Build": "0", "Drag": "15"}},
