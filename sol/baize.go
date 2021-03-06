@@ -151,7 +151,7 @@ func (b *Baize) NewVariant(v string) {
 
 	// temporary fudge to set window width to center cards on baize
 	{
-		ebiten.SetWindowTitle(v)
+		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
 
 		maxX := 0
 		for _, p := range b.Piles {
@@ -206,6 +206,9 @@ func (b *Baize) dealCards() {
 			switch d {
 			case 'u':
 				c := stock.Pop() // this will flip card up
+				if c == nil {
+					log.Fatal("out of cards during deal")
+				}
 				if c.prone {
 					log.Fatal("popped a face down card from stock")
 				}
@@ -225,12 +228,22 @@ func (b *Baize) dealCards() {
 				if ok {
 					c := stock.Extract(idx)
 					p.Push(c)
+				} else {
+					log.Fatal("cannot find", d, "during deal")
 				}
 			}
 		}
 	}
 
 	for _, p := range b.Piles {
+		bury, ok := p.GetIntAttribute("Bury")
+		if ok {
+			p.BuryCards(bury)
+		}
+		disinter, ok := p.GetIntAttribute("Disinter")
+		if ok {
+			p.DisinterCards(disinter)
+		}
 		if p.Class == "Foundation" && p.CardCount() == 1 {
 			afp := p.GetBoolAttribute("AcceptFirstPush")
 			if afp {

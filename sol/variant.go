@@ -2,6 +2,7 @@ package sol
 
 // VariantInfo contains configuration info for a variant
 type VariantInfo struct {
+	DisplayName string
 	Description string
 	AKA         []string
 	Wikipedia   string
@@ -36,6 +37,31 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 5, 1, "Down", map[string]string{"Accept": "13", "Build": "22", "Drag": "15", "Scrunch": "5", "Deal": "uuuu"}},
 			{"Tableau", 6, 1, "Down", map[string]string{"Accept": "13", "Build": "22", "Drag": "15", "Scrunch": "5", "Deal": "uuuu"}},
 			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "13", "Build": "22", "Drag": "15", "Scrunch": "5", "Deal": "uuuu"}},
+		},
+	},
+	"BakersDozen": {
+		DisplayName: "Baker's Dozen",
+		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+		Piles: []PileInfo{
+			{"Stock", 1, -2, "None", map[string]string{"Build": "0", "Drag": "15"}},
+			{"Tableau", 1, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 2, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 3, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 4, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 5, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 6, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 7, 0, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 1, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 2, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 3, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 4, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 5, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Tableau", 6, 4, "Down", map[string]string{"Accept": "99", "Build": "12", "Drag": "115", "Scrunch": "4", "Bury": "13", "Deal": "uuuu"}},
+			{"Foundation", 9, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 9, 1, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 9, 2, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 9, 3, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 		},
 	},
 	"Canfield": {
@@ -113,6 +139,7 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Klondike": {
+		DisplayName: "Klondike (Turn One)",
 		Description: "The well-known solitaire variant",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
@@ -133,6 +160,7 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Klondike3": {
+		DisplayName: "Klondike (Turn Three)",
 		Description: "The well-known solitaire variant",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
@@ -199,6 +227,7 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"SimpleSimon": {
+		DisplayName: "Simple Simon",
 		Description: "A wonderfully simple game with no stock or waste, that plays like Spider. Most games are winnable, but require skill",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
 		Piles: []PileInfo{
@@ -220,7 +249,8 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Spider1": {
-		Wikipedia: "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		DisplayName: "Spider (One Suit)",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "8", "Build": "0", "Drag": "15", "Suits": "Spade"}},
 			{"FoundationSpider", 3, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
@@ -244,7 +274,8 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Spider2": {
-		Wikipedia: "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		DisplayName: "Spider (Two Suits)",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "4", "Build": "0", "Drag": "15", "Suits": "Spade,Heart"}},
 			{"FoundationSpider", 3, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
@@ -333,4 +364,14 @@ func buildVariantPiles(v string) ([]*Pile, bool) {
 	}
 
 	return piles, len(piles) > 0
+}
+
+func variantDisplayName(v string) string {
+	if vi, exists := Variants[v]; exists {
+		if vi.DisplayName == "" {
+			return v
+		}
+		return vi.DisplayName
+	}
+	return ""
 }

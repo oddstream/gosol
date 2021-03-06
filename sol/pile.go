@@ -509,6 +509,44 @@ func (p *Pile) IsComplete() bool {
 	return true
 }
 
+// BuryCards moves cards with the specified ordinal to the bottom of the stack
+func (p *Pile) BuryCards(ordinal int) {
+	tmp := make([]*Card, 0, cap(p.Cards))
+	for _, c := range p.Cards {
+		if c.ordinal == ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	for _, c := range p.Cards {
+		if c.ordinal != ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
+	for i := 0; i < len(tmp); i++ {
+		p.Push(tmp[i])
+	}
+}
+
+// DisinterCards moves cards with the specified ordinal to the top of the stack
+func (p *Pile) DisinterCards(ordinal int) {
+	tmp := make([]*Card, 0, cap(p.Cards))
+	for _, c := range p.Cards {
+		if c.ordinal != ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	for _, c := range p.Cards {
+		if c.ordinal == ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
+	for i := 0; i < len(tmp); i++ {
+		p.Push(tmp[i])
+	}
+}
+
 // Layout the cards in this Pile
 func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
