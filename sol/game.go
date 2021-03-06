@@ -15,6 +15,10 @@ type Game struct {
 var (
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
+	// NoGameLoad is a boolean set by command line flag -noload
+	NoGameLoad = false
+	// NoGameSave is a boolean set by command line flag -nosave
+	NoGameSave = false
 	// WindowWidth of main window in pixels
 	WindowWidth int
 	// WindowHeight of main window in pixels

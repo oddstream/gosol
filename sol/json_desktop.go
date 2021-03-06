@@ -121,7 +121,7 @@ func (ud *UserData) Load() {
 // Save writes the UserData object to file
 func (ud *UserData) Save() {
 
-	bytes, err := json.Marshal(ud)
+	bytes, err := json.MarshalIndent(ud, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func (s *Statistics) Load() {
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
 
-	bytes, err := json.Marshal(s)
+	bytes, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}

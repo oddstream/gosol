@@ -4,8 +4,11 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ saving a "complete" game, reloading it and it's "started"
+  saved state; last entry is "State": 1
+  possible fix; Complete (setting state) came after post-move UndoPush()
 + your best score is 0%
-+ Baker's Dozen (drag conformant tails?), Bisley (empty tableau cannot be filled)
++ Bisley
 + Pile iterator eg Baize.IteratePiles("Foundation")
 + save game to json when closing (will need way to specify and switch variant)
 + cleaner desktop/browser userdata/statistics load/save (interface?)
@@ -40,6 +43,8 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x UndoPush() after collect?
+x Load/Save Baize
 x Baker's Dozen, variant display name
 x Spider Scrunch 5
 x detect game exit

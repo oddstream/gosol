@@ -22,6 +22,8 @@ import (
 func init() {
 	println("processing command line flags")
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
+	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
+	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.IntVar(&sol.WindowWidth, "width", 1000, "width of window in pixels")
 	flag.IntVar(&sol.WindowHeight, "height", 900, "height of window in pixels")
 	flag.IntVar(&sol.CardWidth, "cw", 71, "width of a card in pixels")
@@ -53,7 +55,9 @@ func main() {
 
 	defer func() {
 		println("cleanup")
-		sol.TheBaize.Save()
+		if sol.NoGameSave == false {
+			sol.TheBaize.Save()
+		}
 		sol.TheUserData.Save()
 	}()
 

@@ -92,12 +92,6 @@ func (b *Baize) Collect() {
 	NextFoundationPile:
 	}
 
-	if b.Complete() {
-		println(b.Variant, "auto complete")
-		b.State = Complete
-		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-	}
-
 }
 
 // TableauxComplete returns true if every tableau is complete

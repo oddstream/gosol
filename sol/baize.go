@@ -42,7 +42,7 @@ func NewBaize() *Baize {
 	log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
-	if !TheBaize.LoadVariant(TheBaize.Variant) {
+	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
 		TheBaize.NewVariant(TheBaize.Variant)
 	}
 	return TheBaize // ugly global-setting kludge
@@ -115,20 +115,14 @@ func (b *Baize) StartGame() {
 // RestartGame resets Baize and restarts current variant with same seed
 func (b *Baize) RestartGame() {
 	// could load first entry on undo stack, start game will push initial state
-	switch b.State {
-	case Started:
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-	}
+	b.recordStatistics()
 	b.Restart()
 	b.StartGame()
 }
 
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
-	switch b.State {
-	case Started:
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-	}
+	b.recordStatistics()
 	b.Seed = time.Now().UnixNano()
 	b.Restart()
 	b.StartGame()
@@ -137,11 +131,7 @@ func (b *Baize) NewGame() {
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant(v string) {
 
-	switch b.State {
-	case Started:
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-	}
-
+	b.recordStatistics()
 	b.Reset()
 	b.Variant = v
 	b.Seed = time.Now().UnixNano()
@@ -195,15 +185,6 @@ func (b *Baize) LoadVariant(v string) bool {
 		log.Fatal("unknown variant", b.Variant)
 	}
 	b.Piles = piles
-	stock := b.findPilePrefix("Stock")
-	if stock == nil {
-		log.Fatal("Cannot find stock pile to create cards with")
-	}
-	createCards(stock)
-	b.totalCards = stock.CardCount()
-
-	b.UpdateFromSaveable(sav)
-	// b.UndoPush() // replace current state?
 
 	// temporary fudge to set window width to center cards on baize
 	{
@@ -219,6 +200,16 @@ func (b *Baize) LoadVariant(v string) bool {
 
 		TopMargin = CardHeight / 3
 	}
+
+	stock := b.findPilePrefix("Stock")
+	if stock == nil {
+		log.Fatal("Cannot find stock pile to create cards with")
+	}
+	createCards(stock)
+	b.totalCards = stock.CardCount()
+
+	b.UpdateFromSaveable(sav)
+	b.UndoPush()
 
 	return true
 }
@@ -491,12 +482,12 @@ func (b *Baize) CardTapped(c *Card) {
 		println("clueless when tapping on a", pSrc.Class, "card")
 	}
 
-	if !moved {
+	if moved {
+		b.AfterUserMove()
+	} else {
 		if c != nil {
 			c.Shake()
 		}
-	} else {
-		b.AfterUserMove()
 	}
 
 	// TODO else test other piles to see if this card is accepted?
@@ -585,6 +576,13 @@ func (b *Baize) AfterUserMove() {
 
 	//
 
+	if b.Complete() {
+		println(b.Variant, "complete")
+		b.State = Complete
+	}
+
+	//
+
 	var oldChecksum, newChecksum uint32
 	var ok bool
 
@@ -606,13 +604,6 @@ func (b *Baize) AfterUserMove() {
 		println("not pushing to undo because checksums match")
 	}
 
-	//
-
-	if b.Complete() {
-		println(b.Variant, "complete")
-		b.State = Complete
-		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-	}
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
@@ -655,6 +646,7 @@ func (b *Baize) Update() error {
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyC) {
 		b.Collect()
+		b.AfterUserMove()
 		return nil
 	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyN) {
