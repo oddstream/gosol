@@ -54,10 +54,10 @@ func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 	return count
 }
 
-// Collect automatically moves cards to the Foundations
-func (b *Baize) Collect() {
+// Collect automatically moves cards to the Foundations; returns true if any cards were collected
+func (b *Baize) Collect() bool {
 
-	var count int
+	var count, totalCount int
 	for {
 		count = 0
 		for _, fp := range b.Piles {
@@ -90,8 +90,9 @@ func (b *Baize) Collect() {
 			break
 		}
 	NextFoundationPile:
+		totalCount += count
 	}
-
+	return totalCount != 0
 }
 
 // TableauxComplete returns true if every tableau is complete

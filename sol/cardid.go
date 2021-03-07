@@ -73,6 +73,11 @@ func (c *Card) Suit() int {
 	return c.ID.Suit()
 }
 
+// StringSuit returns the suit as a string
+func (c *Card) StringSuit() string {
+	return c.ID.StringSuit()
+}
+
 // Ordinal returns the ordinal number buried in the card id
 func (cid CardID) Ordinal() int {
 	return int(uint32(cid) & ordinalMask)
@@ -147,11 +152,6 @@ func NewCardID(pack, suit, ordinal int) CardID {
 	u += uint32(suit) << 4
 	u += uint32(ordinal)
 	return CardID(u)
-}
-
-// StringSuit returns the suit as a string
-func (c *Card) StringSuit() string {
-	return c.ID.StringSuit()
 }
 
 func sameCard(ID1, ID2 CardID) bool {

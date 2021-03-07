@@ -655,8 +655,9 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (b *Baize) Update() error {
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyC) {
-		b.Collect()
-		b.AfterUserMove()
+		if b.Collect() {
+			b.AfterUserMove()
+		}
 		return nil
 	}
 	if inpututil.IsKeyJustReleased(ebiten.KeyN) {

@@ -18,15 +18,14 @@ $ git branch -m master main
   in Yukon, you can just drag away the card(s) on top of it
 + Spider/Simple Simon tap on King to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
-+ enum constants for suits, functions to turn into String eg Heart and Char eg H
 + map[VariantName]english string
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 + CompleteWhen attribute, default 0, 13 for Foundations
   "a game is complete when all piles except foundations are empty"
   other rules for Poker, GrandfathersClock
-+ method goes in Baize if it needs access to Baize.Piles
-  method goes in Pile if it needs access to Pile.Cards
+! method goes in Baize if it needs access to Baize.Piles
+! method goes in Pile if it needs access to Pile.Cards
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + grid X,Y to screenX,screenY func
