@@ -63,7 +63,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 			log.Fatal("saved pile", savedPile.Class, "does not match baize pile", pile.Class)
 		}
 		if len(pile.Cards) != len(savedPile.Cards) {
-			println("updating pile", pile.Class)
+			// println("updating pile", pile.Class)
 			pile.UpdateFromSaved(cardCache, savedPile)
 		}
 	}

@@ -4,7 +4,6 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ record won game when detecting Complete(), disallow undo?
 + your best score is 0%
 + https://en.wikipedia.org/wiki/Bisley_(solitaire)
 + https://en.wikipedia.org/wiki/Aces_Up
@@ -16,7 +15,7 @@ $ git branch -m master main
 + tap a scrunched card to show it in full
   hover won't work on mobiles
   in Yukon, you can just drag away the card(s) on top of it
-+ Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
++ Spider/Simple Simon tap on King to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
 + map[VariantName]english string
@@ -34,6 +33,7 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x record won game when detecting Complete(), disallow undo?
 x append 'u' or 'd' to Card.ID to create SaveableCard (which beomes a string)
 x saving a "complete" game, reloading it and it's "started"
   saved state; last entry is "State": 1

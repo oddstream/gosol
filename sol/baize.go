@@ -115,14 +115,18 @@ func (b *Baize) StartGame() {
 // RestartGame resets Baize and restarts current variant with same seed
 func (b *Baize) RestartGame() {
 	// could load first entry on undo stack, start game will push initial state
-	b.recordStatistics()
+	if b.State == Started {
+		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+	}
 	b.Restart()
 	b.StartGame()
 }
 
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
-	b.recordStatistics()
+	if b.State == Started {
+		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+	}
 	b.Seed = time.Now().UnixNano()
 	b.Restart()
 	b.StartGame()
@@ -131,7 +135,9 @@ func (b *Baize) NewGame() {
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant(v string) {
 
-	b.recordStatistics()
+	if b.State == Started {
+		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+	}
 	b.Reset()
 	b.Variant = v
 	b.Seed = time.Now().UnixNano()
@@ -569,7 +575,8 @@ func (b *Baize) AutoMoves() {
 
 }
 
-// AfterUserMove runs after the user has made a move
+// AfterUserMove runs after the user has made a move;
+// perform any auto moves (on behalf of user), test for game complete, push state onto undo stack
 func (b *Baize) AfterUserMove() {
 
 	b.AutoMoves()
@@ -579,6 +586,7 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		println(b.Variant, "complete")
 		b.State = Complete
+		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 	}
 
 	//

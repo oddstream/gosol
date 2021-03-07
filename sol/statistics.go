@@ -86,14 +86,14 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 	s.Save()
 }
 
-func (b *Baize) recordStatistics() {
-	switch b.State {
-	case Started:
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-	case Complete:
-		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-	}
-}
+// func (b *Baize) recordStatistics() {
+// 	switch b.State {
+// 	case Started:
+// 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+// 	case Complete:
+// 		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+// 	}
+// }
 
 func (s *Statistics) welcomeToast(v string) {
 	stats, ok := s.StatsMap[v]

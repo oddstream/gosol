@@ -493,8 +493,8 @@ func (p *Pile) DragTailBy(dx, dy int) {
 	}
 }
 
-// IsComplete returns true if this Pile is complete
-func (p *Pile) IsComplete() bool {
+// Complete returns true if this Pile is complete
+func (p *Pile) Complete() bool {
 	// a game is complete when all piles except foundations are empty
 
 	cw, ok := p.GetIntAttribute("CompleteWhen")

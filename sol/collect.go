@@ -111,9 +111,13 @@ func (b *Baize) TableauxComplete() bool {
 
 // Complete returns true if this game is complete
 func (b *Baize) Complete() bool {
+	if b.State == Complete {
+		println("testing a complete game for completeness")
+		return true
+	}
 	complete := true
 	for _, p := range b.Piles {
-		if !p.IsComplete() {
+		if !p.Complete() {
 			complete = false
 			break
 		}
