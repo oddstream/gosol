@@ -393,7 +393,7 @@ func (b *Baize) PileTapped(p *Pile) {
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
-	// println("card",c.id,"tapped")
+	// println("card",c.ID.String(),"tapped")
 
 	if c.Animating() {
 		println("cannot tap an animating card")
@@ -427,7 +427,7 @@ func (b *Baize) CardTapped(c *Card) {
 			if targetClass == p.Class {
 				// println("found a", p.Class)
 				if p.CanAcceptCard(c) {
-					// println(p.Class, "can accept", c.id)
+					// println(p.Class, "can accept", c.ID.String())
 					for cardsToMove > 0 && c != nil {
 						cardsToMove--
 						b.MoveCards(c, p)
@@ -548,6 +548,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	src.ScrunchCards()
 	dst.ScrunchCards()
 
+	// TODO should this be in AfterUserMove()?
 	if b.State == Virgin {
 		TheStatistics.startGame(b.Variant)
 		b.State = Started

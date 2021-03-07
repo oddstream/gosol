@@ -2,7 +2,6 @@ package sol
 
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
-	"strconv"
 
 	"bytes"
 	"image"
@@ -176,35 +175,9 @@ func NewCard(pack, suit, ordinal int) *Card {
 	return c
 }
 
+// String satisfies the Stringer interface (defined by fmt package)
 func (c *Card) String() string {
 	return c.ID.String()
-}
-
-// ParseID decomposes a string id into Card members pack, suit, ordinal
-func parseID(id string) (pack int, suit string, ordinal int) {
-	i64, err := strconv.ParseInt(string(id[0]), 16, 0)
-	pack = int(i64)
-	if err != nil || pack > 9 {
-		log.Fatal("error in Card id" + id)
-	}
-	switch string(id[1]) {
-	case "C":
-		suit = "Club"
-	case "D":
-		suit = "Diamond"
-	case "H":
-		suit = "Heart"
-	case "S":
-		suit = "Spade"
-	default:
-		log.Fatal("error in Card id" + id)
-	}
-	i64, err = strconv.ParseInt(string(id[2]), 16, 0)
-	ordinal = int(i64)
-	if err != nil || ordinal < 1 || ordinal > 13 {
-		log.Fatal("error in Card id" + id)
-	}
-	return // uses named return variables
 }
 
 // Position returns the x,y screen coords of this card
@@ -230,7 +203,7 @@ func (c *Card) SetPosition(x, y int) {
 // TransitionTo starts the transition of this Card
 func (c *Card) TransitionTo(x, y int) {
 	// if c.lerpStep < 1.0 {
-	// 	println(c.id, "already lerping")
+	// 	println(c.ID.String(), "already lerping")
 	// }
 	if x == c.screenX && y == c.screenY {
 		c.SetPosition(x, y)
@@ -245,7 +218,7 @@ func (c *Card) TransitionTo(x, y int) {
 func (c *Card) StartDrag() {
 	c.dragStartX, c.dragStartY = c.screenX, c.screenY
 	c.dragging = true
-	// println("start drag", c.id, "start", c.dragStartX, c.dragStartY)
+	// println("start drag", c.ID.String(), "start", c.dragStartX, c.dragStartY)
 }
 
 // DragBy repositions the card by the distance it has been dragged
@@ -260,13 +233,13 @@ func (c *Card) DragStartPosition() (int, int) {
 
 // StopDrag informs card that it is no longer being dragged
 func (c *Card) StopDrag() {
-	// println("stop drag", c.id)
+	// println("stop drag", c.ID.String())
 	c.dragging = false
 }
 
 // CancelDrag informs card that it is no longer being dragged
 func (c *Card) CancelDrag() {
-	// println("cancel drag", c.id, "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
+	// println("cancel drag", c.ID.String(), "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
 	c.TransitionTo(c.dragStartX, c.dragStartY)
 	// TODO should go back to Pile.PushedFannedPosition in case of a mis-drag
 	c.dragging = false

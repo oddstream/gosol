@@ -620,7 +620,7 @@ func (p *Pile) DrawCards(screen *ebiten.Image) {
 func (p *Pile) DrawAnimatingCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
 		if c.Animating() {
-			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.id, c.screenX, c.screenY))
+			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.ID.String(), c.screenX, c.screenY))
 			c.Draw(screen)
 		}
 	}

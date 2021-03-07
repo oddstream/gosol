@@ -5,6 +5,7 @@ $ git branch -m master main
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
 + your best score is 0%
++ completed Limited.json is 770KBytes - zip it?
 + https://en.wikipedia.org/wiki/Bisley_(solitaire)
 + https://en.wikipedia.org/wiki/Aces_Up
 + Pile iterator eg Baize.IteratePiles("Foundation")

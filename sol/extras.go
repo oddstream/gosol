@@ -72,7 +72,7 @@ func shuffleCards(stock *Pile, seed int64) {
 
 	// println("-ordered------------")
 	// for i, c := range sh.cards {
-	// 	println(i, c.id)
+	// 	println(i, c.ID.String())
 	// }
 
 	// println("-KFY----------------")
@@ -83,7 +83,7 @@ func shuffleCards(stock *Pile, seed int64) {
 	}
 
 	// for i, c := range sh.cards {
-	// 	println(i, c.id)
+	// 	println(i, c.ID.String())
 	// }
 
 }
