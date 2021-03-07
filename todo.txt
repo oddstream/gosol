@@ -4,13 +4,11 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ saving a "complete" game, reloading it and it's "started"
-  saved state; last entry is "State": 1
-  possible fix; Complete (setting state) came after post-move UndoPush()
++ record won game when detecting Complete(), disallow undo?
 + your best score is 0%
-+ Bisley
++ https://en.wikipedia.org/wiki/Bisley_(solitaire)
++ https://en.wikipedia.org/wiki/Aces_Up
 + Pile iterator eg Baize.IteratePiles("Foundation")
-+ save game to json when closing (will need way to specify and switch variant)
 + cleaner desktop/browser userdata/statistics load/save (interface?)
 + card font scaling could use some more love to remove majic numbers
   includes position of accept symbol
@@ -20,14 +18,7 @@ $ git branch -m master main
   in Yukon, you can just drag away the card(s) on top of it
 + Spider/Simple Simon tap on K to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
-+ bury/disinter cards
 + enum constants for suits, functions to turn into String eg Heart and Char eg H
-+ compress SaveableCard into a uint16 (pack,suit,ordinal,prone)
-  pack 1..16, 4 bits
-  ordinal 1..16, 4 bits
-  suit 1..4 (maybe more later) (fuck it, give it 4 bits)
-  prone 1 bit
-  = 13 bits
 + map[VariantName]english string
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
@@ -43,8 +34,14 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x append 'u' or 'd' to Card.ID to create SaveableCard (which beomes a string)
+x saving a "complete" game, reloading it and it's "started"
+  saved state; last entry is "State": 1
+  possible fix; Complete (setting state) came after post-move UndoPush()
+x save game to json when closing (will need way to specify and switch variant)
 x UndoPush() after collect?
 x Load/Save Baize
+x bury/disinter cards
 x Baker's Dozen, variant display name
 x Spider Scrunch 5
 x detect game exit

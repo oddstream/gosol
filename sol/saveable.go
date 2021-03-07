@@ -20,13 +20,7 @@ type SaveablePile struct {
 	Accept   int    // local, mutable copy of Accept
 	Recycles int    // local, mutable copy of Recycles
 	Scrunch  int    // copy of scrunch percentage
-	Cards    []SaveableCard
-}
-
-// SaveableCard is a reduced struct for converting to JSON
-type SaveableCard struct {
-	ID    string
-	Prone bool
+	Cards    []string
 }
 
 // Checksum creates checksum for the current state
@@ -103,10 +97,23 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	p.localRecycles = sav.Recycles
 	p.scrunchPercentage = sav.Scrunch
 	for _, cSaved := range sav.Cards {
-		c := findCardInCache(cSaved.ID)
+		id := cSaved[0:3] // substring operation up to, but not including, cSaved[3]
+		var prone bool
+		switch string(cSaved[3]) {
+		case "d":
+			prone = true
+		case "u":
+			prone = false
+		default:
+			log.Fatal("unexpected saved card", cSaved)
+		}
+		c := findCardInCache(id)
+		if c == nil {
+			log.Fatal("could not find card in cache", id)
+		}
 		p.Push(c)
-		if cSaved.Prone != c.prone { // TODO copy this back to Opsole
-			if cSaved.Prone {
+		if prone != c.prone { // TODO copy this back to Opsole
+			if prone {
 				c.FlipDown()
 			} else {
 				c.FlipUp()
@@ -115,58 +122,10 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	}
 }
 
-// Saveable returns a reduced object for converting to JSON and saving
-func (c *Card) Saveable() SaveableCard {
-	return SaveableCard{ID: c.id, Prone: c.prone}
+// Saveable returns a 4-char string for converting to JSON and saving
+func (c *Card) Saveable() string {
+	if c.prone {
+		return c.id + "d"
+	}
+	return c.id + "u"
 }
-
-// Bits returns the compact form of a card id + prone flag
-// func (c *Card) Bits() uint16 {
-// 	// 1111000011110000
-// 	var ui uint16
-// 	ui = uint16(c.pack) << 12
-// 	switch c.suit {
-// 	case "Club":
-// 		ui |= 0b00010000
-// 	case "Diamond":
-// 		ui |= 0b00100000
-// 	case "Heart":
-// 		ui |= 0b00110000
-// 	case "Spade":
-// 		ui |= 0b01000000
-// 	}
-// 	ui |= uint16(c.ordinal) << 4 // 1=0b0001, 13=0b1101
-// 	if c.prone {
-// 		ui |= 1
-// 	}
-// 	return ui
-// }
-
-// ParseBits unpacks the compact form of a card id+prone flag
-// func (c *Card) ParseBits(ui uint16) (id string, prone bool) {
-// 	var pack, ordinal int
-// 	var suit string
-// 	pack = int(ui >> 12 & 0b1111)
-// 	switch ui & 0b11110000 {
-// 	case 0b00010000:
-// 		suit = "Club"
-// 	case 0b00100000:
-// 		suit = "Diamond"
-// 	case 0b00110000:
-// 		suit = "Heart"
-// 	case 0b01000000:
-// 		suit = "Spade"
-// 	}
-// 	ordinal = int(ui >> 4 & 0b1111)
-// 	prone = ui&1 == 1
-// 	id = fmt.Sprintf("%d%c%02d", pack, suit[0], ordinal)
-// 	return
-// }
-
-// NewCardFromSaveable is a factory for Card objects
-// func NewCardFromSaveable(sav SaveableCard) *Card {
-// 	p, s, o := parseID(sav.ID)
-// 	c := NewCard(p, s, o)
-// 	c.prone = sav.Prone
-// 	return c
-// }
