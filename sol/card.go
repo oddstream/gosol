@@ -5,9 +5,7 @@ import (
 	"strconv"
 
 	"bytes"
-	"fmt"
 	"image"
-	"image/color"
 	"log"
 
 	"github.com/fogleman/gg"
@@ -16,20 +14,12 @@ import (
 )
 
 const (
-	// LERPSTEP is the amount a transitioning card moves each tick
-	LERPSTEP = 0.025
-	// FLIPSTEP is the amount we shrink/grow the flipping card width every tick
-	FLIPSTEP = 0.1
-	// SHAKEAMOUNT the number of pixels to shake a card by
-	SHAKEAMOUNT = 2
-)
-
-// enum types for card suits
-const (
-	CLUB    = 1
-	DIAMOND = 2
-	HEART   = 3
-	SPADE   = 4
+	// lerpStepAmount is the amount a transitioning card moves each tick
+	lerpStepAmount = 0.025
+	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
+	flipStepAmount = 0.1
+	// shakeAmount the number of pixels to shake a card by
+	shakeAmount = 2
 )
 
 type shakeState int
@@ -68,19 +58,8 @@ var (
 		"Roses":       {X: 325, Y: 140},
 		"Shell":       {X: 405, Y: 140},
 	}
-	scalableFaceImages map[string]*ebiten.Image
+	scalableFaceImages map[uint32]*ebiten.Image
 	scalableBackImage  *ebiten.Image
-
-	suitColors = map[string]*color.RGBA{
-		"C":       {R: 0, G: 0, B: 0, A: 0xff},
-		"D":       {R: 0xff, G: 0, B: 0, A: 0xff},
-		"H":       {R: 0xff, G: 0, B: 0, A: 0xff},
-		"S":       {R: 0, G: 0, B: 0, A: 0xff},
-		"Club":    {R: 0, G: 0, B: 0, A: 0xff},
-		"Diamond": {R: 0xff, G: 0, B: 0, A: 0xff},
-		"Heart":   {R: 0xff, G: 0, B: 0, A: 0xff},
-		"Spade":   {R: 0, G: 0, B: 0, A: 0xff},
-	}
 )
 
 func init() {
@@ -122,12 +101,12 @@ func BuildScalableCardImages() {
 
 	// build images for scalable cards
 
-	scalableFaceImages = make(map[string]*ebiten.Image)
+	scalableFaceImages = make(map[uint32]*ebiten.Image)
 
 	for ord := 1; ord < 14; ord++ {
-		for _, suit := range [4]string{"Club", "Diamond", "Heart", "Spade"} {
-			id := fmt.Sprintf("%c%x", suit[0], ord)
-			scalableFaceImages[id] = createFaceImage(suit, ord, suitColors[suit])
+		for suit := 1; suit < 5; suit++ {
+			ID := makeCardID(0, suit, ord)
+			scalableFaceImages[ID] = createFaceImage(ID)
 		}
 	}
 
@@ -138,12 +117,14 @@ func BuildScalableCardImages() {
 type Card struct {
 	owner *Pile
 
-	pack    int
-	suit    string // TODO turn into an int
-	ordinal int
-	prone   bool
-	id      string
-	red     bool
+	// pack    int
+	// suit    string
+	// ordinal int
+	// prone   bool
+	// id      string
+	// red     bool
+
+	ID uint32
 
 	screenX, screenY int // current position on screen (after Fan)
 
@@ -163,16 +144,14 @@ type Card struct {
 }
 
 // NewCard is a factory for Card objects
-func NewCard(pack int, suit string, ordinal int) *Card {
-	c := &Card{pack: pack, suit: suit, ordinal: ordinal}
-	c.id = c.String()
-	c.red = suit == "Heart" || suit == "Diamond"
-	c.prone = true
+func NewCard(pack, suit, ordinal int) *Card {
+	c := &Card{ID: makeCardID(pack, suit, ordinal)}
+	c.SetProne(true)
 
 	switch TheUserData.CardStyle {
 	case "retro":
 		var faceX, faceY, backX, backY int
-		switch c.suit {
+		switch c.StringSuit() {
 		case "Club":
 			faceY = 0
 		case "Diamond":
@@ -182,7 +161,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 		case "Spade":
 			faceY = CardHeight + CardHeight + CardHeight
 		}
-		faceX = (c.ordinal - 1) * CardWidth
+		faceX = (c.Ordinal() - 1) * CardWidth
 
 		c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+CardWidth, faceY+CardHeight)).(*ebiten.Image)
 
@@ -191,7 +170,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 		c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
 
 	case "scalable":
-		subid := c.id[1:] // take the pack off (first char) leaving suit and hexadecimal ordinal
+		subid := makeCardID(0, c.Suit(), c.Ordinal())
 		var ok bool
 		c.faceImg, ok = scalableFaceImages[subid]
 		if !ok {
@@ -206,8 +185,7 @@ func NewCard(pack int, suit string, ordinal int) *Card {
 }
 
 func (c *Card) String() string {
-	// %x = lowercase hexadecimal, %c = character
-	return fmt.Sprintf("%x%c%x", c.pack, c.suit[0], c.ordinal)
+	return cardIDToString(c.ID)
 }
 
 // ParseID decomposes a string id into Card members pack, suit, ordinal
@@ -312,28 +290,26 @@ func (c *Card) Shake() {
 	}
 	// hijack the lerping src, dst positions
 	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	c.dstX, c.dstY = float64(c.screenX-SHAKEAMOUNT), float64(c.screenY)
+	c.dstX, c.dstY = float64(c.screenX-shakeAmount), float64(c.screenY)
 	c.shake = shakingLeft
 }
 
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
-	if c.prone {
-		c.prone = false        // card is immediately face up, else fan isn't correct
-		c.flipStep = -FLIPSTEP // start by making card narrower
+	if c.Prone() {
+		c.SetProne(false)            // card is immediately face up, else fan isn't correct
+		c.flipStep = -flipStepAmount // start by making card narrower
 		c.flipWidth = 1.0
 	}
-	// c.prone = false
 }
 
 // FlipDown flips the card face down
 func (c *Card) FlipDown() {
-	if !c.prone {
-		c.prone = true         // card is immediately face down, else fan isn't correct
-		c.flipStep = -FLIPSTEP // start by making card narrower
+	if !c.Prone() {
+		c.SetProne(true)             // card is immediately face down, else fan isn't correct
+		c.flipStep = -flipStepAmount // start by making card narrower
 		c.flipWidth = 1.0
 	}
-	// c.prone = true
 }
 
 // Flip toggles the card
@@ -376,9 +352,9 @@ func (c *Card) Update() error {
 		c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
 		// make Card settle faster when already close to it's destination
 		if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
-			c.lerpStep += LERPSTEP * 2
+			c.lerpStep += lerpStepAmount * 2
 		} else {
-			c.lerpStep += LERPSTEP
+			c.lerpStep += lerpStepAmount
 		}
 		if c.lerpStep >= 1.0 {
 			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
@@ -387,7 +363,7 @@ func (c *Card) Update() error {
 	if c.flipStep != 0.0 {
 		c.flipWidth += c.flipStep
 		if c.flipWidth <= 0.15 {
-			c.flipStep = FLIPSTEP // now make card wider
+			c.flipStep = flipStepAmount // now make card wider
 		} else if c.flipWidth >= 1.0 {
 			c.flipWidth = 1.0
 			c.flipStep = 0.0
@@ -399,7 +375,7 @@ func (c *Card) Update() error {
 			if float64(c.screenX) > c.dstX {
 				c.screenX--
 			} else {
-				c.dstX = c.srcX + SHAKEAMOUNT
+				c.dstX = c.srcX + shakeAmount
 				c.shake = shakingRight
 			}
 		case shakingRight:
@@ -428,7 +404,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	var img *ebiten.Image
 	// card prone has already been set to destination state
 	if c.flipStep < 0 {
-		if c.prone {
+		if c.Prone() {
 			// card is getting narrower, and it's going to show face down, but show face up
 			img = c.faceImg
 		} else {
@@ -436,7 +412,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			img = c.backImg
 		}
 	} else {
-		if c.prone {
+		if c.Prone() {
 			img = c.backImg
 		} else {
 			img = c.faceImg

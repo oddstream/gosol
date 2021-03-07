@@ -17,17 +17,30 @@ func createCards(stock *Pile) {
 		packs = 1
 	}
 
-	var createSuits []string
+	var createSuitStrings []string
 	attribSuits := stock.GetStringAttribute("Suits")
 	if attribSuits != "" {
-		createSuits = strings.Split(attribSuits, ",")
+		createSuitStrings = strings.Split(attribSuits, ",")
 	} else {
-		createSuits = []string{"Club", "Diamond", "Heart", "Spade"}
+		createSuitStrings = []string{"Club", "Diamond", "Heart", "Spade"}
+	}
+	var createSuitInts []int
+	for _, suit := range createSuitStrings {
+		switch suit {
+		case "Club":
+			createSuitInts = append(createSuitInts, 1)
+		case "Diamond":
+			createSuitInts = append(createSuitInts, 2)
+		case "Heart":
+			createSuitInts = append(createSuitInts, 3)
+		case "Spade":
+			createSuitInts = append(createSuitInts, 4)
+		}
 	}
 
 	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
 	for pack := 0; pack < packs; pack++ {
-		for _, suit := range createSuits {
+		for _, suit := range createSuitInts {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
 				c.owner = stock
@@ -55,7 +68,7 @@ func shuffleCards(stock *Pile, seed int64) {
 			}
 		}
 	*/
-	sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].id < stock.Cards[j].id })
+	sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
 
 	// println("-ordered------------")
 	// for i, c := range sh.cards {
@@ -83,7 +96,7 @@ func findCard(cards []*Card, card rune) (int, bool) {
 	}
 	ordinal := int(i64)
 	for i, c := range cards {
-		if c.ordinal == ordinal {
+		if c.Ordinal() == ordinal {
 			return i, true
 		}
 	}
@@ -91,7 +104,7 @@ func findCard(cards []*Card, card rune) (int, bool) {
 }
 
 func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
-	if cPrev.prone || cThis.prone {
+	if cPrev.Prone() || cThis.Prone() {
 		println("prone cards are not conformant")
 		return false
 	}
@@ -104,19 +117,19 @@ func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 		return false
 	case 1: // regardless of suit
 	case 2: // in suit
-		if cPrev.suit != cThis.suit {
+		if cPrev.Suit() != cThis.Suit() {
 			return false
 		}
 	case 3: // in color
-		if cPrev.red != cThis.red {
+		if cPrev.Color() != cThis.Color() {
 			return false
 		}
 	case 4: // in alternate color
-		if cPrev.red == cThis.red {
+		if cPrev.Color() == cThis.Color() {
 			return false
 		}
 	case 5: // in any suit but it's own
-		if cPrev.suit == cThis.suit {
+		if cPrev.Suit() == cThis.Suit() {
 			return false
 		}
 	}
@@ -126,26 +139,26 @@ func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 		case 0: // may not build or move
 			return false
 		case 1: // up, e.g. a 10 goes on a 9
-			if cPrev.ordinal == 13 && cThis.ordinal == 1 {
+			if cPrev.Ordinal() == 13 && cThis.Ordinal() == 1 {
 				// an Ace on a King
 			} else {
-				if cThis.ordinal != cPrev.ordinal+1 {
+				if cThis.Ordinal() != cPrev.Ordinal()+1 {
 					return false
 				}
 			}
 		case 2: // down, e.g. a 9 goes on a 10
-			if cPrev.ordinal == 1 && cThis.ordinal == 13 {
+			if cPrev.Ordinal() == 1 && cThis.Ordinal() == 13 {
 				// a King on an Ace
 			} else {
-				if cThis.ordinal != cPrev.ordinal-1 {
+				if cThis.Ordinal() != cPrev.Ordinal()-1 {
 					return false
 				}
 			}
 		case 4: // either up or down
-			if (cPrev.ordinal == 13 && cThis.ordinal == 1) || (cPrev.ordinal == 1 && cThis.ordinal == 13) {
+			if (cPrev.Ordinal() == 13 && cThis.Ordinal() == 1) || (cPrev.Ordinal() == 1 && cThis.Ordinal() == 13) {
 				// a king on an ace or an ace on a king
 			} else {
-				if util.Abs(cPrev.ordinal-cThis.ordinal) != 1 {
+				if util.Abs(cPrev.Ordinal()-cThis.Ordinal()) != 1 {
 					return false
 				}
 			}
@@ -156,22 +169,22 @@ func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 		case 0: // may not build or move
 			return false
 		case 1: // up, e.g. a 10 goes on a 9
-			if cThis.ordinal != cPrev.ordinal+1 {
+			if cThis.Ordinal() != cPrev.Ordinal()+1 {
 				return false
 			}
 		case 2: // down, e.g. a 9 goes on a 10
-			if cThis.ordinal != cPrev.ordinal-1 {
+			if cThis.Ordinal() != cPrev.Ordinal()-1 {
 				return false
 			}
 		case 4: // either up or down
-			if util.Abs(cThis.ordinal-cPrev.ordinal) != 1 {
+			if util.Abs(cThis.Ordinal()-cPrev.Ordinal()) != 1 {
 				return false
 			}
 		case 5: // regardless of rank
 		}
 	}
 
-	// TODO localRank == 13 (Pyramid) cPrev.ordinal + cThis.ordinal == 13
+	// TODO localRank == 13 (Pyramid) cPrev.Ordinal() + cThis.Ordinal() == 13
 
 	return true
 }

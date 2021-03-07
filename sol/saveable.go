@@ -16,11 +16,11 @@ type SaveableBaize struct {
 
 // SaveablePile is a reduced struct for converting to JSON
 type SaveablePile struct {
-	Class    string // for readability and sanity checks
-	Accept   int    // local, mutable copy of Accept
-	Recycles int    // local, mutable copy of Recycles
-	Scrunch  int    // copy of scrunch percentage
-	Cards    []string
+	Class    string   // for readability and sanity checks
+	Accept   int      // local, mutable copy of Accept
+	Recycles int      // local, mutable copy of Recycles
+	Scrunch  int      // copy of scrunch percentage
+	Cards    []uint32 // array of Card.ID
 }
 
 // Checksum creates checksum for the current state
@@ -75,7 +75,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 func (p *Pile) Saveable() SaveablePile {
 	sav := SaveablePile{Class: p.Class, Accept: p.localAccept, Recycles: p.localRecycles, Scrunch: p.scrunchPercentage}
 	for _, c := range p.Cards {
-		sav.Cards = append(sav.Cards, c.Saveable())
+		sav.Cards = append(sav.Cards, c.ID)
 	}
 	return sav
 }
@@ -83,9 +83,9 @@ func (p *Pile) Saveable() SaveablePile {
 // UpdateFromSaved replaces this Pile's contents
 func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 
-	findCardInCache := func(id string) *Card {
+	findCardInCache := func(ID uint32) *Card {
 		for _, c := range cardCache {
-			if c.id == id {
+			if sameCard(c.ID, ID) {
 				return c
 			}
 		}
@@ -96,36 +96,16 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	p.localAccept = sav.Accept
 	p.localRecycles = sav.Recycles
 	p.scrunchPercentage = sav.Scrunch
-	for _, cSaved := range sav.Cards {
-		id := cSaved[0:3] // substring operation up to, but not including, cSaved[3]
-		var prone bool
-		switch string(cSaved[3]) {
-		case "d":
-			prone = true
-		case "u":
-			prone = false
-		default:
-			log.Fatal("unexpected saved card", cSaved)
-		}
-		c := findCardInCache(id)
+	for _, savedID := range sav.Cards {
+		c := findCardInCache(savedID)
 		if c == nil {
-			log.Fatal("could not find card in cache", id)
+			log.Fatal("could not find card in cache", savedID, cardIDToString(savedID))
 		}
 		p.Push(c)
-		if prone != c.prone { // TODO copy this back to Opsole
-			if prone {
-				c.FlipDown()
-			} else {
-				c.FlipUp()
-			}
+		if proneFromCardID(savedID) {
+			c.FlipDown()
+		} else {
+			c.FlipUp()
 		}
 	}
-}
-
-// Saveable returns a 4-char string for converting to JSON and saving
-func (c *Card) Saveable() string {
-	if c.prone {
-		return c.id + "d"
-	}
-	return c.id + "u"
 }

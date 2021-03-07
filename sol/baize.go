@@ -254,7 +254,7 @@ func (b *Baize) dealCards() {
 				if c == nil {
 					log.Fatal("out of cards during deal")
 				}
-				if c.prone {
+				if c.Prone() {
 					log.Fatal("popped a face down card from stock")
 				}
 				if c == nil {
@@ -292,7 +292,7 @@ func (b *Baize) dealCards() {
 		if p.Class == "Foundation" && p.CardCount() == 1 {
 			afp := p.GetBoolAttribute("AcceptFirstPush")
 			if afp {
-				ord := p.Peek().ordinal
+				ord := p.Peek().Ordinal()
 				for _, fp := range b.Piles {
 					if fp.Class == "Foundation" {
 						fp.SetAccept(ord)
@@ -454,7 +454,7 @@ func (b *Baize) CardTapped(c *Card) {
 			if p.Class == targetClass {
 				b.MoveCards(c, p)
 				moved = true
-				c.prone = false
+				c.SetProne(false)
 				c = pSrc.Peek()
 			}
 			if c == nil {

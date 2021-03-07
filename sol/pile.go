@@ -263,7 +263,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 	case "Foundation":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
-				return c.ordinal == p.localAccept
+				return c.Ordinal() == p.localAccept
 			}
 			return true
 		}
@@ -271,7 +271,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 	case "Tableau":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
-				return c.ordinal == p.localAccept
+				return c.Ordinal() == p.localAccept
 			}
 			return true
 		}
@@ -332,7 +332,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		}
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
-				return c0.ordinal == p.localAccept
+				return c0.Ordinal() == p.localAccept
 			}
 			return true
 		}
@@ -349,7 +349,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		}
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
-				return c0.ordinal == p.localAccept
+				return c0.Ordinal() == p.localAccept
 			}
 			return true
 		}
@@ -369,7 +369,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 		// do nothing
 	case "Down":
 		for _, c := range p.Cards {
-			if c.prone {
+			if c.Prone() {
 				y = y + (CardHeight / backFanFactor * p.scrunchPercentage / 100)
 			} else {
 				y = y + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
@@ -377,7 +377,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 		}
 	case "Right":
 		for _, c := range p.Cards {
-			if c.prone {
+			if c.Prone() {
 				x = x + (CardWidth / backFanFactor * p.scrunchPercentage / 100)
 			} else {
 				x = x + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
@@ -513,12 +513,12 @@ func (p *Pile) Complete() bool {
 func (p *Pile) BuryCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(p.Cards))
 	for _, c := range p.Cards {
-		if c.ordinal == ordinal {
+		if c.Ordinal() == ordinal {
 			tmp = append(tmp, c)
 		}
 	}
 	for _, c := range p.Cards {
-		if c.ordinal != ordinal {
+		if c.Ordinal() != ordinal {
 			tmp = append(tmp, c)
 		}
 	}
@@ -532,12 +532,12 @@ func (p *Pile) BuryCards(ordinal int) {
 func (p *Pile) DisinterCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(p.Cards))
 	for _, c := range p.Cards {
-		if c.ordinal != ordinal {
+		if c.Ordinal() != ordinal {
 			tmp = append(tmp, c)
 		}
 	}
 	for _, c := range p.Cards {
-		if c.ordinal == ordinal {
+		if c.Ordinal() == ordinal {
 			tmp = append(tmp, c)
 		}
 	}

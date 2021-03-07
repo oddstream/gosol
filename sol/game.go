@@ -56,9 +56,6 @@ var TheBaize *Baize
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	g := &Game{}
-	// println("LevelData", len(LevelData))
-
-	//	TheUserData.Load()
 
 	TheCardFonts = NewCardFonts() // CardWidth/Height have now been set
 	TheStatistics = NewStatistics()

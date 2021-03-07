@@ -35,7 +35,7 @@ func (p *Pile) fannedHeight(scrunchPercent int) int {
 	var y int
 	for i := 0; i < p.CardCount()-1; i++ {
 		c := p.Cards[i]
-		if c.prone {
+		if c.Prone() {
 			y = y + (CardHeight / backFanFactor * scrunchPercent / 100)
 		} else {
 			y = y + (CardHeight / faceFanFactor * scrunchPercent / 100)
@@ -49,7 +49,7 @@ func (p *Pile) fannedWidth(scrunchPercent int) int {
 	var x int
 	for i := 0; i < p.CardCount()-1; i++ {
 		c := p.Cards[i]
-		if c.prone {
+		if c.Prone() {
 			x = x + (CardWidth / backFanFactor * scrunchPercent / 100)
 		} else {
 			x = x + (CardWidth / faceFanFactor * scrunchPercent / 100)

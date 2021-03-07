@@ -31,10 +31,10 @@ func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 			if fc == nil {
 				continue
 			}
-			if fc.red == c.red {
+			if fc.Color() == c.Color() {
 				continue
 			}
-			if fc.ordinal < c.ordinal-1 {
+			if fc.Ordinal() < c.Ordinal()-1 {
 				return false
 			}
 		}
