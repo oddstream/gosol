@@ -10,7 +10,7 @@ import (
 // 	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
 // }
 
-func createFaceImage(ID uint32) *ebiten.Image {
+func createFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(BasicColors["White"])
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
@@ -20,9 +20,9 @@ func createFaceImage(ID uint32) *ebiten.Image {
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
-	dc.SetColor(colorFromCardID(ID))
+	dc.SetColor(ID.Color())
 	dc.SetFontFace(TheCardFonts.acmeRegular)
-	dc.DrawStringAnchored(util.OrdinalToShortString(ordinalFromCardID(ID)), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
+	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
 	dc.Stroke()
 
 	dc.SetFontFace(TheCardFonts.symbolRegular)
@@ -31,14 +31,14 @@ func createFaceImage(ID uint32) *ebiten.Image {
 	// https://www.fileformat.info/info/unicode/char/2665/fontsupport.htm
 	// https://github.com/fogleman/gg/blob/v1.3.0/context.go#L679
 	var r rune
-	switch suitFromCardID(ID) {
-	case 1: // Club
+	switch ID.Suit() {
+	case CLUB:
 		r = 9827 //0x2663
-	case 2: // Diamond
+	case DIAMOND:
 		r = 9830 // 0x2666
-	case 3: // Heart
+	case HEART:
 		r = 9829 //0x2665
-	case 4: // Spade
+	case SPADE:
 		r = 9824 // 0x2660
 	}
 	// to make the symbols align with the ordinal short string, draw it down a little, hence /6 instead of /6.666

@@ -58,7 +58,7 @@ var (
 		"Roses":       {X: 325, Y: 140},
 		"Shell":       {X: 405, Y: 140},
 	}
-	scalableFaceImages map[uint32]*ebiten.Image
+	scalableFaceImages map[CardID]*ebiten.Image
 	scalableBackImage  *ebiten.Image
 )
 
@@ -101,11 +101,11 @@ func BuildScalableCardImages() {
 
 	// build images for scalable cards
 
-	scalableFaceImages = make(map[uint32]*ebiten.Image)
+	scalableFaceImages = make(map[CardID]*ebiten.Image)
 
 	for ord := 1; ord < 14; ord++ {
 		for suit := 1; suit < 5; suit++ {
-			ID := makeCardID(0, suit, ord)
+			ID := NewCardID(0, suit, ord)
 			scalableFaceImages[ID] = createFaceImage(ID)
 		}
 	}
@@ -115,16 +115,8 @@ func BuildScalableCardImages() {
 
 // Card object
 type Card struct {
+	ID    CardID // contains flags (prone, marked) pack, suit, ordinal
 	owner *Pile
-
-	// pack    int
-	// suit    string
-	// ordinal int
-	// prone   bool
-	// id      string
-	// red     bool
-
-	ID uint32
 
 	screenX, screenY int // current position on screen (after Fan)
 
@@ -145,7 +137,7 @@ type Card struct {
 
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) *Card {
-	c := &Card{ID: makeCardID(pack, suit, ordinal)}
+	c := &Card{ID: NewCardID(pack, suit, ordinal)}
 	c.SetProne(true)
 
 	switch TheUserData.CardStyle {
@@ -170,7 +162,7 @@ func NewCard(pack, suit, ordinal int) *Card {
 		c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
 
 	case "scalable":
-		subid := makeCardID(0, c.Suit(), c.Ordinal())
+		subid := NewCardID(0, c.Suit(), c.Ordinal())
 		var ok bool
 		c.faceImg, ok = scalableFaceImages[subid]
 		if !ok {
@@ -185,7 +177,7 @@ func NewCard(pack, suit, ordinal int) *Card {
 }
 
 func (c *Card) String() string {
-	return cardIDToString(c.ID)
+	return c.ID.String()
 }
 
 // ParseID decomposes a string id into Card members pack, suit, ordinal

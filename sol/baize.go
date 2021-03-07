@@ -216,6 +216,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	b.UpdateFromSaveable(sav)
 	b.UndoPush()
+	TheStatistics.welcomeToast(b.Variant)
 
 	return true
 }

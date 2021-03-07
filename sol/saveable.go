@@ -20,7 +20,7 @@ type SaveablePile struct {
 	Accept   int      // local, mutable copy of Accept
 	Recycles int      // local, mutable copy of Recycles
 	Scrunch  int      // copy of scrunch percentage
-	Cards    []uint32 // array of Card.ID
+	Cards    []CardID // array of Card.ID
 }
 
 // Checksum creates checksum for the current state
@@ -83,7 +83,7 @@ func (p *Pile) Saveable() SaveablePile {
 // UpdateFromSaved replaces this Pile's contents
 func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 
-	findCardInCache := func(ID uint32) *Card {
+	findCardInCache := func(ID CardID) *Card {
 		for _, c := range cardCache {
 			if sameCard(c.ID, ID) {
 				return c
@@ -99,10 +99,10 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	for _, savedID := range sav.Cards {
 		c := findCardInCache(savedID)
 		if c == nil {
-			log.Fatal("could not find card in cache", savedID, cardIDToString(savedID))
+			log.Fatal("could not find card in cache", savedID, savedID.String())
 		}
 		p.Push(c)
-		if proneFromCardID(savedID) {
+		if savedID.Prone() {
 			c.FlipDown()
 		} else {
 			c.FlipUp()
