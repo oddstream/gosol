@@ -55,17 +55,7 @@ func (cid CardID) Suit() int {
 
 // StringSuit returns the suit number buried in the card id, expressed as a string
 func (cid CardID) StringSuit() string {
-	switch cid.Suit() {
-	case CLUB:
-		return "Club"
-	case DIAMOND:
-		return "Diamond"
-	case HEART:
-		return "Heart"
-	case SPADE:
-		return "Spade"
-	}
-	return ""
+	return SuitIntToString(cid.Suit())
 }
 
 // Suit returns 1=club, 2=diamond, 3=heart, 4=spade
@@ -156,4 +146,34 @@ func NewCardID(pack, suit, ordinal int) CardID {
 
 func sameCard(ID1, ID2 CardID) bool {
 	return uint32(ID1)&cardMask == uint32(ID2)&cardMask
+}
+
+// SuitStringToInt converts a suit string ("Heart") to an int (HEART)
+func SuitStringToInt(suit string) int {
+	switch suit {
+	case "Club":
+		return CLUB
+	case "Diamond":
+		return DIAMOND
+	case "Heart":
+		return HEART
+	case "Spade":
+		return SPADE
+	}
+	return 0
+}
+
+// SuitIntToString converts a suit int (HEART) to a string ("Heart")
+func SuitIntToString(suit int) string {
+	switch suit {
+	case CLUB:
+		return "Club"
+	case DIAMOND:
+		return "Diamond"
+	case HEART:
+		return "Heart"
+	case SPADE:
+		return "Spade"
+	}
+	return ""
 }

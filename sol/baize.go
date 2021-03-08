@@ -82,19 +82,13 @@ func (b *Baize) Restart() {
 	// if DebugMode {
 	// 	println("cards recalled to stock, now contains", stock.CardCount(), "cards")
 	// 	for _, c := range stock.Cards {
-	// 		if !c.prone {
+	// 		if !c.Prone() {
 	// 			log.Fatal("face up card found in stock")
 	// 		}
 	// 		if c.owner != stock {
 	// 			log.Fatal("card in stock belongs to", c.owner.Class)
 	// 		}
 	// 	}
-	// }
-
-	// TODO wait for lerping back to stock to finish before shuffling, for now use c.SetPosition() to cancel lerping
-	// x, y := stock.Position()
-	// for _, c := range stock.Cards {
-	// 	c.SetPosition(x, y)
 	// }
 
 	shuffleCards(stock, b.Seed)
@@ -535,7 +529,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	if oldSrcLen == len(src.Cards) {
-		println("MoveCards - nothing happened")
+		println("nothing happened in MoveCards")
 		return
 	}
 	// flip up an exposed source card
@@ -548,11 +542,6 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	src.ScrunchCards()
 	dst.ScrunchCards()
 
-	// TODO should this be in AfterUserMove()?
-	if b.State == Virgin {
-		TheStatistics.startGame(b.Variant)
-		b.State = Started
-	}
 }
 
 // AutoMoves performs post user-moves
@@ -585,10 +574,18 @@ func (b *Baize) AfterUserMove() {
 
 	//
 
-	if b.Complete() {
-		println(b.Variant, "complete")
-		b.State = Complete
-		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+	switch b.State {
+	case Virgin:
+		TheStatistics.startGame(b.Variant)
+		b.State = Started
+	case Started:
+		if b.Complete() {
+			println(b.Variant, "complete")
+			b.State = Complete
+			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+		}
+	case Complete:
+		println("what are we doing here?")
 	}
 
 	//
@@ -680,7 +677,7 @@ func (b *Baize) Update() error {
 		b.LoadPosition()
 		return nil
 	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyV) {
+	if DebugMode && inpututil.IsKeyJustReleased(ebiten.KeyV) {
 		b.Save()
 		return nil
 	}

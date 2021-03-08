@@ -1,9 +1,5 @@
 package sol
 
-import (
-	"strings"
-)
-
 /*
 --[[
   "Microsoft FreeCell or FreeCell Pro only plays an available card to its
@@ -96,19 +92,19 @@ func (b *Baize) Collect() bool {
 }
 
 // TableauxComplete returns true if every tableau is complete
-func (b *Baize) TableauxComplete() bool {
-	for _, p := range b.Piles {
-		if strings.HasPrefix(p.Class, "Tableau") {
-			if c0 := p.Peek(); c0 != nil {
-				tail := p.makeTail(c0)
-				if !isConformant(p.buildRules, p.buildFlags, tail) {
-					return false
-				}
-			}
-		}
-	}
-	return true
-}
+// func (b *Baize) TableauxComplete() bool {
+// 	for _, p := range b.Piles {
+// 		if strings.HasPrefix(p.Class, "Tableau") {
+// 			if c0 := p.Peek(); c0 != nil {
+// 				tail := p.makeTail(c0)
+// 				if !isConformant(p.buildRules, p.buildFlags, tail) {
+// 					return false
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return true
+// }
 
 // Complete returns true if this game is complete
 func (b *Baize) Complete() bool {

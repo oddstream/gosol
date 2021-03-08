@@ -19,23 +19,14 @@ func createCards(stock *Pile) {
 
 	var createSuitStrings []string
 	attribSuits := stock.GetStringAttribute("Suits")
-	if attribSuits != "" {
-		createSuitStrings = strings.Split(attribSuits, ",")
-	} else {
+	if attribSuits == "" {
 		createSuitStrings = []string{"Club", "Diamond", "Heart", "Spade"}
+	} else {
+		createSuitStrings = strings.Split(attribSuits, ",")
 	}
 	var createSuitInts []int
 	for _, suit := range createSuitStrings {
-		switch suit {
-		case "Club":
-			createSuitInts = append(createSuitInts, 1)
-		case "Diamond":
-			createSuitInts = append(createSuitInts, 2)
-		case "Heart":
-			createSuitInts = append(createSuitInts, 3)
-		case "Spade":
-			createSuitInts = append(createSuitInts, 4)
-		}
+		createSuitInts = append(createSuitInts, SuitStringToInt(suit))
 	}
 
 	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries

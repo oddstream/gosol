@@ -4,8 +4,9 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ your best score is 0%
++ you have played X N+1 times?
 + completed Limited.json is 770KBytes - zip it?
+  https://stackoverflow.com/questions/56994992/gzip-json-payload-before-post
 + https://en.wikipedia.org/wiki/Bisley_(solitaire)
 + https://en.wikipedia.org/wiki/Aces_Up
 + Pile iterator eg Baize.IteratePiles("Foundation")
@@ -21,9 +22,6 @@ $ git branch -m master main
 + map[VariantName]english string
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
-+ CompleteWhen attribute, default 0, 13 for Foundations
-  "a game is complete when all piles except foundations are empty"
-  other rules for Poker, GrandfathersClock
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
@@ -64,6 +62,8 @@ x get Build and Drag rules when pile is created
 x collect (triggered by command)
 x statistics (copied from Opsole), Baize.state 
 x BUG buildFlags 1xx used for both rank wrap AND power moves!!
+x CompleteWhen attribute, default 0, 13 for Foundations
+  other rules for Poker, GrandfathersClock
 x should Canfield, Storehouse tableaux have rank wrap?
 x investigate nasty panic when using uppercase Card.id
   probably because BuildScalableCardImages() still using lowercase
