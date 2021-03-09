@@ -19,6 +19,7 @@ var symbolFontBytes []byte
 
 // CardFonts contains references to regular and large fonts used on cards and piles
 type CardFonts struct {
+	acmeSmall     font.Face
 	acmeRegular   font.Face
 	acmeLarge     font.Face
 	symbolRegular font.Face
@@ -64,6 +65,11 @@ func NewCardFonts() *CardFonts {
 		log.Fatal(err)
 	}
 
+	cf.acmeSmall = truetype.NewFace(tt, &truetype.Options{
+		Size:    24,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
 	cf.acmeRegular = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(CardWidth) / 2.25,
 		DPI:     72,

@@ -11,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
 )
 
@@ -34,6 +35,7 @@ type Baize struct {
 	totalCards    int
 	State         BaizeState
 	stroke        *Stroke
+	ui            *ui.UI
 }
 
 // NewBaize is the factory func for Baize object
@@ -41,6 +43,7 @@ func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	TheBaize.ui = ui.New()
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
 		TheBaize.NewVariant(TheBaize.Variant)
@@ -436,7 +439,7 @@ func (b *Baize) CardTapped(c *Card) {
 		if empty > 0 {
 			stock := b.findPilePrefix("Stock")
 			if stock.CardCount() > empty {
-				println("all tableaux spaces must be filled before dealing a new row")
+				TheBaize.ui.Toast("all tableaux spaces must be filled before dealing a new row")
 				break
 			}
 		}
@@ -580,7 +583,7 @@ func (b *Baize) AfterUserMove() {
 		b.State = Started
 	case Started:
 		if b.Complete() {
-			println(b.Variant, "complete")
+			b.ui.Toast(b.Variant + " complete")
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 		}
@@ -761,6 +764,8 @@ LabelCompleted:
 		p.Update()
 	}
 
+	b.ui.Update()
+
 	return nil
 }
 
@@ -783,4 +788,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 		runtime.ReadMemStats(&ms)
 		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
 	}
+
+	b.ui.Draw(screen)
 }

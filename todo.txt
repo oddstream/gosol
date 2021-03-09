@@ -24,6 +24,11 @@ $ git branch -m master main
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
+
+! 71x96 = 1:1.352112676
+! 90x130 = 1:1.4444444
+! 89x137 = 1:1.539
+
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + grid X,Y to screenX,screenY func

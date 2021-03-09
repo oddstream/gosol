@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"fmt"
 	"log"
 
 	"oddstream.games/gosol/util"
@@ -98,26 +99,26 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 func (s *Statistics) welcomeToast(v string) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		println("You have not played", v, "before")
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", v))
 		return
 		// log.Fatal("welcomeToast unknown variant ", v)
 	}
 	if stats.Played == 0 {
-		println("You have not played", v, "before")
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", v))
 	} else {
-		println("you have played", v, stats.Played, "time(s)")
+		TheBaize.ui.Toast(fmt.Sprintf("You have started %d games of %s", stats.Played, v))
 	}
 	if stats.BestPercent < 100 {
-		println("you best score is", stats.BestPercent, "%")
+		TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
 	} else {
-		println("You have won", stats.Won, "game(s)")
+		TheBaize.ui.Toast(fmt.Sprintf("You have won %d games", stats.Won))
 	}
 	if stats.BestPercent == 100 {
 		if stats.CurrStreak > 0 {
-			println("You are on a winning streak of", stats.CurrStreak, "game(s)")
+			TheBaize.ui.Toast(fmt.Sprintf("You are one a winning streak of %d games", stats.CurrStreak))
 		}
 		if stats.CurrStreak < 0 {
-			println("You are on a losing streak of", util.Abs(stats.CurrStreak), "game(s)")
+			TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %d games", util.Abs(stats.CurrStreak)))
 		}
 	}
 }
