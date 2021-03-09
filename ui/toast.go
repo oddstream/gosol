@@ -1,39 +1,51 @@
 package ui
 
 import (
+	"image/color"
+
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Toast represents a simple popup window that disappears after a few seconds
+/*
+ https://material.io/archive/guidelines/components/snackbars-toasts.html
+
+	Single-line snackbar height: 48dp
+	Multi-line snackbar height: 80dp
+	Text: Roboto Regular 14sp
+	Action button: Roboto Medium 14sp, all-caps text
+	Default background fill: #323232 100%
+*/
+
+// Toast represents a simple popup label that disappears after a few seconds
 type Toast struct {
 	img       *ebiten.Image
 	ticksLeft int
 }
 
-// ToastManager manages the queue of toasts so that many may appear on screen at once
+// ToastManager manages the list of toasts so that many can appear on screen at once
 type ToastManager struct {
 	toasts []*Toast
 }
 
-// Toast creates a new toast message an adds it to the queue of messages
+// Toast creates a new toast message an adds it to the list of messages
 func (u *UI) Toast(message string) {
 
 	dc := gg.NewContext(8, 8)
-	dc.SetFontFace(u.fontFace)
+	dc.SetFontFace(u.toastTextFace)
 	w, h := dc.MeasureString(message)
 
 	w += 20
-	h += 20
+	h = 48
 
 	dc = gg.NewContext(int(w), int(h))
-	dc.SetRGBA(0, 0, 0, 0.5)
+	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
 	dc.DrawRectangle(0, 0, w, h)
 	dc.Fill()
 	dc.Stroke()
 
-	dc.SetFontFace(u.fontFace)
-	dc.SetRGBA(0.9, 0.9, 0.9, 1)
+	dc.SetFontFace(u.toastTextFace)
+	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawStringAnchored(message, w/2, h/2, 0.5, 0.5)
 	dc.Stroke()
 
@@ -45,9 +57,9 @@ func (u *UI) Toast(message string) {
 	println("toast:", message, "(", int(w), ",", int(h), ")")
 }
 
-// Add a new toast to the queued toasts
+// Add a new toast to the list
 func (tm *ToastManager) Add(t *Toast) {
-	tm.toasts = append([]*Toast{t}, tm.toasts...)
+	tm.toasts = append(tm.toasts, t) // push onto end of list
 }
 
 // Update the queue of toasts
@@ -58,9 +70,8 @@ func (tm *ToastManager) Update() {
 	for _, t := range tm.toasts {
 		t.ticksLeft--
 	}
-	t := tm.toasts[0]
-	if t.ticksLeft < 0 {
-		tm.toasts = tm.toasts[1:]
+	for len(tm.toasts) > 0 && tm.toasts[0].ticksLeft < 0 {
+		tm.toasts = tm.toasts[1:] // delete the oldest
 	}
 }
 

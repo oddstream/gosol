@@ -148,6 +148,7 @@ func (b *Baize) NewVariant(v string) {
 	// temporary fudge to set window width to center cards on baize
 	{
 		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
+		b.ui.SetTitle(variantDisplayName(b.Variant))
 
 		maxX := 0
 		for _, p := range b.Piles {
@@ -157,7 +158,7 @@ func (b *Baize) NewVariant(v string) {
 		}
 		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
 
-		TopMargin = CardHeight / 3
+		TopMargin = 48 + CardHeight/3
 	}
 
 	stock := b.findPilePrefix("Stock")
@@ -192,6 +193,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	// temporary fudge to set window width to center cards on baize
 	{
 		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
+		b.ui.SetTitle(variantDisplayName(b.Variant))
 
 		maxX := 0
 		for _, p := range b.Piles {
@@ -201,7 +203,7 @@ func (b *Baize) LoadVariant(v string) bool {
 		}
 		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
 
-		TopMargin = CardHeight / 3
+		TopMargin = 48 + CardHeight/3
 	}
 
 	stock := b.findPilePrefix("Stock")
