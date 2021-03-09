@@ -35,7 +35,7 @@ func (u *UI) Toast(message string) {
 	dc.SetFontFace(u.toastTextFace)
 	w, h := dc.MeasureString(message)
 
-	w += 20
+	w += 48
 	h = 48
 
 	dc = gg.NewContext(int(w), int(h))
