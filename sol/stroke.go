@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"sync"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -53,49 +54,78 @@ type Stroke struct {
 
 	startTime time.Time
 
+	starting bool
 	released bool
-	tapped   bool
 
 	// draggingObject represents a object (like a tile) that is being dragged.
 	draggingObject interface{}
+
+	observer sync.Map
 }
 
-// NewStroke creates a new Stroke object
-func NewStroke(source StrokeSource) *Stroke {
-	cx, cy := source.Position()
-	return &Stroke{
-		source:    source,
-		initX:     cx,
-		initY:     cy,
-		currX:     cx,
-		currY:     cy,
-		startTime: time.Now(),
+// StrokeEvent is sent to observers when stroke moves or ends
+type StrokeEvent struct {
+	Event  string
+	Stroke *Stroke
+	X, Y   int
+}
+
+// StartStroke returns a pointer to a new Stroke if one is just starting
+func StartStroke(observer Observer) *Stroke {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		var source StrokeSource = &MouseStrokeSource{}
+		x, y := source.Position()
+		s := &Stroke{
+			source:    source,
+			initX:     x,
+			initY:     y,
+			currX:     x,
+			currY:     y,
+			startTime: time.Now(),
+			starting:  true,
+		}
+		s.Add(observer)
+		return s
 	}
+	return nil
 }
 
 // Update is called once per frame and updates the Stroke object
 func (s *Stroke) Update() {
+
 	if s.released {
 		return
 	}
 
-	s.currX, s.currY = s.source.Position()
+	if s.starting {
+		elapsed := time.Since(s.startTime)
+		if elapsed > 150 {
+			s.starting = false
+			s.Notify(StrokeEvent{Event: "start", Stroke: s, X: s.initX, Y: s.initY})
+		}
+		return
+	}
+
+	x, y := s.source.Position()
+	if s.currX != x || s.currY != y {
+		s.currX, s.currY = x, y
+		s.Notify(StrokeEvent{Event: "move", Stroke: s, X: s.currX, Y: s.currY})
+	}
 
 	if s.source.IsJustReleased() {
 		s.released = true
-		elapsed := time.Since(s.startTime) / 1000 / 1000 // convert nano- to milli- seconds
-		s.tapped = elapsed < 150
+		s.Notify(StrokeEvent{Event: "end", Stroke: s, X: s.currX, Y: s.currY})
 	}
+}
+
+// Cancel this stroke; observer is not interested
+func (s *Stroke) Cancel() {
+	s.released = true
 }
 
 // IsReleased returns true if ...
 func (s *Stroke) IsReleased() bool {
 	return s.released
-}
-
-// IsTapped returns true if ...
-func (s *Stroke) IsTapped() bool {
-	return s.tapped
 }
 
 // Position returns the x,y position of the cursor
@@ -116,4 +146,25 @@ func (s *Stroke) DraggingObject() interface{} {
 // SetDraggingObject sets the object currently being dragged
 func (s *Stroke) SetDraggingObject(object interface{}) {
 	s.draggingObject = object
+}
+
+// Add this observer to the list
+func (s *Stroke) Add(observer Observer) {
+	s.observer.Store(observer, struct{}{})
+}
+
+// Remove this observer from the list
+func (s *Stroke) Remove(observer Observer) {
+	s.observer.Delete(observer)
+}
+
+// Notify observers that an event has happened
+func (s *Stroke) Notify(event interface{}) {
+	s.observer.Range(func(key, value interface{}) bool {
+		if key == nil {
+			return false
+		}
+		key.(Observer).NotifyCallback(event)
+		return true
+	})
 }

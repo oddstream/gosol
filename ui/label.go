@@ -39,3 +39,7 @@ func (l *Label) Draw(dc *gg.Context, x, y int) {
 // Action invokes the action func
 func (l *Label) Action() {
 }
+
+// NotifyCallback is called by the Subject (Input) when something interesting happens
+func (l *Label) NotifyCallback(event interface{}) {
+}

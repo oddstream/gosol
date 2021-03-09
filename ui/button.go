@@ -43,3 +43,11 @@ func (rb *RuneButton) Action() {
 		rb.action()
 	}
 }
+
+// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
+func (rb *RuneButton) NotifyCallback(event interface{}) {
+	// switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
+	// case image.Point:
+	// case ebiten.Key:
+	// }
+}

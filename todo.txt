@@ -4,6 +4,10 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ stroke, input in separate pkg
++ don't start a stroke until it's >= 150 ms old
+  stroke Event="starting"
+  stroke Event="started"
 + you have played X N+1 times?
 + completed Limited.json is 770KBytes - zip it?
   https://stackoverflow.com/questions/56994992/gzip-json-payload-before-post

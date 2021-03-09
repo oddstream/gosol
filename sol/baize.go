@@ -2,6 +2,7 @@ package sol
 
 import (
 	"fmt"
+	"image"
 	"log"
 	"math"
 	"runtime"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
 )
@@ -35,6 +35,7 @@ type Baize struct {
 	totalCards    int
 	State         BaizeState
 	stroke        *Stroke
+	input         *Input
 	ui            *ui.UI
 }
 
@@ -43,6 +44,8 @@ func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	TheBaize.input = NewInput()
+	TheBaize.input.Add(TheBaize)
 	TheBaize.ui = ui.New()
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
@@ -643,6 +646,78 @@ func (b *Baize) calcPercentComplete() int {
 	return int(math.Round(float64(count) / float64(b.totalCards) * 100))
 }
 
+// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
+func (b *Baize) NotifyCallback(event interface{}) {
+	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
+	case image.Point:
+		println("image.Point", v.X, v.Y)
+		c := b.findCardAt(v.X, v.Y)
+		if c != nil {
+			b.CardTapped(c)
+		} else {
+			p := b.findPileAt(v.X, v.Y)
+			if p != nil {
+				b.PileTapped(p)
+			}
+		}
+	case ebiten.Key:
+		println("ebiten.Key", v)
+		switch v {
+		case ebiten.KeyC:
+			if b.Collect() {
+				b.AfterUserMove()
+			}
+		case ebiten.KeyN:
+			b.NewGame()
+		case ebiten.KeyR:
+			b.RestartGame()
+		case ebiten.KeyU:
+			b.Undo()
+		case ebiten.KeyS:
+			b.SavePosition()
+		case ebiten.KeyL:
+			b.LoadPosition()
+		case ebiten.KeyV:
+			if DebugMode {
+				b.Save()
+			}
+		}
+	case StrokeEvent:
+		println("stroke event", v.Event, v.X, v.Y)
+		switch v.Event {
+		case "start":
+			c := b.findCardAt(v.X, v.Y)
+			if c != nil {
+				if c.owner.StartDrag(c) {
+					b.stroke = v.Stroke
+					b.stroke.SetDraggingObject(c)
+				} else {
+					v.Stroke.Cancel()
+				}
+			} else {
+				v.Stroke.Cancel()
+			}
+		case "move":
+			c := v.Stroke.DraggingObject().(*Card)
+			c.owner.DragTailBy(v.Stroke.PositionDiff())
+		case "end":
+			c := v.Stroke.DraggingObject().(*Card)
+			p := b.largestIntersection(c)
+			if p == nil || p == c.owner {
+				c.owner.CancelDrag(c)
+			} else {
+				if p.CanAcceptTail(b.Piles, c.owner.Tail) {
+					c.owner.StopDrag(c)
+					b.MoveCards(c, p)
+					b.AfterUserMove()
+				} else {
+					c.owner.CancelDrag(c)
+				}
+			}
+		}
+	}
+}
+
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
@@ -656,108 +731,18 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
-	if inpututil.IsKeyJustReleased(ebiten.KeyC) {
-		if b.Collect() {
-			b.AfterUserMove()
-		}
-		return nil
-	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyN) {
-		b.NewGame()
-		return nil
-	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyR) {
-		b.RestartGame()
-		return nil
-	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyU) {
-		b.Undo()
-		return nil
-	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyS) {
-		b.SavePosition()
-		return nil
-	}
-	if inpututil.IsKeyJustReleased(ebiten.KeyL) {
-		b.LoadPosition()
-		return nil
-	}
-	if DebugMode && inpututil.IsKeyJustReleased(ebiten.KeyV) {
-		b.Save()
-		return nil
-	}
+	b.input.Update()
 
 	if b.State == Complete {
 		goto LabelCompleted
 	}
 
 	if b.stroke == nil {
-		var s *Stroke
-
-		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-			s = NewStroke(&MouseStrokeSource{})
-		}
-		ts := inpututil.JustPressedTouchIDs()
-		if ts != nil && len(ts) == 1 {
-			s = NewStroke(&TouchStrokeSource{ts[0]})
-		}
-
-		if s != nil {
-			sx, sy := s.Position()
-			// maybe user is tapping or starting to drag a card
-			c := b.findCardAt(sx, sy)
-			if c != nil {
-				if c.owner.StartDrag(c) {
-					b.stroke = s
-					b.stroke.SetDraggingObject(c)
-				}
-			} else {
-				// maybe user is tapping an empty pile (eg to recycle waste to stock)
-				p := b.findPileAt(sx, sy)
-				if p != nil {
-					b.stroke = s
-					b.stroke.SetDraggingObject(p)
-				}
-			}
-		}
+		b.stroke = StartStroke(b) // may (and probably will) return nil
 	} else {
 		b.stroke.Update()
-		switch v := b.stroke.DraggingObject().(type) {
-		case *Card:
-			c := v
-			if b.stroke.IsReleased() {
-				if b.stroke.IsTapped() {
-					c.owner.StopDrag(c)
-					b.CardTapped(c)
-				} else {
-					// p := b.findPileAt(b.stroke.Position())
-					p := b.largestIntersection(c)
-					if p == nil || p == c.owner {
-						c.owner.CancelDrag(c)
-					} else {
-						if p.CanAcceptTail(b.Piles, c.owner.Tail) {
-							c.owner.StopDrag(c)
-							b.MoveCards(c, p)
-							b.AfterUserMove()
-						} else {
-							c.owner.CancelDrag(c)
-						}
-					}
-				}
-				b.stroke = nil
-			} else {
-				c.owner.DragTailBy(b.stroke.PositionDiff())
-			}
-		case *Pile:
-			p := v
-			if b.stroke.IsReleased() {
-				if b.stroke.IsTapped() {
-					b.PileTapped(p)
-				}
-				b.stroke = nil
-			}
-		default:
-			log.Fatal("unknown type of dragging object")
+		if b.stroke.IsReleased() {
+			b.stroke = nil
 		}
 	}
 
