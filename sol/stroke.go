@@ -2,7 +2,6 @@ package sol
 
 import (
 	"sync"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -52,13 +51,15 @@ type Stroke struct {
 	// current X,Y represents the current position
 	currX, currY int
 
-	startTime time.Time
+	// startTime time.Time
 
-	starting bool
-	released bool
+	// starting  bool
+	released  bool
+	cancelled bool
 
 	// draggingObject represents a object (like a tile) that is being dragged.
-	draggingObject interface{}
+	// draggingObject interface{}
+	draggedCard *Card
 
 	observer sync.Map
 }
@@ -72,19 +73,19 @@ type StrokeEvent struct {
 
 // StartStroke returns a pointer to a new Stroke if one is just starting
 func StartStroke(observer Observer) *Stroke {
+	// Stroke always starts immediately otherwise weird lag (tap will cancel drag)
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		var source StrokeSource = &MouseStrokeSource{}
 		x, y := source.Position()
 		s := &Stroke{
-			source:    source,
-			initX:     x,
-			initY:     y,
-			currX:     x,
-			currY:     y,
-			startTime: time.Now(),
-			starting:  true,
+			source: source,
+			initX:  x,
+			initY:  y,
+			currX:  x,
+			currY:  y,
 		}
 		s.Add(observer)
+		s.Notify(StrokeEvent{Event: "start", Stroke: s, X: s.initX, Y: s.initY})
 		return s
 	}
 	return nil
@@ -93,16 +94,7 @@ func StartStroke(observer Observer) *Stroke {
 // Update is called once per frame and updates the Stroke object
 func (s *Stroke) Update() {
 
-	if s.released {
-		return
-	}
-
-	if s.starting {
-		elapsed := time.Since(s.startTime)
-		if elapsed > 150 {
-			s.starting = false
-			s.Notify(StrokeEvent{Event: "start", Stroke: s, X: s.initX, Y: s.initY})
-		}
+	if s.released || s.cancelled {
 		return
 	}
 
@@ -120,12 +112,17 @@ func (s *Stroke) Update() {
 
 // Cancel this stroke; observer is not interested
 func (s *Stroke) Cancel() {
-	s.released = true
+	s.cancelled = true
 }
 
 // IsReleased returns true if ...
 func (s *Stroke) IsReleased() bool {
 	return s.released
+}
+
+// IsCancelled returns true if ...
+func (s *Stroke) IsCancelled() bool {
+	return s.cancelled
 }
 
 // Position returns the x,y position of the cursor
@@ -138,14 +135,24 @@ func (s *Stroke) PositionDiff() (int, int) {
 	return s.currX - s.initX, s.currY - s.initY
 }
 
-// DraggingObject returns a reference to the object currently being dragged
-func (s *Stroke) DraggingObject() interface{} {
-	return s.draggingObject
+// // DraggingObject returns a reference to the object currently being dragged
+// func (s *Stroke) DraggingObject() interface{} {
+// 	return s.draggingObject
+// }
+
+// // SetDraggingObject sets the object currently being dragged
+// func (s *Stroke) SetDraggingObject(object interface{}) {
+// 	s.draggingObject = object
+// }
+
+// DraggedCard returns the card being dragged
+func (s *Stroke) DraggedCard() *Card {
+	return s.draggedCard
 }
 
-// SetDraggingObject sets the object currently being dragged
-func (s *Stroke) SetDraggingObject(object interface{}) {
-	s.draggingObject = object
+// SetDraggedCard sets the object currently being dragged
+func (s *Stroke) SetDraggedCard(c *Card) {
+	s.draggedCard = c
 }
 
 // Add this observer to the list

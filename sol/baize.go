@@ -652,6 +652,11 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	case image.Point:
 		println("image.Point", v.X, v.Y)
 		c := b.findCardAt(v.X, v.Y)
+		if b.stroke != nil {
+			println("cancel stroke because tap")
+			c.owner.CancelDrag(c)
+			b.stroke.Cancel()
+		}
 		if c != nil {
 			b.CardTapped(c)
 		} else {
@@ -683,37 +688,51 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		}
 	case StrokeEvent:
-		println("stroke event", v.Event, v.X, v.Y)
+		if v.Event != "move" {
+			println("stroke event", v.Event, v.X, v.Y)
+		}
+		// if v.Stroke.starting {
+		// 	println("event received while stroke is starting", v.Event)
+		// }
 		switch v.Event {
 		case "start":
+			b.stroke = v.Stroke
 			c := b.findCardAt(v.X, v.Y)
 			if c != nil {
-				if c.owner.StartDrag(c) {
-					b.stroke = v.Stroke
-					b.stroke.SetDraggingObject(c)
-				} else {
+				b.stroke.SetDraggedCard(c)
+				if !c.owner.StartDrag(c) {
 					v.Stroke.Cancel()
 				}
 			} else {
 				v.Stroke.Cancel()
 			}
 		case "move":
-			c := v.Stroke.DraggingObject().(*Card)
+			// c := v.Stroke.DraggingObject().(*Card)
+			c := v.Stroke.DraggedCard()
 			c.owner.DragTailBy(v.Stroke.PositionDiff())
 		case "end":
-			c := v.Stroke.DraggingObject().(*Card)
-			p := b.largestIntersection(c)
-			if p == nil || p == c.owner {
-				c.owner.CancelDrag(c)
-			} else {
-				if p.CanAcceptTail(b.Piles, c.owner.Tail) {
-					c.owner.StopDrag(c)
-					b.MoveCards(c, p)
-					b.AfterUserMove()
-				} else {
+			c := v.Stroke.DraggedCard()
+			if c != nil {
+				p := b.largestIntersection(c)
+				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
+				} else {
+					if p.CanAcceptTail(b.Piles, c.owner.Tail) {
+						c.owner.StopDrag(c)
+						b.MoveCards(c, p)
+						b.AfterUserMove()
+					} else {
+						c.owner.CancelDrag(c)
+					}
 				}
 			}
+		case "cancel":
+			// c := v.Stroke.DraggingObject().(*Card)
+			c := v.Stroke.DraggedCard()
+			if c != nil {
+				c.owner.CancelDrag(c)
+			}
+			b.stroke = nil
 		}
 	}
 }
@@ -738,10 +757,10 @@ func (b *Baize) Update() error {
 	}
 
 	if b.stroke == nil {
-		b.stroke = StartStroke(b) // may (and probably will) return nil
+		StartStroke(b) // this will set b.stroke when "start" received
 	} else {
 		b.stroke.Update()
-		if b.stroke.IsReleased() {
+		if b.stroke == nil || b.stroke.IsReleased() || b.stroke.IsCancelled() {
 			b.stroke = nil
 		}
 	}
