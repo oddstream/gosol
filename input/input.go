@@ -1,6 +1,6 @@
 // Copyright ©️ 2021 oddstream.games
 
-package sol
+package input
 
 import (
 	"image"
@@ -77,4 +77,5 @@ func (i *Input) Update() {
 			i.Notify(k)
 		}
 	}
+
 }

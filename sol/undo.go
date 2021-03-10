@@ -48,13 +48,13 @@ func (b *Baize) Undo() {
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	b.SavedPosition = len(b.UndoStack)
-	b.ui.Toast("current position saved")
+	b.ui.Toast("Current position saved")
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.SavedPosition == 0 {
-		b.ui.Toast("no saved position")
+		b.ui.Toast("No saved position")
 		return
 	}
 	if b.SavedPosition > len(b.UndoStack) {

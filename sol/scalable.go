@@ -45,8 +45,10 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.DrawStringAnchored(string(r), float64(CardWidth)-float64(CardWidth)/(3.333), float64(CardHeight)/6, 0.5, 0.5)
 	dc.Stroke()
 
-	dc.SetFontFace(TheCardFonts.symbolLarge)
-	dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
+	if ID.Ordinal() > 10 {
+		dc.SetFontFace(TheCardFonts.symbolLarge)
+		dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
+	}
 
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())

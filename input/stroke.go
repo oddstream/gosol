@@ -1,4 +1,4 @@
-package sol
+package input
 
 import (
 	"sync"
@@ -57,9 +57,9 @@ type Stroke struct {
 	released  bool
 	cancelled bool
 
-	// draggingObject represents a object (like a tile) that is being dragged.
-	// draggingObject interface{}
-	draggedCard *Card
+	// draggedObject represents a object (eg a Card) that is being dragged
+	// can't have a valid stroke with an object that is being dragged
+	draggedObject interface{}
 
 	observer sync.Map
 }
@@ -68,6 +68,7 @@ type Stroke struct {
 type StrokeEvent struct {
 	Event  string
 	Stroke *Stroke
+	Object interface{}
 	X, Y   int
 }
 
@@ -101,13 +102,14 @@ func (s *Stroke) Update() {
 	x, y := s.source.Position()
 	if s.currX != x || s.currY != y {
 		s.currX, s.currY = x, y
-		s.Notify(StrokeEvent{Event: "move", Stroke: s, X: s.currX, Y: s.currY})
+		s.Notify(StrokeEvent{Event: "move", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
 
 	if s.source.IsJustReleased() {
 		s.released = true
-		s.Notify(StrokeEvent{Event: "end", Stroke: s, X: s.currX, Y: s.currY})
+		s.Notify(StrokeEvent{Event: "end", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
+
 }
 
 // Cancel this stroke; observer is not interested
@@ -135,24 +137,14 @@ func (s *Stroke) PositionDiff() (int, int) {
 	return s.currX - s.initX, s.currY - s.initY
 }
 
-// // DraggingObject returns a reference to the object currently being dragged
-// func (s *Stroke) DraggingObject() interface{} {
-// 	return s.draggingObject
-// }
-
-// // SetDraggingObject sets the object currently being dragged
-// func (s *Stroke) SetDraggingObject(object interface{}) {
-// 	s.draggingObject = object
-// }
-
-// DraggedCard returns the card being dragged
-func (s *Stroke) DraggedCard() *Card {
-	return s.draggedCard
+// DraggedObject returns a reference to the object currently being dragged
+func (s *Stroke) DraggedObject() interface{} {
+	return s.draggedObject
 }
 
-// SetDraggedCard sets the object currently being dragged
-func (s *Stroke) SetDraggedCard(c *Card) {
-	s.draggedCard = c
+// SetDraggedObject sets the object currently being dragged
+func (s *Stroke) SetDraggedObject(object interface{}) {
+	s.draggedObject = object
 }
 
 // Add this observer to the list

@@ -4,10 +4,6 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ stroke, input in separate pkg
-+ don't start a stroke until it's >= 150 ms old
-  stroke Event="starting"
-  stroke Event="started"
 + you have played X N+1 times?
 + completed Limited.json is 770KBytes - zip it?
   https://stackoverflow.com/questions/56994992/gzip-json-payload-before-post
@@ -40,6 +36,7 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x stroke, input in separate pkg, so they are visible to UI
 x FreeCellEasy
 x encode prone in <pack><suit><ordinal> three 4-bit numbers
   pack 1..8 0b1111 four bits

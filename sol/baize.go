@@ -11,6 +11,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
 )
@@ -34,8 +35,8 @@ type Baize struct {
 	SavedPosition int
 	totalCards    int
 	State         BaizeState
-	stroke        *Stroke
-	input         *Input
+	stroke        *input.Stroke
+	input         *input.Input
 	ui            *ui.UI
 }
 
@@ -44,8 +45,8 @@ func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
-	TheBaize.input = NewInput()
-	TheBaize.input.Add(TheBaize)
+	TheBaize.input = input.NewInput()
+	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
 	TheBaize.ui = ui.New()
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
@@ -444,7 +445,7 @@ func (b *Baize) CardTapped(c *Card) {
 		if empty > 0 {
 			stock := b.findPilePrefix("Stock")
 			if stock.CardCount() > empty {
-				TheBaize.ui.Toast("all tableaux spaces must be filled before dealing a new row")
+				TheBaize.ui.Toast("All tableaux spaces must be filled before dealing a new row")
 				break
 			}
 		}
@@ -588,7 +589,7 @@ func (b *Baize) AfterUserMove() {
 		b.State = Started
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(b.Variant + " complete")
+			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", b.Variant, len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 		}
@@ -654,7 +655,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		c := b.findCardAt(v.X, v.Y)
 		if b.stroke != nil {
 			println("cancel stroke because tap")
-			c.owner.CancelDrag(c)
+			c.owner.CancelDrag(c) // if we have a stroke we must have a card
 			b.stroke.Cancel()
 		}
 		if c != nil {
@@ -687,7 +688,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				b.Save()
 			}
 		}
-	case StrokeEvent:
+	case input.StrokeEvent:
 		if v.Event != "move" {
 			println("stroke event", v.Event, v.X, v.Y)
 		}
@@ -699,7 +700,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			b.stroke = v.Stroke
 			c := b.findCardAt(v.X, v.Y)
 			if c != nil {
-				b.stroke.SetDraggedCard(c)
+				b.stroke.SetDraggedObject(c)
 				if !c.owner.StartDrag(c) {
 					v.Stroke.Cancel()
 				}
@@ -708,10 +709,10 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		case "move":
 			// c := v.Stroke.DraggingObject().(*Card)
-			c := v.Stroke.DraggedCard()
+			c := v.Stroke.DraggedObject().(*Card)
 			c.owner.DragTailBy(v.Stroke.PositionDiff())
 		case "end":
-			c := v.Stroke.DraggedCard()
+			c := v.Stroke.DraggedObject().(*Card)
 			if c != nil {
 				p := b.largestIntersection(c)
 				if p == nil || p == c.owner {
@@ -726,13 +727,13 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				}
 			}
-		case "cancel":
-			// c := v.Stroke.DraggingObject().(*Card)
-			c := v.Stroke.DraggedCard()
-			if c != nil {
-				c.owner.CancelDrag(c)
-			}
-			b.stroke = nil
+			// case "cancel":
+			// 	// c := v.Stroke.DraggingObject().(*Card)
+			// 	c := v.Stroke.DraggedCard()
+			// 	if c != nil {
+			// 		c.owner.CancelDrag(c)
+			// 	}
+			// 	b.stroke = nil
 		}
 	}
 }
@@ -750,14 +751,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
-	b.input.Update()
-
-	if b.State == Complete {
-		goto LabelCompleted
-	}
+	b.input.Update() // detect mouse taps and keyboard input
 
 	if b.stroke == nil {
-		StartStroke(b) // this will set b.stroke when "start" received
+		input.StartStroke(b) // this will set b.stroke when "start" received
 	} else {
 		b.stroke.Update()
 		if b.stroke == nil || b.stroke.IsReleased() || b.stroke.IsCancelled() {
@@ -765,7 +762,6 @@ func (b *Baize) Update() error {
 		}
 	}
 
-LabelCompleted:
 	for _, p := range b.Piles {
 		p.Update()
 	}
