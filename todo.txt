@@ -4,7 +4,9 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ you have played X N+1 times?
++ UI FAB and FABManager
++ you have started N games of X? Loading a varaint should not count as starting
+  AfterUserMove() > TheStatistics.startGame() is where it's incremented
 + completed Limited.json is 770KBytes - zip it?
   https://stackoverflow.com/questions/56994992/gzip-json-payload-before-post
 + https://en.wikipedia.org/wiki/Bisley_(solitaire)
@@ -25,9 +27,11 @@ $ git branch -m master main
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
 
-! 71x96 = 1:1.352112676
-! 90x130 = 1:1.4444444
-! 89x137 = 1:1.539
+! 71 x 96 = 1:1.352 (Microsoft retro)
+! 64 x 89 = 1:1.390 (official poker size)
+! 90 x 130 = 1:1.444 (nice looking scalable)
+! 89 x 137 = 1:1.539 (measured real card)
+! 57 x 89 = 1:1.561 (official bridge size)
 
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time

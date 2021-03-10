@@ -38,16 +38,29 @@ type Baize struct {
 	stroke        *input.Stroke
 	input         *input.Input
 	ui            *ui.UI
+	commandTable  map[ebiten.Key]func()
 }
 
-// NewBaize is the factory func for Baize object
+// NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New()
+	TheBaize.ui = ui.New(TheBaize.input, TheBaize)
+	TheBaize.commandTable = map[ebiten.Key]func(){
+		ebiten.KeyN: TheBaize.NewGame,
+		ebiten.KeyR: TheBaize.RestartGame,
+		ebiten.KeyU: TheBaize.Undo,
+		ebiten.KeyS: TheBaize.SavePosition,
+		ebiten.KeyL: TheBaize.LoadPosition,
+		ebiten.KeyC: func() {
+			if TheBaize.Collect() {
+				TheBaize.AfterUserMove()
+			}
+		},
+	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
 		TheBaize.NewVariant(TheBaize.Variant)
@@ -668,25 +681,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		}
 	case ebiten.Key:
 		println("ebiten.Key", v)
-		switch v {
-		case ebiten.KeyC:
-			if b.Collect() {
-				b.AfterUserMove()
-			}
-		case ebiten.KeyN:
-			b.NewGame()
-		case ebiten.KeyR:
-			b.RestartGame()
-		case ebiten.KeyU:
-			b.Undo()
-		case ebiten.KeyS:
-			b.SavePosition()
-		case ebiten.KeyL:
-			b.LoadPosition()
-		case ebiten.KeyV:
-			if DebugMode {
-				b.Save()
-			}
+		fn, ok := b.commandTable[v]
+		if ok {
+			fn()
 		}
 	case input.StrokeEvent:
 		if v.Event != "move" {
@@ -735,6 +732,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			// 	}
 			// 	b.stroke = nil
 		}
+	default:
+		println("unknown notification received", v)
 	}
 }
 

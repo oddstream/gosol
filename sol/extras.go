@@ -68,10 +68,12 @@ func shuffleCards(stock *Pile, seed int64) {
 
 	// println("-KFY----------------")
 	// Knuth Fisher-Yates shuffle
-	for i := len(stock.Cards) - 1; i > 0; i-- {
-		j := rand.Intn(i + 1)
-		stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i]
-	}
+	// for i := len(stock.Cards) - 1; i > 0; i-- {
+	// 	j := rand.Intn(i + 1)
+	// 	stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i]
+	// }
+
+	rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
 
 	// for i, c := range sh.cards {
 	// 	println(i, c.ID.String())

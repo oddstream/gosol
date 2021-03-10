@@ -61,7 +61,7 @@ type Stroke struct {
 	// can't have a valid stroke with an object that is being dragged
 	draggedObject interface{}
 
-	observer sync.Map
+	observers sync.Map
 }
 
 // StrokeEvent is sent to observers when stroke moves or ends
@@ -149,17 +149,17 @@ func (s *Stroke) SetDraggedObject(object interface{}) {
 
 // Add this observer to the list
 func (s *Stroke) Add(observer Observer) {
-	s.observer.Store(observer, struct{}{})
+	s.observers.Store(observer, struct{}{})
 }
 
 // Remove this observer from the list
 func (s *Stroke) Remove(observer Observer) {
-	s.observer.Delete(observer)
+	s.observers.Delete(observer)
 }
 
 // Notify observers that an event has happened
 func (s *Stroke) Notify(event interface{}) {
-	s.observer.Range(func(key, value interface{}) bool {
+	s.observers.Range(func(key, value interface{}) bool {
 		if key == nil {
 			return false
 		}

@@ -11,6 +11,7 @@ type RuneButton struct {
 	face          font.Face
 	action        func()
 	align         int
+	x, y          int // screen position
 	width, height int
 }
 
@@ -24,6 +25,15 @@ func (rb *RuneButton) Size() (int, int) {
 	return rb.width, rb.height
 }
 
+// Rect gives the screen position
+func (rb *RuneButton) Rect() (x0, y0, x1, y1 int) {
+	x0 = rb.x
+	y0 = rb.y
+	x1 = rb.x + rb.width
+	y1 = rb.y + rb.height
+	return // using named parameters
+}
+
 // Align returns the x axis alignment (-1, 0, 1)
 func (rb *RuneButton) Align() int {
 	return rb.align
@@ -31,6 +41,7 @@ func (rb *RuneButton) Align() int {
 
 // Draw into a gg context, not to the screen
 func (rb *RuneButton) Draw(dc *gg.Context, x, y int) {
+	rb.x, rb.y = x, y
 	dc.SetFontFace(rb.face)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawStringAnchored(string(rb.r), float64(x), float64(y), 0.5, 0.5)

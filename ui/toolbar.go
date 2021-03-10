@@ -10,6 +10,8 @@ import (
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
+	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/util"
 )
 
 //go:embed assets/DejaVuSans-Bold.ttf
@@ -25,7 +27,7 @@ type Toolbar struct {
 }
 
 // NewToolbar creates a new toolbar
-func NewToolbar() *Toolbar {
+func NewToolbar(observer input.Observer) *Toolbar {
 	tb := &Toolbar{}
 
 	tt, err := truetype.Parse(symbolFontBytes)
@@ -42,10 +44,10 @@ func NewToolbar() *Toolbar {
 	symbolFontBytes = nil
 
 	tb.widgets = []Widget{
-		NewRuneButton(rune(9776), tb.symbolFace, func() {}, -1),
+		NewRuneButton(rune(9776), tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyMenu) }, -1),
 		NewLabel("", tb.symbolFace, 0),
-		NewRuneButton('?', tb.symbolFace, func() {}, 1),
-		NewRuneButton(rune(8592), tb.symbolFace, func() {}, 1),
+		NewRuneButton('?', tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyH) }, 1),
+		NewRuneButton(rune(8592), tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyU) }, 1),
 	}
 
 	return tb
@@ -78,11 +80,30 @@ func (tb *Toolbar) createImg() {
 	tb.img = ebiten.NewImageFromImage(dc.Image())
 }
 
+// Rect returns the area this toolbar covers
+func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
+	x0 = 0
+	y0 = 0
+	x1 = tb.width
+	y1 = 48
+	return // using named parameters
+}
+
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
 	wgts := u.toolbar.widgets
 	wgts[1] = NewLabel(title, u.toastTextFace, 0)
 	u.toolbar.width = 0 // force img to be recreated
+}
+
+// Tapped is called when a tap happens over the toolbar
+func (tb *Toolbar) Tapped(x, y int) {
+	for _, w := range tb.widgets {
+		if util.InRect(x, y, w.Rect) {
+			println("UI widget tapped")
+			w.Action()
+		}
+	}
 }
 
 // Update the toolbar

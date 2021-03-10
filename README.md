@@ -4,7 +4,7 @@ Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg.
 
 It currently only plays a few variants (Australian, Baker's Dozen, Canfield, Klondike (draw 1 and draw 3), Freecell, Limited, Scorpion, Spider1, Spider2, Storehouse Canfield, Wasp, Yukon). Use a command line flag (eg -v=Limited) to set the variant. There should be around 40 by the time I'm done.
 
-It currently has no user interface other than some keyboard shortcuts:
+It currently has a minimal user interface other than a some toasts, a toolbar and some keyboard shortcuts:
 
 * U - undo
 * N - new deal
@@ -12,8 +12,10 @@ It currently has no user interface other than some keyboard shortcuts:
 * S - save current position
 * L - load a previously saved position (handy for the Freecell and Simple Simon players)
 
-I'm currently eyeing up [Ebiten UI](https://ebitenui.github.io/) for the Material Design user interface.
+I'm currently building up a Material Design UI in a separate package for it, keeping an eye on [Ebiten UI](https://ebitenui.github.io/) for ideas.
 
-It currently doesn't do anything after detecting a completed game, or do any fancy highlighting of moveable cards, or recording of the player's statistics.
+It currently doesn't do anything pretty after detecting a completed game, or do any fancy highlighting of moveable cards, or recording of the player's statistics.
+
+That's a lot of 'currently', but this is a work-in-progress.
 
 It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has simplified scalable cards, set via a command line flag -c=scalable, and -cw and -ch to set the card width and height; -cw=90 -ch=130 looks good.

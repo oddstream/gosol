@@ -11,24 +11,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type (
-	// Observable https://gist.github.com/patrickmn/1549985
-	Observable interface {
-		Add(observer Observer)
-		Notify(event interface{})
-		Remove(event interface{})
-	}
-
-	// Observer https://gist.github.com/patrickmn/1549985
-	Observer interface {
-		NotifyCallback(event interface{})
-	}
-)
-
 // Input records state of mouse and touch, Subject in Observer pattern
 type Input struct {
 	// pressed        map[ebiten.Key]struct{} // an empty and useless type
-	observer    sync.Map
+	observers   sync.Map
 	timePressed time.Time
 }
 
@@ -40,17 +26,17 @@ func NewInput() *Input {
 
 // Add this observer to the list
 func (i *Input) Add(observer Observer) {
-	i.observer.Store(observer, struct{}{})
+	i.observers.Store(observer, struct{}{})
 }
 
 // Remove this observer from the list
 func (i *Input) Remove(observer Observer) {
-	i.observer.Delete(observer)
+	i.observers.Delete(observer)
 }
 
 // Notify observers that an event has happened
 func (i *Input) Notify(event interface{}) {
-	i.observer.Range(func(key, value interface{}) bool {
+	i.observers.Range(func(key, value interface{}) bool {
 		if key == nil {
 			return false
 		}
