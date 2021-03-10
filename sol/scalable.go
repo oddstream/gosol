@@ -3,6 +3,7 @@ package sol
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -21,11 +22,11 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
 	dc.SetColor(ID.Color())
-	dc.SetFontFace(TheCardFonts.acmeRegular)
+	dc.SetFontFace(schriftbank.CardOrdinal)
 	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
 	dc.Stroke()
 
-	dc.SetFontFace(TheCardFonts.symbolRegular)
+	dc.SetFontFace(schriftbank.CardSymbolRegular)
 	// https://unicodelookup.com/#club/1
 	// https://www.fileformat.info/info/unicode/char/2665/index.htm
 	// https://www.fileformat.info/info/unicode/char/2665/fontsupport.htm
@@ -46,7 +47,7 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.Stroke()
 
 	if ID.Ordinal() > 10 {
-		dc.SetFontFace(TheCardFonts.symbolLarge)
+		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
 	}
 

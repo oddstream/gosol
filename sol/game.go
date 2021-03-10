@@ -4,6 +4,7 @@ package sol
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Game represents a game state.
@@ -39,9 +40,6 @@ var GSM *GameStateManager = &GameStateManager{}
 // CTQ provides global access to the Card Transition Queue
 //var CTQ *CardTransitionQueue = &CardTransitionQueue{}
 
-// TheCardFonts provides access to small, normal, large, huge Acme fonts
-var TheCardFonts *CardFonts
-
 // TheUserData holds serialized game progress data
 var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
 
@@ -55,7 +53,7 @@ var TheBaize *Baize
 func NewGame() (*Game, error) {
 	g := &Game{}
 
-	TheCardFonts = NewCardFonts() // CardWidth/Height have now been set
+	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 	TheStatistics = NewStatistics()
 
 	GSM.Switch(NewSplash())

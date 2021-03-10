@@ -1,53 +1,32 @@
 package ui
 
 import (
-	_ "embed" // go:embed only allowed in Go files that import "embed"
-
 	"image/color"
-	"log"
 
 	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
-//go:embed assets/DejaVuSans-Bold.ttf
-var symbolFontBytes []byte
-
 // Toolbar object (hamburger button, variant name, undo button)
 type Toolbar struct {
-	img        *ebiten.Image
-	symbolFace font.Face
-	title      string
-	width      int
-	widgets    []Widget
+	img     *ebiten.Image
+	title   string
+	width   int
+	widgets []Widget
 }
 
 // NewToolbar creates a new toolbar
 func NewToolbar(observer input.Observer) *Toolbar {
 	tb := &Toolbar{}
 
-	tt, err := truetype.Parse(symbolFontBytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tb.symbolFace = truetype.NewFace(tt, &truetype.Options{
-		Size:    24,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-
-	symbolFontBytes = nil
-
 	tb.widgets = []Widget{
-		NewRuneButton(rune(9776), tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyMenu) }, -1),
-		NewLabel("", tb.symbolFace, 0),
-		NewRuneButton('?', tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyH) }, 1),
-		NewRuneButton(rune(8592), tb.symbolFace, func() { observer.NotifyCallback(ebiten.KeyU) }, 1),
+		NewRuneButton(rune(9776), schriftbank.Symbol24, func() { observer.NotifyCallback(ebiten.KeyMenu) }, -1),
+		NewLabel("", schriftbank.RobotoMedium24, 0),
+		NewRuneButton('?', schriftbank.Symbol24, func() { observer.NotifyCallback(ebiten.KeyH) }, 1),
+		NewRuneButton(rune(8592), schriftbank.Symbol24, func() { observer.NotifyCallback(ebiten.KeyU) }, 1),
 	}
 
 	return tb
@@ -92,7 +71,7 @@ func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
 	wgts := u.toolbar.widgets
-	wgts[1] = NewLabel(title, u.toastTextFace, 0)
+	wgts[1] = NewLabel(title, schriftbank.RobotoMedium24, 0)
 	u.toolbar.width = 0 // force img to be recreated
 }
 

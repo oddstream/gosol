@@ -5,6 +5,10 @@ $ git branch -m master main
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
 + UI FAB and FABManager
+  https://material.io/components/buttons-floating-action-button
++ UI title font
++ UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
+  https://material.io/components/navigation-drawer#usage
 + you have started N games of X? Loading a varaint should not count as starting
   AfterUserMove() > TheStatistics.startGame() is where it's incremented
 + completed Limited.json is 770KBytes - zip it?
@@ -40,6 +44,7 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x separate FontBank package? Schriftbank
 x stroke, input in separate pkg, so they are visible to UI
 x FreeCellEasy
 x encode prone in <pack><suit><ordinal> three 4-bit numbers

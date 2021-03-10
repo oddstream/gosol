@@ -16,7 +16,7 @@
       // "args": ["-debug", "-v=Canfield", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug", "-v=EasyWin"],
       // "args": ["-debug", "-v=EasyWin" -noload],
-      "args": ["-debug", "-v=EasyWin", "-c=scalable", "-cw=90", "-ch=130"],
+      // "args": ["-debug", "-v=EasyWin", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug", "-v=Freecell", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug", "-v=FreecellEasy", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug","-v=Klondike", "-c=scalable", "-cw=90", "-ch=130"],
@@ -29,7 +29,7 @@
       // "args": ["-debug", "-v=Spider2", "-c=scalable", "-cw=100", "-ch=145"],
       // "args": ["-debug", "-v=Storehouse", "-c=scalable", "-cw=90", "-ch=130"],
       // "args": ["-debug","-v=Wasp", "-c=scalable", "-cw=90", "-ch=130"],
-      // "args": ["-debug","-v=Yukon", "-c=scalable", "-cw=90", "-ch=130"],
+      "args": ["-debug","-v=Yukon", "-c=scalable", "-cw=90", "-ch=130"],
       "buildFlags": "-tags desktop"
     }
   ]

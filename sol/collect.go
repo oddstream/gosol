@@ -40,18 +40,23 @@ func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 
 func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 	var count int
-	c := src.Peek()
-	if c != nil {
+	for { // collect as many as possible from this pile (think Limited)
+		c := src.Peek()
+		if c == nil {
+			break
+		}
 		if dst.CanAcceptCard(c) && b.safeCheck(c, dst) {
 			b.MoveCards(c, dst)
 			count++
+		} else {
+			break
 		}
 	}
 	return count
 }
 
-// Collect automatically moves cards to the Foundations; returns true if any cards were collected
-func (b *Baize) Collect() bool {
+// Collect automatically moves cards to the Foundations
+func (b *Baize) Collect() {
 
 	var count, totalCount int
 	for {
@@ -88,7 +93,10 @@ func (b *Baize) Collect() bool {
 	NextFoundationPile:
 		totalCount += count
 	}
-	return totalCount != 0
+
+	if totalCount != 0 {
+		b.AfterUserMove()
+	}
 }
 
 // TableauxComplete returns true if every tableau is complete

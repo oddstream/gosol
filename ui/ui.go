@@ -4,11 +4,7 @@ import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"image"
 
-	"log"
-
-	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
 )
@@ -21,35 +17,17 @@ import (
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
-	input           *input.Input   // place to receive clicks, taps and key presses from
-	observer        input.Observer // place to send commands to
-	toastTextFace   font.Face
-	toastManager    *ToastManager
-	toolbarTextFace font.Face
-	toolbar         *Toolbar
+	input        *input.Input   // place to receive clicks, taps and key presses from
+	observer     input.Observer // place to send commands to
+	toastManager *ToastManager
+	toolbar      *Toolbar
 }
-
-//go:embed assets/Roboto-Regular.ttf
-var robotoRegularBytes []byte
 
 // New creates a new UI object
 func New(i *input.Input, observer input.Observer) *UI {
 	ui := &UI{input: i}
 
 	i.Add(ui)
-
-	tt, err := truetype.Parse(robotoRegularBytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ui.toastTextFace = truetype.NewFace(tt, &truetype.Options{
-		Size:    14,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-
-	robotoRegularBytes = nil
 
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(observer)

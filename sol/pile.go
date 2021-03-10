@@ -10,6 +10,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -123,7 +124,7 @@ func (p *Pile) createBackgroundImage() {
 	dc.Stroke()
 
 	if p.localAccept > 0 && p.localAccept <= 13 {
-		dc.SetFontFace(TheCardFonts.acmeRegular)
+		dc.SetFontFace(schriftbank.CardOrdinal)
 		dc.DrawStringAnchored(util.OrdinalToShortString(p.localAccept), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
 		dc.SetLineWidth(1)
 		// dc.DrawLine(0, float64(CardHeight)/6.666, float64(CardWidth), float64(CardHeight)/6.666)
@@ -131,7 +132,7 @@ func (p *Pile) createBackgroundImage() {
 		dc.Stroke()
 	}
 	if strings.HasPrefix(p.Class, "Stock") {
-		dc.SetFontFace(TheCardFonts.symbolLarge)
+		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
 			// dc.SetColor(BasicColors["Red"])

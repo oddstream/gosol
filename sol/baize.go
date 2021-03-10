@@ -55,11 +55,7 @@ func NewBaize() *Baize {
 		ebiten.KeyU: TheBaize.Undo,
 		ebiten.KeyS: TheBaize.SavePosition,
 		ebiten.KeyL: TheBaize.LoadPosition,
-		ebiten.KeyC: func() {
-			if TheBaize.Collect() {
-				TheBaize.AfterUserMove()
-			}
-		},
+		ebiten.KeyC: TheBaize.Collect,
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
@@ -164,7 +160,6 @@ func (b *Baize) NewVariant(v string) {
 
 	// temporary fudge to set window width to center cards on baize
 	{
-		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
 		b.ui.SetTitle(variantDisplayName(b.Variant))
 
 		maxX := 0
@@ -209,7 +204,6 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	// temporary fudge to set window width to center cards on baize
 	{
-		ebiten.SetWindowTitle(variantDisplayName(b.Variant))
 		b.ui.SetTitle(variantDisplayName(b.Variant))
 
 		maxX := 0
@@ -686,11 +680,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			fn()
 		}
 	case input.StrokeEvent:
-		if v.Event != "move" {
-			println("stroke event", v.Event, v.X, v.Y)
-		}
-		// if v.Stroke.starting {
-		// 	println("event received while stroke is starting", v.Event)
+		// if v.Event != "move" {
+		// 	println("stroke event", v.Event, v.X, v.Y)
 		// }
 		switch v.Event {
 		case "start":
@@ -705,7 +696,6 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				v.Stroke.Cancel()
 			}
 		case "move":
-			// c := v.Stroke.DraggingObject().(*Card)
 			c := v.Stroke.DraggedObject().(*Card)
 			c.owner.DragTailBy(v.Stroke.PositionDiff())
 		case "end":

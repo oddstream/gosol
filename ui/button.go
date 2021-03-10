@@ -21,9 +21,9 @@ func NewRuneButton(r rune, face font.Face, action func(), align int) *RuneButton
 }
 
 // Size of the RuneButton
-func (rb *RuneButton) Size() (int, int) {
-	return rb.width, rb.height
-}
+// func (rb *RuneButton) Size() (int, int) {
+// 	return rb.width, rb.height
+// }
 
 // Rect gives the screen position
 func (rb *RuneButton) Rect() (x0, y0, x1, y1 int) {
@@ -39,9 +39,9 @@ func (rb *RuneButton) Align() int {
 	return rb.align
 }
 
-// Draw into a gg context, not to the screen
+// Draw into a gg context, not to the screen; x,y is the center of the rune
 func (rb *RuneButton) Draw(dc *gg.Context, x, y int) {
-	rb.x, rb.y = x, y
+	rb.x, rb.y = x-(rb.width/2), y-(rb.height/2)
 	dc.SetFontFace(rb.face)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawStringAnchored(string(rb.r), float64(x), float64(y), 0.5, 0.5)
@@ -53,12 +53,4 @@ func (rb *RuneButton) Action() {
 	if rb.action != nil {
 		rb.action()
 	}
-}
-
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (rb *RuneButton) NotifyCallback(event interface{}) {
-	// switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	// case image.Point:
-	// case ebiten.Key:
-	// }
 }
