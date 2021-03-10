@@ -29,7 +29,7 @@ func (b *Baize) UndoPeekChecksum() (uint32, bool) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.UndoStack) < 2 {
-		println("nothing to undo")
+		b.ui.Toast("Nothing to undo")
 		return
 	}
 	sav, ok := b.UndoPop() // removes current state

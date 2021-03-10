@@ -50,12 +50,15 @@ func NewBaize() *Baize {
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
 	TheBaize.ui = ui.New(TheBaize.input, TheBaize)
 	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyN: TheBaize.NewGame,
-		ebiten.KeyR: TheBaize.RestartGame,
-		ebiten.KeyU: TheBaize.Undo,
-		ebiten.KeyS: TheBaize.SavePosition,
-		ebiten.KeyL: TheBaize.LoadPosition,
-		ebiten.KeyC: TheBaize.Collect,
+		ebiten.KeyN:    TheBaize.NewGame,
+		ebiten.KeyR:    TheBaize.RestartGame,
+		ebiten.KeyU:    TheBaize.Undo,
+		ebiten.KeyS:    TheBaize.SavePosition,
+		ebiten.KeyL:    TheBaize.LoadPosition,
+		ebiten.KeyC:    TheBaize.Collect,
+		ebiten.KeyM:    TheBaize.ui.ToggleNavDrawer,
+		ebiten.KeyMenu: TheBaize.ui.ToggleNavDrawer,
+		// TODO ebiten.KeyEscape pass to UI to close NavDrawer or any open dialog
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {

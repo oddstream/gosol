@@ -26,10 +26,9 @@ func init() {
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.IntVar(&sol.WindowWidth, "width", 1000, "width of window in pixels")
 	flag.IntVar(&sol.WindowHeight, "height", 900, "height of window in pixels")
-	flag.IntVar(&sol.CardWidth, "cw", 71, "width of a card in pixels")
-	flag.IntVar(&sol.CardHeight, "ch", 96, "height of a card in pixels")
+	flag.IntVar(&sol.CardWidth, "cardwidth", 71, "width of a card in pixels")
 	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
-	flag.StringVar(&sol.TheUserData.CardStyle, "c", "retro", "set the card face to retro or scalable")
+	flag.StringVar(&sol.TheUserData.CardStyle, "c", "retro", "set the card face to retro, default, bridge, or poker")
 }
 
 func main() {

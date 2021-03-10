@@ -2,13 +2,12 @@ package ui
 
 import (
 	"github.com/fogleman/gg"
-	"golang.org/x/image/font"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // RuneButton is a button that displays a single rune
 type RuneButton struct {
 	r             rune
-	face          font.Face
 	action        func()
 	align         int
 	x, y          int // screen position
@@ -16,8 +15,8 @@ type RuneButton struct {
 }
 
 // NewRuneButton creates a new RuneButton
-func NewRuneButton(r rune, face font.Face, action func(), align int) *RuneButton {
-	return &RuneButton{r: r, face: face, action: action, align: align, width: 48, height: 48}
+func NewRuneButton(r rune, align int, action func()) *RuneButton {
+	return &RuneButton{r: r, action: action, align: align, width: 48, height: 48}
 }
 
 // Size of the RuneButton
@@ -42,7 +41,7 @@ func (rb *RuneButton) Align() int {
 // Draw into a gg context, not to the screen; x,y is the center of the rune
 func (rb *RuneButton) Draw(dc *gg.Context, x, y int) {
 	rb.x, rb.y = x-(rb.width/2), y-(rb.height/2)
-	dc.SetFontFace(rb.face)
+	dc.SetFontFace(schriftbank.Symbol24)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawStringAnchored(string(rb.r), float64(x), float64(y), 0.5, 0.5)
 	dc.Stroke()

@@ -3,6 +3,9 @@
 package sol
 
 import (
+	"log"
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/schriftbank"
 )
@@ -53,6 +56,22 @@ var TheBaize *Baize
 func NewGame() (*Game, error) {
 	g := &Game{}
 
+	/*
+		71 x 96 = 1:1.352 (Microsoft retro)
+		64 x 89 = 1:1.390 (official poker size)
+		90 x 130 = 1:1.444 (nice looking scalable)
+		89 x 137 = 1:1.539 (measured real card)
+		57 x 89 = 1:1.561 (official bridge size)
+	*/
+	switch TheUserData.CardStyle {
+	case "", "default", "scalable":
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.444))
+	case "poker":
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.39))
+	case "bridge":
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.561))
+	}
+	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 	TheStatistics = NewStatistics()
 

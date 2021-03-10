@@ -31,6 +31,7 @@ $ git branch -m master main
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
 
++ specify card width, then set card height automatically
 ! 71 x 96 = 1:1.352 (Microsoft retro)
 ! 64 x 89 = 1:1.390 (official poker size)
 ! 90 x 130 = 1:1.444 (nice looking scalable)

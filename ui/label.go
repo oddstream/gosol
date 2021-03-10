@@ -15,7 +15,7 @@ type Label struct {
 }
 
 // NewLabel creates a new Label
-func NewLabel(text string, face font.Face, align int) *Label {
+func NewLabel(text string, align int, face font.Face) *Label {
 	return &Label{text: text, face: face, align: align, width: 48, height: 48}
 }
 

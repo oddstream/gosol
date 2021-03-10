@@ -155,12 +155,17 @@ func NewCard(pack, suit, ordinal int) *Card {
 		faceX = (c.Ordinal() - 1) * CardWidth
 
 		c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+CardWidth, faceY+CardHeight)).(*ebiten.Image)
-
+		if c.faceImg == nil {
+			log.Fatal("no face image")
+		}
 		pt := backFrames[TheUserData.CardBack]
 		backX, backY = pt.X, pt.Y
 		c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
+		if c.backImg == nil {
+			log.Fatal("no back image")
+		}
 
-	case "scalable":
+	case "default", "scalable", "bridge", "poker":
 		subid := NewCardID(0, c.Suit(), c.Ordinal())
 		var ok bool
 		c.faceImg, ok = scalableFaceImages[subid]
@@ -168,6 +173,8 @@ func NewCard(pack, suit, ordinal int) *Card {
 			log.Fatal(subid, "not in scalableFaceImages")
 		}
 		c.backImg = scalableBackImage
+	default:
+		log.Fatal("unknown CardStyle", TheUserData.CardStyle)
 	}
 
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()
