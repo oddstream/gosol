@@ -10,5 +10,6 @@ type Widget interface {
 	Rect() (int, int, int, int)
 	Align() int
 	Draw(*gg.Context, int, int)
-	Action()
+	NotifyCallback(interface{})
+	Deactivate()
 }

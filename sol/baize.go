@@ -48,17 +48,16 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input, TheBaize)
+	TheBaize.ui = ui.New(TheBaize.input)
 	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyN:    TheBaize.NewGame,
-		ebiten.KeyR:    TheBaize.RestartGame,
-		ebiten.KeyU:    TheBaize.Undo,
-		ebiten.KeyS:    TheBaize.SavePosition,
-		ebiten.KeyL:    TheBaize.LoadPosition,
-		ebiten.KeyC:    TheBaize.Collect,
-		ebiten.KeyM:    TheBaize.ui.ToggleNavDrawer,
-		ebiten.KeyMenu: TheBaize.ui.ToggleNavDrawer,
-		// TODO ebiten.KeyEscape pass to UI to close NavDrawer or any open dialog
+		ebiten.KeyN:      TheBaize.NewGame,
+		ebiten.KeyR:      TheBaize.RestartGame,
+		ebiten.KeyU:      TheBaize.Undo,
+		ebiten.KeyS:      TheBaize.SavePosition,
+		ebiten.KeyL:      TheBaize.LoadPosition,
+		ebiten.KeyC:      TheBaize.Collect,
+		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
+		ebiten.KeyEscape: TheBaize.ui.CloseAnythingOpen,
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
@@ -290,6 +289,8 @@ func (b *Baize) dealCards() {
 				} else {
 					log.Fatal("cannot find", d, "during deal")
 				}
+			default:
+				println("unknown rune in Deal", d)
 			}
 		}
 	}
@@ -597,6 +598,7 @@ func (b *Baize) AfterUserMove() {
 	case Virgin:
 		TheStatistics.startGame(b.Variant)
 		b.State = Started
+		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
 	case Started:
 		if b.Complete() {
 			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", b.Variant, len(b.UndoStack)-1))
@@ -662,18 +664,22 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		println("image.Point", v.X, v.Y)
-		c := b.findCardAt(v.X, v.Y)
-		if b.stroke != nil {
-			println("cancel stroke because tap")
-			c.owner.CancelDrag(c) // if we have a stroke we must have a card
-			b.stroke.Cancel()
-		}
-		if c != nil {
-			b.CardTapped(c)
+		if util.InRect(v.X, v.Y, b.ui.ActiveRect) {
+			b.ui.CloseAnythingOpen()
 		} else {
-			p := b.findPileAt(v.X, v.Y)
-			if p != nil {
-				b.PileTapped(p)
+			c := b.findCardAt(v.X, v.Y)
+			if b.stroke != nil {
+				println("cancel stroke because tap")
+				c.owner.CancelDrag(c) // if we have a stroke we must have a card
+				b.stroke.Cancel()
+			}
+			if c != nil {
+				b.CardTapped(c)
+			} else {
+				p := b.findPileAt(v.X, v.Y)
+				if p != nil {
+					b.PileTapped(p)
+				}
 			}
 		}
 	case ebiten.Key:
@@ -682,6 +688,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		if ok {
 			fn()
 		}
+	case string:
+		println(v, "tapped")
 	case input.StrokeEvent:
 		// if v.Event != "move" {
 		// 	println("stroke event", v.Event, v.X, v.Y)
@@ -717,6 +725,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				}
 			}
+		default:
+			println("unknown stroke event", v.Event)
 			// case "cancel":
 			// 	// c := v.Stroke.DraggingObject().(*Card)
 			// 	c := v.Stroke.DraggedCard()

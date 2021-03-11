@@ -3,6 +3,7 @@
 package util
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -10,6 +11,11 @@ import (
 func InRect(x, y int, fn func() (int, int, int, int)) bool {
 	x0, y0, x1, y1 := fn()
 	return x > x0 && y > y0 && x < x1 && y < y1
+}
+
+// RectEmpty returns true if rect is empty
+func RectEmpty(x0, y0, x1, y1 int) bool {
+	return x0 == x1 || y0 == y1
 }
 
 // Lerp see https://en.wikipedia.org/wiki/Linear_interpolation
@@ -103,4 +109,15 @@ func OverlapAreaFloat64(x1, y1, x2, y2, X1, Y1, X2, Y2 float64) float64 {
 func OrdinalToShortString(ord int) string {
 	var chars = []string{"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 	return chars[ord]
+}
+
+// Pluralize returns a string containing an attempt at a plural form of the word
+func Pluralize(word string, n int) string {
+	if 0 == n {
+		return fmt.Sprintf("no %ss", word)
+	}
+	if 1 == n {
+		return fmt.Sprintf("one %s", word)
+	}
+	return fmt.Sprintf("%d %ss", n, word)
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/util"
+	"oddstream.games/gosol/input"
 )
 
 const (
@@ -36,9 +36,12 @@ func (n *NavDrawer) createImg() {
 }
 
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
-func NewNavDrawer() *NavDrawer {
+func NewNavDrawer(i *input.Input) *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
 	n := &NavDrawer{width: 256, x: -256, y: 0}
+	n.widgets = []Widget{
+		// TODO add some widgets
+	}
 	return n
 }
 
@@ -64,16 +67,6 @@ func (n *NavDrawer) Hide() {
 // Visible returns true if the NavDrawer is showing
 func (n *NavDrawer) Visible() bool {
 	return n.x == 0
-}
-
-// Tapped is called when a tap happens over the toolbar
-func (n *NavDrawer) Tapped(x, y int) {
-	for _, w := range n.widgets {
-		if util.InRect(x, y, w.Rect) {
-			println("UI toolbar tapped")
-			w.Action()
-		}
-	}
 }
 
 // Update the NavDrawer
@@ -106,4 +99,23 @@ func (n *NavDrawer) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(n.x), 0) // y is always zero
 	screen.DrawImage(n.img, op)
+}
+
+// IsNavDrawerOpen returns true if the drawer is open
+func (u *UI) IsNavDrawerOpen() bool {
+	return u.navdrawer.Visible()
+}
+
+// OpenNavDrawer animates the drawer on/off screen to the left
+func (u *UI) OpenNavDrawer() {
+	if !u.navdrawer.Visible() {
+		u.navdrawer.Show()
+	}
+}
+
+// CloseNavDrawer animates the drawer on/off screen to the left
+func (u *UI) CloseNavDrawer() {
+	if u.navdrawer.Visible() {
+		u.navdrawer.Hide()
+	}
 }

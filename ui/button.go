@@ -1,22 +1,35 @@
 package ui
 
 import (
+	"image"
+
 	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
+	"oddstream.games/gosol/util"
 )
 
 // RuneButton is a button that displays a single rune
 type RuneButton struct {
 	r             rune
-	action        func()
 	align         int
 	x, y          int // screen position
 	width, height int
+	input         *input.Input
+	key           ebiten.Key
 }
 
 // NewRuneButton creates a new RuneButton
-func NewRuneButton(r rune, align int, action func()) *RuneButton {
-	return &RuneButton{r: r, action: action, align: align, width: 48, height: 48}
+func NewRuneButton(r rune, align int, input *input.Input, key ebiten.Key) *RuneButton {
+	rb := &RuneButton{r: r, align: align, width: 48, height: 48, input: input, key: key}
+	input.Add(rb)
+	return rb
+}
+
+// Deactivate tells the input we no longer need notofications
+func (rb *RuneButton) Deactivate() {
+	rb.input.Remove(rb)
 }
 
 // Size of the RuneButton
@@ -33,6 +46,17 @@ func (rb *RuneButton) Rect() (x0, y0, x1, y1 int) {
 	return // using named parameters
 }
 
+// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
+func (rb *RuneButton) NotifyCallback(event interface{}) {
+	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
+	case image.Point:
+		// println("RuneButton image.Point", v.X, v.Y)
+		if util.InRect(v.X, v.Y, rb.Rect) {
+			rb.input.Notify(rb.key)
+		}
+	}
+}
+
 // Align returns the x axis alignment (-1, 0, 1)
 func (rb *RuneButton) Align() int {
 	return rb.align
@@ -45,11 +69,4 @@ func (rb *RuneButton) Draw(dc *gg.Context, x, y int) {
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawStringAnchored(string(rb.r), float64(x), float64(y), 0.5, 0.5)
 	dc.Stroke()
-}
-
-// Action invokes the action func
-func (rb *RuneButton) Action() {
-	if rb.action != nil {
-		rb.action()
-	}
 }

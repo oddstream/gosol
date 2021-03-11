@@ -106,19 +106,21 @@ func (s *Statistics) welcomeToast(v string) {
 	if stats.Played == 0 {
 		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", v))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have started %d games of %s", stats.Played, v))
+		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Played), v))
 	}
-	if stats.BestPercent < 100 {
+	if stats.BestPercent == 0 {
+		TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))
+	} else if stats.BestPercent < 100 {
 		TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have won %d games", stats.Won))
+		TheBaize.ui.Toast(fmt.Sprintf("You have won %s", util.Pluralize("game", stats.Won)))
 	}
 	if stats.BestPercent == 100 {
 		if stats.CurrStreak > 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You are one a winning streak of %d games", stats.CurrStreak))
+			TheBaize.ui.Toast(fmt.Sprintf("You are one a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 		}
 		if stats.CurrStreak < 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %d games", util.Abs(stats.CurrStreak)))
+			TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 		}
 	}
 }

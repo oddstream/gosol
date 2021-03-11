@@ -2,11 +2,9 @@ package ui
 
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
-	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/util"
 )
 
 // Container holds Widgets
@@ -17,48 +15,50 @@ import (
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
-	input        *input.Input   // place to receive clicks, taps and key presses from
-	observer     input.Observer // place to send commands to
+	input        *input.Input // place to receive clicks, taps and key presses from
 	toastManager *ToastManager
 	toolbar      *Toolbar
 	navdrawer    *NavDrawer
 }
 
 // New creates a new UI object
-func New(i *input.Input, observer input.Observer) *UI {
-	ui := &UI{input: i}
-
-	i.Add(ui)
+func New(input *input.Input) *UI {
+	ui := &UI{input: input}
 
 	ui.toastManager = &ToastManager{}
-	ui.toolbar = NewToolbar(observer)
-
-	ui.navdrawer = NewNavDrawer()
+	ui.toolbar = NewToolbar(input)
+	ui.navdrawer = NewNavDrawer(input)
 
 	return ui
 }
 
 // NotifyCallback is called by the Subject (Input) when something interesting happens
-func (u *UI) NotifyCallback(event interface{}) {
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		println("UI event", v.X, v.Y)
-		if util.InRect(v.X, v.Y, u.navdrawer.Rect) {
-			println("UI click over navdrawer")
-			u.navdrawer.Tapped(v.X, v.Y)
-		} else if util.InRect(v.X, v.Y, u.toolbar.Rect) {
-			println("UI click over toolbar")
-			u.toolbar.Tapped(v.X, v.Y)
-		}
+// func (u *UI) NotifyCallback(event interface{}) {
+// 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
+// 	case image.Point:
+// 		println("UI event", v.X, v.Y)
+// 		if util.InRect(v.X, v.Y, u.navdrawer.Rect) {
+// 			println("UI click over navdrawer")
+// 			u.navdrawer.Tapped(v.X, v.Y)
+// 		} else if util.InRect(v.X, v.Y, u.toolbar.Rect) {
+// 			println("UI click over toolbar")
+// 			u.toolbar.Tapped(v.X, v.Y)
+// 		}
+// 	}
+// }
+
+// ActiveRect returns the rect coords of any active UI object (dialog, drawer)
+func (u *UI) ActiveRect() (int, int, int, int) {
+	if u.navdrawer.Visible() {
+		return u.navdrawer.Rect()
 	}
+	return 0, 0, 0, 0
 }
 
-// ToggleNavDrawer animates the drawer on/off screen to the left
-func (u *UI) ToggleNavDrawer() {
+// CloseAnythingOpen closes any open dialogs, drawers &c
+func (u *UI) CloseAnythingOpen() {
 	if u.navdrawer.Visible() {
 		u.navdrawer.Hide()
-	} else {
-		u.navdrawer.Show()
 	}
 }
 

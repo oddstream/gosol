@@ -7,7 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 // Toolbar object (hamburger button, variant name, undo button)
@@ -19,14 +18,14 @@ type Toolbar struct {
 }
 
 // NewToolbar creates a new toolbar
-func NewToolbar(observer input.Observer) *Toolbar {
+func NewToolbar(input *input.Input) *Toolbar {
 	tb := &Toolbar{}
 
 	tb.widgets = []Widget{
-		NewRuneButton(rune(9776), -1, func() { observer.NotifyCallback(ebiten.KeyMenu) }),
-		NewLabel("", 0, schriftbank.RobotoMedium24),
-		NewRuneButton('?', 1, func() { observer.NotifyCallback(ebiten.KeyH) }),
-		NewRuneButton(rune(8592), 1, func() { observer.NotifyCallback(ebiten.KeyU) }),
+		NewRuneButton(rune(9776), -1, input, ebiten.KeyMenu),
+		NewLabel("", 0, schriftbank.RobotoMedium24, input),
+		NewRuneButton('?', 1, input, ebiten.KeyH),
+		NewRuneButton(rune(8592), 1, input, ebiten.KeyU),
 	}
 
 	return tb
@@ -70,19 +69,14 @@ func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
 
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
-	wgts := u.toolbar.widgets
-	wgts[1] = NewLabel(title, 0, schriftbank.RobotoMedium24)
+	u.toolbar.ReplaceWidget(1, NewLabel(title, 0, schriftbank.RobotoMedium24, u.input))
 	u.toolbar.width = 0 // force img to be recreated
 }
 
-// Tapped is called when a tap happens over the toolbar
-func (tb *Toolbar) Tapped(x, y int) {
-	for _, w := range tb.widgets {
-		if util.InRect(x, y, w.Rect) {
-			println("UI widget tapped")
-			w.Action()
-		}
-	}
+// ReplaceWidget replaces a widget
+func (tb *Toolbar) ReplaceWidget(n int, w Widget) {
+	tb.widgets[n].Deactivate()
+	tb.widgets[n] = w
 }
 
 // Update the toolbar
