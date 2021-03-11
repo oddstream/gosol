@@ -9,7 +9,7 @@ import (
 	"oddstream.games/gosol/schriftbank"
 )
 
-// Toolbar object (hamburger button, variant name, undo button)
+// Toolbar object (hamburger button, variant name, undo, help buttons)
 type Toolbar struct {
 	img     *ebiten.Image
 	title   string

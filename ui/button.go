@@ -23,11 +23,16 @@ type RuneButton struct {
 // NewRuneButton creates a new RuneButton
 func NewRuneButton(r rune, align int, input *input.Input, key ebiten.Key) *RuneButton {
 	rb := &RuneButton{r: r, align: align, width: 48, height: 48, input: input, key: key}
-	input.Add(rb)
+	rb.Activate()
 	return rb
 }
 
-// Deactivate tells the input we no longer need notofications
+// Activate tells the input we need notifications
+func (rb *RuneButton) Activate() {
+	rb.input.Add(rb)
+}
+
+// Deactivate tells the input we no longer need notifications
 func (rb *RuneButton) Deactivate() {
 	rb.input.Remove(rb)
 }

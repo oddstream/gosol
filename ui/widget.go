@@ -11,5 +11,6 @@ type Widget interface {
 	Align() int
 	Draw(*gg.Context, int, int)
 	NotifyCallback(interface{})
+	Activate()
 	Deactivate()
 }

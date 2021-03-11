@@ -117,7 +117,7 @@ func (s *Statistics) welcomeToast(v string) {
 	}
 	if stats.BestPercent == 100 {
 		if stats.CurrStreak > 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You are one a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+			TheBaize.ui.Toast(fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 		}
 		if stats.CurrStreak < 0 {
 			TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))

@@ -22,8 +22,13 @@ type Label struct {
 // NewLabel creates a new Label
 func NewLabel(text string, align int, face font.Face, input *input.Input) *Label {
 	l := &Label{text: text, face: face, align: align, width: 48, height: 48, input: input}
-	input.Add(l)
+	l.Activate()
 	return l
+}
+
+// Activate tells the input we need notifications
+func (l *Label) Activate() {
+	l.input.Add(l)
 }
 
 // Deactivate tells the input we no longer need notofications
