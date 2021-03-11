@@ -22,10 +22,10 @@ func NewToolbar(input *input.Input) *Toolbar {
 	tb := &Toolbar{}
 
 	tb.widgets = []Widget{
-		NewRuneButton(rune(9776), -1, input, ebiten.KeyMenu),
-		NewLabel("", 0, schriftbank.RobotoMedium24, input),
-		NewRuneButton('?', 1, input, ebiten.KeyH),
-		NewRuneButton(rune(8592), 1, input, ebiten.KeyU),
+		NewRuneButton(tb, rune(9776), -1, input, ebiten.KeyMenu),
+		NewLabel(tb, "", 0, schriftbank.RobotoMedium24, input),
+		NewRuneButton(tb, '?', 1, input, ebiten.KeyH),
+		NewRuneButton(tb, rune(8592), 1, input, ebiten.KeyU),
 	}
 
 	return tb
@@ -69,7 +69,7 @@ func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
 
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
-	u.toolbar.ReplaceWidget(1, NewLabel(title, 0, schriftbank.RobotoMedium24, u.input))
+	u.toolbar.ReplaceWidget(1, NewLabel(u.toolbar, title, 0, schriftbank.RobotoMedium24, u.input))
 	u.toolbar.width = 0 // force img to be recreated
 }
 

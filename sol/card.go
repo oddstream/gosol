@@ -93,7 +93,7 @@ func BuildScalableCardImages() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
 	dc.SetLineWidth(2)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 4)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Fill()
 	dc.Stroke()
 	shadowImage = ebiten.NewImageFromImage(dc.Image())

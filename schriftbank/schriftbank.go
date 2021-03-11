@@ -23,6 +23,8 @@ var robotoMediumFontBytes []byte
 var (
 	// RobotoRegular14 used by UI toast
 	RobotoRegular14 font.Face
+	// RobotoRegular24 used by UI nav items
+	RobotoRegular24 font.Face
 	// RobotoMedium24 used by UI
 	RobotoMedium24 font.Face
 	// Symbol24 used by UI widgets
@@ -53,6 +55,16 @@ func init() {
 		log.Fatal(err)
 	}
 
+	RobotoRegular24 = truetype.NewFace(tt, &truetype.Options{
+		Size:    24,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+
+	tt, err = truetype.Parse(robotoMediumFontBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
 	RobotoMedium24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,

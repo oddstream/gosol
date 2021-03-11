@@ -14,11 +14,11 @@ import (
 func createFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(BasicColors["White"])
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Fill()
 
 	dc.SetColor(BasicColors["Silver"])
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
 	dc.SetColor(ID.Color())
@@ -58,10 +58,10 @@ func createFaceImage(ID CardID) *ebiten.Image {
 func createBackImage() *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(ExtendedColors[TheUserData.BackColor])
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Fill()
 	dc.SetColor(BasicColors["Silver"])
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }

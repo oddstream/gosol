@@ -57,7 +57,7 @@ func NewBaize() *Baize {
 		ebiten.KeyL:      TheBaize.LoadPosition,
 		ebiten.KeyC:      TheBaize.Collect,
 		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
-		ebiten.KeyEscape: TheBaize.ui.CloseAnythingOpen,
+		ebiten.KeyEscape: TheBaize.ui.CloseActiveModal,
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
@@ -664,8 +664,10 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		println("image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, b.ui.ActiveRect) {
-			b.ui.CloseAnythingOpen()
+		if b.ui.ActiveModal() {
+			if !util.InRect(v.X, v.Y, b.ui.ActiveRect) {
+				b.ui.CloseActiveModal()
+			}
 		} else {
 			c := b.findCardAt(v.X, v.Y)
 			if b.stroke != nil {
@@ -686,6 +688,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		println("ebiten.Key", v)
 		fn, ok := b.commandTable[v]
 		if ok {
+			if b.ui.ActiveModal() {
+				b.ui.CloseActiveModal()
+			}
 			fn()
 		}
 	case string:
@@ -697,14 +702,21 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		switch v.Event {
 		case "start":
 			b.stroke = v.Stroke
-			c := b.findCardAt(v.X, v.Y)
-			if c != nil {
-				b.stroke.SetDraggedObject(c)
-				if !c.owner.StartDrag(c) {
+			if b.ui.ActiveModal() {
+				println("cancel stroke because modal active")
+				v.Stroke.Cancel()
+			} else {
+				c := b.findCardAt(v.X, v.Y)
+				if c != nil {
+					b.stroke.SetDraggedObject(c)
+					if !c.owner.StartDrag(c) {
+						println("cancel stroke because drag not allowed")
+						v.Stroke.Cancel()
+					}
+				} else {
+					println("cancel stroke because not over a card")
 					v.Stroke.Cancel()
 				}
-			} else {
-				v.Stroke.Cancel()
 			}
 		case "move":
 			c := v.Stroke.DraggedObject().(*Card)

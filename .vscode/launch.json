@@ -19,17 +19,16 @@
       // "args": ["-debug", "-v=EasyWin", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=Freecell", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=FreecellEasy", "-c=default", "-cardwidth=90"],
-      // "args": ["-debug","-v=Klondike", "-c=default", "-cardwidth=90"],
+      // "args": ["-debug","-v=Klondike", "-c=retro"],
       // "args": ["-debug","-v=Klondike3", "-c=default", "-cardwidth=90"],
-      "args": ["-debug", "-v=Limited", "-c=default", "-cardwidth=100"],
+      // "args": ["-debug", "-v=Limited", "-c=default", "-cardwidth=80"],
       // "args": ["-debug","-v=Scorpion", "-c=default", "-cardwidth=90"],
       // "args": ["-debug","-v=SimpleSimon", "-c=default", "-cardwidth=90"],
-      // "args": ["-debug", "-v=Spider1", "-c=default", "-cardwidth=45"],
-      // "args": ["-debug", "-v=Spider1", "-c=default", "-cardwidth=90"],
-      // "args": ["-debug", "-v=Spider2", "-c=default", "-cardwidth=100"],
+      // "args": ["-debug", "-v=Spider1", "-c=default", "-cardwidth=60"],
+      // "args": ["-debug", "-v=Spider2", "-c=default", "-cardwidth=60"],
       // "args": ["-debug", "-v=Storehouse", "-c=default", "-cardwidth=90"],
       // "args": ["-debug","-v=Wasp", "-c=default", "-cardwidth=90"],
-      // "args": ["-debug","-v=Yukon", "-c=default", "-cardwidth=90"],
+      "args": ["-debug","-v=Yukon", "-c=default", "-cardwidth=90"],
       "buildFlags": "-tags desktop"
     }
   ]

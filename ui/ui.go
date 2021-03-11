@@ -47,6 +47,14 @@ func New(input *input.Input) *UI {
 // 	}
 // }
 
+// ActiveModal returns true if there is an active modal
+func (u *UI) ActiveModal() bool {
+	if u.navdrawer.Visible() {
+		return true
+	}
+	return false
+}
+
 // ActiveRect returns the rect coords of any active UI object (dialog, drawer)
 func (u *UI) ActiveRect() (int, int, int, int) {
 	if u.navdrawer.Visible() {
@@ -55,8 +63,8 @@ func (u *UI) ActiveRect() (int, int, int, int) {
 	return 0, 0, 0, 0
 }
 
-// CloseAnythingOpen closes any open dialogs, drawers &c
-func (u *UI) CloseAnythingOpen() {
+// CloseActiveModal closes any open dialogs, drawers &c
+func (u *UI) CloseActiveModal() {
 	if u.navdrawer.Visible() {
 		u.navdrawer.Hide()
 	}

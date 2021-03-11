@@ -120,7 +120,7 @@ func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), 6)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Stroke()
 
 	if p.localAccept > 0 && p.localAccept <= 13 {

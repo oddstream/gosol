@@ -97,16 +97,17 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 // }
 
 func (s *Statistics) welcomeToast(v string) {
+	name := variantDisplayName(v)
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", v))
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", name))
 		return
 		// log.Fatal("welcomeToast unknown variant ", v)
 	}
 	if stats.Played == 0 {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", v))
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", name))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Played), v))
+		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Played), name))
 	}
 	if stats.BestPercent == 0 {
 		TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))

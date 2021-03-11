@@ -4,11 +4,8 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ don't care if tap happens over toolbar or navdrawer, only if tap happens on their widgets
-  so the widget should input.Add() (or Remove() if not visible)
 + UI FAB and FABManager
   https://material.io/components/buttons-floating-action-button
-+ UI title font
 + UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
   https://material.io/components/navigation-drawer#usage
 + you have started N games of X? Loading a varaint should not count as starting
@@ -47,6 +44,8 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x don't care if tap happens over toolbar or navdrawer, only if tap happens on their widgets
+  so the widget should input.Add() (or Remove() if not visible)
 x separate FontBank package? Schriftbank
 x stroke, input in separate pkg, so they are visible to UI
 x FreeCellEasy

@@ -12,6 +12,7 @@ import (
 
 // RuneButton is a button that displays a single rune
 type RuneButton struct {
+	parent        Container
 	r             rune
 	align         int
 	x, y          int // screen position
@@ -21,8 +22,8 @@ type RuneButton struct {
 }
 
 // NewRuneButton creates a new RuneButton
-func NewRuneButton(r rune, align int, input *input.Input, key ebiten.Key) *RuneButton {
-	rb := &RuneButton{r: r, align: align, width: 48, height: 48, input: input, key: key}
+func NewRuneButton(parent Container, r rune, align int, input *input.Input, key ebiten.Key) *RuneButton {
+	rb := &RuneButton{parent: parent, r: r, align: align, width: 48, height: 48, input: input, key: key}
 	rb.Activate()
 	return rb
 }

@@ -32,15 +32,23 @@ func (n *NavDrawer) createImg() {
 	dc.DrawRectangle(0, 0, float64(n.width), float64(n.height))
 	dc.Fill()
 	dc.Stroke()
+
+	var y int = 64 + 48
+	for _, w := range n.widgets {
+		w.Draw(dc, 0, y)
+		y += 48
+	}
+
 	n.img = ebiten.NewImageFromImage(dc.Image())
 }
 
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
-func NewNavDrawer(i *input.Input) *NavDrawer {
+func NewNavDrawer(input *input.Input) *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	n := &NavDrawer{width: 256, x: -256, y: 0}
+	n := &NavDrawer{width: 256, height: 0, x: -256, y: 0}
 	n.widgets = []Widget{
-		// TODO add some widgets
+		NewNavItem(n, rune(9733), "New deal", input, ebiten.KeyN),
+		NewNavItem(n, rune(8634), "Restart deal", input, ebiten.KeyR),
 	}
 	return n
 }
@@ -91,7 +99,7 @@ func (n *NavDrawer) Update() {
 
 // Draw the NavDrawer
 func (n *NavDrawer) Draw(screen *ebiten.Image) {
-	h, _ := screen.Size()
+	_, h := screen.Size()
 	if n.img == nil || h != n.height {
 		n.height = h
 		n.createImg()

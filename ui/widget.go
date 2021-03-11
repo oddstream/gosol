@@ -14,3 +14,8 @@ type Widget interface {
 	Activate()
 	Deactivate()
 }
+
+// Container contains a list of widgets
+type Container interface {
+	Rect() (int, int, int, int)
+}

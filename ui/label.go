@@ -11,6 +11,7 @@ import (
 
 // Label is a button that displays a single rune
 type Label struct {
+	parent        Container
 	text          string
 	face          font.Face
 	align         int // -1 left, 0=center, 1=right
@@ -20,8 +21,8 @@ type Label struct {
 }
 
 // NewLabel creates a new Label
-func NewLabel(text string, align int, face font.Face, input *input.Input) *Label {
-	l := &Label{text: text, face: face, align: align, width: 48, height: 48, input: input}
+func NewLabel(parent Container, text string, align int, face font.Face, input *input.Input) *Label {
+	l := &Label{parent: parent, text: text, face: face, align: align, width: 48, height: 48, input: input}
 	l.Activate()
 	return l
 }
