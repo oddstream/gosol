@@ -33,12 +33,6 @@ func (n *NavDrawer) createImg() {
 	dc.Fill()
 	dc.Stroke()
 
-	var y int = 64 + 48
-	for _, w := range n.widgets {
-		w.Draw(dc, 0, y)
-		y += 48
-	}
-
 	n.img = ebiten.NewImageFromImage(dc.Image())
 }
 
@@ -49,6 +43,9 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 	n.widgets = []Widget{
 		NewNavItem(n, rune(9733), "New deal", input, ebiten.KeyN),
 		NewNavItem(n, rune(8634), "Restart deal", input, ebiten.KeyR),
+		NewNavItem(n, rune('?'), "New game...", input, ebiten.KeyF),
+		NewNavItem(n, rune('?'), "Statistics...", input, ebiten.KeyF),
+		NewNavItem(n, rune('?'), "Settings...", input, ebiten.KeyF),
 	}
 	return n
 }
@@ -95,10 +92,23 @@ func (n *NavDrawer) Update() {
 			n.x += 16
 		}
 	}
+	n.LayoutWidgets()
+}
+
+// LayoutWidgets belonging to this container
+func (n *NavDrawer) LayoutWidgets() {
+
+	var y int = 64
+	for _, w := range n.widgets {
+		w.SetPosition(n.x, n.y+y)
+		y += 48
+	}
+
 }
 
 // Draw the NavDrawer
 func (n *NavDrawer) Draw(screen *ebiten.Image) {
+
 	_, h := screen.Size()
 	if n.img == nil || h != n.height {
 		n.height = h
@@ -107,6 +117,11 @@ func (n *NavDrawer) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(n.x), 0) // y is always zero
 	screen.DrawImage(n.img, op)
+
+	for _, w := range n.widgets {
+		w.Draw(screen)
+	}
+
 }
 
 // IsNavDrawerOpen returns true if the drawer is open

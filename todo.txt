@@ -4,8 +4,15 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ Widget disabled (drawn in grey) status
+  maybe widgets should draw themselves, instead of painting to their parent
+  a widget is just a rectangle, placed at x,y by it's parent, that responds to taps, can be disabled, can be visible or not, 
+  so there is a base set of widget functionality that all share: draw, rect,  ...
+  containers (like toolbar or nav drawer) should be widgets too?
++ Scrim when nav drawer open? Maybe just alpha down the baize.
 + UI FAB and FABManager
   https://material.io/components/buttons-floating-action-button
++ modal dialog to show statistics
 + UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
   https://material.io/components/navigation-drawer#usage
 + you have started N games of X? Loading a varaint should not count as starting

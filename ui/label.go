@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
@@ -12,6 +13,7 @@ import (
 // Label is a button that displays a single rune
 type Label struct {
 	parent        Container
+	img           *ebiten.Image
 	text          string
 	face          font.Face
 	align         int // -1 left, 0=center, 1=right
@@ -20,10 +22,28 @@ type Label struct {
 	input         *input.Input
 }
 
+func (l *Label) createImg() *ebiten.Image {
+	dc := gg.NewContext(8, 8)
+	dc.SetFontFace(l.face)
+	w, h := dc.MeasureString(l.text)
+
+	l.width = int(w)
+	l.height = int(h)
+
+	dc = gg.NewContext(int(w), int(h))
+	dc.SetFontFace(l.face)
+	dc.SetRGBA(1, 1, 1, 1)
+	dc.DrawStringAnchored(l.text, w/2, h/2, 0.5, 0.4)
+	dc.Stroke()
+
+	return ebiten.NewImageFromImage(dc.Image())
+}
+
 // NewLabel creates a new Label
-func NewLabel(parent Container, text string, align int, face font.Face, input *input.Input) *Label {
-	l := &Label{parent: parent, text: text, face: face, align: align, width: 48, height: 48, input: input}
+func NewLabel(parent Container, input *input.Input, text string, align int, face font.Face) *Label {
+	l := &Label{parent: parent, text: text, face: face, align: align, width: 0, height: 48, input: input}
 	l.Activate()
+	l.img = l.createImg() // also sets width, height
 	return l
 }
 
@@ -37,10 +57,15 @@ func (l *Label) Deactivate() {
 	l.input.Remove(l)
 }
 
+// Position of the Label
+func (l *Label) Position() (int, int) {
+	return l.x, l.y
+}
+
 // Size of the Label
-// func (l *Label) Size() (int, int) {
-// 	return l.width, l.height
-// }
+func (l *Label) Size() (int, int) {
+	return l.width, l.height
+}
 
 // Rect gives the screen position
 func (l *Label) Rect() (x0, y0, x1, y1 int) {
@@ -49,6 +74,11 @@ func (l *Label) Rect() (x0, y0, x1, y1 int) {
 	x1 = l.x + l.width
 	y1 = l.y + l.height
 	return // using named parameters
+}
+
+// SetPosition of this widget
+func (l *Label) SetPosition(x, y int) {
+	l.x, l.y = x, y
 }
 
 // Align returns the x axis alignment (-1, 0, 1)
@@ -67,14 +97,14 @@ func (l *Label) NotifyCallback(event interface{}) {
 	}
 }
 
-// Draw into a gg context, not to the screen; x,y is the center of the label
-func (l *Label) Draw(dc *gg.Context, x, y int) {
-	dc.SetFontFace(l.face)
-	dc.SetRGBA(1, 1, 1, 1)
-	dc.DrawStringAnchored(l.text, float64(x), float64(y), 0.5, 0.5)
-	dc.Stroke()
+// Update the state of this widget
+func (l *Label) Update() {
 
-	l.x, l.y = x-(l.width/2), y-(l.height/2)
-	w, h := dc.MeasureString(l.text)
-	l.width, l.height = int(w), int(h)
+}
+
+// Draw the widget
+func (l *Label) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(l.x), float64(l.y))
+	screen.DrawImage(l.img, op)
 }

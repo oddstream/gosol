@@ -663,7 +663,7 @@ func (b *Baize) calcPercentComplete() int {
 func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
-		println("image.Point", v.X, v.Y)
+		// println("image.Point (tap)", v.X, v.Y)
 		if b.ui.ActiveModal() {
 			if !util.InRect(v.X, v.Y, b.ui.ActiveRect) {
 				b.ui.CloseActiveModal()
@@ -685,7 +685,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		}
 	case ebiten.Key:
-		println("ebiten.Key", v)
+		// println("ebiten.Key", v)
 		fn, ok := b.commandTable[v]
 		if ok {
 			if b.ui.ActiveModal() {

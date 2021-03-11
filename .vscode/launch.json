@@ -12,7 +12,7 @@
       "program": "${workspaceFolder}",
       // "args": ["-debug", "-v=Australian", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=BakersDozen"],
-      // "args": ["-debug", "-v=BakersDozenRelaxed"],
+      "args": ["-debug", "-v=BakersDozenRelaxed"],
       // "args": ["-debug", "-v=Canfield", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=EasyWin", "-c=retro"],
       // "args": ["-debug", "-v=EasyWin" -noload],
@@ -28,7 +28,7 @@
       // "args": ["-debug", "-v=Spider2", "-c=default", "-cardwidth=60"],
       // "args": ["-debug", "-v=Storehouse", "-c=default", "-cardwidth=90"],
       // "args": ["-debug","-v=Wasp", "-c=default", "-cardwidth=90"],
-      "args": ["-debug","-v=Yukon", "-c=default", "-cardwidth=90"],
+      // "args": ["-debug","-v=Yukon", "-c=bridge", "-cardwidth=90"],
       "buildFlags": "-tags desktop"
     }
   ]

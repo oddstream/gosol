@@ -11,51 +11,54 @@ import (
 
 // Toolbar object (hamburger button, variant name, undo, help buttons)
 type Toolbar struct {
-	img     *ebiten.Image
-	title   string
-	width   int
-	widgets []Widget
+	input         *input.Input
+	img           *ebiten.Image
+	title         string
+	x, y          int
+	width, height int
+	widgets       []Widget
 }
 
 // NewToolbar creates a new toolbar
 func NewToolbar(input *input.Input) *Toolbar {
-	tb := &Toolbar{}
+	tb := &Toolbar{input: input, x: 0, y: 0, width: 0, height: 48}
 
 	tb.widgets = []Widget{
-		NewRuneButton(tb, rune(9776), -1, input, ebiten.KeyMenu),
-		NewLabel(tb, "", 0, schriftbank.RobotoMedium24, input),
-		NewRuneButton(tb, '?', 1, input, ebiten.KeyH),
-		NewRuneButton(tb, rune(8592), 1, input, ebiten.KeyU),
+		NewRuneButton(tb, input, rune(9776), -1, ebiten.KeyMenu),
+		NewLabel(tb, input, "", 0, schriftbank.RobotoMedium24),
+		NewRuneButton(tb, input, '?', 1, ebiten.KeyH),
+		NewRuneButton(tb, input, rune(8592), 1, ebiten.KeyU),
 	}
-
+	// img will created first time it's drawn if width == 0
 	return tb
 }
 
-func (tb *Toolbar) createImg() {
-
+func (tb *Toolbar) createImg() *ebiten.Image {
 	dc := gg.NewContext(tb.width, 48)
 	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
 	dc.DrawRectangle(0, 0, float64(tb.width), 48)
 	dc.Fill()
 	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
+}
 
-	width := dc.Width()
-	height := dc.Height()
-	nextLeft := 48 / 2
-	nextRight := width - 48/2
+// LayoutWidgets that belong to this container
+func (tb *Toolbar) LayoutWidgets() {
+	nextLeft := 0
+	nextRight := tb.width - 48
 	for _, w := range tb.widgets {
 		switch w.Align() {
 		case -1:
-			w.Draw(dc, nextLeft, height/2)
+			w.SetPosition(nextLeft, tb.y)
 			nextLeft += 48
 		case 0:
-			w.Draw(dc, width/2, height/2)
+			widgetWidth, widgetHeight := w.Size()
+			w.SetPosition(tb.width/2-widgetWidth/2, tb.y+widgetHeight/2)
 		case 1:
-			w.Draw(dc, nextRight, height/2)
+			w.SetPosition(nextRight, tb.y)
 			nextRight -= 48
 		}
 	}
-	tb.img = ebiten.NewImageFromImage(dc.Image())
 }
 
 // Rect returns the area this toolbar covers
@@ -69,7 +72,7 @@ func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
 
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
-	u.toolbar.ReplaceWidget(1, NewLabel(u.toolbar, title, 0, schriftbank.RobotoMedium24, u.input))
+	u.toolbar.ReplaceWidget(1, NewLabel(u.toolbar, u.input, title, 0, schriftbank.RobotoMedium24))
 	u.toolbar.width = 0 // force img to be recreated
 }
 
@@ -88,8 +91,13 @@ func (tb *Toolbar) Draw(screen *ebiten.Image) {
 	w, _ := screen.Size()
 	if tb.img == nil || w != tb.width {
 		tb.width = w
-		tb.createImg()
+		tb.img = tb.createImg()
+		tb.LayoutWidgets()
 	}
 	op := &ebiten.DrawImageOptions{}
 	screen.DrawImage(tb.img, op)
+
+	for _, w := range tb.widgets {
+		w.Draw(screen)
+	}
 }
