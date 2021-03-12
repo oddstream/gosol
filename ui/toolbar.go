@@ -36,8 +36,10 @@ func NewToolbar(input *input.Input) *Toolbar {
 		NewRuneButton(tb, input, 0, 0, 48, 48, -1, rune(9776), ebiten.KeyMenu),
 		NewLabel(tb, input, 0, 0, 0, 48, 0, "", schriftbank.RobotoMedium24),
 		NewRuneButton(tb, input, 0, 0, 48, 48, 1, '?', ebiten.KeyH),
+		// NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(0x238c), ebiten.KeyU),	// does not display unicode undo glyph
 		NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(8592), ebiten.KeyU),
 	}
+	tb.widgets[2].Deactivate()
 	// img will created first time it's drawn if width == 0
 	return tb
 }

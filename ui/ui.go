@@ -13,6 +13,7 @@ type UI struct {
 	toastManager *ToastManager
 	toolbar      *Toolbar
 	navdrawer    *NavDrawer
+	window       *Window
 }
 
 // New creates a new UI object
@@ -22,6 +23,7 @@ func New(input *input.Input) *UI {
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
 	ui.navdrawer = NewNavDrawer(input)
+	ui.window = nil
 
 	return ui
 }
@@ -46,6 +48,9 @@ func (u *UI) ActiveModal() bool {
 	if u.navdrawer.Visible() {
 		return true
 	}
+	if u.window != nil {
+		return true
+	}
 	return false
 }
 
@@ -53,6 +58,9 @@ func (u *UI) ActiveModal() bool {
 func (u *UI) ActiveRect() (int, int, int, int) {
 	if u.navdrawer.Visible() {
 		return u.navdrawer.Rect()
+	}
+	if u.window != nil {
+		return u.window.Rect()
 	}
 	return 0, 0, 0, 0
 }
@@ -62,6 +70,9 @@ func (u *UI) CloseActiveModal() {
 	if u.navdrawer.Visible() {
 		u.navdrawer.Hide()
 	}
+	if u.window != nil {
+		u.window = nil
+	}
 }
 
 // Update is called once per tick and updates the UI's state
@@ -69,6 +80,9 @@ func (u *UI) Update() {
 	u.toolbar.Update()
 	u.navdrawer.Update()
 	u.toastManager.Update()
+	if u.window != nil {
+		u.window.Update()
+	}
 }
 
 // Draw is called once per tick and renders the UI to the screen
@@ -76,4 +90,7 @@ func (u *UI) Draw(screen *ebiten.Image) {
 	u.toolbar.Draw(screen)
 	u.navdrawer.Draw(screen)
 	u.toastManager.Draw(screen)
+	if u.window != nil {
+		u.window.Draw(screen)
+	}
 }

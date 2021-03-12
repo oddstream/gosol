@@ -42,9 +42,16 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 	n := &NavDrawer{width: 256, height: 0, x: -256, y: 0}
 	n.widgets = []Widget{
 		// give -ve y to make sure item is initially drawn off screen
-		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(9733), "New deal", ebiten.KeyN),
-		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(8634), "Restart deal", ebiten.KeyR),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2605), "New deal", ebiten.KeyN),
+		// NewNavItem(n, input, 0, -100, 256, 48, 0, rune(8634), "Restart deal", ebiten.KeyR),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x267b), "Restart deal", ebiten.KeyR),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2618), "Find game...", ebiten.KeyHome),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2696), "Statistics...", ebiten.KeyT),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2611), "Settings...", ebiten.KeyHome),
 	}
+	n.widgets[2].Deactivate()
+	// n.widgets[3].Deactivate()
+	n.widgets[4].Deactivate()
 	return n
 }
 

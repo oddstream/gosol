@@ -19,7 +19,11 @@ type RuneButton struct {
 
 func (rb *RuneButton) createImg() *ebiten.Image {
 	dc := gg.NewContext(rb.width, rb.height)
-	dc.SetRGBA(1, 1, 1, 1)
+	if rb.disabled {
+		dc.SetRGBA(0.5, 0.5, 0.5, 1)
+	} else {
+		dc.SetRGBA(1, 1, 1, 1)
+	}
 	dc.SetFontFace(schriftbank.Symbol24)
 	dc.DrawStringAnchored(string(rb.r), float64(rb.width/2), float64(rb.height/2), 0.5, 0.5)
 	dc.Stroke()
@@ -29,23 +33,29 @@ func (rb *RuneButton) createImg() *ebiten.Image {
 // NewRuneButton creates a new RuneButton
 func NewRuneButton(parent Container, input *input.Input, x, y, width, height, align int, r rune, key ebiten.Key) *RuneButton {
 	rb := &RuneButton{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, r: r, key: key}
-	rb.img = rb.createImg()
 	rb.Activate()
 	return rb
 }
 
 // Activate tells the input we need notifications
 func (rb *RuneButton) Activate() {
+	rb.disabled = false
+	rb.img = rb.createImg()
 	rb.input.Add(rb)
 }
 
 // Deactivate tells the input we no longer need notifications
 func (rb *RuneButton) Deactivate() {
+	rb.disabled = true
+	rb.img = rb.createImg()
 	rb.input.Remove(rb)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (rb *RuneButton) NotifyCallback(event interface{}) {
+	if rb.disabled {
+		return
+	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("RuneButton image.Point", v.X, v.Y)

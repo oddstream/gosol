@@ -11,6 +11,7 @@ type WidgetBase struct {
 	input         *input.Input
 	img           *ebiten.Image
 	align         int
+	disabled      bool
 	x, y          int // screen position
 	width, height int
 }

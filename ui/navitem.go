@@ -22,7 +22,11 @@ func (n *NavItem) createImg() *ebiten.Image {
 
 	dc := gg.NewContext(n.width, n.height)
 
-	dc.SetRGBA(1, 1, 1, 1)
+	if n.disabled {
+		dc.SetRGBA(0.5, 0.5, 0.5, 1)
+	} else {
+		dc.SetRGBA(1, 1, 1, 1)
+	}
 
 	// nota bene - text is drawn with y as a baseline
 
@@ -44,23 +48,29 @@ func (n *NavItem) createImg() *ebiten.Image {
 // NewNavItem creates a new NavItem
 func NewNavItem(parent Container, input *input.Input, x, y, width, height, align int, r rune, text string, key ebiten.Key) *NavItem {
 	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, r: r, text: text, key: key}
-	n.img = n.createImg()
 	n.Activate()
 	return n
 }
 
 // Activate tells the input we need notifications
 func (n *NavItem) Activate() {
+	n.disabled = false
+	n.img = n.createImg()
 	n.input.Add(n)
 }
 
 // Deactivate tells the input we no longer need notifications
 func (n *NavItem) Deactivate() {
+	n.disabled = true
+	n.img = n.createImg()
 	n.input.Remove(n)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (n *NavItem) NotifyCallback(event interface{}) {
+	if n.disabled {
+		return
+	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("NavItem image.Point", v.X, v.Y)

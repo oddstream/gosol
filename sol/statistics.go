@@ -86,45 +86,78 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 	s.Save()
 }
 
-// func (b *Baize) recordStatistics() {
-// 	switch b.State {
-// 	case Started:
-// 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-// 	case Complete:
-// 		TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-// 	}
-// }
-
 func (s *Statistics) welcomeToast(v string) {
-	name := variantDisplayName(v)
+	displayName := variantDisplayName(v)
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", name))
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", displayName))
 		return
 		// log.Fatal("welcomeToast unknown variant ", v)
 	}
 	if stats.Won+stats.Lost == 0 {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", name))
+		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", displayName))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Won+stats.Lost), name))
+		// TheBaize.ui.Toast(fmt.Sprintf("You have played %s of %s", util.Pluralize("game", stats.Won+stats.Lost), displayName))
+
+		if stats.BestPercent == 0 {
+			TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))
+		} else if stats.BestPercent < 100 {
+			TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
+		} else {
+			TheBaize.ui.Toast(
+				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+					util.Pluralize("game", stats.Won),
+					util.Pluralize("game", stats.Lost),
+					((stats.Won * 100) / (stats.Won + stats.Lost))))
+		}
+		if stats.BestPercent == 100 {
+			if stats.CurrStreak > 0 {
+				TheBaize.ui.Toast(fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+			}
+			if stats.CurrStreak < 0 {
+				TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
+			}
+		}
 	}
-	if stats.BestPercent == 0 {
-		TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))
-	} else if stats.BestPercent < 100 {
-		TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
+}
+
+// ShowStatistics open statistics window
+func (s *Statistics) ShowStatistics(v string) {
+
+	displayName := variantDisplayName(v)
+	stats, ok := s.StatsMap[v]
+	if !ok {
+		TheBaize.ui.AppendTextToWindow(fmt.Sprintf("You have not played %s before", displayName))
+		return
+		// log.Fatal("welcomeToast unknown variant ", v)
+	}
+	if stats.Won+stats.Lost == 0 {
+		TheBaize.ui.AppendTextToWindow(fmt.Sprintf("You have not played %s before", displayName))
 	} else {
-		TheBaize.ui.Toast(
-			fmt.Sprintf("You have won %s, and lost %s (%d%%)",
-				util.Pluralize("game", stats.Won),
-				util.Pluralize("game", stats.Lost),
-				((stats.Won * 100) / (stats.Won + stats.Lost))))
-	}
-	if stats.BestPercent == 100 {
-		if stats.CurrStreak > 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+		if stats.BestPercent == 0 {
+			TheBaize.ui.AppendTextToWindow(fmt.Sprintf("You have yet to score anything"))
+		} else if stats.BestPercent < 100 {
+			TheBaize.ui.AppendTextToWindow(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
+		} else {
+			TheBaize.ui.AppendTextToWindow(
+				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+					util.Pluralize("game", stats.Won),
+					util.Pluralize("game", stats.Lost),
+					((stats.Won * 100) / (stats.Won + stats.Lost))))
 		}
-		if stats.CurrStreak < 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
+		if stats.BestPercent == 100 {
+			if stats.CurrStreak > 0 {
+				TheBaize.ui.AppendTextToWindow(fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+			}
+			if stats.CurrStreak < 0 {
+				TheBaize.ui.AppendTextToWindow(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
+			}
 		}
 	}
+}
+
+// ShowStatistics open statistics window
+func (b *Baize) ShowStatistics() {
+	b.ui.OpenWindow(b.input, "Statistics")
+	TheStatistics.ShowStatistics(b.Variant)
 }

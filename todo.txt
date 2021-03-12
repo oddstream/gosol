@@ -4,8 +4,8 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ Complete() counts as one move, wrong for statistics
 + statusbar: stock card count, number of moves
-+ Widget disabled (drawn in grey) status
 + Scrim when nav drawer open? Maybe just alpha down the baize.
 + UI FAB and FABManager
   https://material.io/components/buttons-floating-action-button
@@ -48,6 +48,7 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x Widget disabled (drawn in grey) status
 x reduce widget boilerplate clutter with method expression/method value/embedded struct
   https://travix.io/type-embedding-in-go-ba40dd4264df
   maybe widgets should draw themselves, instead of painting to their parent
