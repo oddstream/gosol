@@ -72,6 +72,7 @@ x encode prone in <pack><suit><ordinal> three 4-bit numbers
   Card.Ordinal() = id & 0b1111
   https://play.golang.org/p/5XjdhoDDkq suggests okay to jsonisze uint32
   
+x added stats.Lost, retired stats.Played
 x util.Pluralize(word string, n int) string {}
 x record won game when detecting Complete(), disallow undo?
 x append 'u' or 'd' to Card.ID to create SaveableCard (which beomes a string)

@@ -7,12 +7,6 @@ import (
 	"oddstream.games/gosol/input"
 )
 
-// Container holds Widgets
-// type Container struct {
-// 	widgets         []*Widget
-// 	BackgroundImage *ebiten.Image
-// }
-
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
 	input        *input.Input // place to receive clicks, taps and key presses from

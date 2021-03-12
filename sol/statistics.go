@@ -16,7 +16,7 @@ type Statistics struct {
 // VariantStatistics holds the statistics for one variant
 type VariantStatistics struct {
 	// PascalCase for JSON
-	Played, Won, BestWinningMoves, WorstWinningMoves, CurrStreak, BestStreak, WorstStreak, BestPercent int
+	Won, Lost, BestWinningMoves, WorstWinningMoves, CurrStreak, BestStreak, WorstStreak, BestPercent int
 }
 
 // NewStatistics creates a new Statistics object
@@ -32,8 +32,6 @@ func (s *Statistics) startGame(v string) {
 		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
 		s.StatsMap[v] = stats
 	}
-	stats.Played = stats.Played + 1
-	s.Save()
 }
 
 func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
@@ -69,6 +67,7 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 		log.Fatal("recordLostGame unknown variant ", v)
 	}
 
+	stats.Lost = stats.Lost + 1
 	// don't see that currStreak can ever be zero
 	if stats.CurrStreak > 0 {
 		stats.CurrStreak = -1
@@ -104,17 +103,21 @@ func (s *Statistics) welcomeToast(v string) {
 		return
 		// log.Fatal("welcomeToast unknown variant ", v)
 	}
-	if stats.Played == 0 {
+	if stats.Won+stats.Lost == 0 {
 		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", name))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Played), name))
+		TheBaize.ui.Toast(fmt.Sprintf("You have started %s of %s", util.Pluralize("game", stats.Won+stats.Lost), name))
 	}
 	if stats.BestPercent == 0 {
 		TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))
 	} else if stats.BestPercent < 100 {
 		TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
 	} else {
-		TheBaize.ui.Toast(fmt.Sprintf("You have won %s", util.Pluralize("game", stats.Won)))
+		TheBaize.ui.Toast(
+			fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+				util.Pluralize("game", stats.Won),
+				util.Pluralize("game", stats.Lost),
+				((stats.Won * 100) / (stats.Won + stats.Lost))))
 	}
 	if stats.BestPercent == 100 {
 		if stats.CurrStreak > 0 {
