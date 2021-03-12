@@ -129,3 +129,13 @@ func Pluralize(word string, n int) string {
 	}
 	return fmt.Sprintf("%d %ss", n, word)
 }
+
+// Contains tells whether a contains x.
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}

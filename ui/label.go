@@ -20,10 +20,10 @@ type Label struct {
 func (l *Label) createImg() *ebiten.Image {
 	dc := gg.NewContext(8, 8)
 	dc.SetFontFace(l.face)
-	w, h := dc.MeasureString(l.text)
-
+	w, h := dc.MeasureMultilineString(l.text, 1)
 	l.width = int(w)
 	l.height = int(h)
+	// println("label widget is", l.width, l.height)
 
 	dc = gg.NewContext(int(w), int(h))
 	dc.SetFontFace(l.face)
@@ -32,7 +32,8 @@ func (l *Label) createImg() *ebiten.Image {
 	} else {
 		dc.SetRGBA(1, 1, 1, 1)
 	}
-	dc.DrawStringAnchored(l.text, w/2, h/2, 0.5, 0.4)
+	// dc.DrawStringAnchored(l.text, w/2, h/2, 0.5, 0.4)
+	dc.DrawStringWrapped(l.text, w/2, h/2-4, 0.5, 0.5, w, 1, gg.AlignLeft) // -4 otherwise tails are clipped
 	dc.Stroke()
 
 	return ebiten.NewImageFromImage(dc.Image())

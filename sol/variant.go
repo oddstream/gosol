@@ -424,3 +424,13 @@ func variantDisplayName(v string) string {
 	}
 	return ""
 }
+
+func variantDescription(v string) string {
+	if vi, exists := Variants[v]; exists {
+		if vi.Description == "" {
+			return v
+		}
+		return vi.Description
+	}
+	return ""
+}

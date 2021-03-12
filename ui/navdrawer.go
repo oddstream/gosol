@@ -46,7 +46,7 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		// NewNavItem(n, input, 0, -100, 256, 48, 0, rune(8634), "Restart deal", ebiten.KeyR),
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x267b), "Restart deal", ebiten.KeyR),
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2618), "Find game...", ebiten.KeyHome),
-		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2696), "Statistics...", ebiten.KeyT),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2696), "Rules...", ebiten.KeyF1),
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2611), "Settings...", ebiten.KeyHome),
 	}
 	n.widgets[2].Deactivate()

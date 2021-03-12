@@ -56,7 +56,7 @@ func NewBaize() *Baize {
 		ebiten.KeyS:      TheBaize.SavePosition,
 		ebiten.KeyL:      TheBaize.LoadPosition,
 		ebiten.KeyC:      TheBaize.Collect,
-		ebiten.KeyT:      TheBaize.ShowStatistics,
+		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.CloseActiveModal,
 	}

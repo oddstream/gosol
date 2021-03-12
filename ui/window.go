@@ -13,10 +13,11 @@ import (
 type Window struct {
 	img           *ebiten.Image
 	input         *input.Input
-	title         *Label
+	widgets       []Widget
 	x, y          int
 	width, height int
-	widgets       []Widget
+	title         *Label
+	content       []string
 }
 
 func (w *Window) createImg() *ebiten.Image {
@@ -29,9 +30,12 @@ func (w *Window) createImg() *ebiten.Image {
 }
 
 // NewWindow creates a new toolbar
-func NewWindow(input *input.Input, title string) *Window {
+func NewWindow(input *input.Input, title string, content []string) *Window {
 	w := &Window{input: input} // x,y,width,height will be set when drawn
 	w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24)
+	for _, c := range content {
+		w.widgets = append(w.widgets, NewLabel(w, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular14))
+	}
 	return w
 }
 
@@ -46,26 +50,19 @@ func (w *Window) Rect() (x0, y0, x1, y1 int) {
 
 // LayoutWidgets that belong to this container
 func (w *Window) LayoutWidgets() {
-	wpx, wpy, x1, _ := w.Rect()
-	wsx := x1 - wpx
-	x := wpx + (wsx / 2) // center of window
-	lsx, lsy := w.title.Size()
-	x -= lsx / 2
-	w.title.SetPosition(x, wpy+lsy)
+	wpx0, wpy0, wpx1, _ := w.Rect()
+	windowWidth := wpx1 - wpx0
+	x := wpx0 + (windowWidth / 2) // center of window
+	titleWidth, titleHeight := w.title.Size()
+	x -= titleWidth / 2
+	w.title.SetPosition(x, wpy0+titleHeight)
 
-	y := lsy + 48
+	y := titleHeight + 48
 	for _, w := range w.widgets {
-		w.SetPosition(wpx+48, wpy+y)
-		y += 48
+		w.SetPosition(wpx0+48, wpy0+y)
+		_, widgetHeight := w.Size()
+		y += widgetHeight + 14
 	}
-}
-
-// AppendText to this window
-func (w *Window) AppendText(text string) {
-	w.widgets = append(w.widgets,
-		NewLabel(w, w.input, 0, 0, 640, 48, 0, text, schriftbank.RobotoRegular14),
-	)
-	w.LayoutWidgets()
 }
 
 // Update the window
@@ -95,19 +92,11 @@ func (w *Window) Draw(screen *ebiten.Image) {
 }
 
 // OpenWindow create window
-func (u *UI) OpenWindow(input *input.Input, title string) {
+func (u *UI) OpenWindow(input *input.Input, title string, content []string) {
 	if u.window != nil {
 		u.window = nil
 	}
-	u.window = NewWindow(input, title)
-}
-
-// AppendTextToWindow create window
-func (u *UI) AppendTextToWindow(text string) {
-	if u.window == nil {
-		return
-	}
-	u.window.AppendText(text)
+	u.window = NewWindow(input, title, content)
 }
 
 // CloseWindow create window
