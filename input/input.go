@@ -14,8 +14,9 @@ import (
 // Input records state of mouse and touch, Subject in Observer pattern
 type Input struct {
 	// pressed        map[ebiten.Key]struct{} // an empty and useless type
-	observers   sync.Map
-	timePressed time.Time
+	observers          sync.Map
+	timePressed        time.Time
+	xPressed, yPressed int
 }
 
 // NewInput Input object constructor
@@ -49,12 +50,15 @@ func (i *Input) Notify(event interface{}) {
 func (i *Input) Update() {
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		i.xPressed, i.yPressed = ebiten.CursorPosition()
 		i.timePressed = time.Now()
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		elapsed := time.Since(i.timePressed) / 1000 / 1000 // convert nano- to milli- seconds
-		if elapsed < 150 {
-			x, y := ebiten.CursorPosition()
-			i.Notify(image.Point{X: x, Y: y})
+		xNow, yNow := ebiten.CursorPosition()
+		// distance := util.DistanceInt(i.xPressed, i.yPressed, xNow, yNow)
+		// can't use distance < n because card will be animating
+		if elapsed < 150 || (i.xPressed == xNow && i.yPressed == yNow) {
+			i.Notify(image.Point{X: xNow, Y: yNow})
 		}
 	}
 

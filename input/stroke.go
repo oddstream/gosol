@@ -159,6 +159,7 @@ func (s *Stroke) Remove(observer Observer) {
 
 // Notify observers that an event has happened
 func (s *Stroke) Notify(event interface{}) {
+	// cannot range over a value of type sync.Map
 	s.observers.Range(func(key, value interface{}) bool {
 		if key == nil {
 			return false

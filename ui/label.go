@@ -12,14 +12,9 @@ import (
 
 // Label is a button that displays a single rune
 type Label struct {
-	parent        Container
-	img           *ebiten.Image
-	text          string
-	face          font.Face
-	align         int // -1 left, 0=center, 1=right
-	x, y          int // screen position
-	width, height int
-	input         *input.Input
+	WidgetBase
+	text string
+	face font.Face
 }
 
 func (l *Label) createImg() *ebiten.Image {
@@ -40,10 +35,10 @@ func (l *Label) createImg() *ebiten.Image {
 }
 
 // NewLabel creates a new Label
-func NewLabel(parent Container, input *input.Input, text string, align int, face font.Face) *Label {
-	l := &Label{parent: parent, text: text, face: face, align: align, width: 0, height: 48, input: input}
-	l.Activate()
+func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, face font.Face) *Label {
+	l := &Label{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, text: text, face: face}
 	l.img = l.createImg() // also sets width, height
+	l.Activate()
 	return l
 }
 
@@ -55,35 +50,6 @@ func (l *Label) Activate() {
 // Deactivate tells the input we no longer need notofications
 func (l *Label) Deactivate() {
 	l.input.Remove(l)
-}
-
-// Position of the Label
-func (l *Label) Position() (int, int) {
-	return l.x, l.y
-}
-
-// Size of the Label
-func (l *Label) Size() (int, int) {
-	return l.width, l.height
-}
-
-// Rect gives the screen position
-func (l *Label) Rect() (x0, y0, x1, y1 int) {
-	x0 = l.x
-	y0 = l.y
-	x1 = l.x + l.width
-	y1 = l.y + l.height
-	return // using named parameters
-}
-
-// SetPosition of this widget
-func (l *Label) SetPosition(x, y int) {
-	l.x, l.y = x, y
-}
-
-// Align returns the x axis alignment (-1, 0, 1)
-func (l *Label) Align() int {
-	return l.align
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
@@ -100,11 +66,4 @@ func (l *Label) NotifyCallback(event interface{}) {
 // Update the state of this widget
 func (l *Label) Update() {
 
-}
-
-// Draw the widget
-func (l *Label) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(l.x), float64(l.y))
-	screen.DrawImage(l.img, op)
 }

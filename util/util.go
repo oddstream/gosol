@@ -83,12 +83,20 @@ func Pow(x, y int) int {
 	return int(math.Pow(float64(x), float64(y)))
 }
 
-// Distance finds the length of the hypotenuse between two points.
-// Forumula is the square root of (x2 - x1)^2 + (y2 - y1)^2
-func Distance(x1, y1, x2, y2 float64) float64 {
+// DistanceFloat64 finds the length of the hypotenuse between two points.
+// Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
+func DistanceFloat64(x1, y1, x2, y2 float64) float64 {
 	first := math.Pow(x2-x1, 2)
 	second := math.Pow(y2-y1, 2)
 	return math.Sqrt(first + second)
+}
+
+// Distance finds the length of the hypotenuse between two points.
+// Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
+func DistanceInt(x1, y1, x2, y2 int) int {
+	first := math.Pow(float64(x2)-float64(x1), 2)
+	second := math.Pow(float64(y2)-float64(y1), 2)
+	return int(math.Sqrt(first + second))
 }
 
 // OverlapArea returns the intersection of two rectangles

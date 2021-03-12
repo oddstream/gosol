@@ -41,11 +41,9 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
 	n := &NavDrawer{width: 256, height: 0, x: -256, y: 0}
 	n.widgets = []Widget{
-		NewNavItem(n, rune(9733), "New deal", input, ebiten.KeyN),
-		NewNavItem(n, rune(8634), "Restart deal", input, ebiten.KeyR),
-		NewNavItem(n, rune('?'), "New game...", input, ebiten.KeyF),
-		NewNavItem(n, rune('?'), "Statistics...", input, ebiten.KeyF),
-		NewNavItem(n, rune('?'), "Settings...", input, ebiten.KeyF),
+		// give -ve y to make sure item is initially drawn off screen
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(9733), "New deal", ebiten.KeyN),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(8634), "Restart deal", ebiten.KeyR),
 	}
 	return n
 }

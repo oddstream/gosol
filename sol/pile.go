@@ -488,7 +488,7 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 // DragTailBy repositions all the cards in the tail (from c inclusive)
 func (p *Pile) DragTailBy(dx, dy int) {
 	// would have used https://golang.org/ref/spec#Method_expressions
-	// but couldn't figure out the syntax
+	// but couldn't figure out the syntax (TODO)
 	// so using a standalone loop instead
 	for _, tc := range p.Tail {
 		tc.DragBy(dx, dy)

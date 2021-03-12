@@ -19,20 +19,6 @@ type Toolbar struct {
 	widgets       []Widget
 }
 
-// NewToolbar creates a new toolbar
-func NewToolbar(input *input.Input) *Toolbar {
-	tb := &Toolbar{input: input, x: 0, y: 0, width: 0, height: 48}
-
-	tb.widgets = []Widget{
-		NewRuneButton(tb, input, rune(9776), -1, ebiten.KeyMenu),
-		NewLabel(tb, input, "", 0, schriftbank.RobotoMedium24),
-		NewRuneButton(tb, input, '?', 1, ebiten.KeyH),
-		NewRuneButton(tb, input, rune(8592), 1, ebiten.KeyU),
-	}
-	// img will created first time it's drawn if width == 0
-	return tb
-}
-
 func (tb *Toolbar) createImg() *ebiten.Image {
 	dc := gg.NewContext(tb.width, 48)
 	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
@@ -40,6 +26,20 @@ func (tb *Toolbar) createImg() *ebiten.Image {
 	dc.Fill()
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
+}
+
+// NewToolbar creates a new toolbar
+func NewToolbar(input *input.Input) *Toolbar {
+	tb := &Toolbar{input: input, x: 0, y: 0, width: 0, height: 48}
+
+	tb.widgets = []Widget{
+		NewRuneButton(tb, input, 0, 0, 48, 48, -1, rune(9776), ebiten.KeyMenu),
+		NewLabel(tb, input, 0, 0, 0, 48, 0, "", schriftbank.RobotoMedium24),
+		NewRuneButton(tb, input, 0, 0, 48, 48, 1, '?', ebiten.KeyH),
+		NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(8592), ebiten.KeyU),
+	}
+	// img will created first time it's drawn if width == 0
+	return tb
 }
 
 // LayoutWidgets that belong to this container
@@ -66,13 +66,13 @@ func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
 	x0 = 0
 	y0 = 0
 	x1 = tb.width
-	y1 = 48
+	y1 = tb.height
 	return // using named parameters
 }
 
 // SetTitle of the toolbar
 func (u *UI) SetTitle(title string) {
-	u.toolbar.ReplaceWidget(1, NewLabel(u.toolbar, u.input, title, 0, schriftbank.RobotoMedium24))
+	u.toolbar.ReplaceWidget(1, NewLabel(u.toolbar, u.input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24))
 	u.toolbar.width = 0 // force img to be recreated
 }
 
