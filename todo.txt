@@ -4,11 +4,8 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
++ statusbar: stock card count, number of moves
 + Widget disabled (drawn in grey) status
-  maybe widgets should draw themselves, instead of painting to their parent
-  a widget is just a rectangle, placed at x,y by it's parent, that responds to taps, can be disabled, can be visible or not, 
-  so there is a base set of widget functionality that all share: draw, rect,  ...
-  containers (like toolbar or nav drawer) should be widgets too?
 + Scrim when nav drawer open? Maybe just alpha down the baize.
 + UI FAB and FABManager
   https://material.io/components/buttons-floating-action-button
@@ -51,6 +48,12 @@ $ git branch -m master main
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x reduce widget boilerplate clutter with method expression/method value/embedded struct
+  https://travix.io/type-embedding-in-go-ba40dd4264df
+  maybe widgets should draw themselves, instead of painting to their parent
+  a widget is just a rectangle, placed at x,y by it's parent, that responds to taps, can be disabled, can be visible or not, 
+  so there is a base set of widget functionality that all share: draw, rect,  ...
+  containers (like toolbar or nav drawer) should be widgets too?
 x don't care if tap happens over toolbar or navdrawer, only if tap happens on their widgets
   so the widget should input.Add() (or Remove() if not visible)
 x separate FontBank package? Schriftbank
