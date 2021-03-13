@@ -62,8 +62,27 @@ func (wb *WidgetBase) Align() int {
 	return wb.align
 }
 
+// StartDrag this widget, if it is allowed
+func (wb *WidgetBase) StartDrag() bool {
+	return false
+}
+
+// DragBy this widget
+func (wb *WidgetBase) DragBy(dx, dy int) {
+}
+
+// StopDrag this widget
+func (wb *WidgetBase) StopDrag() {
+}
+
 // Draw the widget
 func (wb *WidgetBase) Draw(screen *ebiten.Image) {
+	// don't draw a widget unless it is fully contained within it's parent
+	_, py0, _, py1 := wb.parent.Rect()
+	_, _, _, wy1 := wb.Rect()
+	if wy1 > py1 || wy1 < py0 {
+		return
+	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(wb.x), float64(wb.y))
 	screen.DrawImage(wb.img, op)

@@ -13,7 +13,7 @@ type UI struct {
 	toastManager *ToastManager
 	toolbar      *Toolbar
 	navdrawer    *NavDrawer
-	window       *Window
+	modal        Container
 }
 
 // New creates a new UI object
@@ -23,7 +23,6 @@ func New(input *input.Input) *UI {
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
 	ui.navdrawer = NewNavDrawer(input)
-	ui.window = nil
 
 	return ui
 }
@@ -43,12 +42,20 @@ func New(input *input.Input) *UI {
 // 	}
 // }
 
+// FindWidgetAt finds the widget at the screen coords
+func (u *UI) FindWidgetAt(x, y int) Widget {
+	if u.modal == nil {
+		return nil
+	}
+	return u.modal.FindWidgetAt(x, y)
+}
+
 // ActiveModal returns true if there is an active modal
 func (u *UI) ActiveModal() bool {
 	if u.navdrawer.Visible() {
 		return true
 	}
-	if u.window != nil {
+	if u.modal != nil {
 		return true
 	}
 	return false
@@ -59,8 +66,8 @@ func (u *UI) ActiveRect() (int, int, int, int) {
 	if u.navdrawer.Visible() {
 		return u.navdrawer.Rect()
 	}
-	if u.window != nil {
-		return u.window.Rect()
+	if u.modal != nil {
+		return u.modal.Rect()
 	}
 	return 0, 0, 0, 0
 }
@@ -70,8 +77,8 @@ func (u *UI) CloseActiveModal() {
 	if u.navdrawer.Visible() {
 		u.navdrawer.Hide()
 	}
-	if u.window != nil {
-		u.window = nil
+	if u.modal != nil {
+		u.modal = nil
 	}
 }
 
@@ -80,8 +87,8 @@ func (u *UI) Update() {
 	u.toolbar.Update()
 	u.navdrawer.Update()
 	u.toastManager.Update()
-	if u.window != nil {
-		u.window.Update()
+	if u.modal != nil {
+		u.modal.Update()
 	}
 }
 
@@ -90,7 +97,7 @@ func (u *UI) Draw(screen *ebiten.Image) {
 	u.toolbar.Draw(screen)
 	u.navdrawer.Draw(screen)
 	u.toastManager.Draw(screen)
-	if u.window != nil {
-		u.window.Draw(screen)
+	if u.modal != nil {
+		u.modal.Draw(screen)
 	}
 }

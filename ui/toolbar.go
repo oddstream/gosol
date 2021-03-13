@@ -1,9 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
@@ -11,25 +8,12 @@ import (
 
 // Toolbar object (hamburger button, variant name, undo, help buttons)
 type Toolbar struct {
-	input         *input.Input
-	img           *ebiten.Image
-	x, y          int
-	width, height int
-	widgets       []Widget
-}
-
-func (tb *Toolbar) createImg() *ebiten.Image {
-	dc := gg.NewContext(tb.width, 48)
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
-	dc.DrawRectangle(0, 0, float64(tb.width), 48)
-	dc.Fill()
-	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
+	ContainerBase
 }
 
 // NewToolbar creates a new toolbar
 func NewToolbar(input *input.Input) *Toolbar {
-	tb := &Toolbar{input: input, x: 0, y: 0, width: 0, height: 48}
+	tb := &Toolbar{ContainerBase: ContainerBase{input: input, x: 0, y: 0, width: 0, height: 48}}
 
 	tb.widgets = []Widget{
 		NewRuneButton(tb, input, 0, 0, 48, 48, -1, rune(9776), ebiten.KeyMenu),
@@ -60,15 +44,6 @@ func (tb *Toolbar) LayoutWidgets() {
 			nextRight -= 48
 		}
 	}
-}
-
-// Rect returns the area this toolbar covers
-func (tb *Toolbar) Rect() (x0, y0, x1, y1 int) {
-	x0 = 0
-	y0 = 0
-	x1 = tb.width
-	y1 = tb.height
-	return // using named parameters
 }
 
 // SetTitle of the toolbar

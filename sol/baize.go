@@ -665,7 +665,7 @@ func (b *Baize) calcPercentComplete() int {
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (b *Baize) NotifyCallback(event interface{}) {
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
+	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("image.Point (tap)", v.X, v.Y)
 		if b.ui.ActiveModal() {
@@ -707,8 +707,14 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		case "start":
 			b.stroke = v.Stroke
 			if b.ui.ActiveModal() {
-				println("cancel stroke because modal active")
-				v.Stroke.Cancel()
+				w := b.ui.FindWidgetAt(v.X, v.Y)
+				if w != nil {
+					if w.StartDrag() {
+						b.stroke.SetDraggedObject(w)
+					} else {
+						v.Stroke.Cancel()
+					}
+				}
 			} else {
 				c := b.findCardAt(v.X, v.Y)
 				if c != nil {
@@ -723,11 +729,28 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				}
 			}
 		case "move":
-			c := v.Stroke.DraggedObject().(*Card)
-			c.owner.DragTailBy(v.Stroke.PositionDiff())
-		case "end":
-			c := v.Stroke.DraggedObject().(*Card)
-			if c != nil {
+			if v.Stroke.DraggedObject() == nil {
+				println("move stroke with nil dragged object")
+				break
+			}
+			switch v.Stroke.DraggedObject().(type) { // type switch
+			case *Card:
+				c := v.Stroke.DraggedObject().(*Card)
+				c.owner.DragTailBy(v.Stroke.PositionDiff())
+			case ui.Widget:
+				w := v.Stroke.DraggedObject().(ui.Widget)
+				w.DragBy(v.Stroke.PositionDiff())
+			default:
+				println("unknown move dragging object")
+			}
+		case "stop":
+			if v.Stroke.DraggedObject() == nil {
+				println("stop stroke with nil dragged object")
+				break
+			}
+			switch v.Stroke.DraggedObject().(type) { // type switch
+			case *Card:
+				c := v.Stroke.DraggedObject().(*Card)
 				p := b.largestIntersection(c)
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
@@ -740,6 +763,11 @@ func (b *Baize) NotifyCallback(event interface{}) {
 						c.owner.CancelDrag(c)
 					}
 				}
+			case ui.Widget:
+				w := v.Stroke.DraggedObject().(ui.Widget)
+				w.StopDrag()
+			default:
+				println("unknown stop dragging object")
 			}
 		default:
 			println("unknown stroke event", v.Event)

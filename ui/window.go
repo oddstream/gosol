@@ -1,9 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
@@ -11,26 +8,13 @@ import (
 
 // Window object (hamburger button, variant name, undo, help buttons)
 type Window struct {
-	img           *ebiten.Image
-	input         *input.Input
-	widgets       []Widget
-	x, y          int
-	width, height int
-	title         *Label
-}
-
-func (w *Window) createImg() *ebiten.Image {
-	dc := gg.NewContext(w.width, w.height)
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
-	dc.DrawRectangle(0, 0, float64(w.width), float64(w.height))
-	dc.Fill()
-	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
+	ContainerBase
+	title *Label
 }
 
 // NewWindow creates a new toolbar
 func NewWindow(input *input.Input, title string, content []string) *Window {
-	w := &Window{input: input} // x,y,width,height will be set when drawn
+	w := &Window{ContainerBase: ContainerBase{input: input}} // x,y,width,height will be set when drawn
 	if title != "" {
 		w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24)
 	}
@@ -40,29 +24,22 @@ func NewWindow(input *input.Input, title string, content []string) *Window {
 	return w
 }
 
-// Rect gives the screen position
-func (w *Window) Rect() (x0, y0, x1, y1 int) {
-	x0 = w.x
-	y0 = w.y
-	x1 = w.x + w.width
-	y1 = w.y + w.height
-	return // using named parameters
-}
-
 // LayoutWidgets that belong to this container
 func (w *Window) LayoutWidgets() {
 	wpx0, wpy0, wpx1, _ := w.Rect()
 	windowWidth := wpx1 - wpx0
 
-	var titleWidth, titleHeight int
+	var titleWidth, titleHeight, x, y int
 	if w.title != nil {
-		x := wpx0 + (windowWidth / 2) // center of window
+		x = wpx0 + (windowWidth / 2) // center of window
 		titleWidth, titleHeight = w.title.Size()
 		x -= titleWidth / 2
 		w.title.SetPosition(x, wpy0+titleHeight)
+		y = titleHeight + 48
+	} else {
+		y = 24
 	}
 
-	y := titleHeight + 48
 	for _, w := range w.widgets {
 		w.SetPosition(wpx0+48, wpy0+y)
 		_, widgetHeight := w.Size()
@@ -105,15 +82,11 @@ func (w *Window) Draw(screen *ebiten.Image) {
 
 // OpenWindow create window
 func (u *UI) OpenWindow(title string, content []string) {
-	if u.window != nil {
-		u.window = nil
-	}
-	u.window = NewWindow(u.input, title, content)
+	u.CloseActiveModal()
+	u.modal = NewWindow(u.input, title, content)
 }
 
 // CloseWindow create window
 func (u *UI) CloseWindow() {
-	if u.window != nil {
-		u.window = nil
-	}
+	u.CloseActiveModal()
 }

@@ -448,5 +448,5 @@ func (b *Baize) ShowPicker() {
 	}
 	sort.Slice(displayNames, func(i, j int) bool { return displayNames[i] < displayNames[j] })
 
-	b.ui.OpenWindow("", displayNames)
+	b.ui.OpenPicker(displayNames)
 }

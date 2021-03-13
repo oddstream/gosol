@@ -121,16 +121,18 @@ func OrdinalToShortString(ord int) string {
 
 // Pluralize returns a string containing an attempt at a plural form of the word
 func Pluralize(word string, n int) string {
-	if 0 == n {
+	if n == 0 {
 		return fmt.Sprintf("no %ss", word)
 	}
-	if 1 == n {
+	if n == 1 {
 		return fmt.Sprintf("one %s", word)
 	}
 	return fmt.Sprintf("%d %ss", n, word)
 }
 
 // Contains tells whether a contains x.
+// func SearchStrings(a []string, x string) int
+// assumes the input slice is sorted
 func Contains(a []string, x string) bool {
 	for _, n := range a {
 		if x == n {

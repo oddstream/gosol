@@ -1,3 +1,4 @@
++ toolbar, window, picker, navdraw all have the same createImg (BaseContainer?)
 + Freecell, there was a card in a cell which was not
 + window.Update() needs StartStroke() so it can scroll contents
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI

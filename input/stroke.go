@@ -107,7 +107,7 @@ func (s *Stroke) Update() {
 
 	if s.source.IsJustReleased() {
 		s.released = true
-		s.Notify(StrokeEvent{Event: "end", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
+		s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
 
 }

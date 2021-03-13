@@ -1,9 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 )
@@ -18,28 +15,14 @@ const (
 
 // NavDrawer slide out modal menu
 type NavDrawer struct {
-	img           *ebiten.Image
-	width, height int
-	x, y          int
-	aniState      int
-	widgets       []Widget
-}
-
-func (n *NavDrawer) createImg() {
-
-	dc := gg.NewContext(n.width, n.height)
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
-	dc.DrawRectangle(0, 0, float64(n.width), float64(n.height))
-	dc.Fill()
-	dc.Stroke()
-
-	n.img = ebiten.NewImageFromImage(dc.Image())
+	ContainerBase
+	aniState int
 }
 
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
 func NewNavDrawer(input *input.Input) *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	n := &NavDrawer{width: 256, height: 0, x: -256, y: 0}
+	n := &NavDrawer{ContainerBase: ContainerBase{input: input, width: 256, height: 0, x: -256, y: 0}}
 	n.widgets = []Widget{
 		// give -ve y to make sure item is initially drawn off screen
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2605), "New deal", ebiten.KeyN),
@@ -54,15 +37,6 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 	// n.widgets[3].Deactivate()
 	n.widgets[4].Deactivate()
 	return n
-}
-
-// Rect returns the area the NavDrawer currently covers (it may be off screen to the left)
-func (n *NavDrawer) Rect() (x0, y0, x1, y1 int) {
-	x0 = n.x
-	y0 = n.y
-	x1 = n.x + n.width
-	y1 = n.y + n.height
-	return // using named parameters
 }
 
 // Show starts to animate the drawer on screen from the left
@@ -118,7 +92,7 @@ func (n *NavDrawer) Draw(screen *ebiten.Image) {
 	_, h := screen.Size()
 	if n.img == nil || h != n.height {
 		n.height = h
-		n.createImg()
+		n.img = n.createImg()
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(n.x), 0) // y is always zero

@@ -51,6 +51,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 	var cardCache []*Card
 
 	for _, p := range b.Piles {
+		// S1011 – Use a single append to concatenate two slices
 		// for _, c := range p.Cards {
 		// 	cardCache = append(cardCache, c)
 		// }

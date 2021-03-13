@@ -12,6 +12,9 @@ type Widget interface {
 	Align() int
 	Activate()
 	Deactivate()
+	StartDrag() bool
+	DragBy(int, int)
+	StopDrag()
 	Update()
 	Draw(*ebiten.Image)
 	NotifyCallback(interface{})
@@ -20,7 +23,9 @@ type Widget interface {
 // Container contains a list of widgets
 type Container interface {
 	Rect() (int, int, int, int)
+	FindWidgetAt(int, int) Widget
 	LayoutWidgets()
+	OffsetWidgets(int, int)
 	Update()
 	Draw(*ebiten.Image)
 }

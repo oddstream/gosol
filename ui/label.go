@@ -74,6 +74,24 @@ func (l *Label) NotifyCallback(event interface{}) {
 	}
 }
 
+// StartDrag this widget, if it is allowed; overrides WidgetBase
+func (l *Label) StartDrag() bool {
+	println("start dragging widget")
+	return true
+}
+
+// DragBy this widget; overrides WidgetBase
+func (l *Label) DragBy(dx, dy int) {
+	l.parent.OffsetWidgets(0, dy)
+	// println("dragging widget by", dy, "parent offset now", l.parent.yOffset)
+	l.parent.LayoutWidgets()
+}
+
+// StopDrag this widget; overrides WidgetBase
+func (l *Label) StopDrag() {
+	println("stop dragging widget")
+}
+
 // Update the state of this widget
 func (l *Label) Update() {
 
