@@ -1,5 +1,7 @@
 package sol
 
+import "sort"
+
 // VariantInfo contains configuration info for a variant
 type VariantInfo struct {
 	DisplayName string
@@ -433,4 +435,18 @@ func variantDescription(v string) string {
 		return vi.Description
 	}
 	return ""
+}
+
+func (b *Baize) ShowPicker() {
+	var displayNames []string
+	for key, v := range Variants {
+		if v.DisplayName == "" {
+			displayNames = append(displayNames, key)
+		} else {
+			displayNames = append(displayNames, v.DisplayName)
+		}
+	}
+	sort.Slice(displayNames, func(i, j int) bool { return displayNames[i] < displayNames[j] })
+
+	b.ui.OpenWindow("", displayNames)
 }

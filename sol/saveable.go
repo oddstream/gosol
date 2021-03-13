@@ -48,13 +48,13 @@ func (b *Baize) Saveable() SaveableBaize {
 // UpdateFromSaveable updates the contents of the Piles from a saved copy of a previous state
 func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 
-	var cardCache []*Card = nil
+	var cardCache []*Card
 
 	for _, p := range b.Piles {
 		// for _, c := range p.Cards {
 		// 	cardCache = append(cardCache, c)
 		// }
-		cardCache = append(cardCache, p.Cards...)
+		cardCache = append(cardCache, p.Cards...) // append a slice to a slice
 	}
 
 	for i := 0; i < len(b.Piles); i++ {

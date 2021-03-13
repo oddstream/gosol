@@ -1,21 +1,3 @@
-$ git branch -m master main
-? https://pkg.go.dev/fmt#hdr-Printing
-? https://golang.org/pkg/builtin/
-? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
-? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
-
-added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
-				"go.lintFlags": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": ["-tags=desktop"],
-					"description": "Flags to pass to Lint tool (e.g. [\"-min_confidence=.8\"])",
-					"scope": "resource"
-				},
-...then restarted vscode
-
 + Freecell, there was a card in a cell which was not
 + window.Update() needs StartStroke() so it can scroll contents
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
@@ -47,15 +29,6 @@ added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 + map[VariantName]english string
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
-! method goes in Baize if it needs access to Baize.Piles
-! method goes in Pile if it needs access to Pile.Cards
-
-+ specify card width, then set card height automatically
-! 71 x 96 = 1:1.352 (Microsoft retro)
-! 64 x 89 = 1:1.390 (official poker size)
-! 90 x 130 = 1:1.444 (nice looking scalable)
-! 89 x 137 = 1:1.539 (measured real card)
-! 57 x 89 = 1:1.561 (official bridge size)
 
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
@@ -75,6 +48,7 @@ x don't care if tap happens over toolbar or navdrawer, only if tap happens on th
   so the widget should input.Add() (or Remove() if not visible)
 x separate FontBank package? Schriftbank
 x stroke, input in separate pkg, so they are visible to UI
+x specify card width, then set card height automatically
 x FreeCellEasy
 x encode prone in <pack><suit><ordinal> three 4-bit numbers
   pack 1..8 0b1111 four bits

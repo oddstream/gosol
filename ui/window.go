@@ -31,7 +31,9 @@ func (w *Window) createImg() *ebiten.Image {
 // NewWindow creates a new toolbar
 func NewWindow(input *input.Input, title string, content []string) *Window {
 	w := &Window{input: input} // x,y,width,height will be set when drawn
-	w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24)
+	if title != "" {
+		w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24)
+	}
 	for _, c := range content {
 		w.widgets = append(w.widgets, NewLabel(w, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular14))
 	}
@@ -51,10 +53,14 @@ func (w *Window) Rect() (x0, y0, x1, y1 int) {
 func (w *Window) LayoutWidgets() {
 	wpx0, wpy0, wpx1, _ := w.Rect()
 	windowWidth := wpx1 - wpx0
-	x := wpx0 + (windowWidth / 2) // center of window
-	titleWidth, titleHeight := w.title.Size()
-	x -= titleWidth / 2
-	w.title.SetPosition(x, wpy0+titleHeight)
+
+	var titleWidth, titleHeight int
+	if w.title != nil {
+		x := wpx0 + (windowWidth / 2) // center of window
+		titleWidth, titleHeight = w.title.Size()
+		x -= titleWidth / 2
+		w.title.SetPosition(x, wpy0+titleHeight)
+	}
 
 	y := titleHeight + 48
 	for _, w := range w.widgets {
@@ -66,7 +72,9 @@ func (w *Window) LayoutWidgets() {
 
 // Update the window
 func (w *Window) Update() {
-	w.title.Update()
+	if w.title != nil {
+		w.title.Update()
+	}
 	for _, w := range w.widgets {
 		w.Update()
 	}
@@ -87,7 +95,9 @@ func (w *Window) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(w.x), float64(w.y))
 	screen.DrawImage(w.img, op)
 
-	w.title.Draw(screen)
+	if w.title != nil {
+		w.title.Draw(screen)
+	}
 	for _, w := range w.widgets {
 		w.Draw(screen)
 	}

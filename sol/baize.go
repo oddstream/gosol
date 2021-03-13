@@ -58,6 +58,7 @@ func NewBaize() *Baize {
 		ebiten.KeyL:      TheBaize.LoadPosition,
 		ebiten.KeyC:      TheBaize.Collect,
 		ebiten.KeyF1:     TheBaize.ShowRules,
+		ebiten.KeyF:      TheBaize.ShowPicker,
 		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.CloseActiveModal,
 		ebiten.KeyX:      TheBaize.Exit,
@@ -192,7 +193,6 @@ func (b *Baize) NewVariant(v string) {
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
 
-	//lint:ignore SA???? needs staticcheck command line flag -tags desktop
 	if !b.Load(v) {
 		return false
 	}

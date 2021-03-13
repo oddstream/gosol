@@ -1,0 +1,34 @@
+$ git branch -m master main
+? https://pkg.go.dev/fmt#hdr-Printing
+? https://golang.org/pkg/builtin/
+? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
+? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
+
+added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
+				"go.lintFlags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": ["-tags=desktop"],
+					"description": "Flags to pass to Lint tool (e.g. [\"-min_confidence=.8\"])",
+					"scope": "resource"
+				},
+
+				"go.buildTags": {
+					"type": "string",
+					"default": "-tags=desktop",
+					"description": "The Go build tags to use for all commands, that support a `-tags '...'` argument. When running tests, go.testTags will be used instead if it was set. This is propagated to the language server if `gopls.build.buildFlags` is not specified.",
+					"scope": "resource"
+				},
+
+...then restarted vscode
+
+! 71 x 96 = 1:1.352 (Microsoft retro)
+! 64 x 89 = 1:1.390 (official poker size)
+! 90 x 130 = 1:1.444 (nice looking scalable)
+! 89 x 137 = 1:1.539 (measured real card)
+! 57 x 89 = 1:1.561 (official bridge size)
+
+! method goes in Baize if it needs access to Baize.Piles
+! method goes in Pile if it needs access to Pile.Cards
