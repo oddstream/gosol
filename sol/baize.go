@@ -5,6 +5,7 @@ import (
 	"image"
 	"log"
 	"math"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -59,9 +60,10 @@ func NewBaize() *Baize {
 		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.CloseActiveModal,
+		ebiten.KeyX:      TheBaize.Exit,
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
-	if NoGameLoad == true || !TheBaize.LoadVariant(TheBaize.Variant) {
+	if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
 		TheBaize.NewVariant(TheBaize.Variant)
 	}
 	return TheBaize // ugly global-setting kludge
@@ -190,6 +192,7 @@ func (b *Baize) NewVariant(v string) {
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
 
+	//lint:ignore SA???? needs staticcheck command line flag -tags desktop
 	if !b.Load(v) {
 		return false
 	}
@@ -372,7 +375,7 @@ func (b *Baize) countPiles(cls string) (total, count int) {
 	for _, p := range b.Piles {
 		if p.Class == cls {
 			total++
-			if 0 == p.CardCount() {
+			if p.CardCount() == 0 {
 				count++
 			}
 		}
@@ -807,4 +810,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	}
 
 	b.ui.Draw(screen)
+}
+
+// Exit this app
+func (b *Baize) Exit() {
+	if !NoGameSave {
+		b.Save()
+	}
+	TheUserData.Save()
+	os.Exit(0)
 }

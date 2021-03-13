@@ -34,10 +34,10 @@ func (u *UI) Toast(message string) {
 
 	dc := gg.NewContext(8, 8)
 	dc.SetFontFace(schriftbank.RobotoRegular14)
-	w, h := dc.MeasureString(message)
+	w, _ := dc.MeasureString(message)
 
 	w += 48
-	h = 48
+	h := float64(48) // ignore measured height, force height to be 48
 
 	dc = gg.NewContext(int(w), int(h))
 	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})

@@ -4,7 +4,23 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
-+ Complete() counts as one move, wrong for statistics
+added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
+				"go.lintFlags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": ["-tags=desktop"],
+					"description": "Flags to pass to Lint tool (e.g. [\"-min_confidence=.8\"])",
+					"scope": "resource"
+				},
+...then restarted vscode
+
++ Freecell, there was a card in a cell which was not
++ window.Update() needs StartStroke() so it can scroll contents
++ pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
++ only allow Collect() when tableaux is conformant, FAB
++ Collect() counts as one move, wrong for statistics
 + statusbar: stock card count, number of moves
 + Scrim when nav drawer open? Maybe just alpha down the baize.
 + UI FAB and FABManager

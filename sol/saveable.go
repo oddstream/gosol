@@ -51,9 +51,10 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 	var cardCache []*Card = nil
 
 	for _, p := range b.Piles {
-		for _, c := range p.Cards {
-			cardCache = append(cardCache, c)
-		}
+		// for _, c := range p.Cards {
+		// 	cardCache = append(cardCache, c)
+		// }
+		cardCache = append(cardCache, p.Cards...)
 	}
 
 	for i := 0; i < len(b.Piles); i++ {

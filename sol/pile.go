@@ -39,20 +39,20 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class             string
-	X, Y              int
-	Fan               string
+	Class             string // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"FoundationSpider"|"Tableau"|"Cell"|"Reserve"
+	X, Y              int    // relative position on Baize in CardWidth/Height units (ie not screen coords)
+	Fan               string // ""|"None"|"Down"|"Right"|"Waste"
 	localAccept       int
 	localRecycles     int
 	Attributes        map[string]string
-	Cards             []*Card
-	Tail              []*Card
+	Cards             []*Card // array of cards, managed as a stack
+	Tail              []*Card // array of cards currently being dragged
 	buildRules        int
-	buildFlags        int
+	buildFlags        int // 1=rank wrap 2=power moves
 	dragRules         int
-	dragFlags         int
-	scrunchPercentage int
-	backgroundImage   *ebiten.Image
+	dragFlags         int           // 1=single card only (no tail)
+	scrunchPercentage int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
+	backgroundImage   *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
 }
 
 // NewPile create and fills in a Pile object
@@ -64,14 +64,14 @@ func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pil
 		log.Fatal("no Build rules for Pile " + p.Class)
 	}
 	p.buildRules = br % 100
-	p.buildFlags = br / 100 // 1=rank wrap 2=power moves
+	p.buildFlags = br / 100
 
 	d, ok := p.GetIntAttribute("Drag")
 	if !ok {
 		log.Fatal("no Drag attribute for Pile " + p.Class)
 	}
 	p.dragRules = d % 100
-	p.dragFlags = d / 100 // 1=single card only (no tail)
+	p.dragFlags = d / 100
 
 	p.Reset()
 	return p
@@ -211,7 +211,7 @@ func (p *Pile) CardCount() int {
 
 // Peek topmost Card of this Pile (a stack)
 func (p *Pile) Peek() *Card {
-	if 0 == p.CardCount() {
+	if p.CardCount() == 0 {
 		return nil
 	}
 	return p.Cards[p.CardCount()-1]
@@ -219,7 +219,7 @@ func (p *Pile) Peek() *Card {
 
 // Pop a Card off the end of this Pile (a stack)
 func (p *Pile) Pop() *Card {
-	if 0 == p.CardCount() {
+	if p.CardCount() == 0 {
 		return nil
 	}
 	c := p.Cards[p.CardCount()-1]
@@ -287,7 +287,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 // CanAcceptTail returns true if this Pile can accept the tail of Cards from another Pile
 func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 
-	if Tail == nil || len(Tail) == 0 {
+	if len(Tail) == 0 { // len() for nil slices is defined as zero
 		log.Fatal("empty tail passed to CanAcceptTail")
 	}
 

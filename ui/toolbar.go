@@ -13,7 +13,6 @@ import (
 type Toolbar struct {
 	input         *input.Input
 	img           *ebiten.Image
-	title         string
 	x, y          int
 	width, height int
 	widgets       []Widget

@@ -17,7 +17,6 @@ type Window struct {
 	x, y          int
 	width, height int
 	title         *Label
-	content       []string
 }
 
 func (w *Window) createImg() *ebiten.Image {
@@ -68,6 +67,9 @@ func (w *Window) LayoutWidgets() {
 // Update the window
 func (w *Window) Update() {
 	w.title.Update()
+	for _, w := range w.widgets {
+		w.Update()
+	}
 }
 
 // Draw the window
@@ -92,11 +94,11 @@ func (w *Window) Draw(screen *ebiten.Image) {
 }
 
 // OpenWindow create window
-func (u *UI) OpenWindow(input *input.Input, title string, content []string) {
+func (u *UI) OpenWindow(title string, content []string) {
 	if u.window != nil {
 		u.window = nil
 	}
-	u.window = NewWindow(input, title, content)
+	u.window = NewWindow(u.input, title, content)
 }
 
 // CloseWindow create window

@@ -1,7 +1,7 @@
 package sol
 
 func (p *Pile) popWithoutFlip() *Card {
-	if 0 == p.CardCount() {
+	if p.CardCount() == 0 {
 		return nil
 	}
 	c := p.Cards[p.CardCount()-1]

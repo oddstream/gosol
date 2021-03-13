@@ -400,7 +400,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
 
-	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging == true) {
+	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
 		op.GeoM.Translate(2, 2)
 		screen.DrawImage(shadowImage, op)
 		op.GeoM.Translate(-2, -2)

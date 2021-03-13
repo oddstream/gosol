@@ -8,11 +8,14 @@ func (b *Baize) ShowRulesForVariant(v string) {
 	rules = append(rules, "this is\na multiline\nstring")
 
 	for _, p := range b.Piles {
+		if p.X < 0 || p.Y < 0 {
+			continue // don't show rules for hidden piles
+		}
 		if !util.Contains(rules, p.Class) {
 			rules = append(rules, p.Class)
 		}
 	}
-	b.ui.OpenWindow(b.input, variantDisplayName(b.Variant), rules)
+	b.ui.OpenWindow(variantDisplayName(b.Variant), rules)
 }
 
 func (b *Baize) ShowRules() {

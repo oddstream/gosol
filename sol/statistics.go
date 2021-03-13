@@ -27,10 +27,9 @@ func NewStatistics() *Statistics {
 }
 
 func (s *Statistics) startGame(v string) {
-	stats, ok := s.StatsMap[v]
+	_, ok := s.StatsMap[v]
 	if !ok {
-		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
-		s.StatsMap[v] = stats
+		s.StatsMap[v] = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
 	}
 }
 
@@ -88,35 +87,41 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 
 func (s *Statistics) welcomeToast(v string) {
 	displayName := variantDisplayName(v)
+	toasts := []string{}
+
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", displayName))
-		return
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
+		goto DisplayToastsLabel
 		// log.Fatal("welcomeToast unknown variant ", v)
 	}
 	if stats.Won+stats.Lost == 0 {
-		TheBaize.ui.Toast(fmt.Sprintf("You have not played %s before", displayName))
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
 	} else {
-		// TheBaize.ui.Toast(fmt.Sprintf("You have played %s of %s", util.Pluralize("game", stats.Won+stats.Lost), displayName))
+		// toasts = append(toasts, fmt.Sprintf("You have played %s of %s", util.Pluralize("game", stats.Won+stats.Lost), displayName))
 
 		if stats.BestPercent == 0 {
-			TheBaize.ui.Toast(fmt.Sprintf("You have yet to score anything"))
+			toasts = append(toasts, "You have yet to score anything")
 		} else if stats.BestPercent < 100 {
-			TheBaize.ui.Toast(fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
+			toasts = append(toasts, fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
 		} else {
-			TheBaize.ui.Toast(
+			toasts = append(toasts,
 				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
 					util.Pluralize("game", stats.Won),
 					util.Pluralize("game", stats.Lost),
-					((stats.Won * 100) / (stats.Won + stats.Lost))))
+					((stats.Won*100)/(stats.Won+stats.Lost))))
 		}
 		if stats.BestPercent == 100 {
 			if stats.CurrStreak > 0 {
-				TheBaize.ui.Toast(fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+				toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 			}
 			if stats.CurrStreak < 0 {
-				TheBaize.ui.Toast(fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
+				toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 			}
 		}
+	}
+DisplayToastsLabel:
+	for _, t := range toasts {
+		TheBaize.ui.Toast(t)
 	}
 }

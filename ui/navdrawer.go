@@ -48,6 +48,7 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2618), "Find game...", ebiten.KeyHome),
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2696), "Rules...", ebiten.KeyF1),
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2611), "Settings...", ebiten.KeyHome),
+		NewNavItem(n, input, 0, -100, 256, 48, 0, rune('x'), "Save and exit", ebiten.KeyX),
 	}
 	n.widgets[2].Deactivate()
 	// n.widgets[3].Deactivate()

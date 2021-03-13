@@ -20,7 +20,8 @@ const ordinalMask uint32 = 0b1111
 const cardMask uint32 = (packMask | suitMask | ordinalMask)
 const proneFlag uint32 = 0b1000000000000
 const markedFlag uint32 = 0b10000000000000
-const flagMask uint32 = 0b1111000000000000
+
+// const flagMask uint32 = 0b1111000000000000
 
 // CardID holds flags (marked, prone), pack, suit, ordinal
 type CardID uint32
