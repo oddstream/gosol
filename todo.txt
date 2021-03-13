@@ -1,6 +1,5 @@
-+ toolbar, window, picker, navdraw all have the same createImg (BaseContainer?)
++ Drag the modal container (by offsetting it's widgets), not the widgets
 + Freecell, there was a card in a cell which was not
-+ window.Update() needs StartStroke() so it can scroll contents
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
 + only allow Collect() when tableaux is conformant, FAB
 + Collect() counts as one move, wrong for statistics
@@ -38,6 +37,7 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x ContainerBase
 x Widget disabled (drawn in grey) status
 x reduce widget boilerplate clutter with method expression/method value/embedded struct
   https://travix.io/type-embedding-in-go-ba40dd4264df

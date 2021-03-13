@@ -33,6 +33,23 @@ func (p *Picker) LayoutWidgets() {
 		_, widgetHeight := w.Size()
 		y += widgetHeight + 14
 	}
+	println("yOffset is", p.yOffset)
+}
+
+// StartDrag this widget, if it is allowed
+func (p *Picker) StartDrag() bool {
+	return true
+}
+
+// DragBy this widget
+func (p *Picker) DragBy(dx, dy int) {
+	p.xOffset = dx
+	p.yOffset = dy
+	p.LayoutWidgets()
+}
+
+// StopDrag this widget
+func (p *Picker) StopDrag() {
 }
 
 // Update the window

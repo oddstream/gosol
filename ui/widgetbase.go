@@ -29,25 +29,28 @@ func (wb *WidgetBase) Size() (int, int) {
 
 // Position of the widget
 func (wb *WidgetBase) Position() (int, int) {
+	// xOff, yOff := wb.parent.WidgetOffset()
 	return wb.x, wb.y
 }
 
 // Rect gives the screen position
 func (wb *WidgetBase) Rect() (x0, y0, x1, y1 int) {
+	// xOff, yOff := wb.parent.WidgetOffset()
 	x0 = wb.x
 	y0 = wb.y
-	x1 = wb.x + wb.width
-	y1 = wb.y + wb.height
+	x1 = x0 + wb.width
+	y1 = y0 + wb.height
 	return // using named parameters
 }
 
 // OffsetRect gives the screen position in relation to parent's position
 func (wb *WidgetBase) OffsetRect() (x0, y0, x1, y1 int) {
 	px, py, _, _ := wb.parent.Rect()
+	// xOff, yOff := wb.parent.WidgetOffset()
 	x0 = px + wb.x
 	y0 = py + wb.y
-	x1 = px + wb.x + wb.width
-	y1 = py + wb.y + wb.height
+	x1 = x0 + wb.width
+	y1 = y0 + wb.height
 	// println(x0, y0, x1, y1)
 	return // using named parameters
 }
@@ -62,25 +65,13 @@ func (wb *WidgetBase) Align() int {
 	return wb.align
 }
 
-// StartDrag this widget, if it is allowed
-func (wb *WidgetBase) StartDrag() bool {
-	return false
-}
-
-// DragBy this widget
-func (wb *WidgetBase) DragBy(dx, dy int) {
-}
-
-// StopDrag this widget
-func (wb *WidgetBase) StopDrag() {
-}
-
 // Draw the widget
 func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	// don't draw a widget unless it is fully contained within it's parent
 	_, py0, _, py1 := wb.parent.Rect()
 	_, _, _, wy1 := wb.Rect()
-	if wy1 > py1 || wy1 < py0 {
+	_, height := wb.Size()
+	if wy1 > py1 || wy1-height < py0 {
 		return
 	}
 	op := &ebiten.DrawImageOptions{}

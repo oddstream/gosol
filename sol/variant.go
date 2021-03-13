@@ -437,6 +437,18 @@ func variantDescription(v string) string {
 	return ""
 }
 
+func findVariantFromDisplayName(name string) string {
+	for key, v := range Variants {
+		if v.DisplayName == name {
+			return key
+		}
+		if v.DisplayName == "" && key == name {
+			return key
+		}
+	}
+	return ""
+}
+
 func (b *Baize) ShowPicker() {
 	var displayNames []string
 	for key, v := range Variants {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/util"
 )
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
@@ -27,27 +28,27 @@ func New(input *input.Input) *UI {
 	return ui
 }
 
-// NotifyCallback is called by the Subject (Input) when something interesting happens
-// func (u *UI) NotifyCallback(event interface{}) {
-// 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-// 	case image.Point:
-// 		println("UI event", v.X, v.Y)
-// 		if util.InRect(v.X, v.Y, u.navdrawer.Rect) {
-// 			println("UI click over navdrawer")
-// 			u.navdrawer.Tapped(v.X, v.Y)
-// 		} else if util.InRect(v.X, v.Y, u.toolbar.Rect) {
-// 			println("UI click over toolbar")
-// 			u.toolbar.Tapped(v.X, v.Y)
-// 		}
-// 	}
-// }
-
 // FindWidgetAt finds the widget at the screen coords
 func (u *UI) FindWidgetAt(x, y int) Widget {
 	if u.modal == nil {
 		return nil
 	}
 	return u.modal.FindWidgetAt(x, y)
+}
+
+func (u *UI) FindContainerAt(x, y int) Container {
+
+	if u.modal != nil && util.InRect(x, y, u.modal.Rect) {
+		return u.modal
+	}
+	if util.InRect(x, y, u.toolbar.Rect) {
+		return u.toolbar
+	}
+	if u.IsNavDrawerOpen() && util.InRect(x, y, u.navdrawer.Rect) {
+		return u.navdrawer
+	}
+	return nil
+
 }
 
 // ActiveModal returns true if there is an active modal

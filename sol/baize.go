@@ -698,7 +698,16 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			fn()
 		}
 	case string:
-		println(v, "tapped")
+		newVariant := findVariantFromDisplayName(v)
+		if b.ui.ActiveModal() {
+			b.ui.CloseActiveModal()
+		}
+		if newVariant == "" {
+			println("unknown variant", v)
+		} else {
+			TheUserData.Variant = v
+			b.NewVariant(v)
+		}
 	case input.StrokeEvent:
 		// if v.Event != "move" {
 		// 	println("stroke event", v.Event, v.X, v.Y)
@@ -707,10 +716,10 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		case "start":
 			b.stroke = v.Stroke
 			if b.ui.ActiveModal() {
-				w := b.ui.FindWidgetAt(v.X, v.Y)
-				if w != nil {
-					if w.StartDrag() {
-						b.stroke.SetDraggedObject(w)
+				con := b.ui.FindContainerAt(v.X, v.Y)
+				if con != nil {
+					if con.StartDrag() {
+						b.stroke.SetDraggedObject(con)
 					} else {
 						v.Stroke.Cancel()
 					}
@@ -737,9 +746,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			case *Card:
 				c := v.Stroke.DraggedObject().(*Card)
 				c.owner.DragTailBy(v.Stroke.PositionDiff())
-			case ui.Widget:
-				w := v.Stroke.DraggedObject().(ui.Widget)
-				w.DragBy(v.Stroke.PositionDiff())
+			case ui.Container:
+				con := v.Stroke.DraggedObject().(ui.Container)
+				con.DragBy(v.Stroke.PositionDiff())
 			default:
 				println("unknown move dragging object")
 			}
@@ -763,9 +772,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 						c.owner.CancelDrag(c)
 					}
 				}
-			case ui.Widget:
-				w := v.Stroke.DraggedObject().(ui.Widget)
-				w.StopDrag()
+			case ui.Container:
+				con := v.Stroke.DraggedObject().(ui.Container)
+				con.StopDrag()
 			default:
 				println("unknown stop dragging object")
 			}

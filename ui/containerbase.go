@@ -45,17 +45,38 @@ func (cb *ContainerBase) FindWidgetAt(x, y int) Widget {
 	return nil
 }
 
-func (cb *ContainerBase) OffsetWidgets(dx, dy int) {
-	// TODO limit based on height of all widgets
+func (cb *ContainerBase) WidgetOffset() (int, int) {
+	return cb.xOffset, cb.yOffset
+}
+
+func (cb *ContainerBase) SetWidgetOffset(dx, dy int) {
 	x0, y0, x1, y1 := cb.Rect()
 	width := x1 - x0
 	height := y1 - y0
-	cb.xOffset += dx
+
+	cb.xOffset = dx
 	if cb.xOffset > width {
 		cb.xOffset = width
 	}
-	cb.yOffset += dy
-	if cb.yOffset > height {
-		cb.yOffset = height
+
+	cb.yOffset = dy
+	if cb.yOffset > 0 {
+		cb.yOffset = 0
 	}
+	if cb.yOffset < -(height / 2) {
+		cb.yOffset = -(height / 2)
+	}
+}
+
+// StartDrag this widget, if it is allowed
+func (cb *ContainerBase) StartDrag() bool {
+	return false
+}
+
+// DragBy this widget
+func (cb *ContainerBase) DragBy(dx, dy int) {
+}
+
+// StopDrag this widget
+func (cb *ContainerBase) StopDrag() {
 }
