@@ -79,6 +79,7 @@ func (u *UI) CloseActiveModal() {
 		u.navdrawer.Hide()
 	}
 	if u.modal != nil {
+		u.modal.DeactivateWidgets()
 		u.modal = nil
 	}
 }

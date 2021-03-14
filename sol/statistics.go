@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"log"
 
 	"oddstream.games/gosol/util"
 )
@@ -26,17 +25,19 @@ func NewStatistics() *Statistics {
 	return s
 }
 
-func (s *Statistics) startGame(v string) {
-	_, ok := s.StatsMap[v]
-	if !ok {
-		s.StatsMap[v] = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
-	}
-}
+// func (s *Statistics) startGame(v string) {
+// 	_, ok := s.StatsMap[v]
+// 	if !ok {
+// 		s.StatsMap[v] = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
+// 	}
+// }
 
 func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		log.Fatal("recordWonGame unknown variant ", v)
+		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
+		s.StatsMap[v] = stats
+		println("recordWonGame new variant ", v)
 	}
 
 	stats.Won = stats.Won + 1
@@ -63,7 +64,9 @@ func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
 func (s *Statistics) recordLostGame(v string, percent int) {
 	stats, ok := s.StatsMap[v]
 	if !ok {
-		log.Fatal("recordLostGame unknown variant ", v)
+		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
+		s.StatsMap[v] = stats
+		println("recordLostGame new variant ", v)
 	}
 
 	stats.Lost = stats.Lost + 1

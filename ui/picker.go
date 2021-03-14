@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
+	"oddstream.games/gosol/util"
 )
 
 // Picker object (hamburger button, variant name, undo, help buttons)
@@ -22,34 +23,37 @@ func NewPicker(input *input.Input, content []string) *Picker {
 
 // LayoutWidgets that belong to this container
 func (p *Picker) LayoutWidgets() {
-	wpx0, wpy0, _, _ := p.Rect()
-
 	var x, y int
 	x = 24
 	y = 24
 
 	for _, w := range p.widgets {
-		w.SetPosition(wpx0+x, wpy0+y+p.yOffset)
+		w.SetPosition(p.x+x, p.y+y+p.yOffset)
 		_, widgetHeight := w.Size()
 		y += widgetHeight + 14
 	}
-	println("yOffset is", p.yOffset)
+	// println("yOffset is", p.yOffset)
 }
 
 // StartDrag this widget, if it is allowed
 func (p *Picker) StartDrag() bool {
+	// println("start drag with offset base", p.yOffsetBase)
 	return true
 }
 
 // DragBy this widget
 func (p *Picker) DragBy(dx, dy int) {
-	p.xOffset = dx
-	p.yOffset = dy
+	p.xOffset = p.xOffsetBase + dx
+	p.xOffset = util.ClampInt(p.xOffset, -p.width, 0)
+	p.yOffset = p.yOffsetBase + dy
+	p.yOffset = util.ClampInt(p.yOffset, -p.height, 0)
 	p.LayoutWidgets()
 }
 
 // StopDrag this widget
 func (p *Picker) StopDrag() {
+	p.xOffsetBase = p.xOffset
+	p.yOffsetBase = p.yOffset
 }
 
 // Update the window

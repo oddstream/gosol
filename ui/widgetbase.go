@@ -29,13 +29,11 @@ func (wb *WidgetBase) Size() (int, int) {
 
 // Position of the widget
 func (wb *WidgetBase) Position() (int, int) {
-	// xOff, yOff := wb.parent.WidgetOffset()
 	return wb.x, wb.y
 }
 
 // Rect gives the screen position
 func (wb *WidgetBase) Rect() (x0, y0, x1, y1 int) {
-	// xOff, yOff := wb.parent.WidgetOffset()
 	x0 = wb.x
 	y0 = wb.y
 	x1 = x0 + wb.width
@@ -46,7 +44,6 @@ func (wb *WidgetBase) Rect() (x0, y0, x1, y1 int) {
 // OffsetRect gives the screen position in relation to parent's position
 func (wb *WidgetBase) OffsetRect() (x0, y0, x1, y1 int) {
 	px, py, _, _ := wb.parent.Rect()
-	// xOff, yOff := wb.parent.WidgetOffset()
 	x0 = px + wb.x
 	y0 = py + wb.y
 	x1 = x0 + wb.width

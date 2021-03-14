@@ -54,6 +54,11 @@ func Clamp(value, min, max float64) float64 {
 	return math.Min(math.Max(value, min), max)
 }
 
+// Clamp a value between min and max values
+func ClampInt(value, min, max int) int {
+	return Min(Max(value, min), max)
+}
+
 // Abs returns the absolute value of x.
 func Abs(x int) int {
 	if x < 0 {

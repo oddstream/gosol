@@ -16,6 +16,8 @@ type ContainerBase struct {
 	x, y             int
 	width, height    int
 	xOffset, yOffset int // used when dragging group of widgets
+	xOffsetBase      int // used when dragging group of widgets more than once
+	yOffsetBase      int // used when dragging group of widgets more than once
 }
 
 func (cb *ContainerBase) createImg() *ebiten.Image {
@@ -25,6 +27,20 @@ func (cb *ContainerBase) createImg() *ebiten.Image {
 	dc.Fill()
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
+}
+
+// Position gives the screen position
+func (cb *ContainerBase) Position() (x, y int) {
+	x = cb.x
+	y = cb.y
+	return // using named parameters
+}
+
+// Size gives the size of the container
+func (cb *ContainerBase) Size() (width, height int) {
+	width = cb.width
+	height = cb.height
+	return // using named parameters
 }
 
 // Rect gives the screen position
@@ -45,29 +61,6 @@ func (cb *ContainerBase) FindWidgetAt(x, y int) Widget {
 	return nil
 }
 
-func (cb *ContainerBase) WidgetOffset() (int, int) {
-	return cb.xOffset, cb.yOffset
-}
-
-func (cb *ContainerBase) SetWidgetOffset(dx, dy int) {
-	x0, y0, x1, y1 := cb.Rect()
-	width := x1 - x0
-	height := y1 - y0
-
-	cb.xOffset = dx
-	if cb.xOffset > width {
-		cb.xOffset = width
-	}
-
-	cb.yOffset = dy
-	if cb.yOffset > 0 {
-		cb.yOffset = 0
-	}
-	if cb.yOffset < -(height / 2) {
-		cb.yOffset = -(height / 2)
-	}
-}
-
 // StartDrag this widget, if it is allowed
 func (cb *ContainerBase) StartDrag() bool {
 	return false
@@ -79,4 +72,11 @@ func (cb *ContainerBase) DragBy(dx, dy int) {
 
 // StopDrag this widget
 func (cb *ContainerBase) StopDrag() {
+}
+
+// DeactivateWidgets stops the widgets from receiving input
+func (cb *ContainerBase) DeactivateWidgets() {
+	for _, w := range cb.widgets {
+		cb.input.Remove(w)
+	}
 }

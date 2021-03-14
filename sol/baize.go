@@ -160,7 +160,7 @@ func (b *Baize) NewVariant(v string) {
 
 	piles, ok := buildVariantPiles(b.Variant)
 	if !ok {
-		log.Fatal("unknown variant", b.Variant)
+		log.Fatal("unknown variant ", b.Variant)
 	}
 	b.Piles = piles
 
@@ -204,7 +204,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	piles, ok := buildVariantPiles(b.Variant)
 	if !ok {
-		log.Fatal("unknown variant", b.Variant)
+		log.Fatal("unknown variant ", b.Variant)
 	}
 	b.Piles = piles
 
@@ -600,12 +600,12 @@ func (b *Baize) AfterUserMove() {
 
 	switch b.State {
 	case Virgin:
-		TheStatistics.startGame(b.Variant)
+		// TheStatistics.startGame(b.Variant)
 		b.State = Started
-		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
+		b.ui.Toast(fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", b.Variant, len(b.UndoStack)-1))
+			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 		}
@@ -698,6 +698,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			fn()
 		}
 	case string:
+		println("Baize.NotifyCallback string received", v)
 		newVariant := findVariantFromDisplayName(v)
 		if b.ui.ActiveModal() {
 			b.ui.CloseActiveModal()
@@ -705,8 +706,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		if newVariant == "" {
 			println("unknown variant", v)
 		} else {
-			TheUserData.Variant = v
-			b.NewVariant(v)
+			TheUserData.Variant = newVariant
+			b.NewVariant(newVariant)
 		}
 	case input.StrokeEvent:
 		// if v.Event != "move" {
