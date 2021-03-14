@@ -16,10 +16,10 @@ type Window struct {
 func NewWindow(input *input.Input, title string, content []string) *Window {
 	w := &Window{ContainerBase: ContainerBase{input: input}} // x,y,width,height will be set when drawn
 	if title != "" {
-		w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24)
+		w.title = NewLabel(w, input, 0, 0, 0, 48, 0, title, schriftbank.RobotoMedium24, "")
 	}
 	for _, c := range content {
-		w.widgets = append(w.widgets, NewLabel(w, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular14))
+		w.widgets = append(w.widgets, NewLabel(w, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular14, ""))
 	}
 	return w
 }

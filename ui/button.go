@@ -60,6 +60,7 @@ func (rb *RuneButton) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("RuneButton image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, rb.Rect) {
+			println("button notify", rb.key)
 			rb.input.Notify(rb.key)
 		}
 	}

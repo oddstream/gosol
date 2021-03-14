@@ -32,3 +32,6 @@ added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
+
+"Just Enough User Interface" JEUI
+"Minimum User Interface" MUI

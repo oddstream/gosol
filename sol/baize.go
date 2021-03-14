@@ -460,7 +460,7 @@ func (b *Baize) CardTapped(c *Card) {
 		if empty > 0 {
 			stock := b.findPilePrefix("Stock")
 			if stock.CardCount() > empty {
-				TheBaize.ui.Toast("All tableaux spaces must be filled before dealing a new row")
+				TheBaize.ui.Toast(0, 0, "All tableaux spaces must be filled before dealing a new row")
 				break
 			}
 		}
@@ -602,10 +602,10 @@ func (b *Baize) AfterUserMove() {
 	case Virgin:
 		// TheStatistics.startGame(b.Variant)
 		b.State = Started
-		b.ui.Toast(fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
+		b.ui.Toast(0, 0, fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
+			b.ui.Toast(0, 0, fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 		}
@@ -697,17 +697,23 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 			fn()
 		}
-	case string:
-		println("Baize.NotifyCallback string received", v)
-		newVariant := findVariantFromDisplayName(v)
+	case ui.ChangeRequest:
 		if b.ui.ActiveModal() {
 			b.ui.CloseActiveModal()
 		}
-		if newVariant == "" {
-			println("unknown variant", v)
-		} else {
-			TheUserData.Variant = newVariant
-			b.NewVariant(newVariant)
+		switch v.ChangeRequested {
+		case "Variant":
+			newVariant := findVariantFromDisplayName(v.Data)
+			if newVariant == "" {
+				println("unknown variant", v.Data)
+				break
+			}
+			if newVariant != b.Variant {
+				TheUserData.Variant = newVariant
+				b.NewVariant(newVariant)
+			}
+		default:
+			println("unknown change request", v.ChangeRequested, v.Data)
 		}
 	case input.StrokeEvent:
 		// if v.Event != "move" {
@@ -841,13 +847,14 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, p := range b.Piles {
 		p.DrawAnimatingCards(screen)
 	}
+
+	b.ui.Draw(screen)
+
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
 		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
 	}
-
-	b.ui.Draw(screen)
 }
 
 // Exit this app

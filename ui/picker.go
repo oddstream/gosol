@@ -16,7 +16,7 @@ type Picker struct {
 func NewPicker(input *input.Input, content []string) *Picker {
 	p := &Picker{ContainerBase: ContainerBase{input: input}} // x,y,width,height will be set when drawn
 	for _, c := range content {
-		p.widgets = append(p.widgets, NewLabel(p, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular24))
+		p.widgets = append(p.widgets, NewLabel(p, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular24, "Variant"))
 	}
 	return p
 }
@@ -45,8 +45,18 @@ func (p *Picker) StartDrag() bool {
 func (p *Picker) DragBy(dx, dy int) {
 	p.xOffset = p.xOffsetBase + dx
 	p.xOffset = util.ClampInt(p.xOffset, -p.width, 0)
+
+	numWidgets := len(p.widgets)
+	_, widgetHeight := p.widgets[0].Size()
+	widgetHeight += 14 // see Picker.LayoutWidgets, which uses 24 (widget height) + 14 as vertical spacing
+	_, pickerHeight := p.Size()
+	// println("picker height", pickerHeight, "widget height", widgetHeight)
+	visibleWidgets := pickerHeight / widgetHeight
+	hiddenWidgets := numWidgets - visibleWidgets
+	// println("total", numWidgets, "visible", visibleWidgets, "hidden", hiddenWidgets)
+	heightOfHiddenWidgets := hiddenWidgets * widgetHeight
 	p.yOffset = p.yOffsetBase + dy
-	p.yOffset = util.ClampInt(p.yOffset, -p.height, 0)
+	p.yOffset = util.ClampInt(p.yOffset, -heightOfHiddenWidgets, 0)
 	p.LayoutWidgets()
 }
 

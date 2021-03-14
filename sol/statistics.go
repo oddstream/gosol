@@ -107,6 +107,7 @@ func (s *Statistics) welcomeToast(v string) {
 			toasts = append(toasts, "You have yet to score anything")
 		} else if stats.BestPercent < 100 {
 			toasts = append(toasts, fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
+			toasts = append(toasts, fmt.Sprintf("You have played %s %s", displayName, util.Pluralize("time", stats.Won+stats.Lost)))
 		} else {
 			toasts = append(toasts,
 				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
@@ -125,6 +126,6 @@ func (s *Statistics) welcomeToast(v string) {
 	}
 DisplayToastsLabel:
 	for _, t := range toasts {
-		TheBaize.ui.Toast(t)
+		TheBaize.ui.Toast(0, 0, t)
 	}
 }

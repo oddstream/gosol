@@ -1,4 +1,5 @@
-+ Drag the modal container (by offsetting it's widgets), not the widgets
++ rules could be displayed as dismissable? toasts over relevant piles
++ cannot tap on an animating card, leaves it out of place
 + Freecell, there was a card in a cell which was not
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
 + only allow Collect() when tableaux is conformant, FAB
@@ -37,6 +38,9 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x better passing of things from ui to baize, instead of just a string, passing two strings (for now) as can only pass a value, not a type
+x Forty and Eight
+x Drag the modal container (by offsetting it's widgets), not the widgets
 x ContainerBase
 x Widget disabled (drawn in grey) status
 x reduce widget boilerplate clutter with method expression/method value/embedded struct

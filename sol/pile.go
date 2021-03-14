@@ -301,7 +301,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 	targetClass := c0.owner.GetStringAttribute("Target")
 	if targetClass != "" {
 		if targetClass != p.Class {
-			TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
+			TheBaize.ui.Toast(0, 0, "Cards from "+c0.owner.Class+" can only be dragged to "+targetClass+" not to "+p.Class)
 			return false
 		}
 	}
@@ -344,7 +344,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		if p.buildFlags&2 == 2 {
 			pm := powerMoves(piles, p)
 			if len(Tail) > pm {
-				TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
+				TheBaize.ui.Toast(0, 0, fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
 				return false
 			}
 			println("can drag", len(Tail), "cards")
@@ -445,7 +445,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	p.Tail = p.makeTail(c)
 
 	if p.dragFlags&1 == 1 && len(p.Tail) > 1 {
-		TheBaize.ui.Toast(p.Class + " can only drag a single card")
+		TheBaize.ui.Toast(0, 0, p.Class+" can only drag a single card")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false

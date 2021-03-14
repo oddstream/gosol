@@ -13,8 +13,9 @@ import (
 // Label is a button that displays a single rune
 type Label struct {
 	WidgetBase
-	text string
-	face font.Face
+	text        string
+	face        font.Face
+	requestType string
 }
 
 func (l *Label) createImg() *ebiten.Image {
@@ -40,8 +41,10 @@ func (l *Label) createImg() *ebiten.Image {
 }
 
 // NewLabel creates a new Label
-func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, face font.Face) *Label {
-	l := &Label{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, text: text, face: face}
+func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, face font.Face, requestType string) *Label {
+	l := &Label{
+		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+		text:       text, face: face, requestType: requestType}
 	l.Activate()
 	return l
 }
@@ -68,8 +71,9 @@ func (l *Label) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("Label image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, l.Rect) {
-			l.input.Notify(l.text)
+		if l.requestType != "" && util.InRect(v.X, v.Y, l.Rect) {
+			println("label notify", l.requestType, ":=", l.text)
+			l.input.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
 		}
 	}
 }
