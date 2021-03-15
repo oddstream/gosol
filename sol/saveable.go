@@ -70,6 +70,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		}
 	}
 
+	b.Seed = sav.Seed // TODO ???
 	b.State = sav.State
 }
 

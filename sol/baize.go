@@ -156,6 +156,7 @@ func (b *Baize) NewVariant(v string) {
 	}
 	b.Reset()
 	b.Variant = v
+	TheUserData.Variant = v
 	b.Seed = time.Now().UnixNano()
 
 	piles, ok := buildVariantPiles(b.Variant)
@@ -192,6 +193,9 @@ func (b *Baize) NewVariant(v string) {
 
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
+
+	b.Variant = v
+	TheUserData.Variant = v
 
 	if !b.Load(v) {
 		return false
@@ -692,15 +696,11 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		// println("ebiten.Key", v)
 		fn, ok := b.commandTable[v]
 		if ok {
-			if con := b.ui.VisibleDrawer(); con != nil {
-				con.Hide()
-			}
+			b.ui.HideActiveDrawer()
 			fn()
 		}
 	case ui.ChangeRequest:
-		if con := b.ui.VisibleDrawer(); con != nil {
-			con.Hide()
-		}
+		b.ui.HideActiveDrawer()
 		switch v.ChangeRequested {
 		case "Variant":
 			newVariant := findVariantFromDisplayName(v.Data)
@@ -709,8 +709,10 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				break
 			}
 			if newVariant != b.Variant {
-				TheUserData.Variant = newVariant
-				b.NewVariant(newVariant)
+				b.Save()
+				if !TheBaize.LoadVariant(newVariant) {
+					b.NewVariant(newVariant)
+				}
 			}
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
@@ -723,12 +725,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		case "start":
 			b.stroke = v.Stroke
 			if con := b.ui.VisibleDrawer(); con != nil {
-				if util.InRect(v.X, v.Y, con.Rect) {
-					if con.StartDrag() {
-						b.stroke.SetDraggedObject(con)
-					} else {
-						v.Stroke.Cancel()
-					}
+				if util.InRect(v.X, v.Y, con.Rect) && con.StartDrag() {
+					b.stroke.SetDraggedObject(con)
 				} else {
 					v.Stroke.Cancel()
 				}

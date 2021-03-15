@@ -1,11 +1,12 @@
-+ two types of containers; bars and drawers
-  navdrawer, picker, settings, statistics, rules are drawers
-  BarBase (doesn't do dragging, only Tapping) and DrawerBase (does Dragging and Tapping); NavDraw, Picker, Rules, Settings
-  NavDrawer overrides StartDrag() to return false
-  ui.drawer points to current open drawer
-  can still have Container interface (for dragging and parents)
-  retire window, picker, modal
-+ rules could be displayed as dismissable? toasts over relevant piles
++ use of Varaint is a mess
+  TheUserData.Variant and Baize.Varaint are the same thing
+  SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
++ flicker when undoing waste fan
++ widget align
+  left/center/right (titlebar)
+  vertical (navdrawer)
+  vertical with left padding, container can resize width to fit (picker)
+  vertical with left padding, lines wrap (rules, statistics)
 + cannot tap on an animating card, leaves it out of place
 + Freecell, there was a card in a cell which was not
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
@@ -45,6 +46,13 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x two types of containers; bars and drawers
+  navdrawer, picker, settings, statistics, rules are drawers
+  BarBase (doesn't do dragging, only Tapping) and DrawerBase (does Dragging and Tapping); NavDraw, Picker, Rules, Settings
+  NavDrawer overrides StartDrag() to return false
+  ui.drawer points to current open drawer
+  can still have Container interface (for dragging and parents)
+  retire window, picker, modal
 x better passing of things from ui to baize, instead of just a string, passing two strings (for now) as can only pass a value, not a type
 x Forty and Eight
 x Drag the modal container (by offsetting it's widgets), not the widgets

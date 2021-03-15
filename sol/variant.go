@@ -148,7 +148,7 @@ var Variants = map[string]VariantInfo{
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
 		Piles: []PileInfo{
 			{"Stock", 1, 0, "None", map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "1", "Build": "0", "Drag": "15"}},
-			{"Waste", 2, 0, "None", map[string]string{"Build": "15", "Drag": "115"}},
+			{"Waste", 2, 0, "Waste", map[string]string{"Build": "15", "Drag": "115"}},
 			{"Foundation", 4, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 			{"Foundation", 5, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 			{"Foundation", 6, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
@@ -261,7 +261,7 @@ var Variants = map[string]VariantInfo{
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
 		Piles: []PileInfo{
 			{"Stock", 1, 0, "None", map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "0", "Build": "0", "Drag": "15"}},
-			{"Waste", 2, 0, "None", map[string]string{"Build": "15", "Drag": "115"}},
+			{"Waste", 2, 0, "Waste", map[string]string{"Build": "15", "Drag": "115"}},
 			{"Foundation", 5, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 			{"Foundation", 6, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 			{"Foundation", 7, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
