@@ -49,18 +49,18 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input)
+	TheBaize.ui = ui.New(TheBaize.input, pickerContents())
 	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyN:      TheBaize.NewGame,
-		ebiten.KeyR:      TheBaize.RestartGame,
-		ebiten.KeyU:      TheBaize.Undo,
-		ebiten.KeyS:      TheBaize.SavePosition,
-		ebiten.KeyL:      TheBaize.LoadPosition,
-		ebiten.KeyC:      TheBaize.Collect,
-		ebiten.KeyF1:     TheBaize.ShowRules,
+		ebiten.KeyN: TheBaize.NewGame,
+		ebiten.KeyR: TheBaize.RestartGame,
+		ebiten.KeyU: TheBaize.Undo,
+		ebiten.KeyS: TheBaize.SavePosition,
+		ebiten.KeyL: TheBaize.LoadPosition,
+		ebiten.KeyC: TheBaize.Collect,
+		// ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF:      TheBaize.ShowPicker,
-		ebiten.KeyMenu:   TheBaize.ui.OpenNavDrawer,
-		ebiten.KeyEscape: TheBaize.ui.CloseActiveModal,
+		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
+		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
 	}
 	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
@@ -460,7 +460,7 @@ func (b *Baize) CardTapped(c *Card) {
 		if empty > 0 {
 			stock := b.findPilePrefix("Stock")
 			if stock.CardCount() > empty {
-				TheBaize.ui.Toast(0, 0, "All tableaux spaces must be filled before dealing a new row")
+				TheBaize.ui.Toast("All tableaux spaces must be filled before dealing a new row")
 				break
 			}
 		}
@@ -602,10 +602,10 @@ func (b *Baize) AfterUserMove() {
 	case Virgin:
 		// TheStatistics.startGame(b.Variant)
 		b.State = Started
-		b.ui.Toast(0, 0, fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
+		b.ui.Toast(fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(0, 0, fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
+			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 		}
@@ -668,9 +668,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("image.Point (tap)", v.X, v.Y)
-		if b.ui.ActiveModal() {
-			if !util.InRect(v.X, v.Y, b.ui.ActiveRect) {
-				b.ui.CloseActiveModal()
+		if con := b.ui.VisibleDrawer(); con != nil {
+			if !util.InRect(v.X, v.Y, con.Rect) {
+				con.Hide()
 			}
 		} else {
 			c := b.findCardAt(v.X, v.Y)
@@ -692,14 +692,14 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		// println("ebiten.Key", v)
 		fn, ok := b.commandTable[v]
 		if ok {
-			if b.ui.ActiveModal() {
-				b.ui.CloseActiveModal()
+			if con := b.ui.VisibleDrawer(); con != nil {
+				con.Hide()
 			}
 			fn()
 		}
 	case ui.ChangeRequest:
-		if b.ui.ActiveModal() {
-			b.ui.CloseActiveModal()
+		if con := b.ui.VisibleDrawer(); con != nil {
+			con.Hide()
 		}
 		switch v.ChangeRequested {
 		case "Variant":
@@ -722,14 +722,15 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		switch v.Event {
 		case "start":
 			b.stroke = v.Stroke
-			if b.ui.ActiveModal() {
-				con := b.ui.FindContainerAt(v.X, v.Y)
-				if con != nil {
+			if con := b.ui.VisibleDrawer(); con != nil {
+				if util.InRect(v.X, v.Y, con.Rect) {
 					if con.StartDrag() {
 						b.stroke.SetDraggedObject(con)
 					} else {
 						v.Stroke.Cancel()
 					}
+				} else {
+					v.Stroke.Cancel()
 				}
 			} else {
 				c := b.findCardAt(v.X, v.Y)

@@ -29,7 +29,7 @@ func (b *Baize) UndoPeekChecksum() (uint32, bool) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.UndoStack) < 2 {
-		b.ui.Toast(0, 0, "Nothing to undo")
+		b.ui.Toast("Nothing to undo")
 		return
 	}
 	sav, ok := b.UndoPop() // removes current state
@@ -48,13 +48,13 @@ func (b *Baize) Undo() {
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	b.SavedPosition = len(b.UndoStack)
-	b.ui.Toast(0, 0, "Current position saved")
+	b.ui.Toast("Current position saved")
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.SavedPosition == 0 {
-		b.ui.Toast(0, 0, "No saved position")
+		b.ui.Toast("No saved position")
 		return
 	}
 	if b.SavedPosition > len(b.UndoStack) {

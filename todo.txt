@@ -1,3 +1,10 @@
++ two types of containers; bars and drawers
+  navdrawer, picker, settings, statistics, rules are drawers
+  BarBase (doesn't do dragging, only Tapping) and DrawerBase (does Dragging and Tapping); NavDraw, Picker, Rules, Settings
+  NavDrawer overrides StartDrag() to return false
+  ui.drawer points to current open drawer
+  can still have Container interface (for dragging and parents)
+  retire window, picker, modal
 + rules could be displayed as dismissable? toasts over relevant piles
 + cannot tap on an animating card, leaves it out of place
 + Freecell, there was a card in a cell which was not

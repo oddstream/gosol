@@ -126,6 +126,6 @@ func (s *Statistics) welcomeToast(v string) {
 	}
 DisplayToastsLabel:
 	for _, t := range toasts {
-		TheBaize.ui.Toast(0, 0, t)
+		TheBaize.ui.Toast(t)
 	}
 }

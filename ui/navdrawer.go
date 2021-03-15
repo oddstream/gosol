@@ -5,25 +5,17 @@ import (
 	"oddstream.games/gosol/input"
 )
 
-const (
-	aniLeft  = -1
-	aniRight = 1
-	aniHide  = -2
-	aniShow  = 2
-	aniStop  = 0
-)
-
 // NavDrawer slide out modal menu
 type NavDrawer struct {
-	ContainerBase
-	aniState int
+	DrawerBase
 }
 
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
 func NewNavDrawer(input *input.Input) *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	n := &NavDrawer{ContainerBase: ContainerBase{input: input, width: 256, height: 0, x: -256, y: 0}}
+	n := &NavDrawer{DrawerBase: DrawerBase{input: input, width: 256, height: 0, x: -256, y: 0}}
 	n.widgets = []Widget{
+		// NewLabel(n, input, 0, -100, 256, 48, 0, "Title", schriftbank.RobotoMedium24, ""),
 		// give -ve y to make sure item is initially drawn off screen
 		NewNavItem(n, input, 0, -100, 256, 48, 0, rune(0x2605), "New deal", ebiten.KeyN),
 		// NewNavItem(n, input, 0, -100, 256, 48, 0, rune(8634), "Restart deal", ebiten.KeyR),
@@ -35,90 +27,47 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 	}
 	// n.widgets[2].Deactivate()
 	// n.widgets[3].Deactivate()
-	n.widgets[4].Deactivate()
+	// n.widgets[4].Deactivate()
 	return n
 }
 
-// Show starts to animate the drawer on screen from the left
-func (n *NavDrawer) Show() {
-	n.aniState = aniRight
-}
-
-// Hide starts to animate the drawer off screen to the left
-func (n *NavDrawer) Hide() {
-	n.aniState = aniLeft
-}
-
-// Visible returns true if the NavDrawer is showing
-func (n *NavDrawer) Visible() bool {
-	return n.x == 0
-}
-
-// Update the NavDrawer
-func (n *NavDrawer) Update() {
-	switch n.aniState {
-	case aniLeft:
-		if n.x <= -256 {
-			n.x = -256
-			n.aniState = aniStop
-		} else {
-			n.x -= 16
-		}
-	case aniRight:
-		if n.x >= 0 {
-			n.x = 0
-			n.aniState = aniStop
-		} else {
-			n.x += 16
-		}
-	}
-	n.LayoutWidgets()
-}
-
 // LayoutWidgets belonging to this container
-func (n *NavDrawer) LayoutWidgets() {
+// func (n *NavDrawer) LayoutWidgets() {
 
-	var y int = 64
-	for _, w := range n.widgets {
-		w.SetPosition(n.x, n.y+y)
-		y += 48
+// 	var y int = 64
+// 	for _, w := range n.widgets {
+// 		w.SetPosition(n.x, n.y+y)
+// 		y += 48
+// 	}
+
+// }
+
+// ShowNavDrawer animates the drawer on/off screen to the left
+// func (u *UI) ShowNavDrawer() {
+
+// 	con := u.VisibleDrawer()
+// 	if con == u.navdrawer {
+// 		return
+// 	}
+// 	if con != nil {
+// 		con.Hide()
+// 	}
+// 	u.navdrawer.Show()
+
+// }
+
+// ToggleNavDrawer animates the drawer on/off screen to the left
+func (u *UI) ToggleNavDrawer() {
+
+	con := u.VisibleDrawer()
+	if con == u.navdrawer {
+		con.Hide()
+		return
 	}
-
-}
-
-// Draw the NavDrawer
-func (n *NavDrawer) Draw(screen *ebiten.Image) {
-
-	_, h := screen.Size()
-	if n.img == nil || h != n.height {
-		n.height = h
-		n.img = n.createImg()
-	}
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(n.x), 0) // y is always zero
-	screen.DrawImage(n.img, op)
-
-	for _, w := range n.widgets {
-		w.Draw(screen)
-	}
-
-}
-
-// IsNavDrawerOpen returns true if the drawer is open
-func (u *UI) IsNavDrawerOpen() bool {
-	return u.navdrawer.Visible()
-}
-
-// OpenNavDrawer animates the drawer on/off screen to the left
-func (u *UI) OpenNavDrawer() {
-	if !u.navdrawer.Visible() {
+	if con == nil {
 		u.navdrawer.Show()
+		return
 	}
-}
-
-// CloseNavDrawer animates the drawer on/off screen to the left
-func (u *UI) CloseNavDrawer() {
-	if u.navdrawer.Visible() {
-		u.navdrawer.Hide()
-	}
+	con.Hide()
+	u.navdrawer.Show()
 }

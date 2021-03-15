@@ -13,11 +13,13 @@ func (b *Baize) ShowRulesForVariant(v string) {
 		}
 		if !util.Contains(rules, p.Class) {
 			rules = append(rules, p.Class)
-			x, y := p.Position()
-			b.ui.Toast(x, y, p.Class)
 		}
 	}
-	b.ui.OpenWindow(variantDisplayName(b.Variant), rules)
+
+	for _, r := range rules {
+		println(r)
+	}
+	// b.ui.OpenWindow(variantDisplayName(b.Variant), rules)
 }
 
 func (b *Baize) ShowRules() {

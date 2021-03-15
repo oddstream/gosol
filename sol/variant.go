@@ -474,7 +474,7 @@ func findVariantFromDisplayName(name string) string {
 	return ""
 }
 
-func (b *Baize) ShowPicker() {
+func pickerContents() []string {
 	var displayNames []string
 	for key, v := range Variants {
 		if v.DisplayName == "" {
@@ -484,6 +484,9 @@ func (b *Baize) ShowPicker() {
 		}
 	}
 	sort.Slice(displayNames, func(i, j int) bool { return displayNames[i] < displayNames[j] })
+	return displayNames
+}
 
-	b.ui.OpenPicker(displayNames)
+func (b *Baize) ShowPicker() {
+	b.ui.ShowPicker()
 }
