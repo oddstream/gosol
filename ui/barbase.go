@@ -26,7 +26,7 @@ func (bb *BarBase) createImg() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// Position gives the screen position
+// Position gives the screen position of this container
 func (bb *BarBase) Position() (x, y int) {
 	x = bb.x
 	y = bb.y
@@ -40,7 +40,7 @@ func (bb *BarBase) Size() (width, height int) {
 	return // using named parameters
 }
 
-// Rect gives the screen position
+// Rect gives the screen position and extent of this container
 func (bb *BarBase) Rect() (x0, y0, x1, y1 int) {
 	x0 = bb.x
 	y0 = bb.y
@@ -49,9 +49,10 @@ func (bb *BarBase) Rect() (x0, y0, x1, y1 int) {
 	return // using named parameters
 }
 
+// FindWidgetAt given screen coordinates
 func (bb *BarBase) FindWidgetAt(x, y int) Widget {
 	for _, w := range bb.widgets {
-		if util.InRect(x, y, w.Rect) {
+		if util.InRect(x, y, w.OffsetRect) {
 			return w
 		}
 	}
@@ -59,29 +60,30 @@ func (bb *BarBase) FindWidgetAt(x, y int) Widget {
 }
 
 // LayoutWidgets that belong to this container
+// set the widgets x,y relative to their parent, not the screen
 func (bb *BarBase) LayoutWidgets() {
 	nextLeft := 0
 	nextRight := bb.width - 48
 	for _, w := range bb.widgets {
+		widgetWidth, widgetHeight := w.Size()
 		switch w.Align() {
-		case -1:
+		case -1: // left align
 			w.SetPosition(nextLeft, bb.y)
-			nextLeft += 48
-		case 0:
-			widgetWidth, widgetHeight := w.Size()
+			nextLeft += widgetWidth
+		case 0: // center
 			w.SetPosition(bb.width/2-widgetWidth/2, bb.y+widgetHeight/2)
-		case 1:
+		case 1: // right align
 			w.SetPosition(nextRight, bb.y)
-			nextRight -= 48
+			nextRight -= widgetWidth
 		}
 	}
 }
 
 // ReplaceWidget replaces a widget
-func (bb *BarBase) ReplaceWidget(n int, w Widget) {
-	bb.widgets[n].Deactivate()
-	bb.widgets[n] = w
-}
+// func (bb *BarBase) ReplaceWidget(n int, w Widget) {
+// 	bb.widgets[n].Deactivate()
+// 	bb.widgets[n] = w
+// }
 
 // StartDrag this widget, if it is allowed
 func (bb *BarBase) StartDrag() bool {

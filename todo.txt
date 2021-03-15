@@ -1,5 +1,6 @@
-+ use of Varaint is a mess
-  TheUserData.Variant and Baize.Varaint are the same thing
++ add Text widget for multiline text
++ use of Variant is a mess
+  TheUserData.Variant and Baize.Variant are the same thing
   SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
 + flicker when undoing waste fan
 + widget align
@@ -39,6 +40,8 @@
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 
++ widget x,y should be in relation to their parent, yes?
+  add parent x,y before draw, hit test
 + CardState resting, lerping, flipping in, flipping out, shake left, shake right, shake center
   ... but can flip and lerp at the same time
 + grid X,Y to screenX,screenY func

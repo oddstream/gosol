@@ -75,8 +75,9 @@ func (b *Baize) Reset() {
 	b.Piles = nil
 	b.UndoStack = nil
 	b.SavedPosition = 0
-	b.Variant = TheUserData.Variant
-	b.Seed = time.Now().UnixNano()
+	// the following can stay the same
+	// b.Variant = TheUserData.Variant
+	// b.Seed = time.Now().UnixNano()
 	b.State = Virgin
 	b.stroke = nil
 }

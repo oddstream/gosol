@@ -85,7 +85,9 @@ func (tm *ToastManager) Draw(screen *ebiten.Image) {
 	sx, sy := screen.Size()
 	var tx, ty int
 	ty = sy - 10
-	for _, t := range tm.toasts {
+	// for _, t := range tm.toasts {
+	for i := len(tm.toasts) - 1; i >= 0; i-- {
+		t := tm.toasts[i]
 		w, h := t.img.Size()
 		tx = (sx - w) / 2
 		ty = ty - h - 10 // move y up ready for next toast

@@ -59,8 +59,8 @@ func (rb *RuneButton) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("RuneButton image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, rb.Rect) {
-			println("button notify", rb.key)
+		if util.InRect(v.X, v.Y, rb.OffsetRect) {
+			println("rune button notify", rb.key)
 			rb.input.Notify(rb.key)
 		}
 	}

@@ -11,10 +11,8 @@ import (
 
 const (
 	aniLeft  = -1
-	aniRight = 1
-	aniHide  = -2
-	aniShow  = 2
 	aniStop  = 0
+	aniRight = 1
 )
 
 type DrawerBase struct {
@@ -64,7 +62,7 @@ func (db *DrawerBase) Rect() (x0, y0, x1, y1 int) {
 
 func (db *DrawerBase) FindWidgetAt(x, y int) Widget {
 	for _, w := range db.widgets {
-		if util.InRect(x, y, w.Rect) {
+		if util.InRect(x, y, w.OffsetRect) {
 			return w
 		}
 	}
@@ -72,16 +70,15 @@ func (db *DrawerBase) FindWidgetAt(x, y int) Widget {
 }
 
 // LayoutWidgets that belong to this container
+// by setting the x,y of each relative to their parent
 func (db *DrawerBase) LayoutWidgets() {
-	var toolbarHeight int = 48
 	var x, y int
-	x = 0
-	y = toolbarHeight + 24
+	y = 24 // vertical padding = half the height of a standard widget
 
 	for _, w := range db.widgets {
-		w.SetPosition(db.x+x, db.y+y+db.yOffset)
+		w.SetPosition(x, y+db.yOffset)
 		_, widgetHeight := w.Size()
-		y += widgetHeight + 14
+		y += widgetHeight
 	}
 	// println("yOffset is", p.yOffset)
 }
@@ -93,7 +90,9 @@ func (db *DrawerBase) Show() {
 
 // Hide starts to animate the drawer off screen to the left
 func (db *DrawerBase) Hide() {
-	if db.x != -db.width {
+	if db.x == -db.width {
+		db.aniState = aniStop
+	} else {
 		db.aniState = aniLeft
 	}
 }
@@ -130,6 +129,7 @@ func (db *DrawerBase) DragBy(dx, dy int) {
 
 // StopDrag this widget
 func (db *DrawerBase) StopDrag() {
+	// remember the amount of drag incase the widgets are dragged again
 	db.xOffsetBase = db.xOffset
 	db.yOffsetBase = db.yOffset
 }
@@ -168,15 +168,15 @@ func (db *DrawerBase) Update() {
 // Draw the Drawer
 func (db *DrawerBase) Draw(screen *ebiten.Image) {
 
-	var toolbarHeight int = 48 // draw drawer below toolbar
+	const toolbarHeight int = 48 // draw drawer below toolbar
 
-	_, h := screen.Size()
-	if db.img == nil || h != toolbarHeight+db.height {
-		db.height = h - toolbarHeight
+	_, screenHeight := screen.Size()
+	if db.img == nil || screenHeight != toolbarHeight+db.height {
+		db.height = screenHeight - toolbarHeight
 		db.img = db.createImg()
 	}
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(db.x), float64(toolbarHeight))
+	op.GeoM.Translate(float64(db.x), float64(db.y))
 	screen.DrawImage(db.img, op)
 
 	for _, w := range db.widgets {

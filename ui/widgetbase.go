@@ -12,7 +12,7 @@ type WidgetBase struct {
 	img           *ebiten.Image
 	align         int
 	disabled      bool
-	x, y          int // screen position
+	x, y          int // position relative to parent
 	width, height int
 }
 
@@ -27,12 +27,12 @@ func (wb *WidgetBase) Size() (int, int) {
 	return wb.width, wb.height
 }
 
-// Position of the widget
+// Position of the widget, relative to parent
 func (wb *WidgetBase) Position() (int, int) {
 	return wb.x, wb.y
 }
 
-// Rect gives the screen position
+// Rect gives the position and extent of widget, relative to parent
 func (wb *WidgetBase) Rect() (x0, y0, x1, y1 int) {
 	x0 = wb.x
 	y0 = wb.y
@@ -43,7 +43,7 @@ func (wb *WidgetBase) Rect() (x0, y0, x1, y1 int) {
 
 // OffsetRect gives the screen position in relation to parent's position
 func (wb *WidgetBase) OffsetRect() (x0, y0, x1, y1 int) {
-	px, py, _, _ := wb.parent.Rect()
+	px, py := wb.parent.Position()
 	x0 = px + wb.x
 	y0 = py + wb.y
 	x1 = x0 + wb.width
@@ -65,13 +65,13 @@ func (wb *WidgetBase) Align() int {
 // Draw the widget
 func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	// don't draw a widget unless it is fully contained within it's parent
-	_, py0, _, py1 := wb.parent.Rect()
-	_, _, _, wy1 := wb.Rect()
-	_, height := wb.Size()
-	if wy1 > py1 || wy1-height < py0 {
+	parentLeft, parentTop, _, parentBottom := wb.parent.Rect()
+	_, _, _, widgetBottom := wb.OffsetRect()
+	_, widgetHeight := wb.Size()
+	if widgetBottom > parentBottom || widgetBottom-widgetHeight < parentTop {
 		return
 	}
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(wb.x), float64(wb.y))
+	op.GeoM.Translate(float64(parentLeft+wb.x), float64(parentTop+wb.y))
 	screen.DrawImage(wb.img, op)
 }

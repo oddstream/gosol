@@ -12,9 +12,9 @@ type Picker struct {
 
 // NewPicker creates a new toolbar
 func NewPicker(input *input.Input, content []string) *Picker {
-	p := &Picker{DrawerBase: DrawerBase{input: input, x: -300, width: 300}} // x,y,height will be set when drawn
+	p := &Picker{DrawerBase: DrawerBase{input: input, x: -300, y: 48, width: 300}} // height will be set when drawn
 	for _, c := range content {
-		p.widgets = append(p.widgets, NewLabel(p, input, 0, 0, 0, 48, 0, c, schriftbank.RobotoRegular24, "Variant"))
+		p.widgets = append(p.widgets, NewLabel(p, input, -300, 0, 300, 48, 0, c, schriftbank.RobotoRegular24, "Variant"))
 	}
 	return p
 }
