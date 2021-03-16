@@ -242,26 +242,6 @@ func (b *Baize) LoadVariant(v string) bool {
 	return true
 }
 
-// doesn't work because time.Sleep suspends the whole thread, not allowing Ebiten to breathe
-// func (b *Baize) waitForCards() {
-// 	for {
-// 		ani := 0
-// 		for _, p := range b.Piles {
-// 			for _, c := range p.Cards {
-// 				if c.Animating() {
-// 					ani++
-// 				}
-// 			}
-// 		}
-// 		if ani == 0 {
-// 			break
-// 		}
-// 		println("waiting for", ani, "cards")
-// 		b.Update()
-// 			time.Sleep(time.Second)
-// 	}
-// }
-
 func (b *Baize) dealCards() {
 	stock := b.findPilePrefix("Stock")
 	for _, p := range b.Piles {
@@ -613,6 +593,9 @@ func (b *Baize) AfterUserMove() {
 			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+		} else if b.Conformant() {
+			println("baize is conformant")
+			// TODO display FAB
 		}
 	case Complete:
 		println("what are we doing here?")

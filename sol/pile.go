@@ -411,21 +411,22 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			for ; i >= 0; i-- {
 				p.Cards[i].TransitionTo(x0, y0)
 			}
+			// TODO could try reversing the order of this, do top card last
 		}
 	}
 	return x, y
 }
 
 func (p *Pile) makeTail(c *Card) []*Card {
-	var tail []*Card // append works on a nil slice, yay
-	marking := false
-	for _, pc := range p.Cards {
-		if !marking && pc == c {
-			marking = true
+	var tail []*Card
+	for i, pc := range p.Cards {
+		if pc == c {
+			tail = p.Cards[i:]
+			break
 		}
-		if marking {
-			tail = append(tail, pc)
-		}
+	}
+	if len(tail) == 0 {
+		println("error - make empty tail")
 	}
 	return tail
 }
@@ -509,6 +510,14 @@ func (p *Pile) Complete() bool {
 	}
 
 	return true
+}
+
+// Conformant returns true if all cards in this pile are conformant
+func (p *Pile) Conformant() bool {
+	if len(p.Cards) == 0 {
+		return true
+	}
+	return isConformant(p.buildRules, p.buildFlags, p.Cards)
 }
 
 // BuryCards moves cards with the specified ordinal to the bottom of the stack

@@ -1,3 +1,10 @@
++ UI FAB widget
+  https://material.io/components/buttons-floating-action-button
++ Settings
+    Card design (add default) (a slide out picker)
+    Animation speed (a slide out picker for slow, medium, fast)
++ Menu items or toolbar buttons for save/load position (latter will require tooltips)
++ Auto scaling of cards to window size (what - even retro ones? Hmmm)
 + use of Variant is a mess
   TheUserData.Variant and Baize.Variant are the same thing
   SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
@@ -14,9 +21,6 @@
 + Collect() counts as one move, wrong for statistics
 + statusbar: stock card count, number of moves
 + Scrim rect when nav drawer open? Will sponge up taps and drags. Maybe just alpha down the baize.
-+ UI FAB and FABManager
-  https://material.io/components/buttons-floating-action-button
-+ modal dialog to show statistics
 + UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
   https://material.io/components/navigation-drawer#usage
 + you have started N games of X? Loading a varaint should not count as starting
@@ -48,6 +52,7 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x modal dialog to show statistics (rejected)
 x english rules
 x add Text widget for multiline text
 x two types of containers; bars and drawers

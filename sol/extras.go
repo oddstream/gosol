@@ -183,8 +183,9 @@ func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 }
 
 func isConformant(rules, flags int, cards []*Card) bool {
-	if nil == cards || len(cards) == 0 {
-		log.Fatal("isConformant passed empty tail")
+	if len(cards) == 0 {
+		println("isConformant passed empty tail")
+		return false
 	}
 	if rules == 0 {
 		return false // may not build or move, even a single card
