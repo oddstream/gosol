@@ -593,9 +593,10 @@ func (b *Baize) AfterUserMove() {
 			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+			b.ui.ShowFAB(rune(0x2605), ebiten.KeyN)
 		} else if b.Conformant() {
 			println("baize is conformant")
-			// TODO display FAB
+			b.ui.ShowFAB(rune(0x2713), ebiten.KeyC)
 		}
 	case Complete:
 		println("what are we doing here?")
@@ -681,10 +682,12 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		fn, ok := b.commandTable[v]
 		if ok {
 			b.ui.HideActiveDrawer()
+			b.ui.HideFAB()
 			fn()
 		}
 	case ui.ChangeRequest:
 		b.ui.HideActiveDrawer()
+		b.ui.HideFAB()
 		switch v.ChangeRequested {
 		case "Variant":
 			newVariant := findVariantFromDisplayName(v.Data)

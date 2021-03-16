@@ -5,7 +5,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/util"
 )
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
@@ -15,6 +14,7 @@ type UI struct {
 	navdrawer    *NavDrawer
 	picker       *Picker
 	rules        *Rules
+	fab          *FAB
 	containers   []Container
 	bars         []Container
 	drawers      []Container
@@ -39,23 +39,28 @@ func New(input *input.Input, pickerContents []string) *UI {
 }
 
 // FindWidgetAt finds the widget at the screen coords
-func (u *UI) FindWidgetAt(x, y int) Widget {
-	for _, con := range u.containers {
-		if w := con.FindWidgetAt(x, y); con != nil {
-			return w
-		}
-	}
-	return nil
-}
+// func (u *UI) FindWidgetAt(x, y int) Widget {
+// 	for _, con := range u.containers {
+// 		if w := con.FindWidgetAt(x, y); con != nil {
+// 			return w
+// 		}
+// 	}
+// 	// if u.fab != nil {
+// 	// 	if util.InRect(x, y, u.fab.Rect) {
+// 	// 		return u.fab
+// 	// 	}
+// 	// }
+// 	return nil
+// }
 
-func (u *UI) FindContainerAt(x, y int) Container {
-	for _, con := range u.containers {
-		if util.InRect(x, y, con.Rect) {
-			return con
-		}
-	}
-	return nil
-}
+// func (u *UI) FindContainerAt(x, y int) Container {
+// 	for _, con := range u.containers {
+// 		if util.InRect(x, y, con.Rect) {
+// 			return con
+// 		}
+// 	}
+// 	return nil
+// }
 
 // VisibleDrawer returns the drawer that is currently open
 func (u *UI) VisibleDrawer() Container {
@@ -66,25 +71,6 @@ func (u *UI) VisibleDrawer() Container {
 	}
 	return nil
 }
-
-// InVisibleDrawRect
-// func (u *UI) InVisibleDrawerRect(x, y int) bool {
-// 	for _, con := range u.drawers {
-// 		if con.Visible() {
-// 			return util.InRect(x, y, con.Rect)
-// 		}
-// 	}
-// 	return false
-// }
-
-// ActiveDrawerRect returns the rect coords of the active drawer
-// func (u *UI) ActiveDrawerRect() (int, int, int, int) {
-// 	d := u.VisibleDrawer()
-// 	if d != nil {
-// 		return d.Rect()
-// 	}
-// 	return 0, 0, 0, 0
-// }
 
 // HideActiveDrawer closes the active/open drawer
 func (u *UI) HideActiveDrawer() {
@@ -98,6 +84,9 @@ func (u *UI) Update() {
 	for _, con := range u.containers {
 		con.Update()
 	}
+	if u.fab != nil {
+		u.fab.Update()
+	}
 	u.toastManager.Update()
 }
 
@@ -105,6 +94,9 @@ func (u *UI) Update() {
 func (u *UI) Draw(screen *ebiten.Image) {
 	for _, con := range u.containers {
 		con.Draw(screen)
+	}
+	if u.fab != nil {
+		u.fab.Draw(screen)
 	}
 	u.toastManager.Draw(screen)
 }

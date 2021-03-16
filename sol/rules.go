@@ -7,6 +7,137 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
+	if cPrev.Prone() || cThis.Prone() {
+		println("prone cards are not conformant")
+		return false
+	}
+
+	localSuit := rules / 10
+	localRank := rules % 10
+
+	switch localSuit {
+	case 0: // may not build or move
+		return false
+	case 1: // regardless of suit
+	case 2: // in suit
+		if cPrev.Suit() != cThis.Suit() {
+			return false
+		}
+	case 3: // in color
+		if cPrev.Color() != cThis.Color() {
+			return false
+		}
+	case 4: // in alternate color
+		if cPrev.Color() == cThis.Color() {
+			return false
+		}
+	case 5: // in any suit but it's own
+		if cPrev.Suit() == cThis.Suit() {
+			return false
+		}
+	}
+
+	if flags&1 == 1 { // rank wrap == true
+		switch localRank {
+		case 0: // may not build or move
+			return false
+		case 1: // up, e.g. a 10 goes on a 9
+			if cPrev.Ordinal() == 13 && cThis.Ordinal() == 1 {
+				// an Ace on a King
+			} else {
+				if cThis.Ordinal() != cPrev.Ordinal()+1 {
+					return false
+				}
+			}
+		case 2: // down, e.g. a 9 goes on a 10
+			if cPrev.Ordinal() == 1 && cThis.Ordinal() == 13 {
+				// a King on an Ace
+			} else {
+				if cThis.Ordinal() != cPrev.Ordinal()-1 {
+					return false
+				}
+			}
+		case 4: // either up or down
+			if (cPrev.Ordinal() == 13 && cThis.Ordinal() == 1) || (cPrev.Ordinal() == 1 && cThis.Ordinal() == 13) {
+				// a king on an ace or an ace on a king
+			} else {
+				if util.Abs(cPrev.Ordinal()-cThis.Ordinal()) != 1 {
+					return false
+				}
+			}
+		case 5: // regardless of rank
+		}
+	} else { // rank wrap == false
+		switch localRank {
+		case 0: // may not build or move
+			return false
+		case 1: // up, e.g. a 10 goes on a 9
+			if cThis.Ordinal() != cPrev.Ordinal()+1 {
+				return false
+			}
+		case 2: // down, e.g. a 9 goes on a 10
+			if cThis.Ordinal() != cPrev.Ordinal()-1 {
+				return false
+			}
+		case 4: // either up or down
+			if util.Abs(cThis.Ordinal()-cPrev.Ordinal()) != 1 {
+				return false
+			}
+		case 5: // regardless of rank
+		}
+	}
+
+	// TODO localRank == 13 (Pyramid) cPrev.Ordinal() + cThis.Ordinal() == 13
+
+	return true
+}
+
+func isConformant(rules, flags int, cards []*Card) bool {
+	if len(cards) == 0 {
+		println("isConformant passed empty tail")
+		return false
+	}
+	if rules == 0 {
+		return false // may not build or move, even a single card
+	}
+	cPrev := cards[0]
+	for n := 1; n < len(cards); n++ {
+		cThis := cards[n]
+		if !isConformant0(rules, flags, cPrev, cThis) {
+			return false
+		}
+		cPrev = cThis
+	}
+	return true
+}
+
+func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
+	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
+	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
+	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
+	var emptyCells, emptyCols int
+	for _, p := range piles {
+		switch p.Class {
+		case "Cell":
+			if p.CardCount() == 0 {
+				emptyCells++
+			}
+		case "Tableau":
+			// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
+			if p == pDraggingTo && pDraggingTo.CardCount() == 0 {
+				// empty column doesn't count
+			} else if p.CardCount() == 0 {
+				emptyCols++
+			}
+		}
+	}
+	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
+	n := (1 + emptyCells) * util.Pow(2, emptyCols)
+	println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
+	return n
+}
+
 func englishRules(rules, flags int) string {
 	suit := rules / 10
 	rank := rules % 10
