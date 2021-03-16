@@ -131,16 +131,18 @@ func (b *Baize) rulesContents() []string {
 			if accept == 0 {
 				fmt.Fprint(&str, " Any card may be placed on an empty tableaux.")
 			} else if accept > 0 && accept < 14 {
-				var cardValueEnglish [14]string = [14]string{"", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
-				fmt.Fprintf(&str, " Only a %s may be placed on an empty tableaux.", cardValueEnglish[accept])
+				fmt.Fprintf(&str, " Only a %s may be placed on an empty tableaux.", util.OrdinalToLongString(accept))
 			} else {
 				fmt.Fprint(&str, " No card may be placed on an empty tableaux.")
 			}
-			if p.dragFlags&1 == 1 {
-				fmt.Fprint(&str, " Only a single card may be moved at once.")
-			}
 			if p.buildFlags&2 == 2 {
 				fmt.Fprint(&str, " Strictly, only the top card of each stack may be moved. However, the game automates moves of several cards, when empty tableau columns and empty cells allow.")
+			} else {
+				if p.dragFlags&1 == 1 {
+					fmt.Fprint(&str, " Only a single card may be moved at once.")
+				} else {
+					fmt.Fprint(&str, " Completed sequences of cards may be moved together.")
+				}
 			}
 			// TODO Bury, Disinter
 		case "Cell":

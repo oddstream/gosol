@@ -25,20 +25,19 @@ func NewStatistics() *Statistics {
 	return s
 }
 
-// func (s *Statistics) startGame(v string) {
-// 	_, ok := s.StatsMap[v]
-// 	if !ok {
-// 		s.StatsMap[v] = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
-// 	}
-// }
-
-func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
+func (s *Statistics) findVariant(v string) *VariantStatistics {
 	stats, ok := s.StatsMap[v]
 	if !ok {
 		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
 		s.StatsMap[v] = stats
-		println("recordWonGame new variant ", v)
+		println("statistics has encountered a new variant ", v)
 	}
+	return stats
+}
+
+func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
+
+	stats := s.findVariant(v)
 
 	stats.Won = stats.Won + 1
 	stats.BestPercent = 100
@@ -62,12 +61,8 @@ func (s *Statistics) recordWonGame(v string, numberOfMoves int) {
 }
 
 func (s *Statistics) recordLostGame(v string, percent int) {
-	stats, ok := s.StatsMap[v]
-	if !ok {
-		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
-		s.StatsMap[v] = stats
-		println("recordLostGame new variant ", v)
-	}
+
+	stats := s.findVariant(v)
 
 	stats.Lost = stats.Lost + 1
 	// don't see that currStreak can ever be zero
@@ -93,29 +88,19 @@ func (s *Statistics) welcomeToast(v string) {
 	toasts := []string{}
 
 	stats, ok := s.StatsMap[v]
-	if !ok {
-		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
-		goto DisplayToastsLabel
-		// log.Fatal("welcomeToast unknown variant ", v)
-	}
-	if stats.Won+stats.Lost == 0 {
+	if !ok || stats.Won+stats.Lost == 0 {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
 	} else {
-		// toasts = append(toasts, fmt.Sprintf("You have played %s of %s", util.Pluralize("game", stats.Won+stats.Lost), displayName))
-
 		if stats.BestPercent == 0 {
-			toasts = append(toasts, "You have yet to score anything")
+			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %d attempts.", stats.Lost))
 		} else if stats.BestPercent < 100 {
-			toasts = append(toasts, fmt.Sprintf("Your best score is %d%%", stats.BestPercent))
-			toasts = append(toasts, fmt.Sprintf("You have played %s %s", displayName, util.Pluralize("time", stats.Won+stats.Lost)))
+			toasts = append(toasts, fmt.Sprintf("Your best score is %d%% in %d attempts", stats.BestPercent, stats.Lost))
 		} else {
 			toasts = append(toasts,
 				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
 					util.Pluralize("game", stats.Won),
 					util.Pluralize("game", stats.Lost),
 					((stats.Won*100)/(stats.Won+stats.Lost))))
-		}
-		if stats.BestPercent == 100 {
 			if stats.CurrStreak > 0 {
 				toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 			}
@@ -124,7 +109,7 @@ func (s *Statistics) welcomeToast(v string) {
 			}
 		}
 	}
-DisplayToastsLabel:
+
 	for _, t := range toasts {
 		TheBaize.ui.Toast(t)
 	}

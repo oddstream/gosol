@@ -1,4 +1,3 @@
-+ add Text widget for multiline text
 + use of Variant is a mess
   TheUserData.Variant and Baize.Variant are the same thing
   SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
@@ -14,7 +13,7 @@
 + only allow Collect() when tableaux is conformant, FAB
 + Collect() counts as one move, wrong for statistics
 + statusbar: stock card count, number of moves
-+ Scrim when nav drawer open? Maybe just alpha down the baize.
++ Scrim rect when nav drawer open? Will sponge up taps and drags. Maybe just alpha down the baize.
 + UI FAB and FABManager
   https://material.io/components/buttons-floating-action-button
 + modal dialog to show statistics
@@ -49,6 +48,8 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x english rules
+x add Text widget for multiline text
 x two types of containers; bars and drawers
   navdrawer, picker, settings, statistics, rules are drawers
   BarBase (doesn't do dragging, only Tapping) and DrawerBase (does Dragging and Tapping); NavDraw, Picker, Rules, Settings

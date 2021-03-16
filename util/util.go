@@ -124,6 +124,12 @@ func OrdinalToShortString(ord int) string {
 	return chars[ord]
 }
 
+// OrdinalToLongString converts an ordinal (1..13) to a single(ish) character (A .. K)
+func OrdinalToLongString(ord int) string {
+	var cardValueEnglish [14]string = [14]string{"", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+	return cardValueEnglish[ord]
+}
+
 // Pluralize returns a string containing an attempt at a plural form of the word
 func Pluralize(word string, n int) string {
 	if n == 0 {
