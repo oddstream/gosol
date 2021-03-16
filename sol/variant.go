@@ -22,7 +22,7 @@ type PileInfo struct {
 // Variants contains configuration info for all the variants
 var Variants = map[string]VariantInfo{
 	"Australian": {
-		Description: "A combination of Klondike and Scorpion",
+		Description: "A combination of Klondike and Scorpion.",
 		AKA:         []string{"Australian Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
 		Piles: []PileInfo{
@@ -43,7 +43,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"BakersDozen": {
 		DisplayName: "Baker's Dozen",
-		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing",
+		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 1, -2, "None", map[string]string{"Build": "0", "Drag": "15"}},
@@ -68,7 +68,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"BakersDozenRelaxed": {
 		DisplayName: "Baker's Dozen (Relaxed)",
-		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing",
+		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 1, -2, "None", map[string]string{"Build": "0", "Drag": "15"}},
@@ -110,7 +110,7 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"EasyWin": {
-		Description: "A game for debugging",
+		Description: "A game for debugging.",
 		Piles: []PileInfo{
 			{"Stock", 1, 0, "None", map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "Build": "0", "Drag": "15"}},
 			{"Waste", 2, 0, "Waste", map[string]string{"Build": "15", "Drag": "115"}},
@@ -215,8 +215,8 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Klondike": {
-		DisplayName: "Klondike (Turn One)",
-		Description: "The well-known solitaire variant",
+		DisplayName: "Klondike (Draw One)",
+		Description: "The well-known solitaire variant.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
@@ -236,8 +236,8 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Klondike3": {
-		DisplayName: "Klondike (Turn Three)",
-		Description: "The well-known solitaire variant",
+		DisplayName: "Klondike (Draw Three)",
+		Description: "The well-known solitaire variant.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
@@ -285,7 +285,7 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Scorpion": {
-		Description: "Related to Spider, with a method of game play like Yukon",
+		Description: "Related to Spider, with a method of game play like Yukon.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
 		Piles: []PileInfo{
 			{"StockScorpion", 1, 0, "None", map[string]string{"Build": "0", "Drag": "15"}},
@@ -304,7 +304,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"SimpleSimon": {
 		DisplayName: "Simple Simon",
-		Description: "A wonderfully simple game with no stock or waste, that plays like Spider. Most games are winnable, but require skill",
+		Description: "A wonderfully simple game with no stock or waste, that plays like Spider. Most games are winnable, but require skill.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 5, -2, "None", map[string]string{"Build": "0", "Drag": "0"}},
@@ -326,6 +326,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"Spider1": {
 		DisplayName: "Spider (One Suit)",
+		Description: "The game originates in 1949, and its name comes from a spider's eight legs, referencing the eight foundation piles that must be filled to win the game.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "8", "Build": "0", "Drag": "15", "Suits": "Spade"}},
@@ -351,6 +352,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"Spider2": {
 		DisplayName: "Spider (Two Suits)",
+		Description: "The game originates in 1949, and its name comes from a spider's eight legs, referencing the eight foundation piles that must be filled to win the game.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "4", "Build": "0", "Drag": "15", "Suits": "Spade,Heart"}},
@@ -374,8 +376,26 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 10, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddddu"}},
 		},
 	},
+	"Spiderette": {
+		Description: "A compact version of Spider.",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		Piles: []PileInfo{
+			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "4", "Build": "0", "Drag": "15", "Suits": "Spade"}},
+			{"FoundationSpider", 4, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 5, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 6, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 7, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"Tableau", 1, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "u"}},
+			{"Tableau", 2, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "du"}},
+			{"Tableau", 3, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 4, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "dddu"}},
+			{"Tableau", 5, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddddu"}},
+			{"Tableau", 6, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "dddddu"}},
+			{"Tableau", 7, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddddddu"}},
+		},
+	},
 	"Storehouse": {
-		Description: "An easier version of Canfield",
+		Description: "An easier version of Canfield.",
 		AKA:         []string{"Thirteen Up"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
 		Piles: []PileInfo{
@@ -392,8 +412,28 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Build": "122", "Drag": "22", "AutoFillFrom": "Reserve", "Deal": "u"}},
 		},
 	},
+	"Thoughtful": {
+		Description: "Klondike, but with all the cards face up.",
+		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+		Piles: []PileInfo{
+			{"Stock", 1, 0, "None", map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "Build": "0", "Drag": "15"}},
+			{"Waste", 2, 0, "Waste", map[string]string{"Build": "15", "Drag": "115"}},
+			{"Foundation", 4, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 5, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 6, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 7, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Tableau", 1, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "u"}},
+			{"Tableau", 2, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uu"}},
+			{"Tableau", 3, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uuu"}},
+			{"Tableau", 4, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uuuu"}},
+			{"Tableau", 5, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uuuuu"}},
+			{"Tableau", 6, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uuuuuu"}},
+			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "uuuuuuu"}},
+		},
+	},
 	"Wasp": {
-		Description: "An easier version of Scorpion, related to Spider, with a method of game play like Yukon",
+		Description: "An easier version of Scorpion, related to Spider, with a method of game play like Yukon.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
 		Piles: []PileInfo{
 			{"StockScorpion", 1, 0, "None", map[string]string{"Build": "0", "Drag": "15"}},
@@ -410,8 +450,27 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Build": "22", "Drag": "15", "Scrunch": "6", "Deal": "uuuuuuu"}},
 		},
 	},
+	"WillOTheWisp": {
+		DisplayName: "Will o' the Wisp",
+		Description: "Invented by Geoffrey Mott-Smith, it is played the same way as Spiderette.",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		Piles: []PileInfo{
+			{"StockSpider", 1, 0, "None", map[string]string{"Packs": "4", "Build": "0", "Drag": "15", "Suits": "Spade"}},
+			{"FoundationSpider", 4, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 5, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 6, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"FoundationSpider", 7, 0, "None", map[string]string{"Accept": "13", "Build": "22", "Drag": "0"}},
+			{"Tableau", 1, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 2, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 3, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 4, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 5, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 6, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+			{"Tableau", 7, 1, "Down", map[string]string{"Build": "12", "Drag": "22", "Scrunch": "5", "Deal": "ddu"}},
+		},
+	},
 	"Yukon": {
-		Description: "Like Klondike, but with no stock or waste piles",
+		Description: "Like Klondike, but with no stock or waste piles.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 1, -2, "None", map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "Build": "0", "Drag": "15"}},
@@ -454,9 +513,6 @@ func variantDisplayName(v string) string {
 
 func variantDescription(v string) string {
 	if vi, exists := Variants[v]; exists {
-		if vi.Description == "" {
-			return v
-		}
 		return vi.Description
 	}
 	return ""

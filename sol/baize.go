@@ -51,13 +51,13 @@ func NewBaize() *Baize {
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
 	TheBaize.ui = ui.New(TheBaize.input, pickerContents())
 	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyN: TheBaize.NewGame,
-		ebiten.KeyR: TheBaize.RestartGame,
-		ebiten.KeyU: TheBaize.Undo,
-		ebiten.KeyS: TheBaize.SavePosition,
-		ebiten.KeyL: TheBaize.LoadPosition,
-		ebiten.KeyC: TheBaize.Collect,
-		// ebiten.KeyF1:     TheBaize.ShowRules,
+		ebiten.KeyN:      TheBaize.NewGame,
+		ebiten.KeyR:      TheBaize.RestartGame,
+		ebiten.KeyU:      TheBaize.Undo,
+		ebiten.KeyS:      TheBaize.SavePosition,
+		ebiten.KeyL:      TheBaize.LoadPosition,
+		ebiten.KeyC:      TheBaize.Collect,
+		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF:      TheBaize.ShowPicker,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,

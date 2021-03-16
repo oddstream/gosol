@@ -2,7 +2,7 @@
 
 Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg. It's an adaptation of my Lua/Solar2D retained mode engine used in the Android game (which was itself an adaptation of my messy vanilla JavaScript/SVG engine used for the online game). The intention is that this version will replace both of those.
 
-It currently only plays 18 variants (including Australian, Baker's Dozen, Canfield, Forty and Eight, Freecell, Klondike (draw 1 and draw 3), Limited, Scorpion, Spider1, Spider2, Storehouse Canfield, Wasp, Yukon). There should be around 40 by the time I'm done.
+It currently knows how to play Australian, Baker's Dozen, Canfield, Forty and Eight, Freecell, Klondike Draw One, Klondike Draw Three, Limited, Scorpion, Spider (One Suit), Spider (Two Suits), Spiderette, Storehouse Canfield, Thoughtful, Wasp, Will o' the Wisp, Yukon.
 
 It currently has a minimal user interface, and some keyboard shortcuts:
 

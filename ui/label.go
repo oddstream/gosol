@@ -7,7 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -46,8 +45,7 @@ func (l *Label) createImg() *ebiten.Image {
 	}
 
 	// nota bene - text is drawn with y as a baseline
-
-	dc.SetFontFace(schriftbank.RobotoRegular24)
+	dc.SetFontFace(l.face)
 	dc.DrawString(l.text, 24, float64(l.height)*0.7)
 
 	return ebiten.NewImageFromImage(dc.Image())

@@ -14,6 +14,7 @@ type UI struct {
 	toolbar      *Toolbar
 	navdrawer    *NavDrawer
 	picker       *Picker
+	rules        *Rules
 	containers   []Container
 	bars         []Container
 	drawers      []Container
@@ -28,10 +29,11 @@ func New(input *input.Input, pickerContents []string) *UI {
 	ui.toolbar = NewToolbar(input)
 	ui.navdrawer = NewNavDrawer(input)
 	ui.picker = NewPicker(input, pickerContents)
+	ui.rules = NewRules(input, nil)
 
 	ui.bars = []Container{ui.toolbar}
-	ui.drawers = []Container{ui.navdrawer, ui.picker}
-	ui.containers = []Container{ui.toolbar, ui.navdrawer, ui.picker}
+	ui.drawers = []Container{ui.navdrawer, ui.picker, ui.rules}
+	ui.containers = []Container{ui.toolbar, ui.navdrawer, ui.picker, ui.rules}
 
 	return ui
 }

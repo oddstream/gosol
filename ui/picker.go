@@ -10,7 +10,7 @@ type Picker struct {
 	DrawerBase
 }
 
-// NewPicker creates a new toolbar
+// NewPicker creates a new container
 func NewPicker(input *input.Input, content []string) *Picker {
 	p := &Picker{DrawerBase: DrawerBase{input: input, x: -300, y: 48, width: 300}} // height will be set when drawn
 	for _, c := range content {
