@@ -269,7 +269,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c)
+		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c)
 	case "Tableau":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
@@ -277,7 +277,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c)
+		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c)
 	case "Cell":
 		return p.CardCount() == 0
 	}
@@ -327,7 +327,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 			if p.CardCount() > 0 {
 				return false
 			}
-			return isConformant(p.buildRules, p.buildFlags, Tail)
+			return isTailConformant(p.buildRules, p.buildFlags, Tail)
 		} else {
 			if len(Tail) != 1 {
 				return false
@@ -338,7 +338,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 				}
 				return true
 			}
-			return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
+			return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c0)
 		}
 
 	case "Tableau":
@@ -356,7 +356,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 			}
 			return true
 		}
-		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
+		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c0)
 
 	case "Cell":
 		return len(Tail) == 1 && p.CardCount() == 0
@@ -439,7 +439,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
 	// 	return false // cannot take cards off foundation
 	// }
-	if c.Animating() {
+	if c.Transitioning() || c.Flipping() {
 		println("unwise to drag an animating card")
 		return false
 	}
@@ -452,7 +452,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 		p.Tail = nil
 		return false
 	}
-	if !isConformant(p.dragRules, p.dragFlags, p.Tail) {
+	if !isTailConformant(p.dragRules, p.dragFlags, p.Tail) {
 		println("non-conformant drag")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
@@ -518,7 +518,7 @@ func (p *Pile) Conformant() bool {
 	if len(p.Cards) == 0 {
 		return true
 	}
-	return isConformant(p.buildRules, p.buildFlags, p.Cards)
+	return isTailConformant(p.buildRules, p.buildFlags, p.Cards)
 }
 
 // BuryCards moves cards with the specified ordinal to the bottom of the stack
@@ -618,20 +618,30 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 	}
 }
 
-// DrawCards renders the Cards in the Pile into the screen
-func (p *Pile) DrawCards(screen *ebiten.Image) {
+// DrawStaticCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawStaticCards(screen *ebiten.Image) {
 	// draw dragging/lerping cards last so they appear on top
 	for _, c := range p.Cards {
-		if !c.Animating() {
+		if !c.Transitioning() && !c.Flipping() {
 			c.Draw(screen)
 		}
 	}
 }
 
-// DrawAnimatingCards renders the Cards in the Pile into the screen
-func (p *Pile) DrawAnimatingCards(screen *ebiten.Image) {
+// DrawTransitioningCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawTransitioningCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
-		if c.Animating() {
+		if c.Transitioning() {
+			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.ID.String(), c.screenX, c.screenY))
+			c.Draw(screen)
+		}
+	}
+}
+
+// DrawFlippingCards renders the Cards in the Pile into the screen
+func (p *Pile) DrawFlippingCards(screen *ebiten.Image) {
+	for _, c := range p.Cards {
+		if c.Flipping() {
 			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.ID.String(), c.screenX, c.screenY))
 			c.Draw(screen)
 		}

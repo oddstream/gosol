@@ -7,7 +7,7 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
+func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 	if cPrev.Prone() || cThis.Prone() {
 		println("prone cards are not conformant")
 		return false
@@ -93,7 +93,7 @@ func isConformant0(rules, flags int, cPrev, cThis *Card) bool {
 	return true
 }
 
-func isConformant(rules, flags int, cards []*Card) bool {
+func isTailConformant(rules, flags int, cards []*Card) bool {
 	if len(cards) == 0 {
 		println("isConformant passed empty tail")
 		return false
@@ -104,7 +104,7 @@ func isConformant(rules, flags int, cards []*Card) bool {
 	cPrev := cards[0]
 	for n := 1; n < len(cards); n++ {
 		cThis := cards[n]
-		if !isConformant0(rules, flags, cPrev, cThis) {
+		if !isCardPairConformant(rules, flags, cPrev, cThis) {
 			return false
 		}
 		cPrev = cThis

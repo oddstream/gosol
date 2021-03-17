@@ -1,9 +1,4 @@
-+ Use material icons instead of unicode glyphs in UI
-  https://material.io/resources/icons/?style=baseline
-  use android png (no clear way to draw svg into image)
-  store then in a map, pass icon name when creating widget
-  icons will need to be scaled to 48x48 by fogleman/gg Scale() (check this works ok first)
-  read direct from undo-black-android.zip
++ draw flipping cards over transitioning cards
 + Settings
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
@@ -55,6 +50,13 @@
 + orientation change
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
+
+x Use material icons instead of unicode glyphs in UI
+  https://material.io/resources/icons/?style=baseline
+  use android png (no clear way to draw svg into image)
+  store then in a map, pass icon name when creating widget
+  icons will need to be scaled to 48x48 by fogleman/gg Scale() (check this works ok first)
+  read direct from undo-black-android.zip
 
 x spider build flags to replace FoundationSpider, tidy Conformant()
 x Bookmark / Goto bookmark instead of SavePosition?

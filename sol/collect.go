@@ -73,7 +73,7 @@ func (b *Baize) Collect() {
 							for i := 0; i < p.CardCount(); i++ {
 								c := p.Cards[i]
 								tail := p.makeTail(c)
-								if len(tail) == 13 && isConformant(p.buildRules, p.buildFlags, tail) {
+								if len(tail) == 13 && isTailConformant(p.buildRules, p.buildFlags, tail) {
 									b.MoveCards(c, fp)
 									count += 13
 									goto NextFoundationPile

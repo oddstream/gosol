@@ -52,7 +52,7 @@ func (u *UI) Toast(message string) {
 
 	t := &Toast{}
 	t.img = ebiten.NewImageFromImage(dc.Image())
-	t.ticksLeft = int(ebiten.CurrentTPS()) * 5
+	t.ticksLeft = int(ebiten.CurrentTPS()) * 6
 
 	u.toastManager.Add(t)
 	println("toast:", message, "(", int(w), ",", int(h), ")")

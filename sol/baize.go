@@ -398,7 +398,7 @@ func (b *Baize) CardTapped(c *Card) {
 
 	// println("card",c.ID.String(),"tapped")
 
-	if c.Animating() {
+	if c.Transitioning() || c.Flipping() {
 		println("cannot tap an animating card")
 		return
 	}
@@ -830,10 +830,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 		p.Draw(screen)
 	}
 	for _, p := range b.Piles {
-		p.DrawCards(screen)
+		p.DrawStaticCards(screen)
 	}
 	for _, p := range b.Piles {
-		p.DrawAnimatingCards(screen)
+		p.DrawTransitioningCards(screen)
+	}
+	for _, p := range b.Piles {
+		p.DrawFlippingCards(screen)
 	}
 
 	b.ui.Draw(screen)

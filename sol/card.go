@@ -293,8 +293,8 @@ func (c *Card) FlipDown() {
 // 	}
 // }
 
-// Animating returns true if this card is lerping, dragging or flipping
-func (c *Card) Animating() bool {
+// Transitioning returns true if this card is lerping, dragging
+func (c *Card) Transitioning() bool {
 	if c.lerpStep < 1.0 {
 		return true
 	}
@@ -305,6 +305,11 @@ func (c *Card) Animating() bool {
 		return true
 	}
 	return false
+}
+
+// Flipping returns true if this card is flipping
+func (c *Card) Flipping() bool {
+	return c.flipStep != 0
 }
 
 // MarkMovable sets the movable state
