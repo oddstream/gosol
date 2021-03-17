@@ -37,10 +37,12 @@ func NewToolbar(input *input.Input) *Toolbar {
 
 	tb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets() (y will always be 0 in a toolbar)
-		NewRuneButton(tb, input, 0, 0, 48, 48, -1, rune(9776), ebiten.KeyMenu),
-		NewRuneButton(tb, input, 0, 0, 48, 48, 1, '?', ebiten.KeyH),
+		// NewRuneButton(tb, input, 0, 0, 48, 48, -1, rune(9776), ebiten.KeyMenu),
+		NewIconButton(tb, input, 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
+		NewIconButton(tb, input, 0, 0, 48, 48, 1, "help_outline", ebiten.KeyH),
 		// NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(0x238c), ebiten.KeyU),	// does not display unicode undo glyph
-		NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(8592), ebiten.KeyU),
+		// NewRuneButton(tb, input, 0, 0, 48, 48, 1, rune(8592), ebiten.KeyU),
+		NewIconButton(tb, input, 0, 0, 48, 48, 1, "undo", ebiten.KeyU),
 	}
 	tb.widgets[1].Deactivate() // deactivate the help rune for now
 	return tb

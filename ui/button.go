@@ -2,70 +2,74 @@ package ui
 
 import (
 	"image"
+	"log"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
-// RuneButton is a button that displays a single rune
-type RuneButton struct {
+// IconButton is a button that displays a single rune
+type IconButton struct {
 	WidgetBase
-	r   rune
-	key ebiten.Key
+	iconName string
+	key      ebiten.Key
 }
 
-func (rb *RuneButton) createImg() *ebiten.Image {
-	dc := gg.NewContext(rb.width, rb.height)
-	if rb.disabled {
+func (b *IconButton) createImg() *ebiten.Image {
+	dc := gg.NewContext(b.width, b.height)
+	if b.disabled {
 		dc.SetRGBA(0.5, 0.5, 0.5, 1)
 	} else {
 		dc.SetRGBA(1, 1, 1, 1)
 	}
-	dc.SetFontFace(schriftbank.Symbol24)
-	dc.DrawStringAnchored(string(rb.r), float64(rb.width/2), float64(rb.height/2), 0.5, 0.5)
+	img, ok := IconMap[b.iconName]
+	if !ok || img == nil {
+		log.Fatal(b.iconName, " not in icon map")
+	}
+	dc.DrawImageAnchored(img, b.width/2, b.height/2, 0.5, 0.5)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// NewRuneButton creates a new RuneButton
-func NewRuneButton(parent Container, input *input.Input, x, y, width, height, align int, r rune, key ebiten.Key) *RuneButton {
-	rb := &RuneButton{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, r: r, key: key}
-	rb.Activate()
-	return rb
+// NewIconButton creates a new IconButton
+func NewIconButton(parent Container, input *input.Input, x, y, width, height, align int, iconName string, key ebiten.Key) *IconButton {
+	b := &IconButton{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+		iconName: iconName, key: key}
+	b.Activate()
+	return b
 }
 
 // Activate tells the input we need notifications
-func (rb *RuneButton) Activate() {
-	rb.disabled = false
-	rb.img = rb.createImg()
-	rb.input.Add(rb)
+func (b *IconButton) Activate() {
+	b.disabled = false
+	b.img = b.createImg()
+	b.input.Add(b)
 }
 
 // Deactivate tells the input we no longer need notifications
-func (rb *RuneButton) Deactivate() {
-	rb.disabled = true
-	rb.img = rb.createImg()
-	rb.input.Remove(rb)
+func (b *IconButton) Deactivate() {
+	b.disabled = true
+	b.img = b.createImg()
+	b.input.Remove(b)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (rb *RuneButton) NotifyCallback(event interface{}) {
-	if rb.disabled {
+func (b *IconButton) NotifyCallback(event interface{}) {
+	if b.disabled {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
-		// println("RuneButton image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, rb.OffsetRect) {
-			println("rune button notify", rb.key)
-			rb.input.Notify(rb.key)
+		// println("IconButton image.Point", v.X, v.Y)
+		if util.InRect(v.X, v.Y, b.OffsetRect) {
+			println("icon button notify", b.key)
+			b.input.Notify(b.key)
 		}
 	}
 }
 
 // Update the state of this widget
-func (rb *RuneButton) Update() {
+func (b *IconButton) Update() {
 }

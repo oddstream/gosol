@@ -26,6 +26,8 @@ type UI struct {
 func New(input *input.Input, pickerContents []string) *UI {
 	ui := &UI{input: input}
 
+	LoadIconMap()
+
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
 	ui.navdrawer = NewNavDrawer(input)
