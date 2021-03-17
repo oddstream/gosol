@@ -7,7 +7,6 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -16,7 +15,7 @@ type FAB struct {
 	img           *ebiten.Image
 	x, y          int // position relative to parent
 	width, height int
-	r             rune
+	iconName      string
 	key           ebiten.Key
 }
 
@@ -27,15 +26,14 @@ func (f *FAB) createImg() *ebiten.Image {
 	dc.Fill()
 	dc.Stroke()
 	dc.SetRGBA(1, 1, 1, 1)
-	dc.SetFontFace(schriftbank.CardSymbolLarge)
-	dc.DrawStringAnchored(string(f.r), float64(f.width/2), float64(f.height/2), 0.5, 0.4)
+	dc.DrawImageAnchored(IconMap[f.iconName], f.width/2, f.height/2, 0.5, 0.5)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 
 }
 
-func NewFAB(input *input.Input, r rune, key ebiten.Key) *FAB {
-	f := &FAB{input: input, width: 80, height: 80, r: r, key: key}
+func NewFAB(input *input.Input, iconName string, key ebiten.Key) *FAB {
+	f := &FAB{input: input, width: 72, height: 72, iconName: iconName, key: key}
 	// x, y will be set by Draw()
 	f.img = f.createImg()
 	return f
@@ -112,9 +110,9 @@ func (f *FAB) Draw(screen *ebiten.Image) {
 	screen.DrawImage(f.img, op)
 }
 
-func (u *UI) ShowFAB(r rune, key ebiten.Key) {
+func (u *UI) ShowFAB(iconName string, key ebiten.Key) {
 	if u.fab == nil {
-		u.fab = NewFAB(u.input, r, key)
+		u.fab = NewFAB(u.input, iconName, key)
 		u.fab.Activate()
 	}
 }

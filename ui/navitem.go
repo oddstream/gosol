@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image"
+	"log"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,9 +14,9 @@ import (
 // NavItem is a button that displays a single rune
 type NavItem struct {
 	WidgetBase
-	r    rune
-	text string
-	key  ebiten.Key
+	iconName string
+	text     string
+	key      ebiten.Key
 }
 
 func (n *NavItem) createImg() *ebiten.Image {
@@ -30,9 +31,12 @@ func (n *NavItem) createImg() *ebiten.Image {
 
 	// nota bene - text is drawn with y as a baseline
 
-	if n.r != 0 {
-		dc.SetFontFace(schriftbank.Symbol24)
-		dc.DrawString(string(n.r), 24, float64(n.height)*0.7)
+	if n.iconName != "" {
+		img, ok := IconMap[n.iconName]
+		if !ok || img == nil {
+			log.Fatal(n.iconName, " not in icon map")
+		}
+		dc.DrawImageAnchored(img, 24, n.height/2, 0, 0.5)
 	}
 	dc.SetFontFace(schriftbank.RobotoRegular24)
 	dc.DrawString(n.text, float64(24+48), float64(n.height)*0.7)
@@ -48,8 +52,9 @@ func (n *NavItem) createImg() *ebiten.Image {
 }
 
 // NewNavItem creates a new NavItem
-func NewNavItem(parent Container, input *input.Input, x, y, width, height, align int, r rune, text string, key ebiten.Key) *NavItem {
-	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align}, r: r, text: text, key: key}
+func NewNavItem(parent Container, input *input.Input, x, y, width, height, align int, iconName string, text string, key ebiten.Key) *NavItem {
+	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+		iconName: iconName, text: text, key: key}
 	n.Activate()
 	return n
 }

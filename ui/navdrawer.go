@@ -18,14 +18,14 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		// NewLabel(n, input, 0, -100, 256, 48, 0, "Title", schriftbank.RobotoMedium24, ""),
 		// give -ve x to make sure item is initially drawn off screen
 		// y will be set by LayoutWidgets()
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2605), "New deal", ebiten.KeyN),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x267b), "Restart deal", ebiten.KeyR),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2618), "Find game...", ebiten.KeyF),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2693), "Save position", ebiten.KeyS),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0), "Load position", ebiten.KeyL),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2696), "Rules...", ebiten.KeyF1),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2611), "Settings...", ebiten.KeyHome),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, rune('x'), "Save and exit", ebiten.KeyX),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "star", "New deal", ebiten.KeyN),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "restore", "Restart deal", ebiten.KeyR),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "search", "Find game...", ebiten.KeyF),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "bookmark", "Goto bookmark", ebiten.KeyL),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "list", "Rules...", ebiten.KeyF1),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "settings", "Settings...", ebiten.KeyHome),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, "close", "Save and exit", ebiten.KeyX),
 	}
 	n.LayoutWidgets()
 	// n.widgets[2].Deactivate()

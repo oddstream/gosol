@@ -593,10 +593,10 @@ func (b *Baize) AfterUserMove() {
 			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-			b.ui.ShowFAB(rune(0x2605), ebiten.KeyN)
+			b.ui.ShowFAB("star", ebiten.KeyN)
 		} else if b.Conformant() {
 			println("baize is conformant")
-			b.ui.ShowFAB(rune(0x2713), ebiten.KeyC)
+			b.ui.ShowFAB("check", ebiten.KeyC)
 		} else {
 			b.ui.HideFAB()
 		}

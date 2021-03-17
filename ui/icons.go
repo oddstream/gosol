@@ -61,9 +61,15 @@ func LoadIconMap() {
 	// println("button image dimensions", w, h)
 	// dci.Scale(float64(rb.width)/float64(w), float64(rb.height)/float64(h))
 
-	iconNames := []string{"help_outline", "menu", "undo"}
+	// temporary hack while figuring out size and type of icons
+
+	// https://gist.github.com/madevelopers/40b269730df687cdcb8b
+
+	// https://material.io/resources/icons/style=baseline
+
+	iconNames := []string{"bookmark", "bookmark_add", "check", "close", "help_outline", "list", "menu", "restore", "search", "settings", "star", "undo"}
 	for _, iconName := range iconNames {
-		zipFname := fmt.Sprintf("/home/gilbert/gosol/ui/%s-white-android.zip", iconName)
+		zipFname := fmt.Sprintf("/home/gilbert/Downloads/%s-white-android.zip", iconName)
 		zf, err := zip.OpenReader(zipFname)
 		if err != nil {
 			log.Fatal(err)
