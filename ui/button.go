@@ -19,11 +19,6 @@ type IconButton struct {
 
 func (b *IconButton) createImg() *ebiten.Image {
 	dc := gg.NewContext(b.width, b.height)
-	if b.disabled {
-		dc.SetRGBA(0.5, 0.5, 0.5, 1)
-	} else {
-		dc.SetRGBA(1, 1, 1, 1)
-	}
 	img, ok := IconMap[b.iconName]
 	if !ok || img == nil {
 		log.Fatal(b.iconName, " not in icon map")

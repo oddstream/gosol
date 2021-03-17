@@ -14,23 +14,6 @@ type Text struct {
 }
 
 func (t *Text) createImg() *ebiten.Image {
-	// dc := gg.NewContext(8, 8)
-	// dc.SetFontFace(l.face)
-	// w, h := dc.MeasureMultilineString(l.text, 1)
-	// t.width = int(w)
-	// t.height = int(h)
-	// // println("label widget is", t.width, t.height)
-
-	// dc = gg.NewContext(int(w), int(h))
-	// dc.SetFontFace(l.face)
-	// if t.disabled {
-	// 	dc.SetRGBA(0.5, 0.5, 0.5, 1)
-	// } else {
-	// 	dc.SetRGBA(1, 1, 1, 1)
-	// }
-	// // dc.DrawStringAnchored(l.text, w/2, h/2, 0.5, 0.4)
-	// dc.DrawStringWrapped(l.text, w/2, h/2-4, 0.5, 0.5, w, 1, gg.AlignLeft) // -4 otherwise tails are clipped
-	// dc.Stroke()
 	dc := gg.NewContext(t.width, t.height)
 	dc.SetFontFace(schriftbank.RobotoRegular14)
 	// MeasureString says this text, requested to be 48 high, is 14 high
@@ -39,12 +22,6 @@ func (t *Text) createImg() *ebiten.Image {
 
 	t.height = lineHeight*len(lines) + lineHeight
 	dc = gg.NewContext(t.width, t.height)
-
-	if t.disabled {
-		dc.SetRGBA(0.5, 0.5, 0.5, 1)
-	} else {
-		dc.SetRGBA(1, 1, 1, 1)
-	}
 
 	// nota bene - text is drawn with y as a baseline
 	dc.SetFontFace(schriftbank.RobotoRegular14)

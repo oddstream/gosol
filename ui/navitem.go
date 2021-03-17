@@ -23,12 +23,6 @@ func (n *NavItem) createImg() *ebiten.Image {
 
 	dc := gg.NewContext(n.width, n.height)
 
-	if n.disabled {
-		dc.SetRGBA(0.5, 0.5, 0.5, 1)
-	} else {
-		dc.SetRGBA(1, 1, 1, 1)
-	}
-
 	// nota bene - text is drawn with y as a baseline
 
 	if n.iconName != "" {
@@ -38,6 +32,7 @@ func (n *NavItem) createImg() *ebiten.Image {
 		}
 		dc.DrawImageAnchored(img, 18, n.height/2, 0, 0.5)
 	}
+	dc.SetRGBA(1, 1, 1, 1)
 	dc.SetFontFace(schriftbank.RobotoRegular24)
 	dc.DrawString(n.text, float64(18+48), float64(n.height)*0.7)
 

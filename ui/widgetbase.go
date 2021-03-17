@@ -73,5 +73,8 @@ func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(parentLeft+wb.x), float64(parentTop+wb.y))
+	if wb.disabled {
+		op.ColorM.Scale(0.5, 0.5, 0.5, 1)
+	}
 	screen.DrawImage(wb.img, op)
 }

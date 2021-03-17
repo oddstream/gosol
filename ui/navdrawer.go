@@ -28,9 +28,7 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		NewNavItem(n, input, -256, 0, 256, 48, 0, "close", "Save and exit", ebiten.KeyX),
 	}
 	n.LayoutWidgets()
-	// n.widgets[2].Deactivate()
-	// n.widgets[3].Deactivate()
-	// n.widgets[4].Deactivate()
+	n.widgets[6].Deactivate()
 	return n
 }
 
