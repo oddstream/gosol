@@ -1,5 +1,4 @@
-// Copyright ©️ 2021 oddstream.games
-
+// Package util provides general-purpose utility functions for package sol
 package util
 
 import (
@@ -54,7 +53,7 @@ func Clamp(value, min, max float64) float64 {
 	return math.Min(math.Max(value, min), max)
 }
 
-// Clamp a value between min and max values
+// ClampInt a value between min and max values
 func ClampInt(value, min, max int) int {
 	return Min(Max(value, min), max)
 }
@@ -96,7 +95,7 @@ func DistanceFloat64(x1, y1, x2, y2 float64) float64 {
 	return math.Sqrt(first + second)
 }
 
-// Distance finds the length of the hypotenuse between two points.
+// DistanceInt finds the length of the hypotenuse between two points.
 // Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
 func DistanceInt(x1, y1, x2, y2 int) int {
 	first := math.Pow(float64(x2)-float64(x1), 2)

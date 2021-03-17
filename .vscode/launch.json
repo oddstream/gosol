@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": ["-debug"],
+      "args": ["-debug", "-c=bridge", "-cardwidth=90"],
       // "args": ["-debug", "-v=Australian", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=BakersDozen"],
       // "args": ["-debug", "-v=BakersDozenRelaxed"],

@@ -1,5 +1,4 @@
-// Copyright ©️ 2021 oddstream.games
-
+// Package sol provides a polymorphic solitaire engine
 package sol
 
 import (
@@ -10,7 +9,7 @@ import (
 	"oddstream.games/gosol/schriftbank"
 )
 
-// Game represents a game state.
+// Game represents a game state
 type Game struct {
 }
 

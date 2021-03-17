@@ -1,3 +1,4 @@
+// Package ui provides a minimal user interface for package sol
 package ui
 
 import (
@@ -29,7 +30,7 @@ func New(input *input.Input, pickerContents []string) *UI {
 	ui.toolbar = NewToolbar(input)
 	ui.navdrawer = NewNavDrawer(input)
 	ui.picker = NewPicker(input, pickerContents)
-	ui.rules = NewRules(input, nil)
+	ui.rules = NewRules(input) // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar}
 	ui.drawers = []Container{ui.navdrawer, ui.picker, ui.rules}

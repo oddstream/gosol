@@ -474,7 +474,7 @@ func (b *Baize) CardTapped(c *Card) {
 					break
 				}
 			}
-			// if p.Class == "FoundationSpider" {
+			// if p.Class == "Foundation" && p.buildFlags&8==8 {
 			// 	// fake a drag
 			// 	if c.owner.StartDrag(c) {
 			// 		if p.CanAcceptTail(b.Piles, c.owner.Tail) {
@@ -597,6 +597,8 @@ func (b *Baize) AfterUserMove() {
 		} else if b.Conformant() {
 			println("baize is conformant")
 			b.ui.ShowFAB(rune(0x2713), ebiten.KeyC)
+		} else {
+			b.ui.HideFAB()
 		}
 	case Complete:
 		println("what are we doing here?")

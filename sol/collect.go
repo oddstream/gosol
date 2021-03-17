@@ -61,15 +61,12 @@ func (b *Baize) Collect() {
 	var count, totalCount int
 	for {
 		count = 0
+		// iterate over foundations and pull cards to them
 		for _, fp := range b.Piles {
-			switch fp.Class {
-			case "Foundation":
-				for _, p := range b.Piles {
-					if p.Class == "Tableau" || p.Class == "Cell" || p.Class == "Waste" {
-						count += b.collectFromPile(p, fp)
-					}
-				}
-			case "FoundationSpider":
+			if fp.Class != "Foundation" {
+				continue
+			}
+			if fp.buildFlags&8 == 8 {
 				if fp.CardCount() == 0 {
 					for _, p := range b.Piles {
 						if p.Class == "Tableau" && p.CardCount() >= 13 {
@@ -83,6 +80,12 @@ func (b *Baize) Collect() {
 								}
 							}
 						}
+					}
+				}
+			} else {
+				for _, p := range b.Piles {
+					if p.Class == "Tableau" || p.Class == "Cell" || p.Class == "Waste" {
+						count += b.collectFromPile(p, fp)
 					}
 				}
 			}
@@ -137,6 +140,19 @@ func (b *Baize) Conformant() bool {
 		return false
 	}
 	for _, p := range b.Piles {
+		if p.Class == "Tableau" && p.buildFlags&8 == 8 {
+			// if tableau contains <some cards><13 conformant cards> then tableau isn't conformant anyway
+			switch p.CardCount() {
+			case 0:
+				continue // no cards is conformant
+			case 13:
+				if !p.Conformant() {
+					return false
+				}
+			default:
+				return false
+			}
+		}
 		// no need to exclude Foundation* piles as they are guaranteed to be conformant
 		// Cells will always be conformant, Reserve is unlikely to be
 		if !p.Conformant() {

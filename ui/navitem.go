@@ -30,8 +30,10 @@ func (n *NavItem) createImg() *ebiten.Image {
 
 	// nota bene - text is drawn with y as a baseline
 
-	dc.SetFontFace(schriftbank.Symbol24)
-	dc.DrawString(string(n.r), 24, float64(n.height)*0.7)
+	if n.r != 0 {
+		dc.SetFontFace(schriftbank.Symbol24)
+		dc.DrawString(string(n.r), 24, float64(n.height)*0.7)
+	}
 	dc.SetFontFace(schriftbank.RobotoRegular24)
 	dc.DrawString(n.text, float64(24+48), float64(n.height)*0.7)
 

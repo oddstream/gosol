@@ -162,7 +162,6 @@ func (db *DrawerBase) Update() {
 	for _, w := range db.widgets {
 		w.Update()
 	}
-	db.LayoutWidgets()
 }
 
 // Draw the Drawer

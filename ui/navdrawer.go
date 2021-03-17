@@ -21,40 +21,18 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2605), "New deal", ebiten.KeyN),
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x267b), "Restart deal", ebiten.KeyR),
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2618), "Find game...", ebiten.KeyF),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2693), "Save position", ebiten.KeyS),
+		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0), "Load position", ebiten.KeyL),
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2696), "Rules...", ebiten.KeyF1),
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune(0x2611), "Settings...", ebiten.KeyHome),
 		NewNavItem(n, input, -256, 0, 256, 48, 0, rune('x'), "Save and exit", ebiten.KeyX),
 	}
+	n.LayoutWidgets()
 	// n.widgets[2].Deactivate()
 	// n.widgets[3].Deactivate()
 	// n.widgets[4].Deactivate()
 	return n
 }
-
-// LayoutWidgets belonging to this container
-// func (n *NavDrawer) LayoutWidgets() {
-
-// 	var y int = 64
-// 	for _, w := range n.widgets {
-// 		w.SetPosition(n.x, n.y+y)
-// 		y += 48
-// 	}
-
-// }
-
-// ShowNavDrawer animates the drawer on/off screen to the left
-// func (u *UI) ShowNavDrawer() {
-
-// 	con := u.VisibleDrawer()
-// 	if con == u.navdrawer {
-// 		return
-// 	}
-// 	if con != nil {
-// 		con.Hide()
-// 	}
-// 	u.navdrawer.Show()
-
-// }
 
 // ToggleNavDrawer animates the drawer on/off screen to the left
 func (u *UI) ToggleNavDrawer() {

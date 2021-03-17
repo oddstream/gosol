@@ -39,7 +39,7 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class             string // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"FoundationSpider"|"Tableau"|"Cell"|"Reserve"
+	Class             string // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
 	X, Y              int    // relative position on Baize in CardWidth/Height units (ie not screen coords)
 	Fan               string // ""|"None"|"Down"|"Right"|"Waste"
 	localAccept       int
@@ -48,7 +48,7 @@ type Pile struct {
 	Cards             []*Card // array of cards, managed as a stack
 	Tail              []*Card // array of cards currently being dragged
 	buildRules        int
-	buildFlags        int // 1=rank wrap 2=power moves
+	buildFlags        int // 1=rank wrap, 2=power moves, 8=spider
 	dragRules         int
 	dragFlags         int           // 1=single card only (no tail)
 	scrunchPercentage int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
@@ -319,26 +319,27 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		}
 		return false
 
-	case "FoundationSpider":
-		if len(Tail) != 13 {
-			return false
-		}
-		if p.CardCount() > 0 {
-			return false
-		}
-		return isConformant(p.buildRules, p.buildFlags, Tail)
-
 	case "Foundation":
-		if len(Tail) != 1 {
-			return false
-		}
-		if p.CardCount() == 0 {
-			if p.localAccept > 0 {
-				return c0.Ordinal() == p.localAccept
+		if p.buildFlags&8 == 8 {
+			if len(Tail) != 13 {
+				return false
 			}
-			return true
+			if p.CardCount() > 0 {
+				return false
+			}
+			return isConformant(p.buildRules, p.buildFlags, Tail)
+		} else {
+			if len(Tail) != 1 {
+				return false
+			}
+			if p.CardCount() == 0 {
+				if p.localAccept > 0 {
+					return c0.Ordinal() == p.localAccept
+				}
+				return true
+			}
+			return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
 		}
-		return isConformant0(p.buildRules, p.buildFlags, p.Peek(), c0)
 
 	case "Tableau":
 		if p.buildFlags&2 == 2 {

@@ -1,3 +1,9 @@
++ Use material icons instead of unicode glyphs in UI
+  https://material.io/resources/icons/?style=baseline
+  use android png (no clear way to draw svg into image)
+  store then in a map, pass icon name when creating widget
+  icons will need to be scaled to 48x48 by fogleman/gg Scale() (check this works ok first)
+  read direct from undo-black-android.zip
 + Settings
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
@@ -50,6 +56,10 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x spider build flags to replace FoundationSpider, tidy Conformant()
+x Bookmark / Goto bookmark instead of SavePosition?
+x BUG Spider Conformant FAB
+  If Baize has FoundationSpider, then Tableau must end with contain 13 conformant cards
 x UI FAB widget
   https://material.io/components/buttons-floating-action-button
 x modal dialog to show statistics (rejected)

@@ -92,7 +92,7 @@ func (s *Statistics) welcomeToast(v string) {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
 	} else {
 		if stats.BestPercent == 0 {
-			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %d attempts.", stats.Lost))
+			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s.", util.Pluralize("attempt", stats.Lost)))
 		} else if stats.BestPercent < 100 {
 			toasts = append(toasts, fmt.Sprintf("Your best score is %d%% in %d attempts", stats.BestPercent, stats.Lost))
 		} else {

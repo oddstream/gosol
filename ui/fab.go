@@ -60,7 +60,7 @@ func (f *FAB) Rect() (x0, y0, x1, y1 int) {
 	return // using named parameters
 }
 
-// Rect gives the position and extent of widget, relative to parent
+// OffsetRect gives the position and extent of widget, relative to parent
 func (f *FAB) OffsetRect() (x0, y0, x1, y1 int) {
 	x0 = f.x
 	y0 = f.y

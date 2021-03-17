@@ -16,6 +16,7 @@ func NewPicker(input *input.Input, content []string) *Picker {
 	for _, c := range content {
 		p.widgets = append(p.widgets, NewLabel(p, input, -300, 0, 300, 48, 0, c, schriftbank.RobotoRegular24, "Variant"))
 	}
+	p.LayoutWidgets()
 	return p
 }
 

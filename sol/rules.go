@@ -241,10 +241,9 @@ func (b *Baize) rulesContents() []string {
 		case "Foundation":
 			fmt.Fprint(&str, "Foundation: Build cards ")
 			fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
-		case "FoundationSpider":
-			fmt.Fprint(&str, "Foundation: Build cards ")
-			fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
-			fmt.Fprint(&str, ". Only a set of 13 cards are allowed to be moved here.")
+			if p.buildFlags&8 == 8 {
+				fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
+			}
 		case "Tableau":
 			if p.buildRules == p.dragRules {
 				fmt.Fprint(&str, "Tableau: Build cards ")
@@ -252,7 +251,7 @@ func (b *Baize) rulesContents() []string {
 			} else {
 				fmt.Fprint(&str, "Tableau: Build cards ")
 				fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
-				fmt.Fprint(&str, ". Move cards ")
+				fmt.Fprint(&str, " Move cards ")
 				fmt.Fprint(&str, englishRules(p.dragRules, p.dragFlags))
 			}
 			accept, ok := p.GetIntAttribute("Accept")
