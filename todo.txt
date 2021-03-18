@@ -1,4 +1,6 @@
-+ draw flipping cards over transitioning cards
++ retire Variant.DisplayName
++ use logoBytes to draw Ace of spades
++ Draw-level hit testing of ui widgets
 + Settings
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
@@ -51,6 +53,7 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x draw flipping cards over transitioning cards
 x Use material icons instead of unicode glyphs in UI
   https://material.io/resources/icons/?style=baseline
   use android png (no clear way to draw svg into image)

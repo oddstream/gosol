@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": ["-debug", "-c=poker", "-cardwidth=80"],
+      "args": ["-debug", "-c=default", "-cardwidth=80"],
       // "args": ["-debug", "-v=Australian", "-c=default", "-cardwidth=90"],
       // "args": ["-debug", "-v=BakersDozen"],
       // "args": ["-debug", "-v=BakersDozenRelaxed"],

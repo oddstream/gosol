@@ -1,6 +1,10 @@
 package sol
 
 import (
+	"bytes"
+	"image"
+	"log"
+
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/schriftbank"
@@ -46,7 +50,20 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.DrawStringAnchored(string(r), float64(CardWidth)-float64(CardWidth)/(3.333), float64(CardHeight)/6, 0.5, 0.5)
 	dc.Stroke()
 
-	if ID.Ordinal() == 1 || ID.Ordinal() > 10 {
+	if ID.Ordinal() == 1 && ID.Suit() == SPADE {
+		img, _, err := image.Decode(bytes.NewReader(logoBytes))
+		if err != nil {
+			log.Fatal(err)
+		}
+		logoWidth := img.Bounds().Dx()
+		logoHeight := img.Bounds().Dy()
+		dcLogo := gg.NewContext(logoWidth, logoHeight)
+		var scale float64 = float64(CardWidth) / float64(logoWidth)
+		dcLogo.ScaleAbout(scale, scale, float64(logoWidth)/2, float64(logoHeight)/2)
+		// dcLogo.RotateAbout(gg.Radians(-45), float64(logoWidth)/2, float64(logoHeight)/2)
+		dcLogo.DrawImageAnchored(img, logoWidth/2, logoHeight/2, 0.5, 0.5)
+		dc.DrawImageAnchored(dcLogo.Image(), CardWidth/2, CardHeight/2, 0.5, 0.4)
+	} else if ID.Ordinal() == 1 || ID.Ordinal() > 10 {
 		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
 	}

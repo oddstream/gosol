@@ -23,6 +23,7 @@ func (t *Text) createImg() *ebiten.Image {
 	t.height = lineHeight*len(lines) + lineHeight
 	dc = gg.NewContext(t.width, t.height)
 
+	dc.SetRGBA(1, 1, 1, 1)
 	// nota bene - text is drawn with y as a baseline
 	dc.SetFontFace(schriftbank.RobotoRegular14)
 	y := lineHeight
