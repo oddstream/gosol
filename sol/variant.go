@@ -4,7 +4,6 @@ import "sort"
 
 // VariantInfo contains configuration info for a variant
 type VariantInfo struct {
-	DisplayName string
 	Description string
 	AKA         []string
 	Wikipedia   string
@@ -41,8 +40,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "13", "Build": "22", "Drag": "15", "Scrunch": "5", "Deal": "uuuu"}},
 		},
 	},
-	"BakersDozen": {
-		DisplayName: "Baker's Dozen",
+	"Baker's Dozen": {
 		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
@@ -66,8 +64,7 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 9, 3, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
 		},
 	},
-	"BakersDozenRelaxed": {
-		DisplayName: "Baker's Dozen (Relaxed)",
+	"Baker's Dozen (Relaxed)": {
 		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
@@ -142,8 +139,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 11, 4, "Down", map[string]string{"Build": "42", "Drag": "42", "Deal": "du"}},
 		},
 	},
-	"FortyAndEight": {
-		DisplayName: "Forty And Eight",
+	"Forty And Eight": {
 		Description: "A variation of Forty Thieves that allows the stock to be recycled once.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
 		Piles: []PileInfo{
@@ -190,8 +186,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 8, 1, "Down", map[string]string{"Accept": "0", "Build": "242", "Drag": "42", "Deal": "uuuuuu"}},
 		},
 	},
-	"FreecellEasy": {
-		DisplayName: "Freecell (Easy)",
+	"Freecell (Easy)": {
 		Description: "Popular game, unusual because almost all deals are winnable.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
 		Piles: []PileInfo{
@@ -215,7 +210,6 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Klondike": {
-		DisplayName: "Klondike (Draw One)",
 		Description: "The well-known solitaire variant.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
@@ -235,8 +229,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "13", "Build": "42", "Drag": "42", "Deal": "ddddddu"}},
 		},
 	},
-	"Klondike3": {
-		DisplayName: "Klondike (Draw Three)",
+	"Klondike (Draw Three)": {
 		Description: "The well-known solitaire variant.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
@@ -302,8 +295,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "13", "Build": "822", "Drag": "15", "Scrunch": "6", "Deal": "uuuuuuu"}},
 		},
 	},
-	"SimpleSimon": {
-		DisplayName: "Simple Simon",
+	"Simple Simon": {
 		Description: "A wonderfully simple game with no stock or waste, that plays like Spider. Most games are winnable, but require skill.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
 		Piles: []PileInfo{
@@ -324,8 +316,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 10, 1, "Down", map[string]string{"Build": "812", "Drag": "22", "Deal": "u"}},
 		},
 	},
-	"Spider1": {
-		DisplayName: "Spider (One Suit)",
+	"Spider (One Suit)": {
 		Description: "The game originates in 1949, and its name comes from a spider's eight legs, referencing the eight foundation piles that must be filled to win the game.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
@@ -350,8 +341,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 10, 1, "Down", map[string]string{"Build": "812", "Drag": "22", "Scrunch": "5", "Deal": "ddddu"}},
 		},
 	},
-	"Spider2": {
-		DisplayName: "Spider (Two Suits)",
+	"Spider (Two Suits)": {
 		Description: "The game originates in 1949, and its name comes from a spider's eight legs, referencing the eight foundation piles that must be filled to win the game.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
@@ -450,8 +440,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 7, 1, "Down", map[string]string{"Build": "822", "Drag": "15", "Scrunch": "6", "Deal": "uuuuuuu"}},
 		},
 	},
-	"WillOTheWisp": {
-		DisplayName: "Will o' the Wisp",
+	"Will o' the Wisp": {
 		Description: "Invented by Geoffrey Mott-Smith, it is played the same way as Spiderette.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
@@ -501,16 +490,6 @@ func buildVariantPiles(v string) ([]*Pile, bool) {
 	return piles, len(piles) > 0
 }
 
-func variantDisplayName(v string) string {
-	if vi, exists := Variants[v]; exists {
-		if vi.DisplayName == "" {
-			return v
-		}
-		return vi.DisplayName
-	}
-	return ""
-}
-
 func variantDescription(v string) string {
 	if vi, exists := Variants[v]; exists {
 		return vi.Description
@@ -518,26 +497,10 @@ func variantDescription(v string) string {
 	return ""
 }
 
-func findVariantFromDisplayName(name string) string {
-	for key, v := range Variants {
-		if v.DisplayName == name {
-			return key
-		}
-		if v.DisplayName == "" && key == name {
-			return key
-		}
-	}
-	return ""
-}
-
 func pickerContents() []string {
 	var displayNames []string
-	for key, v := range Variants {
-		if v.DisplayName == "" {
-			displayNames = append(displayNames, key)
-		} else {
-			displayNames = append(displayNames, v.DisplayName)
-		}
+	for key := range Variants {
+		displayNames = append(displayNames, key)
 	}
 	sort.Slice(displayNames, func(i, j int) bool { return displayNames[i] < displayNames[j] })
 	return displayNames

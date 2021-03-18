@@ -168,7 +168,7 @@ func (b *Baize) NewVariant(v string) {
 
 	// temporary fudge to set window width to center cards on baize
 	{
-		b.ui.SetTitle(variantDisplayName(b.Variant))
+		b.ui.SetTitle(b.Variant)
 
 		maxX := 0
 		for _, p := range b.Piles {
@@ -215,7 +215,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	// temporary fudge to set window width to center cards on baize
 	{
-		b.ui.SetTitle(variantDisplayName(b.Variant))
+		b.ui.SetTitle(b.Variant)
 
 		maxX := 0
 		for _, p := range b.Piles {
@@ -587,10 +587,10 @@ func (b *Baize) AfterUserMove() {
 	case Virgin:
 		// TheStatistics.startGame(b.Variant)
 		b.State = Started
-		b.ui.Toast(fmt.Sprintf("%s started", variantDisplayName(b.Variant)))
+		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", variantDisplayName(b.Variant), len(b.UndoStack)-1))
+			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", b.Variant, len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
@@ -692,7 +692,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		b.ui.HideFAB()
 		switch v.ChangeRequested {
 		case "Variant":
-			newVariant := findVariantFromDisplayName(v.Data)
+			newVariant := v.Data
 			if newVariant == "" {
 				println("unknown variant", v.Data)
 				break

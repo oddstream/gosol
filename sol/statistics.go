@@ -84,12 +84,11 @@ func (s *Statistics) recordLostGame(v string, percent int) {
 }
 
 func (s *Statistics) welcomeToast(v string) {
-	displayName := variantDisplayName(v)
 	toasts := []string{}
 
 	stats, ok := s.StatsMap[v]
 	if !ok || stats.Won+stats.Lost == 0 {
-		toasts = append(toasts, fmt.Sprintf("You have not played %s before", displayName))
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
 	} else {
 		if stats.BestPercent == 0 {
 			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s.", util.Pluralize("attempt", stats.Lost)))

@@ -1,6 +1,4 @@
-+ retire Variant.DisplayName
-+ use logoBytes to draw Ace of spades
-+ Draw-level hit testing of ui widgets
++ don't save virgin games to json?
 + Settings
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
@@ -9,7 +7,6 @@
 + use of Variant is a mess
   TheUserData.Variant and Baize.Variant are the same thing
   SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
-+ flicker when undoing waste fan
 + widget align
   left/center/right (titlebar)
   vertical (navdrawer)
@@ -20,7 +17,7 @@
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
 + only allow Collect() when tableaux is conformant, FAB
 + Collect() counts as one move, wrong for statistics
-+ statusbar: stock card count, number of moves
++ statusbar: stock card count (if not hidden), number of moves, % complete
 + Scrim rect when nav drawer open? Will sponge up taps and drags. Maybe just alpha down the baize.
 + UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
   https://material.io/components/navigation-drawer#usage
@@ -53,6 +50,8 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x retire Variant.DisplayName
+x use logoBytes to draw Ace of spades
 x draw flipping cards over transitioning cards
 x Use material icons instead of unicode glyphs in UI
   https://material.io/resources/icons/?style=baseline
@@ -60,7 +59,8 @@ x Use material icons instead of unicode glyphs in UI
   store then in a map, pass icon name when creating widget
   icons will need to be scaled to 48x48 by fogleman/gg Scale() (check this works ok first)
   read direct from undo-black-android.zip
-
+x flicker when undoing waste fan (draw flipping cards after transitioning ones)
+x Draw-level hit testing of ui widgets
 x spider build flags to replace FoundationSpider, tidy Conformant()
 x Bookmark / Goto bookmark instead of SavePosition?
 x BUG Spider Conformant FAB
