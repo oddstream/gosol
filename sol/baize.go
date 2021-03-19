@@ -48,7 +48,7 @@ type Baize struct {
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
-	log.Printf("%v", TheUserData)
+	// log.Printf("%v", TheUserData)
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
@@ -729,7 +729,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				} else {
 					if b.StartDrag() {
-						println("starting baize drag")
+						// println("starting baize drag")
 						b.stroke.SetDraggedObject(b)
 					} else {
 						println("cancel stroke because not over a card")
@@ -750,7 +750,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				con := v.Stroke.DraggedObject().(ui.Container)
 				con.DragBy(v.Stroke.PositionDiff())
 			case *Baize:
-				println("baize drag")
+				// println("baize drag")
 				b2 := v.Stroke.DraggedObject().(*Baize)
 				if b2 != b {
 					println("baize drag - something has gone terribly wrong")
@@ -783,7 +783,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				con := v.Stroke.DraggedObject().(ui.Container)
 				con.StopDrag()
 			case *Baize:
-				println("stop baize drag")
+				// println("stop baize drag")
 				b2 := v.Stroke.DraggedObject().(*Baize)
 				if b2 != b {
 					println("baize drag - something has gone terribly wrong")
@@ -812,12 +812,17 @@ func (b *Baize) ScaleCards() {
 
 	windowWidth, _ := ebiten.WindowSize()
 
-	maxX := 0
+	minX, maxX := 99, 0
 	for _, p := range b.Piles {
+		if p.X < minX {
+			minX = p.X
+		}
 		if p.X > maxX {
 			maxX = p.X
 		}
 	}
+	// All piles start at X=1 (not X=0) so "add" two extra piles to make a border
+	// pilesX := maxX - minX
 
 	/*
 		71 x 96 = 1:1.352 (Microsoft retro)
@@ -829,32 +834,43 @@ func (b *Baize) ScaleCards() {
 
 	// Card gap is 10% of card width
 	switch TheUserData.CardStyle {
-	case "", "default":
-		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.444))
+	default:
+		slotWidth := float64(windowWidth) / float64(maxX+2)
+		PilePaddingX = int(slotWidth / 10) // space applied to right of each pile
+		CardWidth = int(slotWidth) - PilePaddingX
+		slotHeight := slotWidth * 1.444
+		PilePaddingY = int(slotHeight / 10)
+		CardHeight = int(slotHeight) - PilePaddingY
+		LeftMargin = 0
 	case "poker":
-		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.39))
+		slotWidth := float64(windowWidth) / float64(maxX+2)
+		PilePaddingX = int(slotWidth / 10)
+		CardWidth = int(slotWidth) - PilePaddingX
+		slotHeight := slotWidth * 1.39
+		PilePaddingY = int(slotHeight / 10)
+		CardHeight = int(slotHeight) - PilePaddingY
+		LeftMargin = 0
 	case "bridge":
-		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.561))
+		slotWidth := float64(windowWidth) / float64(maxX+2)
+		PilePaddingX = int(slotWidth / 10)
+		CardWidth = int(slotWidth) - PilePaddingX
+		slotHeight := slotWidth * 1.561
+		PilePaddingY = int(slotHeight / 10)
+		CardHeight = int(slotHeight) - PilePaddingY
+		LeftMargin = 0
 	case "retro":
 		CardWidth = 71
+		PilePaddingX = 7
 		CardHeight = 96
+		PilePaddingY = 10
+		// cardsWidth := pilesX * (PilePaddingX + CardWidth)
+		// LeftMargin = (windowWidth - cardsWidth) / 2
+		LeftMargin = 0
 	}
 	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 
 	TopMargin = 48 + CardHeight/3
-	PileMarginX = CardWidth / 10
-	PileMarginY = CardHeight / 10
 
-	if TheUserData.CardStyle == "retro" {
-		cardsWidth := int(float64(CardWidth)*1.1) * (maxX + 2)
-		LeftMargin = (windowWidth - cardsWidth) / 2
-		println("window", windowWidth, "cards", cardsWidth)
-	} else {
-		LeftMargin = 0
-	}
 	println("LeftMargin", LeftMargin)
 
 }

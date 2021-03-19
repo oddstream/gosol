@@ -153,7 +153,7 @@ func (p *Pile) createBackgroundImage() {
 
 // BaizePosition returns the x,y baize coords of this pile
 func (p *Pile) BaizePosition() (int, int) {
-	return LeftMargin + (p.X * PileMarginX) + (p.X * CardWidth), TopMargin + (p.Y * PileMarginY) + (p.Y * CardHeight)
+	return LeftMargin + (p.X * (CardWidth + PilePaddingX)), TopMargin + (p.Y * (CardHeight + PilePaddingY))
 }
 
 // ScreenPosition returns the x,y baize coords of this pile

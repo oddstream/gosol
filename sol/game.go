@@ -20,10 +20,10 @@ var (
 	CardWidth int = 71
 	// CardHeight of cards
 	CardHeight int = 96
-	// PileMarginX the horizontal gap between piles
-	PileMarginX int = CardWidth / 10
-	// PileMarginY the vertical gap between piles
-	PileMarginY int = CardHeight / 10
+	// PilePaddingX the gap left to the right of the pile
+	PilePaddingX = 0
+	// PilePaddingY the gap left underneath each pile
+	PilePaddingY = 0
 	// LeftMargin the gap between the left of the screen and the first pile
 	LeftMargin int = 0
 	// TopMargin the gap between top pile and top of baize
