@@ -29,17 +29,19 @@ const (
 
 // Baize object describes the baize
 type Baize struct {
-	Piles         []*Pile
-	Variant       string
-	Seed          int64
-	UndoStack     []SaveableBaize
-	SavedPosition int
-	totalCards    int
-	State         BaizeState
-	stroke        *input.Stroke
-	input         *input.Input
-	ui            *ui.UI
-	commandTable  map[ebiten.Key]func()
+	Piles           []*Pile
+	Variant         string
+	Seed            int64
+	UndoStack       []SaveableBaize
+	SavedPosition   int
+	totalCards      int
+	State           BaizeState
+	stroke          *input.Stroke
+	input           *input.Input
+	ui              *ui.UI
+	commandTable    map[ebiten.Key]func()
+	DragOffsetY     int
+	DragOffsetBaseY int
 }
 
 // NewBaize is the factory func for the single Baize object
@@ -334,7 +336,7 @@ func (b *Baize) findPilePrefix(cls string) *Pile {
 // findPileAt finds the pile under the mouse click or touch
 func (b *Baize) findPileAt(x, y int) *Pile {
 	for _, o := range b.Piles {
-		if util.InRect(x, y, o.FannedRect) {
+		if util.InRect(x, y, o.FannedScreenRect) {
 			return o
 		}
 	}
@@ -346,7 +348,7 @@ func (b *Baize) findCardAt(x, y int) *Card {
 	for _, p := range b.Piles {
 		for i := p.CardCount() - 1; i >= 0; i-- {
 			c := p.Cards[i]
-			if util.InRect(x, y, c.Rect) {
+			if util.InRect(x, y, c.ScreenRect) {
 				return c
 			}
 		}
@@ -632,9 +634,9 @@ func (b *Baize) AfterUserMove() {
 func (b *Baize) largestIntersection(c *Card) *Pile {
 	var largest int = 0
 	var pile *Pile = nil
-	cx0, cy0, cx1, cy1 := c.Rect()
+	cx0, cy0, cx1, cy1 := c.BaizeRect()
 	for _, p := range b.Piles {
-		px0, py0, px1, py1 := p.FannedRect()
+		px0, py0, px1, py1 := p.FannedBaizeRect()
 		i := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
 		if i > largest {
 			largest = i
@@ -654,6 +656,25 @@ func (b *Baize) calcPercentComplete() int {
 	return int(math.Round(float64(count) / float64(b.totalCards) * 100))
 }
 
+// StartDrag return true if the Baize can be dragged (vscrolled)
+func (b *Baize) StartDrag() bool {
+	return true
+}
+
+// DragBy move (vscroll) the Baize by dragging it
+func (b *Baize) DragBy(dx, dy int) {
+	b.DragOffsetY = b.DragOffsetBaseY + dy
+	if b.DragOffsetY > 0 {
+		b.DragOffsetY = 0 // DragOffsetY should only ever be 0 or -ve
+	}
+}
+
+// StopDrag stop dragging the Baize
+func (b *Baize) StopDrag() {
+	// remember the amount of drag so the next drag starts from here
+	b.DragOffsetBaseY = b.DragOffsetY
+}
+
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
@@ -667,7 +688,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			c := b.findCardAt(v.X, v.Y)
 			if b.stroke != nil {
 				println("cancel stroke because tap")
-				c.owner.CancelDrag(c) // if we have a stroke we must have a card
+				if c != nil {
+					c.owner.CancelDrag(c)
+				}
 				b.stroke.Cancel()
 			}
 			if c != nil {
@@ -728,8 +751,13 @@ func (b *Baize) NotifyCallback(event interface{}) {
 						v.Stroke.Cancel()
 					}
 				} else {
-					println("cancel stroke because not over a card")
-					v.Stroke.Cancel()
+					if b.StartDrag() {
+						println("starting baize drag")
+						b.stroke.SetDraggedObject(b)
+					} else {
+						println("cancel stroke because not over a card")
+						v.Stroke.Cancel()
+					}
 				}
 			}
 		case "move":
@@ -744,6 +772,13 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			case ui.Container:
 				con := v.Stroke.DraggedObject().(ui.Container)
 				con.DragBy(v.Stroke.PositionDiff())
+			case *Baize:
+				println("baize drag")
+				b2 := v.Stroke.DraggedObject().(*Baize)
+				if b2 != b {
+					println("baize drag - something has gone terribly wrong")
+				}
+				b2.DragBy(v.Stroke.PositionDiff())
 			default:
 				println("unknown move dragging object")
 			}
@@ -770,6 +805,13 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			case ui.Container:
 				con := v.Stroke.DraggedObject().(ui.Container)
 				con.StopDrag()
+			case *Baize:
+				println("stop baize drag")
+				b2 := v.Stroke.DraggedObject().(*Baize)
+				if b2 != b {
+					println("baize drag - something has gone terribly wrong")
+				}
+				b2.StopDrag()
 			default:
 				println("unknown stop dragging object")
 			}

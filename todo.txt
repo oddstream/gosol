@@ -1,4 +1,8 @@
-+ don't save virgin games to json?
++ it's time to do auto-scaling of cards to window width
+  detect changes to window width (either resize window or change orientation)
++ don't save virgin games to json? would need to delete any existing saved game
++ Card.UniqueRect() get area of card shown, with y1 == next card's y0
++ json_browser.go
 + Settings
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
@@ -33,6 +37,7 @@
   includes position of accept symbol
 + Yukon One Suit, Yukon Cells, Russian?
 + tap a scrunched card to show it in full
+  another round of Card.Draw, this time draw cards that are currently being tapped (use area minus overlapped area, i.e. rect of text card)
   hover won't work on mobiles
   in Yukon, you can just drag away the card(s) on top of it
 + Spider/Simple Simon tap on King to send conformant pile to foundation (for consistency)
@@ -50,6 +55,7 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x add vscroll to baize (not an actual vscroll, just allow it to be dragged up/down)
 x retire Variant.DisplayName
 x use logoBytes to draw Ace of spades
 x draw flipping cards over transitioning cards

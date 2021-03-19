@@ -117,7 +117,7 @@ type Card struct {
 	ID    CardID // contains flags (prone, marked) pack, suit, ordinal
 	owner *Pile
 
-	screenX, screenY int // current position on screen (after Fan)
+	baizeX, baizeY int // current position on baize (after Fan)
 
 	srcX, srcY float64 // smoothstep origin
 	dstX, dstY float64 // smoothstep destination
@@ -187,15 +187,23 @@ func (c *Card) String() string {
 	return c.ID.String()
 }
 
-// Position returns the x,y screen coords of this card
-func (c *Card) Position() (int, int) {
-	return c.screenX, c.screenY
+// BaizePosition returns the x,y baize coords of this card
+func (c *Card) BaizePosition() (int, int) {
+	return c.baizeX, c.baizeY
 }
 
-// Rect gives the x,y screen coords of the card's top left and bottom right corners
-func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
-	x0 = c.screenX
-	y0 = c.screenY
+// BaizeRect gives the x,y baize coords of the card's top left and bottom right corners
+func (c *Card) BaizeRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0 = c.BaizePosition()
+	x1 = x0 + CardWidth
+	y1 = y0 + CardHeight
+	return // using named return parameters
+}
+
+// ScreenRect gives the x,y screen coords of the card's top left and bottom right corners
+func (c *Card) ScreenRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0 = c.BaizePosition()
+	y0 += TheBaize.DragOffsetY
 	x1 = x0 + CardWidth
 	y1 = y0 + CardHeight
 	return // using named return parameters
@@ -203,7 +211,7 @@ func (c *Card) Rect() (x0 int, y0 int, x1 int, y1 int) {
 
 // SetPosition sets the position of the Card
 func (c *Card) SetPosition(x, y int) {
-	c.screenX, c.screenY = x, y
+	c.baizeX, c.baizeY = x, y
 	c.lerpStep = 1.0 // stop any current lerp
 }
 
@@ -212,10 +220,10 @@ func (c *Card) TransitionTo(x, y int) {
 	// if c.lerpStep < 1.0 {
 	// 	println(c.ID.String(), "already lerping")
 	// }
-	if x == c.screenX && y == c.screenY {
+	if x == c.baizeX && y == c.baizeY {
 		c.SetPosition(x, y)
 	} else {
-		c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
+		c.srcX, c.srcY = float64(c.baizeX), float64(c.baizeY)
 		c.dstX, c.dstY = float64(x), float64(y)
 		c.lerpStep = 0.0 // trigger a lerp
 	}
@@ -223,7 +231,7 @@ func (c *Card) TransitionTo(x, y int) {
 
 // StartDrag informs card that it is being dragged
 func (c *Card) StartDrag() {
-	c.dragStartX, c.dragStartY = c.screenX, c.screenY
+	c.dragStartX, c.dragStartY = c.baizeX, c.baizeY
 	c.dragging = true
 	// println("start drag", c.ID.String(), "start", c.dragStartX, c.dragStartY)
 }
@@ -261,8 +269,8 @@ func (c *Card) Shake() {
 		return
 	}
 	// hijack the lerping src, dst positions
-	c.srcX, c.srcY = float64(c.screenX), float64(c.screenY)
-	c.dstX, c.dstY = float64(c.screenX-shakeAmount), float64(c.screenY)
+	c.srcX, c.srcY = float64(c.baizeX), float64(c.baizeY)
+	c.dstX, c.dstY = float64(c.baizeX-shakeAmount), float64(c.baizeY)
 	c.shake = shakingLeft
 }
 
@@ -325,8 +333,8 @@ func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the card state (transitions)
 func (c *Card) Update() error {
 	if c.lerpStep < 1.0 {
-		c.screenX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
-		c.screenY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
+		c.baizeX = int(util.Smoothstep(c.srcX, c.dstX, c.lerpStep))
+		c.baizeY = int(util.Smoothstep(c.srcY, c.dstY, c.lerpStep))
 		// make Card settle faster when already close to it's destination
 		if util.OverlapAreaFloat64(c.srcX, c.srcY, c.srcX+float64(CardWidth), c.srcY+float64(CardHeight), c.dstX, c.dstY, c.dstX+float64(CardWidth), c.dstY+float64(CardHeight)) > 0 {
 			c.lerpStep += lerpStepAmount * 2
@@ -334,7 +342,7 @@ func (c *Card) Update() error {
 			c.lerpStep += lerpStepAmount
 		}
 		if c.lerpStep >= 1.0 {
-			c.screenX, c.screenY = int(c.dstX), int(c.dstY)
+			c.baizeX, c.baizeY = int(c.dstX), int(c.dstY)
 		}
 	}
 	if c.flipStep != 0.0 {
@@ -349,22 +357,22 @@ func (c *Card) Update() error {
 	if c.shake != notShaking {
 		switch c.shake {
 		case shakingLeft:
-			if float64(c.screenX) > c.dstX {
-				c.screenX--
+			if float64(c.baizeX) > c.dstX {
+				c.baizeX--
 			} else {
 				c.dstX = c.srcX + shakeAmount
 				c.shake = shakingRight
 			}
 		case shakingRight:
-			if float64(c.screenX) < c.dstX {
-				c.screenX++
+			if float64(c.baizeX) < c.dstX {
+				c.baizeX++
 			} else {
 				c.dstX = c.srcX
 				c.shake = shakingCenter
 			}
 		case shakingCenter:
-			if float64(c.screenX) > c.dstX {
-				c.screenX--
+			if float64(c.baizeX) > c.dstX {
+				c.baizeX--
 			} else {
 				c.shake = notShaking
 			}
@@ -403,7 +411,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(float64(CardWidth/2), 0)
 	}
 
-	op.GeoM.Translate(float64(c.screenX), float64(c.screenY))
+	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
 	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
 		op.GeoM.Translate(2, 2)

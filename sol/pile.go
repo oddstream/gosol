@@ -147,48 +147,71 @@ func (p *Pile) createBackgroundImage() {
 	p.backgroundImage = ebiten.NewImageFromImage(dc.Image())
 }
 
-// Position returns the x,y screen coords of this pile
-func (p *Pile) Position() (int, int) {
+// BaizePosition returns the x,y baize coords of this pile
+func (p *Pile) BaizePosition() (int, int) {
 	return (p.X * PileMarginX) + (p.X * CardWidth), TopMargin + (p.Y * PileMarginY) + (p.Y * CardHeight)
 }
 
-// Rect gives the x,y screen coords of the pile's top left and bottom right corners
-func (p *Pile) Rect() (x0 int, y0 int, x1 int, y1 int) {
-	x0, y0 = p.Position()
+// ScreenPosition returns the x,y baize coords of this pile
+func (p *Pile) ScreenPosition() (int, int) {
+	x, y := p.BaizePosition()
+	y += TheBaize.DragOffsetY
+	return x, y
+}
+
+// BaizeRect gives the x,y baize coords of the pile's top left and bottom right corners
+func (p *Pile) BaizeRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0 = p.BaizePosition()
 	x1 = x0 + CardWidth
 	y1 = y0 + CardHeight
 	return // using named return parameters
 }
 
-// FannedRect gives the x,y screen coords of the pile's top left and bottom right corners
-func (p *Pile) FannedRect() (x0 int, y0 int, x1 int, y1 int) {
+// ScreenRect gives the x,y screen coords of the pile's top left and bottom right corners
+func (p *Pile) ScreenRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0, x1, y1 = p.BaizeRect()
+	y0 += TheBaize.DragOffsetY
+	y1 += TheBaize.DragOffsetY
+	return // using named return parameters
+}
+
+// FannedBaizeRect gives the x,y screen coords of the pile's top left and bottom right corners
+func (p *Pile) FannedBaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 	// cannot use position of top card, in case it's being dragged
-	x0, y0, x1, y1 = p.Rect()
+	x0, y0, x1, y1 = p.BaizeRect()
+	if p.Fan == "" || p.Fan == "None" {
+		return
+	}
 	if p.CardCount() > 1 {
 		var x, y int
 		if p.Tail == nil {
-			x, y = p.Peek().Position()
+			x, y = p.Peek().BaizePosition()
 		} else {
-			// x, y = p.PushedFannedPosition() // this fudge is an approximation
 			// do not include cards being dragged, stop before Tail[0]
 			for i := 1; i < p.CardCount(); i++ {
 				if p.Cards[i] == p.Tail[0] {
 					if i > 0 {
-						x, y = p.Cards[i-1].Position()
+						x, y = p.Cards[i-1].BaizePosition()
 					}
 					break
 				}
 			}
 		}
 		switch p.Fan {
-		case "", "None":
-			// do nothing
 		case "Right":
 			x1 = x + CardWidth
 		case "Down":
 			y1 = y + CardHeight
 		}
 	}
+	return // using named return parameters
+}
+
+// FannedScreenRect gives the x,y screen coords of the pile's top left and bottom right corners
+func (p *Pile) FannedScreenRect() (x0 int, y0 int, x1 int, y1 int) {
+	x0, y0, x1, y1 = p.FannedBaizeRect()
+	y0 += TheBaize.DragOffsetY
+	y1 += TheBaize.DragOffsetY
 	return // using named return parameters
 }
 
@@ -366,7 +389,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
 func (p *Pile) PushedFannedPosition() (int, int) {
-	x, y := p.Position()
+	x, y := p.BaizePosition()
 	switch p.Fan {
 	case "", "None":
 		// do nothing
@@ -387,7 +410,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			}
 		}
 	case "Waste":
-		x0, y0 := p.Position()
+		x0, y0 := p.BaizePosition()
 		x1 := x0 + CardWidth/faceFanFactor
 		x2 := x1 + CardWidth/faceFanFactor
 		switch p.CardCount() {
@@ -576,13 +599,11 @@ func (p *Pile) Update() error {
 func (p *Pile) Draw(screen *ebiten.Image) {
 	if p.backgroundImage != nil {
 		op := &ebiten.DrawImageOptions{}
-		x, y := p.Position()
+		x, y := p.ScreenPosition()
 		op.GeoM.Translate(float64(x), float64(y))
 		screen.DrawImage(p.backgroundImage, op)
 	}
 	if DebugMode {
-		// x1, y1, x2, y2 := p.FannedRect()
-		// ebitenutil.DrawRect(screen, float64(x1), float64(y1), float64(x2-x1), float64(y2-y1), color.RGBA{0, 0, 0, 0x40})
 		if p.CardCount() < 3 {
 			return
 		}
@@ -590,31 +611,22 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		if !ok {
 			return
 		}
-		// var currWidth, currHeight int
 		var maxWidth, maxHeight int
 		switch p.Fan {
 		case "", "None", "Waste":
 			return
 		case "Down":
-			// currHeight = p.fannedHeight(p.scrunchPercentage)
 			maxHeight = s * CardHeight
 		case "Right":
-			// currWidth = p.fannedWidth(p.scrunchPercentage)
 			maxWidth = s * CardWidth
 		}
-		x0, y0 := p.Position()
+		x0, y0 := p.BaizePosition()
 		if maxWidth > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
 		}
 		if maxHeight > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
+			ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
 		}
-		// if currWidth > 0 {
-		// 	ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(currWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x40})
-		// }
-		// if currHeight > 0 {
-		// 	ebitenutil.DrawRect(screen, float64(x0), float64(y0), float64(CardWidth), float64(currHeight), color.RGBA{0, 0, 0, 0x40})
-		// }
 	}
 }
 

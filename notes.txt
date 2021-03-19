@@ -4,6 +4,12 @@ $ git branch -m master main
 ? https://github.com/hajimehoshi/ebiten/blob/master/ebitenutil/shapes.go
 ? https://pkg.go.dev/github.com/fogleman/gg@v1.3.0#Context.DrawString
 
+$ find . -name '*.go' | xargs wc -l | sort -nr
+$ wc -l **/*.go | sort -nr
+# In the Bash shell this requires the globstar option to be set, otherwise the ** glob-operator is not recursive. To enable this setting, issue
+$ shopt -s globstar
+$ shopt | sort
+
 added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 				"go.lintFlags": {
 					"type": "array",

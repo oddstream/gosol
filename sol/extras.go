@@ -33,7 +33,7 @@ func createCards(stock *Pile) {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
 				c.owner = stock
-				c.SetPosition(stock.Position())
+				c.SetPosition(stock.BaizePosition())
 				stock.Cards = append(stock.Cards, c)
 			}
 		}
