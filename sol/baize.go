@@ -42,6 +42,7 @@ type Baize struct {
 	commandTable    map[ebiten.Key]func()
 	DragOffsetY     int
 	DragOffsetBaseY int
+	OldWindowWidth  int
 }
 
 // NewBaize is the factory func for the single Baize object
@@ -65,7 +66,6 @@ func NewBaize() *Baize {
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
 	}
-	BuildScalableCardImages() // need to do this after CardWidth,Height set - not in a func init()
 	if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
 		TheBaize.NewVariant(TheBaize.Variant)
 	}
@@ -160,6 +160,7 @@ func (b *Baize) NewVariant(v string) {
 	b.Reset()
 	b.Variant = v
 	TheUserData.Variant = v
+	b.ui.SetTitle(v)
 	b.Seed = time.Now().UnixNano()
 
 	piles, ok := buildVariantPiles(b.Variant)
@@ -167,21 +168,6 @@ func (b *Baize) NewVariant(v string) {
 		log.Fatal("unknown variant ", b.Variant)
 	}
 	b.Piles = piles
-
-	// temporary fudge to set window width to center cards on baize
-	{
-		b.ui.SetTitle(b.Variant)
-
-		maxX := 0
-		for _, p := range b.Piles {
-			if p.X > maxX {
-				maxX = p.X
-			}
-		}
-		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
-
-		TopMargin = 48 + CardHeight/3
-	}
 
 	stock := b.findPilePrefix("Stock")
 	if stock == nil {
@@ -191,6 +177,8 @@ func (b *Baize) NewVariant(v string) {
 	b.totalCards = stock.CardCount()
 	shuffleCards(stock, b.Seed)
 
+	b.Scale()
+
 	b.StartGame()
 }
 
@@ -199,6 +187,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	b.Variant = v
 	TheUserData.Variant = v
+	b.ui.SetTitle(v)
 
 	if !b.Load(v) {
 		return false
@@ -215,21 +204,6 @@ func (b *Baize) LoadVariant(v string) bool {
 	}
 	b.Piles = piles
 
-	// temporary fudge to set window width to center cards on baize
-	{
-		b.ui.SetTitle(b.Variant)
-
-		maxX := 0
-		for _, p := range b.Piles {
-			if p.X > maxX {
-				maxX = p.X
-			}
-		}
-		ebiten.SetWindowSize((maxX+2)*(CardWidth+10), WindowHeight)
-
-		TopMargin = 48 + CardHeight/3
-	}
-
 	stock := b.findPilePrefix("Stock")
 	if stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
@@ -239,6 +213,9 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	b.UpdateFromSaveable(sav)
 	b.UndoPush()
+
+	b.Scale()
+
 	TheStatistics.welcomeToast(b.Variant)
 
 	return true
@@ -830,13 +807,95 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	}
 }
 
+// ScaleCards calculates new width/height of cards and margins
+func (b *Baize) ScaleCards() {
+
+	windowWidth, _ := ebiten.WindowSize()
+
+	maxX := 0
+	for _, p := range b.Piles {
+		if p.X > maxX {
+			maxX = p.X
+		}
+	}
+
+	/*
+		71 x 96 = 1:1.352 (Microsoft retro)
+		64 x 89 = 1:1.390 (official poker size)
+		90 x 130 = 1:1.444 (nice looking scalable)
+		89 x 137 = 1:1.539 (measured real card)
+		57 x 89 = 1:1.561 (official bridge size)
+	*/
+
+	// Card gap is 10% of card width
+	switch TheUserData.CardStyle {
+	case "", "default":
+		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.444))
+	case "poker":
+		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.39))
+	case "bridge":
+		CardWidth = windowWidth / int(float64(maxX+2)*1.1)
+		CardHeight = int(math.Ceil(float64(CardWidth) * 1.561))
+	case "retro":
+		CardWidth = 71
+		CardHeight = 96
+	}
+	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
+
+	TopMargin = 48 + CardHeight/3
+	PileMarginX = CardWidth / 10
+	PileMarginY = CardHeight / 10
+
+	if TheUserData.CardStyle == "retro" {
+		cardsWidth := int(float64(CardWidth)*1.1) * (maxX + 2)
+		LeftMargin = (windowWidth - cardsWidth) / 2
+		println("window", windowWidth, "cards", cardsWidth)
+	} else {
+		LeftMargin = 0
+	}
+	println("LeftMargin", LeftMargin)
+
+}
+
+// Scale resizes piles, cards (inc shadow image), fonts and then repositions piles and cards
+func (b *Baize) Scale() {
+
+	b.ScaleCards()
+
+	BuildScalables()
+
+	for _, p := range b.Piles {
+		p.createBackgroundImage()
+		// px, _ := p.BaizePosition()
+		// for _, c := range p.Cards {
+		// 	_, cy := c.BaizePosition()
+		// 	c.SetPosition(px, cy)
+		// }
+		var tmp = make([]*Card, len(p.Cards))
+		copy(tmp, p.Cards)
+		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
+		for _, c := range tmp {
+			if TheUserData.CardStyle == "retro" {
+				c.getRetroImages()
+			} else {
+				c.getScalableImages()
+			}
+			p.Push(c)
+		}
+	}
+
+}
+
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
-	for _, p := range b.Piles {
-		p.Layout(outsideWidth, outsideHeight)
+	if b.OldWindowWidth == 0 || b.OldWindowWidth != outsideWidth {
+		println("WindowWidth was", b.OldWindowWidth, "now becoming", outsideWidth)
+		b.OldWindowWidth = outsideWidth
+		b.Scale()
 	}
-
 	return outsideWidth, outsideHeight
 }
 

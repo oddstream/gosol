@@ -7,7 +7,6 @@ import (
 	"image"
 	"log"
 
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/util"
 )
@@ -39,7 +38,6 @@ var faceBytes []byte
 var backBytes []byte
 
 var (
-	shadowImage    *ebiten.Image
 	faceImageSheet *ebiten.Image
 	backImageSheet *ebiten.Image
 	backFrames     = map[string]image.Point{
@@ -57,8 +55,6 @@ var (
 		"Roses":       {X: 325, Y: 140},
 		"Shell":       {X: 405, Y: 140},
 	}
-	scalableFaceImages map[CardID]*ebiten.Image
-	scalableBackImage  *ebiten.Image
 )
 
 func init() {
@@ -84,32 +80,6 @@ func init() {
 	}
 	backImageSheet = ebiten.NewImageFromImage(img)
 	backBytes = nil
-}
-
-// BuildScalableCardImages builds the card images that can change in scale, after CardWidth,Height have been set
-func BuildScalableCardImages() {
-
-	// build shadow image
-	dc := gg.NewContext(CardWidth, CardHeight)
-	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
-	dc.SetLineWidth(2)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
-	dc.Fill()
-	dc.Stroke()
-	shadowImage = ebiten.NewImageFromImage(dc.Image())
-
-	// build images for scalable cards
-
-	scalableFaceImages = make(map[CardID]*ebiten.Image)
-
-	for ord := 1; ord < 14; ord++ {
-		for suit := 1; suit < 5; suit++ {
-			ID := NewCardID(0, suit, ord)
-			scalableFaceImages[ID] = createFaceImage(ID)
-		}
-	}
-
-	scalableBackImage = createBackImage()
 }
 
 // Card object
@@ -139,47 +109,50 @@ func NewCard(pack, suit, ordinal int) *Card {
 	c := &Card{ID: NewCardID(pack, suit, ordinal)}
 	c.SetProne(true)
 
-	switch TheUserData.CardStyle {
-	case "retro":
-		var faceX, faceY, backX, backY int
-		switch c.StringSuit() {
-		case "Club":
-			faceY = 0
-		case "Diamond":
-			faceY = CardHeight
-		case "Heart":
-			faceY = CardHeight + CardHeight
-		case "Spade":
-			faceY = CardHeight + CardHeight + CardHeight
-		}
-		faceX = (c.Ordinal() - 1) * CardWidth
-
-		c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+CardWidth, faceY+CardHeight)).(*ebiten.Image)
-		if c.faceImg == nil {
-			log.Fatal("no face image")
-		}
-		pt := backFrames[TheUserData.CardBack]
-		backX, backY = pt.X, pt.Y
-		c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
-		if c.backImg == nil {
-			log.Fatal("no back image")
-		}
-
-	case "default", "scalable", "bridge", "poker":
-		subid := NewCardID(0, c.Suit(), c.Ordinal())
-		var ok bool
-		c.faceImg, ok = scalableFaceImages[subid]
-		if !ok {
-			log.Fatal(subid, "not in scalableFaceImages")
-		}
-		c.backImg = scalableBackImage
-	default:
-		log.Fatal("unknown CardStyle", TheUserData.CardStyle)
+	if TheUserData.CardStyle == "retro" {
+		c.getRetroImages()
+	} else {
+		c.getScalableImages()
 	}
 
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()
 
 	return c
+}
+
+// getRetroImages reloads the face and back image for this card
+func (c *Card) getRetroImages() {
+	var faceX, faceY, backX, backY int
+	switch c.StringSuit() {
+	case "Club":
+		faceY = 0
+	case "Diamond":
+		faceY = CardHeight
+	case "Heart":
+		faceY = CardHeight + CardHeight
+	case "Spade":
+		faceY = CardHeight + CardHeight + CardHeight
+	}
+	faceX = (c.Ordinal() - 1) * CardWidth
+
+	c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+CardWidth, faceY+CardHeight)).(*ebiten.Image)
+	if c.faceImg == nil {
+		log.Fatal("no face image")
+	}
+	pt := backFrames[TheUserData.CardBack]
+	backX, backY = pt.X, pt.Y
+	c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
+	if c.backImg == nil {
+		log.Fatal("no back image")
+	}
+}
+
+// getScalableImages reloads the face and back image for this card
+func (c *Card) getScalableImages() {
+	subid := NewCardID(0, c.Suit(), c.Ordinal())
+	c.faceImg = scalableFaceImages[subid]
+	c.backImg = scalableBackImage
+	// either faceImg or backImg may be nil if we are booting up
 }
 
 // String satisfies the Stringer interface (defined by fmt package)
@@ -413,11 +386,15 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
-		op.GeoM.Translate(2, 2)
-		screen.DrawImage(shadowImage, op)
-		op.GeoM.Translate(-2, -2)
+	if shadowImage != nil {
+		if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
+			op.GeoM.Translate(2, 2)
+			screen.DrawImage(shadowImage, op)
+			op.GeoM.Translate(-2, -2)
+		}
 	}
 
-	screen.DrawImage(img, op)
+	if img != nil {
+		screen.DrawImage(img, op)
+	}
 }

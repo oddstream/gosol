@@ -15,6 +15,12 @@ import (
 // 	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
 // }
 
+var (
+	scalableFaceImages map[CardID]*ebiten.Image
+	scalableBackImage  *ebiten.Image
+	shadowImage        *ebiten.Image
+)
+
 func createFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(BasicColors["White"])
@@ -81,4 +87,33 @@ func createBackImage() *ebiten.Image {
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
+}
+
+func createShadowImage() *ebiten.Image {
+	dc := gg.NewContext(CardWidth, CardHeight)
+	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
+	dc.SetLineWidth(2)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
+	dc.Fill()
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
+}
+
+// BuildScalables builds the card images that can change in scale, after CardWidth,Height have been set
+func BuildScalables() {
+
+	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
+
+	if TheUserData.CardStyle != "retro" {
+		scalableFaceImages = make(map[CardID]*ebiten.Image)
+		for ord := 1; ord < 14; ord++ {
+			for suit := 1; suit < 5; suit++ {
+				ID := NewCardID(0, suit, ord)
+				scalableFaceImages[ID] = createFaceImage(ID)
+			}
+		}
+		scalableBackImage = createBackImage()
+	}
+
+	shadowImage = createShadowImage()
 }

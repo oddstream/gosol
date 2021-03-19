@@ -21,6 +21,7 @@ import (
 // Toast represents a simple popup label that disappears after a few seconds
 type Toast struct {
 	img       *ebiten.Image
+	message   string
 	ticksLeft int
 }
 
@@ -31,6 +32,15 @@ type ToastManager struct {
 
 // Toast creates a new toast message an adds it to the list of messages
 func (u *UI) Toast(message string) {
+
+	// if we are already displaying this message, reset ticksLeft and quit
+	// otherwise you can fill the screen with "Nothing to undo"
+	for _, t := range u.toastManager.toasts {
+		if t.message == message {
+			t.ticksLeft = int(ebiten.CurrentTPS()) * 6
+			return
+		}
+	}
 
 	dc := gg.NewContext(8, 8)
 	dc.SetFontFace(schriftbank.RobotoRegular14)
@@ -50,7 +60,7 @@ func (u *UI) Toast(message string) {
 	dc.DrawStringAnchored(message, w/2, h/2, 0.5, 0.4)
 	dc.Stroke()
 
-	t := &Toast{}
+	t := &Toast{message: message}
 	t.img = ebiten.NewImageFromImage(dc.Image())
 	t.ticksLeft = int(ebiten.CurrentTPS()) * 6
 

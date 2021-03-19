@@ -24,9 +24,6 @@ func init() {
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
-	flag.IntVar(&sol.WindowWidth, "width", 1000, "width of window in pixels")
-	flag.IntVar(&sol.WindowHeight, "height", 900, "height of window in pixels")
-	flag.IntVar(&sol.CardWidth, "cardwidth", 71, "width of a card in pixels")
 	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
 	flag.StringVar(&sol.TheUserData.CardStyle, "c", "retro", "set the card face to retro, default, bridge, or poker")
 }
@@ -47,14 +44,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ebiten.SetWindowTitle("Solitaire")                      // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetWindowSize(sol.WindowWidth, sol.WindowHeight) // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetWindowResizable(true)                         // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetWindowSize(900, 600)     // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetScreenClearedEveryFrame(false)
 
 	defer func() {
 		println("cleanup")
-		if sol.NoGameSave == false {
+		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}
 		sol.TheUserData.Save()

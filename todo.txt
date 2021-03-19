@@ -1,5 +1,5 @@
-+ it's time to do auto-scaling of cards to window width
-  detect changes to window width (either resize window or change orientation)
++ retire WindowWidth/Height from Game, only need them in main
++ don't scale the retro cards with fogleman/gg, just create a big LeftMargin
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
 + json_browser.go
@@ -55,6 +55,10 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x BUG complete is true when multiple cards in Waste that aren't conformant
+x toastManager bump timeout if toast is already displayed
+x auto-scaling of cards to window width
+  detect changes to window width (either resize window or change orientation)
 x add vscroll to baize (not an actual vscroll, just allow it to be dragged up/down)
 x retire Variant.DisplayName
 x use logoBytes to draw Ace of spades

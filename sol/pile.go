@@ -124,7 +124,9 @@ func (p *Pile) createBackgroundImage() {
 	dc.Stroke()
 
 	if p.localAccept > 0 && p.localAccept <= 13 {
-		dc.SetFontFace(schriftbank.CardOrdinal)
+		if schriftbank.CardOrdinal != nil {
+			dc.SetFontFace(schriftbank.CardOrdinal)
+		}
 		dc.DrawStringAnchored(util.OrdinalToShortString(p.localAccept), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
 		dc.SetLineWidth(1)
 		// dc.DrawLine(0, float64(CardHeight)/6.666, float64(CardWidth), float64(CardHeight)/6.666)
@@ -132,7 +134,9 @@ func (p *Pile) createBackgroundImage() {
 		dc.Stroke()
 	}
 	if strings.HasPrefix(p.Class, "Stock") {
-		dc.SetFontFace(schriftbank.CardSymbolLarge)
+		if schriftbank.CardSymbolLarge != nil {
+			dc.SetFontFace(schriftbank.CardSymbolLarge)
+		}
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
 			// dc.SetColor(BasicColors["Red"])
@@ -149,7 +153,7 @@ func (p *Pile) createBackgroundImage() {
 
 // BaizePosition returns the x,y baize coords of this pile
 func (p *Pile) BaizePosition() (int, int) {
-	return (p.X * PileMarginX) + (p.X * CardWidth), TopMargin + (p.Y * PileMarginY) + (p.Y * CardHeight)
+	return LeftMargin + (p.X * PileMarginX) + (p.X * CardWidth), TopMargin + (p.Y * PileMarginY) + (p.Y * CardHeight)
 }
 
 // ScreenPosition returns the x,y baize coords of this pile
@@ -541,6 +545,10 @@ func (p *Pile) Conformant() bool {
 	if len(p.Cards) == 0 {
 		return true
 	}
+	if strings.HasPrefix(p.Class, "Stock") || p.Class == "Waste" {
+		return false
+	}
+	// that leaves Cell, Reserve, Tableau
 	return isTailConformant(p.buildRules, p.buildFlags, p.Cards)
 }
 
@@ -583,9 +591,14 @@ func (p *Pile) DisinterCards(ordinal int) {
 }
 
 // Layout the cards in this Pile
-func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth, outsideHeight
-}
+// func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
+
+// 	for _, c := range p.Cards {
+// 		c.SetPosition(c.BaizePosition())
+// 	}
+
+// 	return outsideWidth, outsideHeight
+// }
 
 // Update the Pile state (transitions, user input)
 func (p *Pile) Update() error {

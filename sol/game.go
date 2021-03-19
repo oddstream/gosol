@@ -2,11 +2,7 @@
 package sol
 
 import (
-	"log"
-	"math"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/schriftbank"
 )
 
 // Game represents a game state
@@ -20,18 +16,16 @@ var (
 	NoGameLoad = false
 	// NoGameSave is a boolean set by command line flag -nosave
 	NoGameSave = false
-	// WindowWidth of main window in pixels
-	WindowWidth int
-	// WindowHeight of main window in pixels
-	WindowHeight int
-	// CardWidth CardHeight of cards
+	// CardWidth of cards
 	CardWidth int = 71
 	// CardHeight of cards
 	CardHeight int = 96
-	// PileMarginX the horzontal gaps between piles
-	PileMarginX int = 10
+	// PileMarginX the horizontal gap between piles
+	PileMarginX int = CardWidth / 10
 	// PileMarginY the vertical gap between piles
-	PileMarginY int = 10
+	PileMarginY int = CardHeight / 10
+	// LeftMargin the gap between the left of the screen and the first pile
+	LeftMargin int = 0
 	// TopMargin the gap between top pile and top of baize
 	TopMargin int = 48 + CardHeight/3
 )
@@ -55,23 +49,6 @@ var TheBaize *Baize
 func NewGame() (*Game, error) {
 	g := &Game{}
 
-	/*
-		71 x 96 = 1:1.352 (Microsoft retro)
-		64 x 89 = 1:1.390 (official poker size)
-		90 x 130 = 1:1.444 (nice looking scalable)
-		89 x 137 = 1:1.539 (measured real card)
-		57 x 89 = 1:1.561 (official bridge size)
-	*/
-	switch TheUserData.CardStyle {
-	case "", "default", "scalable":
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.444))
-	case "poker":
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.39))
-	case "bridge":
-		CardHeight = int(math.Ceil(float64(CardWidth) * 1.561))
-	}
-	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
-	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 	TheStatistics = NewStatistics()
 
 	GSM.Switch(NewSplash())
@@ -81,8 +58,6 @@ func NewGame() (*Game, error) {
 
 // Layout implements ebiten.Game's Layout.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	WindowWidth = outsideWidth
-	WindowHeight = outsideHeight
 	state := GSM.Get()
 	return state.Layout(outsideWidth, outsideHeight)
 }
