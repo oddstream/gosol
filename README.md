@@ -4,18 +4,18 @@ Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg.
 
 It currently knows how to play Australian, Baker's Dozen, Canfield, Forty and Eight, Freecell, Klondike Draw One, Klondike Draw Three, Limited, Scorpion, Spider (One Suit), Spider (Two Suits), Spiderette, Storehouse Canfield, Thoughtful, Wasp, Will o' the Wisp, Yukon.
 
+It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has easy-to-read scalable cards, set via a command line flag `-c=default`. The card width scales to match the window width; the card height is calculated automatically. You can adjust the width:height ratio with `-c=default`, `-c=bridge` or `-c=poker`.
+
 It currently has a minimal user interface, and some keyboard shortcuts:
 
 * U - undo
 * N - new deal
 * R - restart deal
 * S - save current position
-* L - load a previously saved position (handy for the Freecell and Simple Simon players)
+* L - load a previously saved position (handy for Freecell and Simple Simon players)
 
 I'm currently building up a minimal Material Design UI in a separate package for it, keeping an eye on [Ebiten UI](https://ebitenui.github.io/) for ideas.
 
 It currently doesn't do anything pretty after detecting a completed game, or do any fancy highlighting of moveable cards.
 
 That's a lot of 'currently', but this is a work-in-progress.
-
-It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has simplified scalable cards, set via a command line flag `-c=scalable`, and `-cardwidth=` to set the card width; `-cardwidth=90` looks good. The card height is calculated automatically.
