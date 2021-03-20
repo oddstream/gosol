@@ -8,6 +8,7 @@ import (
 	"image"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 /*
@@ -48,6 +49,30 @@ func readAll(file *zip.File) []byte {
 	return content
 }
 
+func saveBytesToFile(bytes []byte, pngFname string) {
+
+	// path, err := fullPath(pngFname)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// makeConfigDir()
+
+	file, err := os.Create(pngFname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = file.Write(bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func LoadIconMap() {
 	// img, _, err := image.Decode(bytes.NewReader(undoBytes))
 	// if err != nil {
@@ -67,6 +92,17 @@ func LoadIconMap() {
 
 	// https://material.io/resources/icons/style=baseline
 
+	gofile, err := os.Create("/home/gilbert/gosol/ui/embeddedicons.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer closeFile(gofile)
+	gofile.WriteString("package ui\n")
+	gofile.WriteString("// Code automatically generated. DO NOT EDIT.\n")
+	gofile.WriteString("import (\n")
+	gofile.WriteString("\t_ \"embed\" // go:embed only allowed in Go files that import \"embed\"\n")
+	gofile.WriteString(")\n")
+
 	iconNames := []string{"bookmark", "bookmark_add", "close", "done", "done_all", "help_outline", "list", "menu", "restore", "search", "settings", "star", "undo"}
 	for _, iconName := range iconNames {
 		zipFname := fmt.Sprintf("/home/gilbert/Downloads/%s-white-android.zip", iconName)
@@ -75,6 +111,7 @@ func LoadIconMap() {
 			log.Fatal(err)
 		}
 		defer closeFile(zf)
+
 		pngFname := fmt.Sprintf("res/drawable-hdpi/baseline_%s_white_24.png", iconName)
 		for _, file := range zf.File {
 			if file.Name == pngFname {
@@ -82,6 +119,11 @@ func LoadIconMap() {
 				img, _, err := image.Decode(bytes.NewReader(imgBytes))
 				check(err)
 				IconMap[iconName] = img
+
+				saveBytesToFile(imgBytes, fmt.Sprintf("/home/gilbert/gosol/ui/icons/%s.png", iconName))
+
+				gofile.WriteString(fmt.Sprintf("//go:embed icons/%s.png\n", iconName))
+				gofile.WriteString(fmt.Sprintf("var %sIconBytes []byte\n\n", iconName))
 			}
 		}
 	}

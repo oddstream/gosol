@@ -1,9 +1,14 @@
++ icons.go creates and writes embeddedicons.go
++ widget that displays retro card backs (img, name), card picker
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
-+ json_browser.go
++ WASM
+  json_browser.go
+  embed icons
+  http server
 + Settings
-    Card design (add default) (a slide out picker)
-    Animation speed (a slide out picker for slow, medium, fast)
+  Card design (add default) (a slide out picker)
+  Animation speed (a slide out picker for slow, medium, fast)
 + Menu items or toolbar buttons for save/load position (latter will require tooltips)
 + use of Variant is a mess
   TheUserData.Variant and Baize.Variant are the same thing

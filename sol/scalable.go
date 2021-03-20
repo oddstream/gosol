@@ -117,3 +117,11 @@ func BuildScalables() {
 
 	shadowImage = createShadowImage()
 }
+
+// getScalableImages reloads the face and back image for this card
+func (c *Card) getScalableImages() {
+	subid := NewCardID(0, c.Suit(), c.Ordinal())
+	c.faceImg = scalableFaceImages[subid]
+	c.backImg = scalableBackImage
+	// either faceImg or backImg may be nil if we are booting up
+}
