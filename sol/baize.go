@@ -569,13 +569,13 @@ func (b *Baize) AfterUserMove() {
 		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
 	case Started:
 		if b.Complete() {
-			b.ui.Toast(fmt.Sprintf("%s complete in %d moves", b.Variant, len(b.UndoStack)-1))
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
 		} else if b.Conformant() {
 			println("baize is conformant")
-			b.ui.ShowFAB("check", ebiten.KeyC)
+			b.ui.ShowFAB("done_all", ebiten.KeyC)
 		} else {
 			b.ui.HideFAB()
 		}
@@ -863,9 +863,9 @@ func (b *Baize) ScaleCards() {
 		PilePaddingX = 7
 		CardHeight = 96
 		PilePaddingY = 10
-		// cardsWidth := pilesX * (PilePaddingX + CardWidth)
-		// LeftMargin = (windowWidth - cardsWidth) / 2
-		LeftMargin = 0
+		cardsWidth := (maxX + 2) * (PilePaddingX + CardWidth)
+		LeftMargin = (windowWidth - cardsWidth) / 2
+		// LeftMargin = 0
 	}
 	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 
@@ -961,7 +961,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("Heap %v, NumGC %v, Undo %d, State %d, Percent %d", ms.HeapAlloc, ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
 	}
 }
 

@@ -5,7 +5,6 @@
     Card design (add default) (a slide out picker)
     Animation speed (a slide out picker for slow, medium, fast)
 + Menu items or toolbar buttons for save/load position (latter will require tooltips)
-+ Auto scaling of cards to window size (what - even retro ones? Hmmm)
 + use of Variant is a mess
   TheUserData.Variant and Baize.Variant are the same thing
   SaveableBaize.Variant is saved in json but never checked, and appears in every pile (is Seed needed too?)
@@ -40,7 +39,6 @@
   in Yukon, you can just drag away the card(s) on top of it
 + Spider/Simple Simon tap on King to send conformant pile to foundation (for consistency)
 + by convention Baize.Pile[0] is always the stock
-+ map[VariantName]english string
 + Accept might be '1' (Martha) '=' (Spider/Scorpion, could just be 13/K) or 'x', use magic numbers, Accept=0 (or missing) means accept anything
 + map of default Build, Drag for Pile Classes, Build/Drag methods?
 
@@ -54,6 +52,7 @@
   either use package or roll-your-own using ebitenui as a guide
 
 x retire WindowWidth/Height from Game, only need them in main
+x Auto scaling of cards to window size (what - even retro ones? Hmmm)
 x don't scale the retro cards with fogleman/gg, just create a big LeftMargin
 x BUG complete is true when multiple cards in Waste that aren't conformant
 x toastManager bump timeout if toast is already displayed

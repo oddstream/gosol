@@ -91,9 +91,9 @@ func (s *Statistics) welcomeToast(v string) {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
 	} else {
 		if stats.BestPercent == 0 {
-			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s.", util.Pluralize("attempt", stats.Lost)))
+			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s", util.Pluralize("attempt", stats.Lost)))
 		} else if stats.BestPercent < 100 {
-			toasts = append(toasts, fmt.Sprintf("Your best score is %d%% in %d attempts", stats.BestPercent, stats.Lost))
+			toasts = append(toasts, fmt.Sprintf("Your best score is %d%% in %s", stats.BestPercent, util.Pluralize("attempt", stats.Lost)))
 		} else {
 			toasts = append(toasts,
 				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
@@ -106,6 +106,32 @@ func (s *Statistics) welcomeToast(v string) {
 			if stats.CurrStreak < 0 {
 				toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 			}
+		}
+	}
+
+	for _, t := range toasts {
+		TheBaize.ui.Toast(t)
+	}
+}
+
+func (s *Statistics) wonToast(v string, moves int) {
+	toasts := []string{}
+
+	stats, ok := s.StatsMap[v]
+	if !ok || stats.Won+stats.Lost == 0 {
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
+	} else {
+		toasts = append(toasts, fmt.Sprintf("%s complete in %d moves", v, moves))
+		toasts = append(toasts,
+			fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+				util.Pluralize("game", stats.Won),
+				util.Pluralize("game", stats.Lost),
+				((stats.Won*100)/(stats.Won+stats.Lost))))
+		if stats.CurrStreak > 0 {
+			toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+		}
+		if stats.CurrStreak < 0 {
+			toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 		}
 	}
 

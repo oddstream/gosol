@@ -1,5 +1,4 @@
-// Copyright ©️ 2021 oddstream.games
-
+// Package input provides basic tap, stroke and key press input
 package input
 
 import (

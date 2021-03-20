@@ -1,3 +1,4 @@
+// Package schriftbank provides a collection for fonts for package sol
 package schriftbank
 
 import (
@@ -27,8 +28,6 @@ var (
 	RobotoRegular24 font.Face
 	// RobotoMedium24 used by UI
 	RobotoMedium24 font.Face
-	// Symbol24 used by UI widgets
-	Symbol24 font.Face
 	// CardSymbolRegular is used to draw the suit symbol
 	CardSymbolRegular font.Face
 	// CardSymbolLarge is used to draw the large suit symbol
@@ -66,17 +65,6 @@ func init() {
 		log.Fatal(err)
 	}
 	RobotoMedium24 = truetype.NewFace(tt, &truetype.Options{
-		Size:    24,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-
-	tt, err = truetype.Parse(symbolFontBytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	Symbol24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,
