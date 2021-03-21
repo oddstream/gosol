@@ -21,7 +21,7 @@ func (b *IconButton) createImg() *ebiten.Image {
 	dc := gg.NewContext(b.width, b.height)
 	img, ok := IconMap[b.iconName]
 	if !ok || img == nil {
-		log.Fatal(b.iconName, " not in icon map")
+		log.Println(b.iconName, " not in icon map")
 	}
 	dc.DrawImageAnchored(img, b.width/2, b.height/2, 0.5, 0.5)
 	dc.Stroke()
@@ -59,7 +59,7 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("IconButton image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			println("icon button notify", b.key)
+			log.Println("icon button notify", b.key)
 			b.input.Notify(b.key)
 		}
 	}

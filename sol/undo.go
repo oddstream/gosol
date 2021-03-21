@@ -34,12 +34,12 @@ func (b *Baize) Undo() {
 	}
 	sav, ok := b.UndoPop() // removes current state
 	if !ok {
-		log.Fatal("error popping current state from undo stack")
+		log.Panic("error popping current state from undo stack")
 	}
 
 	sav, ok = b.UndoPop() // removes previous state for examination
 	if !ok {
-		log.Fatal("error popping second from undo stack")
+		log.Panic("error popping second from undo stack")
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
@@ -58,7 +58,7 @@ func (b *Baize) LoadPosition() {
 		return
 	}
 	if b.SavedPosition > len(b.UndoStack) {
-		println("error with saved position")
+		log.Panic("error with saved position")
 		return
 	}
 	var sav SaveableBaize
@@ -66,9 +66,24 @@ func (b *Baize) LoadPosition() {
 	for len(b.UndoStack)+1 > b.SavedPosition {
 		sav, ok = b.UndoPop()
 		if !ok {
-			log.Fatal("error popping from undo stack")
+			log.Panic("error popping from undo stack")
 		}
 	}
+	b.UpdateFromSaveable(sav)
+	b.UndoPush() // replace current state
+}
+
+// RestartGame loads a previously saved Baize state
+func (b *Baize) RestartGame() {
+	var sav SaveableBaize
+	var ok bool
+	for len(b.UndoStack) > 0 {
+		sav, ok = b.UndoPop()
+		if !ok {
+			log.Panic("error popping from undo stack")
+		}
+	}
+	b.SavedPosition = 0
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
 }

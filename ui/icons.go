@@ -124,6 +124,14 @@ func LoadIconMapFromZipFiles() {
 			}
 		}
 	}
+
+	gofile.WriteString("// LoadIconMapFromEmbedded loads icons from go:embed vars\n")
+	gofile.WriteString("func LoadIconMapFromEmbedded() {\n")
+	for _, iconName := range iconNames {
+		gofile.WriteString(fmt.Sprintf("\tdecode(\"%s\", %sIconBytes)\n", iconName, iconName))
+	}
+	gofile.WriteString("}\n")
+
 	// for _, file := range zf.File {
 	// 	println(file.Name)
 	// }
@@ -135,23 +143,6 @@ func decode(name string, variable []byte) {
 		log.Panic(err)
 	}
 	IconMap[name] = img
-}
-
-func LoadIconMapFromEmbedded() {
-	println("loading ui icons go:embed")
-	decode("bookmark", bookmarkIconBytes)
-	decode("bookmark_add", bookmarkIconBytes)
-	decode("close", closeIconBytes)
-	decode("done", doneIconBytes)
-	decode("done_all", done_allIconBytes)
-	decode("info", infoIconBytes)
-	decode("list", listIconBytes)
-	decode("menu", menuIconBytes)
-	decode("restore", restoreIconBytes)
-	decode("search", searchIconBytes)
-	decode("settings", settingsIconBytes)
-	decode("star", starIconBytes)
-	decode("undo", undoIconBytes)
 }
 
 func LoadIconMap() {

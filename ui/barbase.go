@@ -60,7 +60,7 @@ func (bb *BarBase) FindWidgetAt(x, y int) Widget {
 }
 
 // LayoutWidgets that belong to this container
-// set the widgets x,y relative to their parent, not the screen
+// by setting the x,y of each relative to their parent
 func (bb *BarBase) LayoutWidgets() {
 	nextLeft := 0
 	nextRight := bb.width - 48

@@ -59,6 +59,7 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x RestartGame() now just unwinds undo stack and does not count as a loss
 x count of cards in stock toast
 x show statistics toast (reshow welcome)
   info button in toolbar instead of help?

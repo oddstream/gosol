@@ -47,6 +47,10 @@ func (b *Baize) Saveable() SaveableBaize {
 // UpdateFromSaveable updates the contents of the Piles from a saved copy of a previous state
 func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 
+	if len(sav.Piles) == 0 {
+		log.Panic("bad SaveableBaize passed to UpdateFromSaveable()")
+	}
+
 	var cardCache []*Card
 
 	for _, p := range b.Piles {
@@ -61,10 +65,9 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		pile := b.Piles[i]
 		savedPile := sav.Piles[i]
 		if pile.Class != savedPile.Class {
-			log.Fatal("saved pile", savedPile.Class, "does not match baize pile", pile.Class)
+			log.Panic("saved pile", savedPile.Class, "does not match baize pile", pile.Class)
 		}
 		if len(pile.Cards) != len(savedPile.Cards) {
-			// println("updating pile", pile.Class)
 			pile.UpdateFromSaved(cardCache, savedPile)
 		}
 	}
@@ -73,7 +76,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 	b.State = sav.State
 }
 
-// Saveable returns a reduced object for converting to JSON and saving
+// Saveable returns a reduced Pile object for converting to JSON and saving
 func (p *Pile) Saveable() SaveablePile {
 	sav := SaveablePile{Class: p.Class, Accept: p.localAccept, Recycles: p.localRecycles, Scrunch: p.scrunchPercentage}
 	for _, c := range p.Cards {
@@ -101,7 +104,7 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	for _, savedID := range sav.Cards {
 		c := findCardInCache(savedID)
 		if c == nil {
-			log.Fatal("could not find card in cache", savedID, savedID.String())
+			log.Panic("could not find card in cache", savedID, savedID.String())
 		}
 		p.Push(c)
 		if savedID.Prone() {

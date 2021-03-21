@@ -46,3 +46,19 @@ var starIconBytes []byte
 //go:embed icons/undo.png
 var undoIconBytes []byte
 
+// LoadIconMapFromEmbedded loads icons from go:embed vars
+func LoadIconMapFromEmbedded() {
+	decode("bookmark", bookmarkIconBytes)
+	decode("bookmark_add", bookmark_addIconBytes)
+	decode("close", closeIconBytes)
+	decode("done", doneIconBytes)
+	decode("done_all", done_allIconBytes)
+	decode("info", infoIconBytes)
+	decode("list", listIconBytes)
+	decode("menu", menuIconBytes)
+	decode("restore", restoreIconBytes)
+	decode("search", searchIconBytes)
+	decode("settings", settingsIconBytes)
+	decode("star", starIconBytes)
+	decode("undo", undoIconBytes)
+}

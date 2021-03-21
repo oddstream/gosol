@@ -132,16 +132,6 @@ func (b *Baize) StartGame() {
 	TheStatistics.welcomeToast(b.Variant)
 }
 
-// RestartGame resets Baize and restarts current variant with same seed
-func (b *Baize) RestartGame() {
-	// could load first entry on undo stack, start game will push initial state
-	if b.State == Started {
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
-	}
-	b.Restart()
-	b.StartGame()
-}
-
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
 	if b.State == Started {
@@ -196,7 +186,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	sav, ok := b.UndoPop() // removes extra pushed state
 	if !ok {
-		log.Fatal("error popping extra state from undo stack")
+		log.Panic("error popping extra state from undo stack")
 	}
 
 	piles, ok := buildVariantPiles(b.Variant)
@@ -224,6 +214,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 func (b *Baize) ShowInfo() {
 	TheStatistics.welcomeToast(b.Variant)
+	b.ui.Toast(fmt.Sprintf("You have made %s in this game", util.Pluralize("move", len(b.UndoStack)-1)))
 	stock := b.findPile("Stock")
 	if !(stock.X < 0 || stock.Y < 0) {
 		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", stock.CardCount())))
@@ -507,7 +498,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	if moveFrom == len(src.Cards) {
-		log.Fatal("MoveCards could not find card in source")
+		log.Panic("MoveCards could not find card in source")
 	}
 
 	oldSrcLen := len(src.Cards)
@@ -600,11 +591,11 @@ func (b *Baize) AfterUserMove() {
 	//
 
 	if len(b.UndoStack) == 0 {
-		log.Fatal("undo stack is empty in AfterUserMove()")
+		log.Panic("undo stack is empty in AfterUserMove()")
 	} else {
 		oldChecksum, ok = b.UndoPeekChecksum()
 		if !ok {
-			log.Fatal("error peeking undo stack checksum")
+			log.Panic("error peeking undo stack checksum")
 		}
 	}
 	newChecksum = b.Checksum()
@@ -612,7 +603,7 @@ func (b *Baize) AfterUserMove() {
 	if oldChecksum != newChecksum {
 		b.UndoPush()
 	} else {
-		println("not pushing to undo because checksums match")
+		log.Println("not pushing to undo because checksums match")
 	}
 
 }
@@ -970,7 +961,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("Heap %v, NumGC %v, Undo %d, State %d, Percent %d", ms.HeapAlloc, ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
 	}
 }
 
