@@ -39,6 +39,7 @@ type Baize struct {
 	stroke          *input.Stroke
 	input           *input.Input
 	ui              *ui.UI
+	stock           *Pile
 	commandTable    map[ebiten.Key]func()
 	DragOffsetY     int
 	DragOffsetBaseY int
@@ -67,10 +68,14 @@ func NewBaize() *Baize {
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
 	}
-	if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
-		TheBaize.NewVariant(TheBaize.Variant)
-	}
+	TheBaize.Start()
 	return TheBaize // ugly global-setting kludge
+}
+
+func (b *Baize) Start() {
+	if NoGameLoad || !b.LoadVariant(b.Variant) {
+		TheBaize.NewVariant(b.Variant)
+	}
 }
 
 // Reset the Baize
@@ -85,20 +90,16 @@ func (b *Baize) Reset() {
 	b.stroke = nil
 }
 
-// Restart the Baize without changing variant or seed
-func (b *Baize) Restart() {
-	stock := b.findPilePrefix("Stock")
-	if stock == nil {
-		log.Fatal("cannot find stock pile to recall cards with")
-	}
+// RecallCardsToStock without changing variant or seed
+func (b *Baize) RecallCardsToStock() {
 
 	for _, p := range b.Piles {
 		p.Reset() // stock needs resetting, too
-		if p == stock {
+		if p == b.stock {
 			continue
 		}
 		if p.CardCount() > 0 {
-			b.MoveCards(p.Cards[0], stock)
+			b.MoveCards(p.Cards[0], b.stock)
 		}
 		// if p.CardCount() != 0 {
 		// 	log.Fatal(p.Class, " still contains ", p.CardCount(), " cards")
@@ -117,7 +118,7 @@ func (b *Baize) Restart() {
 	// 	}
 	// }
 
-	shuffleCards(stock, b.Seed)
+	shuffleCards(b.stock, b.Seed)
 
 	b.UndoStack = nil // StartGame will deal cards then do initial UndoPush()
 	b.SavedPosition = 0
@@ -138,7 +139,7 @@ func (b *Baize) NewGame() {
 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
 	}
 	b.Seed = time.Now().UnixNano()
-	b.Restart()
+	b.RecallCardsToStock()
 	b.StartGame()
 }
 
@@ -160,13 +161,13 @@ func (b *Baize) NewVariant(v string) {
 	}
 	b.Piles = piles
 
-	stock := b.findPilePrefix("Stock")
-	if stock == nil {
+	b.stock = b.findPilePrefix("Stock")
+	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
 	}
-	createCards(stock)
-	b.totalCards = stock.CardCount()
-	shuffleCards(stock, b.Seed)
+	createCards(b.stock)
+	b.totalCards = b.stock.CardCount()
+	shuffleCards(b.stock, b.Seed)
 
 	b.Scale()
 
@@ -195,12 +196,12 @@ func (b *Baize) LoadVariant(v string) bool {
 	}
 	b.Piles = piles
 
-	stock := b.findPilePrefix("Stock")
-	if stock == nil {
+	b.stock = b.findPilePrefix("Stock")
+	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
 	}
-	createCards(stock)
-	b.totalCards = stock.CardCount()
+	createCards(b.stock)
+	b.totalCards = b.stock.CardCount()
 
 	b.UpdateFromSaveable(sav)
 	b.UndoPush()
@@ -215,14 +216,12 @@ func (b *Baize) LoadVariant(v string) bool {
 func (b *Baize) ShowInfo() {
 	TheStatistics.welcomeToast(b.Variant)
 	b.ui.Toast(fmt.Sprintf("You have made %s in this game", util.Pluralize("move", len(b.UndoStack)-1)))
-	stock := b.findPile("Stock")
-	if !(stock.X < 0 || stock.Y < 0) {
-		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", stock.CardCount())))
+	if !(b.stock.X < 0 || b.stock.Y < 0) {
+		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", b.stock.CardCount())))
 	}
 }
 
 func (b *Baize) dealCards() {
-	stock := b.findPilePrefix("Stock")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
@@ -231,7 +230,7 @@ func (b *Baize) dealCards() {
 		for _, d := range deal {
 			switch d {
 			case 'u':
-				c := stock.Pop() // this will flip card up
+				c := b.stock.Pop() // this will flip card up
 				if c == nil {
 					log.Fatal("out of cards during deal")
 				}
@@ -243,16 +242,16 @@ func (b *Baize) dealCards() {
 				}
 				p.Push(c)
 			case 'd':
-				c := stock.Pop() // this will flip card up
+				c := b.stock.Pop() // this will flip card up
 				if c == nil {
 					log.Fatal("out of cards during deal")
 				}
 				c.FlipDown()
 				p.Push(c)
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D':
-				idx, ok := findCard(stock.Cards, d)
+				idx, ok := findCard(b.stock.Cards, d)
 				if ok {
-					c := stock.Extract(idx)
+					c := b.stock.Extract(idx)
 					p.Push(c)
 				} else {
 					log.Fatal("cannot find", d, "during deal")
@@ -286,8 +285,8 @@ func (b *Baize) dealCards() {
 	}
 
 	if DebugMode {
-		if stock.Y < 0 {
-			println(stock.CardCount(), "cards remaining in hidden stock")
+		if b.stock.X < 0 || b.stock.Y < 0 {
+			println(b.stock.CardCount(), "cards remaining in hidden stock")
 		}
 	}
 }
@@ -351,7 +350,7 @@ func (b *Baize) countPiles(cls string) (total, count int) {
 func (b *Baize) PileTapped(p *Pile) {
 
 	// this method is in Baize because it needs access to Baize.findPile()
-	if p.Class != "Stock" {
+	if p.Class != "Stock" { // tapping on pile of StockSpider has no effect
 		return
 	}
 
@@ -360,10 +359,9 @@ func (b *Baize) PileTapped(p *Pile) {
 		if waste == nil || len(waste.Cards) == 0 {
 			return
 		}
-		stock := b.findPile("Stock")
 		for len(waste.Cards) > 0 {
 			c := waste.Pop()
-			stock.Push(c) // this will flip card down
+			b.stock.Push(c) // this will flip card down
 		}
 		p.SetRecycles(p.localRecycles - 1)
 		b.AfterUserMove()
@@ -422,8 +420,7 @@ func (b *Baize) CardTapped(c *Card) {
 	case "StockSpider":
 		_, empty := b.countPiles("Tableau")
 		if empty > 0 {
-			stock := b.findPilePrefix("Stock")
-			if stock.CardCount() > empty {
+			if b.stock.CardCount() > empty {
 				TheBaize.ui.Toast("All tableaux spaces must be filled before dealing a new row")
 				break
 			}
@@ -539,12 +536,9 @@ func (b *Baize) AutoMoves() {
 
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
-			amf := p.GetStringAttribute("AutoFillFrom")
-			if amf != "" {
-				src := b.findPile(amf)
-				if src != nil {
-					c := src.Peek()
-					if c != nil {
+			if aff := p.GetStringAttribute("AutoFillFrom"); aff != "" {
+				if src := b.findPile(aff); src != nil {
+					if c := src.Peek(); c != nil {
 						b.MoveCards(c, p)
 					}
 				}
@@ -821,8 +815,7 @@ func (b *Baize) ScaleCards() {
 			maxX = p.X
 		}
 	}
-	// All piles start at X=1 (not X=0) so "add" two extra piles to make a border
-	// pilesX := maxX - minX
+	// "add" two extra piles and a LeftMargin to make a half-card-width border
 
 	/*
 		71 x 96 = 1:1.352 (Microsoft retro)
@@ -841,7 +834,7 @@ func (b *Baize) ScaleCards() {
 		slotHeight := slotWidth * 1.444
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = 0
+		LeftMargin = (CardWidth / 2) + PilePaddingX
 	case "poker":
 		slotWidth := float64(windowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
@@ -849,7 +842,7 @@ func (b *Baize) ScaleCards() {
 		slotHeight := slotWidth * 1.39
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = 0
+		LeftMargin = (CardWidth / 2) + PilePaddingX
 	case "bridge":
 		slotWidth := float64(windowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
@@ -857,13 +850,13 @@ func (b *Baize) ScaleCards() {
 		slotHeight := slotWidth * 1.561
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = 0
+		LeftMargin = (CardWidth / 2) + PilePaddingX
 	case "retro":
 		CardWidth = 71
 		PilePaddingX = 7
 		CardHeight = 96
 		PilePaddingY = 10
-		cardsWidth := (maxX + 2) * (PilePaddingX + CardWidth)
+		cardsWidth := (PilePaddingX + CardWidth) * (maxX + 1) // add 1 for half width card margin
 		LeftMargin = (windowWidth - cardsWidth) / 2
 	}
 	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)

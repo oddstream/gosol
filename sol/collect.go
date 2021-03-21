@@ -135,8 +135,7 @@ func (b *Baize) Complete() bool {
 
 // Conformant returns true if stock is empty and all piles are conformant
 func (b *Baize) Conformant() bool {
-	stock := b.findPilePrefix("Stock")
-	if len(stock.Cards) > 0 {
+	if len(b.stock.Cards) > 0 {
 		return false
 	}
 	for _, p := range b.Piles {
