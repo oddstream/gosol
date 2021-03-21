@@ -2,12 +2,14 @@ package sol
 
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
+	"time"
 
 	"bytes"
 	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/util"
 )
 
 //go:embed assets/cards71x96.png
@@ -45,7 +47,7 @@ func init() {
 	// load fixed-size images for retro cards from spritesheets
 
 	println("loading retro card spritesheets")
-
+	defer util.Duration(time.Now(), "retro init")
 	img, _, err := image.Decode(bytes.NewReader(faceBytes))
 	if err != nil {
 		log.Panic(err)

@@ -8,6 +8,10 @@ import (
 	"oddstream.games/gosol/input"
 )
 
+var (
+	GenerateIcons bool = false
+)
+
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
 	input        *input.Input // place to receive clicks, taps and key presses from
@@ -80,6 +84,11 @@ func (u *UI) HideActiveDrawer() {
 	if con := u.VisibleDrawer(); con != nil {
 		con.Hide()
 	}
+}
+
+// Layout implements Ebiten's Layout
+func (u *UI) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return outsideWidth, outsideHeight
 }
 
 // Update is called once per tick and updates the UI's state

@@ -1,11 +1,16 @@
-+ icons.go creates and writes embeddedicons.go
++ Pile interface
+  PileBase type
+  Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
+  Too much duplication between "derived classes"
++ Baize.stock
++ fan waste after pop
 + widget that displays retro card backs (img, name), card picker
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
 + WASM
-  json_browser.go
-  embed icons
-  http server
+  [ ] json_browser.go
+  [x] embed icons
+  [ ] http server
 + Settings
   Card design (add default) (a slide out picker)
   Animation speed (a slide out picker for slow, medium, fast)
@@ -21,9 +26,7 @@
 + cannot tap on an animating card, leaves it out of place
 + Freecell, there was a card in a cell which was not
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
-+ only allow Collect() when tableaux is conformant, FAB
 + Collect() counts as one move, wrong for statistics
-+ statusbar: stock card count (if not hidden), number of moves, % complete
 + Scrim rect when nav drawer open? Will sponge up taps and drags. Maybe just alpha down the baize.
 + UI modal navigation drawer (blocks baize from dragging, tap on baize closes)
   https://material.io/components/navigation-drawer#usage
@@ -56,6 +59,12 @@
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
 
+x count of cards in stock toast
+x show statistics toast (reshow welcome)
+  info button in toolbar instead of help?
+x statusbar: stock card count (if not hidden), number of moves, % complete
+  NO - takes up too much screen room and looks ugly
+x icons.go creates and writes embeddedicons.go
 x retire WindowWidth/Height from Game, only need them in main
 x Auto scaling of cards to window size (what - even retro ones? Hmmm)
 x don't scale the retro cards with fogleman/gg, just create a big LeftMargin
@@ -67,6 +76,7 @@ x add vscroll to baize (not an actual vscroll, just allow it to be dragged up/do
 x retire Variant.DisplayName
 x use logoBytes to draw Ace of spades
 x draw flipping cards over transitioning cards
+x only allow Collect() when tableaux is conformant, FAB
 x Use material icons instead of unicode glyphs in UI
   https://material.io/resources/icons/?style=baseline
   use android png (no clear way to draw svg into image)

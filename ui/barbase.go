@@ -69,12 +69,12 @@ func (bb *BarBase) LayoutWidgets() {
 		switch w.Align() {
 		case -1: // left align
 			w.SetPosition(nextLeft, bb.y)
-			nextLeft += widgetWidth
+			nextLeft += widgetWidth + 24 // add padding for big fingers
 		case 0: // center
 			w.SetPosition(bb.width/2-widgetWidth/2, bb.y+widgetHeight/2)
 		case 1: // right align
 			w.SetPosition(nextRight, bb.y)
-			nextRight -= widgetWidth
+			nextRight -= widgetWidth + 24 // add padding for big fingers
 		}
 	}
 }
@@ -125,7 +125,7 @@ func (bb *BarBase) Update() {
 	}
 }
 
-// Draw the toolbar
+// Draw the bar
 func (bb *BarBase) Draw(screen *ebiten.Image) {
 	w, _ := screen.Size()
 	if bb.img == nil || w != bb.width {
@@ -134,6 +134,7 @@ func (bb *BarBase) Draw(screen *ebiten.Image) {
 		bb.LayoutWidgets()
 	}
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(bb.x), float64(bb.y))
 	screen.DrawImage(bb.img, op)
 
 	for _, w := range bb.widgets {

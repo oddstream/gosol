@@ -82,7 +82,3 @@ func (n *NavItem) NotifyCallback(event interface{}) {
 		}
 	}
 }
-
-// Update the state of this widget
-func (n *NavItem) Update() {
-}

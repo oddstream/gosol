@@ -6,10 +6,14 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+
+	"oddstream.games/gosol/util"
 )
 
 func createCards(stock *Pile) {
 
+	defer util.Duration(time.Now(), "createCards")
 	packs, ok := stock.GetIntAttribute("Packs")
 	if !ok || packs == 0 {
 		packs = 1
@@ -42,7 +46,7 @@ func createCards(stock *Pile) {
 
 func shuffleCards(stock *Pile, seed int64) {
 
-	rand.Seed(seed)
+	defer util.Duration(time.Now(), "shuffleCards")
 
 	// sort cards in order before shuffle (why?)
 	/*
@@ -58,6 +62,13 @@ func shuffleCards(stock *Pile, seed int64) {
 		}
 	*/
 	sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
+
+	if NoShuffle {
+		println("not shuffling cards")
+		return
+	}
+
+	rand.Seed(seed)
 
 	// println("-ordered------------")
 	// for i, c := range sh.cards {

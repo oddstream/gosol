@@ -63,6 +63,10 @@ func (wb *WidgetBase) Align() int {
 	return wb.align
 }
 
+// Update the state of this widget
+func (wb *WidgetBase) Update() {
+}
+
 // Draw the widget
 func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	// don't draw a widget unless it is fully contained within it's parent

@@ -8,6 +8,9 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"time"
+
+	"oddstream.games/gosol/util"
 )
 
 func fullPath(jsonFname string) (string, error) {
@@ -105,6 +108,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 // Load an already existing UserData object from file
 func (ud *UserData) Load() {
 
+	defer util.Duration(time.Now(), "UserData.Load")
 	bytes, count, err := loadBytesFromFile("userdata.json")
 	if err != nil || count == 0 {
 		return
@@ -120,6 +124,7 @@ func (ud *UserData) Load() {
 
 // Save writes the UserData object to file
 func (ud *UserData) Save() {
+	defer util.Duration(time.Now(), "UserData.Save")
 
 	bytes, err := json.MarshalIndent(ud, "", "\t")
 	if err != nil {
@@ -132,6 +137,7 @@ func (ud *UserData) Save() {
 
 // Load statistics for all variants from JSON to an already-created Statistics object
 func (s *Statistics) Load() {
+	defer util.Duration(time.Now(), "Statistics.Load")
 
 	bytes, count, err := loadBytesFromFile("statistics.json")
 	if err != nil || count == 0 {
@@ -148,6 +154,7 @@ func (s *Statistics) Load() {
 
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
+	defer util.Duration(time.Now(), "Statistics.Save")
 
 	bytes, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
@@ -160,6 +167,7 @@ func (s *Statistics) Save() {
 
 // Save the entire undo stack to file
 func (b *Baize) Save() {
+	defer util.Duration(time.Now(), "Baize.Save")
 
 	if len(b.UndoStack) == 0 {
 		return
@@ -178,6 +186,7 @@ func (b *Baize) Save() {
 
 // Load the entire undo stack from file
 func (b *Baize) Load(v string) bool {
+	defer util.Duration(time.Now(), "Baize.Load")
 
 	bytes, count, err := loadBytesFromFile(v + ".json")
 	if err != nil || count == 0 {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"image"
 	"log"
+	"time"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -56,6 +57,7 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.DrawStringAnchored(string(r), float64(CardWidth)-float64(CardWidth)/(3.333), float64(CardHeight)/6, 0.5, 0.5)
 	dc.Stroke()
 
+	// the following increases duration from 50 to 60ms
 	if ID.Ordinal() == 1 && ID.Suit() == SPADE {
 		img, _, err := image.Decode(bytes.NewReader(logoBytes))
 		if err != nil {
@@ -72,9 +74,9 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	} else if ID.Ordinal() == 1 || ID.Ordinal() > 10 {
 		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
+		dc.Stroke()
 	}
 
-	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
@@ -101,7 +103,7 @@ func createShadowImage() *ebiten.Image {
 
 // BuildScalables builds the card images that can change in scale, after CardWidth,Height have been set
 func BuildScalables() {
-
+	defer util.Duration(time.Now(), "BuildScalables")
 	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 
 	if TheUserData.CardStyle != "retro" {

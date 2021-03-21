@@ -38,11 +38,10 @@ func NewToolbar(input *input.Input) *Toolbar {
 	tb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets() (y will always be 0 in a toolbar)
 		NewIconButton(tb, input, 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
-		NewIconButton(tb, input, 0, 0, 48, 48, 1, "help_outline", ebiten.KeyH),
+		NewIconButton(tb, input, 0, 0, 48, 48, 1, "info", ebiten.KeyI),
 		NewIconButton(tb, input, 0, 0, 48, 48, 1, "done", ebiten.KeyC),
 		NewIconButton(tb, input, 0, 0, 48, 48, 1, "undo", ebiten.KeyU),
 	}
-	tb.widgets[1].Deactivate() // deactivate the help rune for now
 	return tb
 }
 

@@ -62,6 +62,7 @@ func NewBaize() *Baize {
 		ebiten.KeyC:      TheBaize.Collect,
 		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF:      TheBaize.ShowPicker,
+		ebiten.KeyI:      TheBaize.ShowInfo,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
@@ -219,6 +220,14 @@ func (b *Baize) LoadVariant(v string) bool {
 	TheStatistics.welcomeToast(b.Variant)
 
 	return true
+}
+
+func (b *Baize) ShowInfo() {
+	TheStatistics.welcomeToast(b.Variant)
+	stock := b.findPile("Stock")
+	if !(stock.X < 0 || stock.Y < 0) {
+		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", stock.CardCount())))
+	}
 }
 
 func (b *Baize) dealCards() {
@@ -836,7 +845,7 @@ func (b *Baize) ScaleCards() {
 	switch TheUserData.CardStyle {
 	default:
 		slotWidth := float64(windowWidth) / float64(maxX+2)
-		PilePaddingX = int(slotWidth / 10) // space applied to right of each pile
+		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
 		slotHeight := slotWidth * 1.444
 		PilePaddingY = int(slotHeight / 10)
@@ -865,13 +874,10 @@ func (b *Baize) ScaleCards() {
 		PilePaddingY = 10
 		cardsWidth := (maxX + 2) * (PilePaddingX + CardWidth)
 		LeftMargin = (windowWidth - cardsWidth) / 2
-		// LeftMargin = 0
 	}
 	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 
 	TopMargin = 48 + CardHeight/3
-
-	println("LeftMargin", LeftMargin)
 
 }
 
@@ -912,6 +918,9 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		b.OldWindowWidth = outsideWidth
 		b.Scale()
 	}
+
+	b.ui.Layout(outsideWidth, outsideHeight)
+
 	return outsideWidth, outsideHeight
 }
 

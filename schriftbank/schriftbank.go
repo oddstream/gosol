@@ -4,9 +4,11 @@ package schriftbank
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"log"
+	"time"
 
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	"oddstream.games/gosol/util"
 )
 
 //go:embed assets/Acme-Regular.ttf
@@ -37,6 +39,9 @@ var (
 )
 
 func init() {
+
+	println("loading fonts")
+	defer util.Duration(time.Now(), "init schriftbank")
 
 	tt, err := truetype.Parse(robotoRegularFontBytes)
 	if err != nil {
@@ -74,7 +79,7 @@ func init() {
 
 // MakeCardFonts creates the fonts used for Card, once size of card is known (or has changed)
 func MakeCardFonts(cardWidth int) {
-
+	defer util.Duration(time.Now(), "MakeCardFonts")
 	tt, err := truetype.Parse(acmeFontBytes)
 	if err != nil {
 		log.Fatal(err)

@@ -9,6 +9,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
+
+	"oddstream.games/gosol/util"
 )
 
 /*
@@ -73,18 +76,7 @@ func saveBytesToFile(bytes []byte, pngFname string) {
 	}
 }
 
-func LoadIconMap() {
-	// img, _, err := image.Decode(bytes.NewReader(undoBytes))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// IconMap["undo"] = img
-
-	// dci := gg.NewContextForImage(img)
-	// w := dci.Width()
-	// h := dci.Height()
-	// println("button image dimensions", w, h)
-	// dci.Scale(float64(rb.width)/float64(w), float64(rb.height)/float64(h))
+func LoadIconMapFromZipFiles() {
 
 	// temporary hack while figuring out size and type of icons
 
@@ -92,18 +84,23 @@ func LoadIconMap() {
 
 	// https://material.io/resources/icons/style=baseline
 
-	gofile, err := os.Create("/home/gilbert/gosol/ui/embeddedicons.go")
+	println("loading ui icons from zip files")
+
+	var gofile *os.File
+	var err error
+	gofile, err = os.Create("/home/gilbert/gosol/ui/embeddedicons.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer closeFile(gofile)
 	gofile.WriteString("package ui\n")
-	gofile.WriteString("// Code automatically generated. DO NOT EDIT.\n")
+	gofile.WriteString("// Code automatically generated. DO NOT EDIT.\n\n")
+	gofile.WriteString("//lint:file-ignore U1000,ST1003 Ignore unused code and underscores in generated code\n\n")
 	gofile.WriteString("import (\n")
 	gofile.WriteString("\t_ \"embed\" // go:embed only allowed in Go files that import \"embed\"\n")
-	gofile.WriteString(")\n")
+	gofile.WriteString(")\n\n")
 
-	iconNames := []string{"bookmark", "bookmark_add", "close", "done", "done_all", "help_outline", "list", "menu", "restore", "search", "settings", "star", "undo"}
+	iconNames := []string{"bookmark", "bookmark_add", "close", "done", "done_all", "info", "list", "menu", "restore", "search", "settings", "star", "undo"}
 	for _, iconName := range iconNames {
 		zipFname := fmt.Sprintf("/home/gilbert/Downloads/%s-white-android.zip", iconName)
 		zf, err := zip.OpenReader(zipFname)
@@ -130,4 +127,38 @@ func LoadIconMap() {
 	// for _, file := range zf.File {
 	// 	println(file.Name)
 	// }
+}
+
+func decode(name string, variable []byte) {
+	img, _, err := image.Decode(bytes.NewReader(variable))
+	if err != nil {
+		log.Panic(err)
+	}
+	IconMap[name] = img
+}
+
+func LoadIconMapFromEmbedded() {
+	println("loading ui icons go:embed")
+	decode("bookmark", bookmarkIconBytes)
+	decode("bookmark_add", bookmarkIconBytes)
+	decode("close", closeIconBytes)
+	decode("done", doneIconBytes)
+	decode("done_all", done_allIconBytes)
+	decode("info", infoIconBytes)
+	decode("list", listIconBytes)
+	decode("menu", menuIconBytes)
+	decode("restore", restoreIconBytes)
+	decode("search", searchIconBytes)
+	decode("settings", settingsIconBytes)
+	decode("star", starIconBytes)
+	decode("undo", undoIconBytes)
+}
+
+func LoadIconMap() {
+	defer util.Duration(time.Now(), "LoadIconMap")
+	if GenerateIcons {
+		LoadIconMapFromZipFiles()
+	} else {
+		LoadIconMapFromEmbedded()
+	}
 }

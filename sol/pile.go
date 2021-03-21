@@ -133,7 +133,7 @@ func (p *Pile) createBackgroundImage() {
 		// dc.DrawLine(float64(CardWidth)/3.333, 0, float64(CardWidth)/3.333, float64(CardHeight))
 		dc.Stroke()
 	}
-	if strings.HasPrefix(p.Class, "Stock") {
+	if strings.HasPrefix(p.Class, "Stock") { // never StockSpider?
 		if schriftbank.CardSymbolLarge != nil {
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
 		}

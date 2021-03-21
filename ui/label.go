@@ -64,7 +64,3 @@ func (l *Label) NotifyCallback(event interface{}) {
 		}
 	}
 }
-
-// Update the state of this widget
-func (l *Label) Update() {
-}

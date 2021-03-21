@@ -13,17 +13,19 @@ var (
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
-	NoGameLoad = false
+	NoGameLoad bool = false
 	// NoGameSave is a boolean set by command line flag -nosave
-	NoGameSave = false
+	NoGameSave bool = false
+	// NoShuffle stops the cards from being shuffled
+	NoShuffle bool = false
 	// CardWidth of cards
 	CardWidth int = 71
 	// CardHeight of cards
 	CardHeight int = 96
 	// PilePaddingX the gap left to the right of the pile
-	PilePaddingX = 0
+	PilePaddingX int = 0
 	// PilePaddingY the gap left underneath each pile
-	PilePaddingY = 0
+	PilePaddingY int = 0
 	// LeftMargin the gap between the left of the screen and the first pile
 	LeftMargin int = 0
 	// TopMargin the gap between top pile and top of baize

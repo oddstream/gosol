@@ -17,6 +17,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gosol/sol"
+	"oddstream.games/gosol/ui"
 )
 
 func init() {
@@ -24,11 +25,15 @@ func init() {
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
+	flag.BoolVar(&sol.NoShuffle, "noshuffle", false, "do not shuffle cards")
 	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
 	flag.StringVar(&sol.TheUserData.CardStyle, "c", "retro", "set the card face to retro, default, bridge, or poker")
+	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
 }
 
 func main() {
+
+	log.SetFlags(0)
 
 	sol.TheUserData.Load()
 

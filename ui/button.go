@@ -64,7 +64,3 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 		}
 	}
 }
-
-// Update the state of this widget
-func (b *IconButton) Update() {
-}

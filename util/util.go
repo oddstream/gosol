@@ -3,7 +3,9 @@ package util
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"time"
 )
 
 // InRect returns true if px,py is within Rect returned by function parameter
@@ -150,4 +152,13 @@ func Contains(a []string, x string) bool {
 		}
 	}
 	return false
+}
+
+// Duration of a func call
+// Arguments to a defer statement is immediately evaluated and stored.
+// The deferred function receives the pre-evaluated values when its invoked.
+// usage: defer util.Duration(time.Now(), "IntFactorial")
+func Duration(invocation time.Time, name string) {
+	elapsed := time.Since(invocation)
+	log.Printf("%s took %s", name, elapsed)
 }
