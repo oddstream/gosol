@@ -161,6 +161,11 @@ func (b *Baize) NewVariant(v string) {
 	}
 	b.Piles = piles
 
+	b.OldWindowWidth = 0 // force a rescale
+
+	// now we know number of piles and can discover window width; scale the cards before creating them
+	b.Scale()
+
 	b.stock = b.findPilePrefix("Stock")
 	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
@@ -168,8 +173,6 @@ func (b *Baize) NewVariant(v string) {
 	createCards(b.stock)
 	b.totalCards = b.stock.CardCount()
 	shuffleCards(b.stock, b.Seed)
-
-	b.Scale()
 
 	b.StartGame()
 }
@@ -196,6 +199,11 @@ func (b *Baize) LoadVariant(v string) bool {
 	}
 	b.Piles = piles
 
+	b.OldWindowWidth = 0 // force a rescale
+
+	// now we know number of piles and can discover window width; scale the cards before creating them
+	b.Scale()
+
 	b.stock = b.findPilePrefix("Stock")
 	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
@@ -205,8 +213,6 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	b.UpdateFromSaveable(sav)
 	b.UndoPush()
-
-	b.Scale()
 
 	TheStatistics.welcomeToast(b.Variant)
 
@@ -806,15 +812,13 @@ func (b *Baize) ScaleCards() {
 
 	windowWidth, _ := ebiten.WindowSize()
 
-	minX, maxX := 99, 0
+	var maxX int
 	for _, p := range b.Piles {
-		if p.X < minX {
-			minX = p.X
-		}
 		if p.X > maxX {
 			maxX = p.X
 		}
 	}
+
 	// "add" two extra piles and a LeftMargin to make a half-card-width border
 
 	/*
@@ -859,7 +863,7 @@ func (b *Baize) ScaleCards() {
 		cardsWidth := (PilePaddingX + CardWidth) * (maxX + 1) // add 1 for half width card margin
 		LeftMargin = (windowWidth - cardsWidth) / 2
 	}
-	log.Printf("card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
+	log.Printf("scaled card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 
 	TopMargin = 48 + CardHeight/3
 
@@ -867,6 +871,12 @@ func (b *Baize) ScaleCards() {
 
 // Scale resizes piles, cards (inc shadow image), fonts and then repositions piles and cards
 func (b *Baize) Scale() {
+
+	// on startup, b.OldWindowWidth will be 0 so scalables will be built
+	w, _ := ebiten.WindowSize()
+	if w == b.OldWindowWidth {
+		return
+	}
 
 	b.ScaleCards()
 
@@ -892,20 +902,18 @@ func (b *Baize) Scale() {
 		}
 	}
 
+	b.OldWindowWidth = w
 }
 
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
-	if b.OldWindowWidth == 0 || b.OldWindowWidth != outsideWidth {
-		println("WindowWidth was", b.OldWindowWidth, "now becoming", outsideWidth)
-		b.OldWindowWidth = outsideWidth
-		b.Scale()
-	}
+	b.Scale()
 
 	b.ui.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
+
 }
 
 // Update the baize state (transitions, user input)

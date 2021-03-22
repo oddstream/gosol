@@ -70,21 +70,21 @@ func (c *Card) getRetroImages() {
 	case "Club":
 		faceY = 0
 	case "Diamond":
-		faceY = CardHeight
+		faceY = 96
 	case "Heart":
-		faceY = CardHeight + CardHeight
+		faceY = 96 + 96
 	case "Spade":
-		faceY = CardHeight + CardHeight + CardHeight
+		faceY = 96 + 96 + 96
 	}
-	faceX = (c.Ordinal() - 1) * CardWidth
+	faceX = (c.Ordinal() - 1) * 71
 
-	c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+CardWidth, faceY+CardHeight)).(*ebiten.Image)
+	c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+71, faceY+96)).(*ebiten.Image)
 	if c.faceImg == nil {
 		log.Panic("no face image")
 	}
 	pt := backFrames[TheUserData.CardBack]
 	backX, backY = pt.X, pt.Y
-	c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+CardWidth, backY+CardHeight)).(*ebiten.Image)
+	c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+71, backY+96)).(*ebiten.Image)
 	if c.backImg == nil {
 		log.Panic("no back image")
 	}
