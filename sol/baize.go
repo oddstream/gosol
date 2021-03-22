@@ -701,6 +701,18 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					b.NewVariant(newVariant)
 				}
 			}
+		case "CardBack":
+			TheUserData.CardBack = v.Data
+			for _, p := range b.Piles {
+				for _, c := range p.Cards {
+					if TheUserData.CardStyle == "retro" {
+						c.getRetroImages()
+					} else {
+						c.getScalableImages()
+					}
+				}
+			}
+
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}

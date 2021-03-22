@@ -106,37 +106,7 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 
 // getRetroImages reloads the face and back image for this card
 func (c *Card) getRetroImages() {
-	// var faceX, faceY, backX, backY int
-	// switch c.StringSuit() {
-	// case "Club":
-	// 	faceY = 0
-	// case "Diamond":
-	// 	faceY = 96
-	// case "Heart":
-	// 	faceY = 96 + 96
-	// case "Spade":
-	// 	faceY = 96 + 96 + 96
-	// }
-	// faceX = (c.Ordinal() - 1) * 71
-
-	// c.faceImg = faceImageSheet.SubImage(image.Rect(faceX, faceY, faceX+71, faceY+96)).(*ebiten.Image)
-	// if c.faceImg == nil {
-	// 	log.Panic("no face image")
-	// }
-	// // dc := gg.NewContextForImage(ebiten.NewImageFromImage(c.faceImg))
-	// // dc.SetColor(BasicColors["Black"])
-	// // // draw the RoundedRect entirely INSIDE the context
-	// // dc.DrawRoundedRectangle(1, 1, float64(dc.Width()-2), float64(dc.Height()-2), 2)
-	// // dc.Stroke() // otherwise outline gets drawn in textColor (!?)
-	// // c.faceImg = ebiten.NewImageFromImage(dc.Image())
-
-	// pt := backFrames[TheUserData.CardBack]
-	// backX, backY = pt.X, pt.Y
-	// c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+71, backY+96)).(*ebiten.Image)
-	// if c.backImg == nil {
-	// 	log.Panic("no back image")
-	// }
-	var ID CardID = c.ID & CardID(suitMask|ordinalMask)
+	ID := NewCardID(0, c.Suit(), c.Ordinal())
 	c.faceImg = retroFaceImages[ID]
 	c.backImg = retroBackImages[TheUserData.CardBack]
 }

@@ -12,7 +12,7 @@ type CardBackPicker struct {
 
 // NewCardBackPicker creates a new container
 func NewCardBackPicker(input *input.Input, content map[string]*ebiten.Image) *CardBackPicker {
-	p := &CardBackPicker{DrawerBase: DrawerBase{input: input, x: -256, y: 48, width: 256}} // height will be set when drawn
+	p := &CardBackPicker{DrawerBase: DrawerBase{input: input, x: -71, y: 48, width: 71}} // height will be set when drawn
 	for name, img := range content {
 		p.widgets = append(p.widgets, NewCardBackWidget(p, input, name, img))
 	}
