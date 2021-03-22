@@ -119,8 +119,9 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 func (p *Pile) createBackgroundImage() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
-	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), float64(CardWidth)/12)
+	dc.SetLineWidth(2)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), cardCornerRadius())
 	dc.Stroke()
 
 	if p.localAccept > 0 && p.localAccept <= 13 {
@@ -217,6 +218,11 @@ func (p *Pile) FannedScreenRect() (x0 int, y0 int, x1 int, y1 int) {
 	y0 += TheBaize.DragOffsetY
 	y1 += TheBaize.DragOffsetY
 	return // using named return parameters
+}
+
+// Hidden returns true if this Pile is off screen
+func (p *Pile) Hidden() bool {
+	return p.X < 0 || p.Y < 0
 }
 
 // SetAccept updates the Accept for this pile and updates the background image

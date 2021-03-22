@@ -222,7 +222,7 @@ func (b *Baize) LoadVariant(v string) bool {
 func (b *Baize) ShowInfo() {
 	TheStatistics.welcomeToast(b.Variant)
 	b.ui.Toast(fmt.Sprintf("You have made %s in this game", util.Pluralize("move", len(b.UndoStack)-1)))
-	if !(b.stock.X < 0 || b.stock.Y < 0) {
+	if !b.stock.Hidden() {
 		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", b.stock.CardCount())))
 	}
 }
@@ -269,17 +269,14 @@ func (b *Baize) dealCards() {
 	}
 
 	for _, p := range b.Piles {
-		bury, ok := p.GetIntAttribute("Bury")
-		if ok {
+		if bury, ok := p.GetIntAttribute("Bury"); ok {
 			p.BuryCards(bury)
 		}
-		disinter, ok := p.GetIntAttribute("Disinter")
-		if ok {
+		if disinter, ok := p.GetIntAttribute("Disinter"); ok {
 			p.DisinterCards(disinter)
 		}
 		if p.Class == "Foundation" && p.CardCount() == 1 {
-			afp := p.GetBoolAttribute("AcceptFirstPush")
-			if afp {
+			if afp := p.GetBoolAttribute("AcceptFirstPush"); afp {
 				ord := p.Peek().Ordinal()
 				for _, fp := range b.Piles {
 					if fp.Class == "Foundation" {
@@ -291,7 +288,7 @@ func (b *Baize) dealCards() {
 	}
 
 	if DebugMode {
-		if b.stock.X < 0 || b.stock.Y < 0 {
+		if b.stock.Hidden() {
 			println(b.stock.CardCount(), "cards remaining in hidden stock")
 		}
 	}

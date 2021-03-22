@@ -67,9 +67,8 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		if pile.Class != savedPile.Class {
 			log.Panic("saved pile", savedPile.Class, "does not match baize pile", pile.Class)
 		}
-		if len(pile.Cards) != len(savedPile.Cards) {
-			pile.UpdateFromSaved(cardCache, savedPile)
-		}
+		// always update pile, even if lengths match (TODO copy to Opsole)
+		pile.UpdateFromSaved(cardCache, savedPile)
 	}
 
 	b.Seed = sav.Seed // TODO ???
@@ -97,7 +96,7 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 		return nil
 	}
 
-	p.Cards = nil
+	p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
 	p.localAccept = sav.Accept
 	p.localRecycles = sav.Recycles
 	p.scrunchPercentage = sav.Scrunch

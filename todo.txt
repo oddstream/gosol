@@ -1,8 +1,8 @@
++ open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
 + Pile interface
   PileBase type
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
-+ Baize.stock
 + fan waste after pop
 + widget that displays retro card backs (img, name), card picker
 + don't save virgin games to json? would need to delete any existing saved game

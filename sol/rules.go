@@ -184,7 +184,7 @@ func (b *Baize) rulesContents() []string {
 
 	uniquePiles := []string{}
 	for _, p := range b.Piles {
-		if p.X < 0 || p.Y < 0 {
+		if p.Hidden() {
 			continue // don't show rules for hidden piles
 		}
 		if !util.Contains(uniquePiles, p.Class) {
@@ -204,7 +204,7 @@ func (b *Baize) rulesContents() []string {
 			if !ok || packs == 0 {
 				packs = 1
 			}
-			if p.X < 0 || p.Y < 0 {
+			if b.stock.Hidden() {
 				fmt.Fprintf(&str, "The game uses %s of cards in a hidden stock. ", util.Pluralize("pack", packs))
 			} else {
 				fmt.Fprintf(&str, "The game uses %s of cards. ", util.Pluralize("pack", packs))

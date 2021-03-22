@@ -82,6 +82,13 @@ func (c *Card) getRetroImages() {
 	if c.faceImg == nil {
 		log.Panic("no face image")
 	}
+	// dc := gg.NewContextForImage(ebiten.NewImageFromImage(c.faceImg))
+	// dc.SetColor(BasicColors["Black"])
+	// // draw the RoundedRect entirely INSIDE the context
+	// dc.DrawRoundedRectangle(1, 1, float64(dc.Width()-2), float64(dc.Height()-2), 2)
+	// dc.Stroke() // otherwise outline gets drawn in textColor (!?)
+	// c.faceImg = ebiten.NewImageFromImage(dc.Image())
+
 	pt := backFrames[TheUserData.CardBack]
 	backX, backY = pt.X, pt.Y
 	c.backImg = backImageSheet.SubImage(image.Rect(backX, backY, backX+71, backY+96)).(*ebiten.Image)

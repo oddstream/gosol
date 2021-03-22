@@ -65,7 +65,6 @@ func (u *UI) Toast(message string) {
 	t.ticksLeft = int(ebiten.CurrentTPS()) * 6
 
 	u.toastManager.Add(t)
-	println("toast:", message, "(", int(w), ",", int(h), ")")
 }
 
 // Add a new toast to the list

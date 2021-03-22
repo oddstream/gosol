@@ -35,9 +35,6 @@ var (
 // GSM provides global access to the game state manager
 var GSM *GameStateManager = &GameStateManager{}
 
-// CTQ provides global access to the Card Transition Queue
-//var CTQ *CardTransitionQueue = &CardTransitionQueue{}
-
 // TheUserData holds serialized game progress data
 var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
 

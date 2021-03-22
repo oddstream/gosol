@@ -50,7 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// default window size is 640, 480
-	ebiten.SetWindowSize(1000, 800)    // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetWindowSize(640*2, 480*2) // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
 	ebiten.SetScreenClearedEveryFrame(false)
