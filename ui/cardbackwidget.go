@@ -16,9 +16,6 @@ type CardBackWidget struct {
 // NewCardBackWidget creates a new cardBack widget for the CardBackPicker
 func NewCardBackWidget(parent Container, input *input.Input, name string, img *ebiten.Image) *CardBackWidget {
 	w, h := img.Size()
-	if img == nil {
-		println("warning nil img")
-	}
 	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, input: input, x: -71, y: 0, width: w, height: h, img: img},
 		name: name}
 	cb.input.Add(cb)

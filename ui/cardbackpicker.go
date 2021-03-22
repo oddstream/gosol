@@ -17,9 +17,6 @@ func NewCardBackPicker(input *input.Input, content map[string]*ebiten.Image) *Ca
 		p.widgets = append(p.widgets, NewCardBackWidget(p, input, name, img))
 	}
 	p.LayoutWidgets()
-	// for _, w := range p.widgets {
-	// 	println(w.Rect())
-	// }
 	return p
 }
 

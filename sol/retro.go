@@ -48,8 +48,9 @@ func init() {
 
 	// load fixed-size images for retro cards from spritesheets
 
-	println("loading retro card spritesheets")
+	// println("loading retro card spritesheets")
 	defer util.Duration(time.Now(), "retro init")
+
 	img, _, err := image.Decode(bytes.NewReader(faceBytes))
 	if err != nil {
 		log.Panic(err)
@@ -73,9 +74,9 @@ func init() {
 	backBytes = nil
 
 	retroBackImages = make(map[string]*ebiten.Image)
+	retroBackImages["Default"] = createScalableBackImage(71, 96)
 	for name, pt := range backFrames {
-		backX, backY := pt.X, pt.Y
-		backImg := backImageSheet.SubImage(image.Rect(backX, backY, backX+71, backY+96)).(*ebiten.Image)
+		backImg := backImageSheet.SubImage(image.Rect(pt.X, pt.Y, pt.X+71, pt.Y+96)).(*ebiten.Image)
 		if backImg == nil {
 			log.Panic("no back image")
 		}

@@ -26,7 +26,7 @@ func cardCornerRadius() float64 {
 	return float64(CardWidth) / 12
 }
 
-func createFaceImage(ID CardID) *ebiten.Image {
+func createScalableFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), cardCornerRadius())
@@ -86,23 +86,23 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createBackImage() *ebiten.Image {
-	dc := gg.NewContext(CardWidth, CardHeight)
+func createScalableBackImage(width, height int) *ebiten.Image {
+	dc := gg.NewContext(width, height)
 	dc.SetColor(ExtendedColors[TheUserData.BackColor])
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), cardCornerRadius())
+	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), cardCornerRadius())
 	dc.Fill()
 	dc.SetLineWidth(2)
 	dc.SetRGBA(0, 0, 0, 0.1)
-	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), cardCornerRadius())
+	dc.DrawRoundedRectangle(1, 1, float64(width-2), float64(height-2), cardCornerRadius())
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createShadowImage() *ebiten.Image {
-	dc := gg.NewContext(CardWidth, CardHeight)
+func createScalableShadowImage(width, height int) *ebiten.Image {
+	dc := gg.NewContext(width, height)
 	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
 	dc.SetLineWidth(2)
-	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), cardCornerRadius())
+	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), cardCornerRadius())
 	dc.Fill()
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
@@ -118,13 +118,13 @@ func BuildScalables() {
 		for ord := 1; ord < 14; ord++ {
 			for suit := 1; suit < 5; suit++ {
 				ID := NewCardID(0, suit, ord)
-				scalableFaceImages[ID] = createFaceImage(ID)
+				scalableFaceImages[ID] = createScalableFaceImage(ID)
 			}
 		}
-		scalableBackImage = createBackImage()
+		scalableBackImage = createScalableBackImage(CardWidth, CardHeight)
 	}
 
-	shadowImage = createShadowImage()
+	shadowImage = createScalableShadowImage(CardWidth, CardHeight)
 }
 
 // getScalableImages reloads the face and back image for this card
