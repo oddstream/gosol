@@ -18,14 +18,14 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		// NewLabel(n, input, 0, -100, 256, 48, 0, "Title", schriftbank.RobotoMedium24, ""),
 		// give -ve x to make sure item is initially drawn off screen
 		// y will be set by LayoutWidgets()
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "star", "New deal", ebiten.KeyN),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "restore", "Restart deal", ebiten.KeyR),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "search", "Find game...", ebiten.KeyF),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "bookmark_add", "Bookmark", ebiten.KeyS),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "bookmark", "Goto bookmark", ebiten.KeyL),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "list", "Rules...", ebiten.KeyF1),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "settings", "Settings...", ebiten.KeyHome),
-		NewNavItem(n, input, -256, 0, 256, 48, 0, "close", "Save and exit", ebiten.KeyX),
+		NewNavItem(n, input, "star", "New deal", ebiten.KeyN),
+		NewNavItem(n, input, "restore", "Restart deal", ebiten.KeyR),
+		NewNavItem(n, input, "search", "Find game...", ebiten.KeyF),
+		NewNavItem(n, input, "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(n, input, "bookmark", "Goto bookmark", ebiten.KeyL),
+		NewNavItem(n, input, "list", "Rules...", ebiten.KeyF1),
+		NewNavItem(n, input, "settings", "Settings...", ebiten.KeyHome),
+		NewNavItem(n, input, "close", "Save and exit", ebiten.KeyX),
 	}
 	n.LayoutWidgets()
 	n.widgets[6].Deactivate()
@@ -36,14 +36,14 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 func (u *UI) ToggleNavDrawer() {
 
 	con := u.VisibleDrawer()
-	if con == u.navdrawer {
+	if con == u.navDrawer {
 		con.Hide()
 		return
 	}
 	if con == nil {
-		u.navdrawer.Show()
+		u.navDrawer.Show()
 		return
 	}
 	con.Hide()
-	u.navdrawer.Show()
+	u.navDrawer.Show()
 }

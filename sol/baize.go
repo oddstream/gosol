@@ -53,7 +53,7 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input, pickerContents())
+	TheBaize.ui = ui.New(TheBaize.input, pickerContents(), retroBackImages)
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
@@ -62,7 +62,8 @@ func NewBaize() *Baize {
 		ebiten.KeyL:      TheBaize.LoadPosition,
 		ebiten.KeyC:      TheBaize.Collect,
 		ebiten.KeyF1:     TheBaize.ShowRules,
-		ebiten.KeyF:      TheBaize.ShowPicker,
+		ebiten.KeyF:      TheBaize.ShowVariantPicker,
+		ebiten.KeyF2:     TheBaize.ShowCardBackPicker,
 		ebiten.KeyI:      TheBaize.ShowInfo,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,

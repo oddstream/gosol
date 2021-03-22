@@ -20,14 +20,14 @@ func NewPicker(input *input.Input, content []string) *Picker {
 	return p
 }
 
-// ShowPicker makes the variant picker visible
-func (u *UI) ShowPicker() {
+// ShowVariantPicker makes the variant picker visible
+func (u *UI) ShowVariantPicker() {
 	con := u.VisibleDrawer()
-	if con == u.picker {
+	if con == u.variantPicker {
 		return
 	}
 	if con != nil {
 		con.Hide()
 	}
-	u.picker.Show()
+	u.variantPicker.Show()
 }

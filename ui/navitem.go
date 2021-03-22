@@ -47,8 +47,8 @@ func (n *NavItem) createImg() *ebiten.Image {
 }
 
 // NewNavItem creates a new NavItem
-func NewNavItem(parent Container, input *input.Input, x, y, width, height, align int, iconName string, text string, key ebiten.Key) *NavItem {
-	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+func NewNavItem(parent Container, input *input.Input, iconName string, text string, key ebiten.Key) *NavItem {
+	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: -256, y: 0, width: 256, height: 48, align: 0},
 		iconName: iconName, text: text, key: key}
 	n.Activate()
 	return n

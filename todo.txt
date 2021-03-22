@@ -1,10 +1,6 @@
 + open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
-+ Pile interface
-  PileBase type
-  Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
-  Too much duplication between "derived classes"
 + fan waste after pop
-+ widget that displays retro card backs (img, name), card picker
++ widget that displays retro card backs (img, name), card back picker
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
 + WASM
@@ -58,6 +54,10 @@
 + orientation change
 + UI (https://ebitenui.github.io/) titlebar (hamburger, title, undo), statusbar, toast, slideout menu, dialogs, FAB
   either use package or roll-your-own using ebitenui as a guide
++ Pile interface
+  PileBase type
+  Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
+  Too much duplication between "derived classes"
 
 x RestartGame() now just unwinds undo stack and does not count as a loss
 x count of cards in stock toast

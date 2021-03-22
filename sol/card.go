@@ -9,7 +9,7 @@ const (
 	// lerpStepAmount is the amount a transitioning card moves each tick
 	lerpStepAmount = 0.025
 	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
-	flipStepAmount = 0.05
+	flipStepAmount = 0.075
 	// shakeAmount the number of pixels to shake a card by
 	shakeAmount = 2
 )

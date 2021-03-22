@@ -14,33 +14,35 @@ var (
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
-	input        *input.Input // place to receive clicks, taps and key presses from
-	toolbar      *Toolbar
-	navdrawer    *NavDrawer
-	picker       *Picker
-	rules        *Rules
-	fab          *FAB
-	containers   []Container
-	bars         []Container
-	drawers      []Container
-	toastManager *ToastManager
+	input          *input.Input // place to receive clicks, taps and key presses from
+	toolbar        *Toolbar
+	navDrawer      *NavDrawer
+	variantPicker  *Picker
+	cardBackPicker *CardBackPicker
+	rules          *Rules
+	fab            *FAB
+	containers     []Container
+	bars           []Container
+	drawers        []Container
+	toastManager   *ToastManager
 }
 
 // New creates a new UI object
-func New(input *input.Input, pickerContents []string) *UI {
+func New(input *input.Input, pickerContents []string, cardBackPickerContents map[string]*ebiten.Image) *UI {
 	ui := &UI{input: input}
 
 	LoadIconMap()
 
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
-	ui.navdrawer = NewNavDrawer(input)
-	ui.picker = NewPicker(input, pickerContents)
+	ui.navDrawer = NewNavDrawer(input)
+	ui.variantPicker = NewPicker(input, pickerContents)
+	ui.cardBackPicker = NewCardBackPicker(input, cardBackPickerContents)
 	ui.rules = NewRules(input) // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar}
-	ui.drawers = []Container{ui.navdrawer, ui.picker, ui.rules}
-	ui.containers = []Container{ui.toolbar, ui.navdrawer, ui.picker, ui.rules}
+	ui.drawers = []Container{ui.navDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
+	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
 
 	return ui
 }

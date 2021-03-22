@@ -531,6 +531,6 @@ func pickerContents() []string {
 	return displayNames
 }
 
-func (b *Baize) ShowPicker() {
-	b.ui.ShowPicker()
+func (b *Baize) ShowVariantPicker() {
+	b.ui.ShowVariantPicker()
 }

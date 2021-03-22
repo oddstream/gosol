@@ -86,5 +86,7 @@ func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 			op.GeoM.Translate(2, 2)
 		}
 	}
-	screen.DrawImage(wb.img, op)
+	if wb.img != nil {
+		screen.DrawImage(wb.img, op)
+	}
 }
