@@ -890,11 +890,6 @@ func (b *Baize) Scale() {
 
 	for _, p := range b.Piles {
 		p.CreateBackgroundImage()
-		// px, _ := p.BaizePosition()
-		// for _, c := range p.Cards {
-		// 	_, cy := c.BaizePosition()
-		// 	c.SetPosition(px, cy)
-		// }
 		var tmp = make([]*Card, len(p.Cards))
 		copy(tmp, p.Cards)
 		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length

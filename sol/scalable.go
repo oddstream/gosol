@@ -137,7 +137,7 @@ func (ip *ScalableCardImageProvider) BackImage(string) *ebiten.Image {
 
 func (ip *ScalableCardImageProvider) BackImages() map[string]*ebiten.Image {
 	return map[string]*ebiten.Image{
-		"Default": ip.backImg,
+		TheUserData.BackColor: ip.backImg,
 	}
 }
 
