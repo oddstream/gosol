@@ -44,23 +44,20 @@ type Card struct {
 
 	shake shakeState
 
-	faceImg, backImg *ebiten.Image // images used to draw this card
+	faceImg *ebiten.Image // images used to draw this card
 }
 
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) *Card {
 	c := &Card{ID: NewCardID(pack, suit, ordinal)}
 	c.SetProne(true)
-
-	if TheUserData.CardStyle == "retro" {
-		c.getRetroImages()
-	} else {
-		c.getScalableImages()
-	}
-
-	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()
-
+	c.RefreshFaceImage()
+	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
 	return c
+}
+
+func (c *Card) RefreshFaceImage() {
+	c.faceImg = TheCIP.FaceImage(c.ID)
 }
 
 // String satisfies the Stringer interface (defined by fmt package)
@@ -228,7 +225,7 @@ func (c *Card) Update() error {
 	}
 	if c.flipStep != 0.0 {
 		c.flipWidth += c.flipStep
-		if c.flipWidth <= 0.15 {
+		if c.flipWidth <= 0 {
 			c.flipStep = flipStepAmount // now make card wider
 		} else if c.flipWidth >= 1.0 {
 			c.flipWidth = 1.0
@@ -275,11 +272,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			img = c.faceImg
 		} else {
 			// card is getting narrower, and it's going to show face up, but show face down
-			img = c.backImg
+			img = CardBackImage
 		}
 	} else {
 		if c.Prone() {
-			img = c.backImg
+			img = CardBackImage
 		} else {
 			img = c.faceImg
 		}
@@ -294,10 +291,10 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if shadowImage != nil {
+	if CardShadowImage != nil {
 		if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
 			op.GeoM.Translate(2, 2)
-			screen.DrawImage(shadowImage, op)
+			screen.DrawImage(CardShadowImage, op)
 			op.GeoM.Translate(-2, -2)
 		}
 	}

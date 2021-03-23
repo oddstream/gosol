@@ -30,6 +30,10 @@ var (
 	LeftMargin int = (CardWidth / 2) + PilePaddingX
 	// TopMargin the gap between top pile and top of baize
 	TopMargin int = 48 + CardHeight/3
+	// CardBackImage applies to all cards so is kept globally as an optimization
+	CardBackImage *ebiten.Image
+	// CardShadowImage applies to all cards so is kept globally as an optimization
+	CardShadowImage *ebiten.Image
 )
 
 // GSM provides global access to the game state manager
@@ -43,6 +47,8 @@ var TheStatistics *Statistics
 
 // TheBaize points to the Baize, so that main can see it
 var TheBaize *Baize
+
+var TheCIP CardImageProvider
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {

@@ -61,7 +61,7 @@ type Stroke struct {
 	// can't have a valid stroke with an object that is being dragged
 	draggedObject interface{}
 
-	observers sync.Map
+	observers sync.Map // sync.Map is not type safe, it is similar to a map[interface{}]interface{}
 }
 
 // StrokeEvent is sent to observers when stroke moves or ends

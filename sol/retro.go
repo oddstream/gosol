@@ -18,6 +18,12 @@ var faceBytes []byte
 //go:embed assets/windows_16bit_cards.png
 var backBytes []byte
 
+type RetroCardImageProvider struct {
+	faceImgs  map[CardID]*ebiten.Image
+	backImgs  map[string]*ebiten.Image
+	shadowImg *ebiten.Image
+}
+
 var (
 	faceImageSheet *ebiten.Image
 	backImageSheet *ebiten.Image
@@ -36,8 +42,6 @@ var (
 		"Roses":       {X: 325, Y: 140},
 		"Shell":       {X: 405, Y: 140},
 	}
-	retroFaceImages map[CardID]*ebiten.Image
-	retroBackImages map[string]*ebiten.Image
 )
 
 func init() {
@@ -58,30 +62,12 @@ func init() {
 	faceImageSheet = ebiten.NewImageFromImage(img)
 	faceBytes = nil
 
-	retroFaceImages = make(map[CardID]*ebiten.Image)
-	for ord := 1; ord < 14; ord++ {
-		for suit := 1; suit < 5; suit++ {
-			ID := NewCardID(0, suit, ord)
-			retroFaceImages[ID] = createRetroFaceImage(ID)
-		}
-	}
-
 	img, _, err = image.Decode(bytes.NewReader(backBytes))
 	if err != nil {
 		log.Panic(err)
 	}
 	backImageSheet = ebiten.NewImageFromImage(img)
 	backBytes = nil
-
-	retroBackImages = make(map[string]*ebiten.Image)
-	retroBackImages["Default"] = createScalableBackImage(71, 96)
-	for name, pt := range backFrames {
-		backImg := backImageSheet.SubImage(image.Rect(pt.X, pt.Y, pt.X+71, pt.Y+96)).(*ebiten.Image)
-		if backImg == nil {
-			log.Panic("no back image")
-		}
-		retroBackImages[name] = backImg
-	}
 }
 
 func createRetroFaceImage(ID CardID) *ebiten.Image {
@@ -105,13 +91,59 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 	return faceImg
 }
 
-// getRetroImages reloads the face and back image for this card
-func (c *Card) getRetroImages() {
-	ID := NewCardID(0, c.Suit(), c.Ordinal())
-	c.faceImg = retroFaceImages[ID]
-	c.backImg = retroBackImages[TheUserData.CardBack]
-}
-
 func (b *Baize) ShowCardBackPicker() {
 	b.ui.ShowCardBackPicker()
+}
+
+func NewRetroCardImageProvider() *RetroCardImageProvider {
+	ip := &RetroCardImageProvider{}
+
+	ip.faceImgs = make(map[CardID]*ebiten.Image)
+	for ord := 1; ord < 14; ord++ {
+		for suit := 1; suit < 5; suit++ {
+			ID := NewCardID(0, suit, ord)
+			ip.faceImgs[ID] = createRetroFaceImage(ID)
+		}
+	}
+
+	ip.backImgs = make(map[string]*ebiten.Image)
+	for name, pt := range backFrames {
+		backImg := backImageSheet.SubImage(image.Rect(pt.X, pt.Y, pt.X+71, pt.Y+96)).(*ebiten.Image)
+		if backImg == nil {
+			log.Panic("no back image")
+		}
+		ip.backImgs[name] = backImg
+	}
+
+	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight) // cheeky bit of borrowing, sorry
+
+	return ip
+}
+
+func (ip *RetroCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
+	ID = ID & CardID(suitMask|ordinalMask)
+	img, ok := ip.faceImgs[ID]
+	if !ok {
+		log.Panic("missing retro face image")
+	}
+	return img
+}
+
+func (ip *RetroCardImageProvider) BackImage(name string) *ebiten.Image {
+	img, ok := ip.backImgs[name]
+	if !ok {
+		img, ok = ip.backImgs["FlowerBlue"]
+		if !ok {
+			log.Panic("retro back images appear empty")
+		}
+	}
+	return img
+}
+
+func (ip *RetroCardImageProvider) BackImages() map[string]*ebiten.Image {
+	return ip.backImgs
+}
+
+func (ip *RetroCardImageProvider) ShadowImage() *ebiten.Image {
+	return ip.shadowImg
 }

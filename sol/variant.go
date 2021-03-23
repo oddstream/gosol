@@ -109,7 +109,7 @@ var Variants = map[string]VariantInfo{
 	"EasyWin": {
 		Description: "A game for debugging.",
 		Piles: []PileInfo{
-			{"Stock", 0, 0, "None", map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "Build": "0", "Drag": "15"}},
+			{"Stock", 0, 0, "None", map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "1", "Build": "0", "Drag": "15"}},
 			{"Waste", 1, 0, "Waste", map[string]string{"Build": "15", "Drag": "115"}},
 			{"Foundation", 7, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0", "Deal": "1"}},
 			{"Foundation", 8, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0", "Deal": "1"}},

@@ -13,7 +13,7 @@ import (
 // Input records state of mouse and touch, Subject in Observer pattern
 type Input struct {
 	// pressed        map[ebiten.Key]struct{} // an empty and useless type
-	observers          sync.Map
+	observers          sync.Map // sync.Map is not type safe, it is similar to a map[interface{}]interface{}
 	timePressed        time.Time
 	xPressed, yPressed int
 }

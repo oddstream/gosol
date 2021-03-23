@@ -50,10 +50,13 @@ type Baize struct {
 func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	// log.Printf("%v", TheUserData)
+
+	CreateScalables() // sets global TheCIP (sorry)
+
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input, pickerContents(), retroBackImages)
+	TheBaize.ui = ui.New(TheBaize.input, pickerContents(), TheCIP.BackImages())
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
@@ -69,6 +72,7 @@ func NewBaize() *Baize {
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
 	}
+
 	TheBaize.Start()
 	return TheBaize // ugly global-setting kludge
 }
@@ -77,11 +81,14 @@ func (b *Baize) Start() {
 	if NoGameLoad || !b.LoadVariant(b.Variant) {
 		TheBaize.NewVariant(b.Variant)
 	}
+	if b.State == Complete {
+		b.ui.ShowFAB("star", ebiten.KeyN)
+	}
 }
 
 // Reset the Baize
 func (b *Baize) Reset() {
-	b.Piles = nil
+	b.Piles = b.Piles[:0]
 	b.UndoStack = nil
 	b.SavedPosition = 0
 	// the following can stay the same
@@ -499,18 +506,17 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	if moveFrom == len(src.Cards) {
-		log.Panic("MoveCards could not find card in source")
+		log.Panic("MoveCards could not find first card in source")
 	}
 
 	oldSrcLen := len(src.Cards)
 
 	// pop the tail off the source and push onto temp stack
 	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
-		sc := src.Pop()
-		tmp = append(tmp, sc)
+		tmp = append(tmp, src.Pop())
 	}
 
-	// pop cards off the temp stack and onto the destination
+	// pop all cards off the temp stack and onto the destination
 	for len(tmp) > 0 {
 		dc := tmp[len(tmp)-1]
 		tmp = tmp[:len(tmp)-1]
@@ -521,10 +527,10 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		println("nothing happened in MoveCards")
 		return
 	}
+
 	// flip up an exposed source card
 	if !strings.HasPrefix(src.Class, "Stock") {
-		tc := src.Peek()
-		if tc != nil {
+		if tc := src.Peek(); tc != nil {
 			tc.FlipUp()
 		}
 	}
@@ -562,7 +568,6 @@ func (b *Baize) AfterUserMove() {
 
 	switch b.State {
 	case Virgin:
-		// TheStatistics.startGame(b.Variant)
 		b.State = Started
 		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
 	case Started:
@@ -703,16 +708,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		case "CardBack":
 			TheUserData.CardBack = v.Data
-			for _, p := range b.Piles {
-				for _, c := range p.Cards {
-					if TheUserData.CardStyle == "retro" {
-						c.getRetroImages()
-					} else {
-						c.getScalableImages()
-					}
-				}
-			}
-
+			CardBackImage = TheCIP.BackImage(TheUserData.CardBack)
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}
@@ -890,10 +886,10 @@ func (b *Baize) Scale() {
 
 	b.ScaleCards()
 
-	BuildScalables()
+	CreateScalables()
 
 	for _, p := range b.Piles {
-		p.createBackgroundImage()
+		p.CreateBackgroundImage()
 		// px, _ := p.BaizePosition()
 		// for _, c := range p.Cards {
 		// 	_, cy := c.BaizePosition()
@@ -903,11 +899,7 @@ func (b *Baize) Scale() {
 		copy(tmp, p.Cards)
 		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
 		for _, c := range tmp {
-			if TheUserData.CardStyle == "retro" {
-				c.getRetroImages()
-			} else {
-				c.getScalableImages()
-			}
+			c.RefreshFaceImage()
 			p.Push(c)
 		}
 	}

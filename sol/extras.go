@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -31,7 +32,7 @@ func createCards(stock *Pile) {
 		createSuitInts = append(createSuitInts, SuitStringToInt(suit))
 	}
 
-	// gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
+	// golang gotcha don't use make([]*Card, packs*52) as it makes a lot of nil entries
 	for pack := 0; pack < packs; pack++ {
 		for _, suit := range createSuitInts {
 			for ord := 1; ord < 14; ord++ {
@@ -103,4 +104,17 @@ func findCard(cards []*Card, card rune) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func CreateScalables() {
+	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
+
+	switch TheUserData.CardStyle {
+	case "retro":
+		TheCIP = NewRetroCardImageProvider()
+	default:
+		TheCIP = NewScalableCardImageProvider()
+	}
+	CardBackImage = TheCIP.BackImage(TheUserData.CardBack)
+	CardShadowImage = TheCIP.ShadowImage()
 }

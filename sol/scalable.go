@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"image"
 	"log"
-	"time"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -16,11 +15,11 @@ import (
 // 	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
 // }
 
-var (
-	scalableFaceImages map[CardID]*ebiten.Image
-	scalableBackImage  *ebiten.Image
-	shadowImage        *ebiten.Image
-)
+type ScalableCardImageProvider struct {
+	faceImgs  map[CardID]*ebiten.Image
+	backImg   *ebiten.Image
+	shadowImg *ebiten.Image
+}
 
 func cardCornerRadius() float64 {
 	return float64(CardWidth) / 12
@@ -108,29 +107,40 @@ func createScalableShadowImage(width, height int) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// BuildScalables builds the card images that can change in scale, after CardWidth,Height have been set
-func BuildScalables() {
-	defer util.Duration(time.Now(), "BuildScalables")
-	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
-
-	if TheUserData.CardStyle != "retro" {
-		scalableFaceImages = make(map[CardID]*ebiten.Image)
-		for ord := 1; ord < 14; ord++ {
-			for suit := 1; suit < 5; suit++ {
-				ID := NewCardID(0, suit, ord)
-				scalableFaceImages[ID] = createScalableFaceImage(ID)
-			}
+func NewScalableCardImageProvider() *ScalableCardImageProvider {
+	ip := &ScalableCardImageProvider{}
+	ip.faceImgs = make(map[CardID]*ebiten.Image)
+	for ord := 1; ord < 14; ord++ {
+		for suit := 1; suit < 5; suit++ {
+			ID := NewCardID(0, suit, ord)
+			ip.faceImgs[ID] = createScalableFaceImage(ID)
 		}
-		scalableBackImage = createScalableBackImage(CardWidth, CardHeight)
 	}
-
-	shadowImage = createScalableShadowImage(CardWidth, CardHeight)
+	ip.backImg = createScalableBackImage(CardWidth, CardHeight)
+	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight)
+	return ip
 }
 
-// getScalableImages reloads the face and back image for this card
-func (c *Card) getScalableImages() {
-	subid := NewCardID(0, c.Suit(), c.Ordinal())
-	c.faceImg = scalableFaceImages[subid]
-	c.backImg = scalableBackImage
-	// either faceImg or backImg may be nil if we are booting up
+func (ip *ScalableCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
+	ID = ID & CardID(suitMask|ordinalMask)
+	img, ok := ip.faceImgs[ID]
+	if !ok {
+		log.Panic("missing scalable face image")
+	}
+	return img
+}
+
+func (ip *ScalableCardImageProvider) BackImage(string) *ebiten.Image {
+	// we only have one back image, so ignore the string parameter
+	return ip.backImg
+}
+
+func (ip *ScalableCardImageProvider) BackImages() map[string]*ebiten.Image {
+	return map[string]*ebiten.Image{
+		"Default": ip.backImg,
+	}
+}
+
+func (ip *ScalableCardImageProvider) ShadowImage() *ebiten.Image {
+	return ip.shadowImg
 }

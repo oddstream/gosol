@@ -82,7 +82,7 @@ func (p *Pile) Reset() {
 	p.localAccept, _ = p.GetIntAttribute("Accept")
 	p.localRecycles, _ = p.GetIntAttribute("Recycles")
 	p.scrunchPercentage = 100
-	p.createBackgroundImage()
+	p.CreateBackgroundImage()
 }
 
 // GetIntAttribute gets an integer Pile attribute
@@ -116,7 +116,7 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 	return false
 }
 
-func (p *Pile) createBackgroundImage() {
+func (p *Pile) CreateBackgroundImage() {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(2)
@@ -140,10 +140,8 @@ func (p *Pile) createBackgroundImage() {
 		}
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
-			// dc.SetColor(BasicColors["Red"])
-			// dc.SetFontFace(TheCardFonts.large)
-			// dc.DrawStringAnchored("O", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
-			// dc.DrawStringAnchored("/", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+			dc.SetFontFace(schriftbank.CardSymbolLarge)
+			dc.DrawStringAnchored(string(rune(0x2613)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		} else {
 			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		}
@@ -228,13 +226,13 @@ func (p *Pile) Hidden() bool {
 // SetAccept updates the Accept for this pile and updates the background image
 func (p *Pile) SetAccept(ord int) {
 	p.localAccept = ord
-	p.createBackgroundImage()
+	p.CreateBackgroundImage()
 }
 
 // SetRecycles updates the Recycles for this pile and updates the background image
 func (p *Pile) SetRecycles(n int) {
 	p.localRecycles = n
-	p.createBackgroundImage()
+	p.CreateBackgroundImage()
 }
 
 // CardCount returns the number of cards in this Pile

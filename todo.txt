@@ -1,6 +1,10 @@
++ tooltips over hovered icons triggered by (wb *WidgetBase) Update()
+  tooltipManager
++ interface for scalable/retro cards
+  card face img provider
+  card back img provider
 + open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
 + fan waste after pop
-+ widget that displays retro card backs (img, name), card back picker
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
 + WASM
@@ -59,6 +63,8 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x show star FAB when loaded game is complete
+x widget that displays retro card backs (img, name), card back picker
 x RestartGame() now just unwinds undo stack and does not count as a loss
 x count of cards in stock toast
 x show statistics toast (reshow welcome)
