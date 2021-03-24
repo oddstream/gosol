@@ -274,7 +274,14 @@ func (b *Baize) rulesContents() []string {
 					fmt.Fprint(&str, " Completed sequences of cards may be moved together.")
 				}
 			}
-			// TODO Bury, Disinter
+			if bury, ok := p.GetIntAttribute("Bury"); ok {
+				buryStr := util.OrdinalToLongString(bury)
+				fmt.Fprintf(&str, " Any %ss are moved to the bottom of the tableaux when dealing.", buryStr)
+			}
+			if disinter, ok := p.GetIntAttribute("Disinter"); ok {
+				disinterStr := util.OrdinalToLongString(disinter)
+				fmt.Fprintf(&str, " Any %ss are moved to the top of the tableaux when dealing.", disinterStr)
+			}
 		case "Cell":
 			fmt.Fprint(&str, "Cell: Can store one card of any type.")
 		case "Reserve":

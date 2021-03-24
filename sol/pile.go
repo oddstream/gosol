@@ -463,6 +463,18 @@ func (p *Pile) makeTail(c *Card) []*Card {
 	return tail
 }
 
+// DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
+func (p *Pile) DraggableTail(c *Card) []*Card {
+	tail := p.makeTail(c)
+	if p.dragFlags&1 == 1 && len(tail) > 1 {
+		return nil
+	}
+	if !isTailConformant(p.dragRules, p.dragFlags, tail) {
+		return nil
+	}
+	return tail
+}
+
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(c *Card) bool {
 

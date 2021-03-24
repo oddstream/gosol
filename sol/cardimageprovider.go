@@ -7,4 +7,5 @@ type CardImageProvider interface {
 	BackImage(string) *ebiten.Image
 	BackImages() map[string]*ebiten.Image
 	ShadowImage() *ebiten.Image
+	MovableImage() *ebiten.Image
 }

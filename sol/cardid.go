@@ -19,7 +19,7 @@ const suitMask uint32 = 0b000011110000
 const ordinalMask uint32 = 0b1111
 const cardMask uint32 = (packMask | suitMask | ordinalMask)
 const proneFlag uint32 = 0b1000000000000
-const markedFlag uint32 = 0b10000000000000
+const movableFlag uint32 = 0b10000000000000
 
 // const flagMask uint32 = 0b1111000000000000
 
@@ -89,14 +89,14 @@ func (c *Card) Prone() bool {
 	return c.ID.Prone()
 }
 
-// Marked returns the marked flag buried in the card id
-func (cid CardID) Marked() bool {
-	return uint32(cid)&markedFlag == markedFlag
+// Movable returns the movable flag buried in the card id
+func (cid CardID) Movable() bool {
+	return uint32(cid)&movableFlag == movableFlag
 }
 
-// Marked returns true if the card is marked, false if it is unmarked
-func (c *Card) Marked() bool {
-	return c.ID.Marked()
+// Movable returns true if the card is marked as movable, false if it is unmarked
+func (c *Card) Movable() bool {
+	return c.ID.Movable()
 }
 
 // SetProne true or false
@@ -108,12 +108,12 @@ func (c *Card) SetProne(prone bool) {
 	}
 }
 
-// SetMarked true or false
-func (c *Card) SetMarked(marked bool) {
-	if marked {
-		c.ID = CardID(uint32(c.ID) | markedFlag)
+// SetMovable set the "this card is movable" flag
+func (c *Card) SetMovable(movable bool) {
+	if movable {
+		c.ID = CardID(uint32(c.ID) | movableFlag)
 	} else {
-		c.ID = CardID(uint32(c.ID) & ^markedFlag)
+		c.ID = CardID(uint32(c.ID) & ^movableFlag)
 	}
 }
 

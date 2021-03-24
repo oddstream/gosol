@@ -1,10 +1,5 @@
-+ scalable card backs from all the extended colors
-+ repl.it the DragBy(dx,dy) problem
 + tooltips over hovered icons triggered by (wb *WidgetBase) Update()
   tooltipManager
-+ interface for scalable/retro cards
-  card face img provider
-  card back img provider
 + open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
 + fan waste after pop
 + don't save virgin games to json? would need to delete any existing saved game
@@ -65,6 +60,13 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x highlight movable cards
+x bury, disinter in rules
+x interface for scalable/retro cards
+  card face img provider
+  card back img provider
+x scalable card backs from all the extended colors
+x repl.it the DragBy(dx,dy) problem
 x show star FAB when loaded game is complete
 x widget that displays retro card backs (img, name), card back picker
 x RestartGame() now just unwinds undo stack and does not count as a loss

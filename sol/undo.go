@@ -43,6 +43,7 @@ func (b *Baize) Undo() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
+	b.MarkMovable()
 }
 
 // SavePosition saves the current Baize state
@@ -71,6 +72,7 @@ func (b *Baize) LoadPosition() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
+	b.MarkMovable()
 }
 
 // RestartGame loads a previously saved Baize state

@@ -79,9 +79,10 @@ func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(parentLeft+wb.x), float64(parentTop+wb.y))
 	if wb.disabled {
-		op.ColorM.Scale(0.5, 0.5, 0.5, 1)
+		op.ColorM.Scale(1, 1, 1, 0.1)
 	} else if x, y := ebiten.CursorPosition(); util.InRect(x, y, wb.OffsetRect) {
-		op.ColorM.Scale(100.0/255.0, 149.0/255.0, 237.0/255.0, 1) // CornflowerBlue
+		// op.ColorM.Scale(100.0/255.0, 149.0/255.0, 237.0/255.0, 1) // CornflowerBlue
+		op.ColorM.Scale(1, 1, 1, 0.5)
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			op.GeoM.Translate(2, 2)
 		}

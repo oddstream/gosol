@@ -30,7 +30,7 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 	dc.SetFontFace(schriftbank.RobotoRegular24)
 	dc.DrawString(cb.name, float64(24+w+24), float64(cb.height)*0.6)
 
-	dc.Stroke()
+	// dc.Stroke()
 
 	return ebiten.NewImageFromImage(dc.Image())
 }

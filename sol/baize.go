@@ -51,6 +51,7 @@ func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
 	// log.Printf("%v", TheUserData)
 
+	// bug lurking here; scalables start at 71x96, which is the size needed for CardBackPicker
 	CreateScalables() // sets global TheCIP (sorry)
 
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
@@ -80,9 +81,6 @@ func NewBaize() *Baize {
 func (b *Baize) Start() {
 	if NoGameLoad || !b.LoadVariant(b.Variant) {
 		TheBaize.NewVariant(b.Variant)
-	}
-	if b.State == Complete {
-		b.ui.ShowFAB("star", ebiten.KeyN)
 	}
 }
 
@@ -223,6 +221,10 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.UndoPush()
 
 	TheStatistics.welcomeToast(b.Variant)
+
+	if b.State == Complete {
+		b.ui.ShowFAB("star", ebiten.KeyN)
+	}
 
 	return true
 }
@@ -609,6 +611,7 @@ func (b *Baize) AfterUserMove() {
 		log.Println("not pushing to undo because checksums match")
 	}
 
+	b.MarkMovable()
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {

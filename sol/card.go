@@ -198,11 +198,6 @@ func (c *Card) Flipping() bool {
 	return c.flipStep != 0
 }
 
-// MarkMovable sets the movable state
-func (c *Card) MarkMovable(bool) {
-	// TODO
-}
-
 // Layout implements ebiten.Game's Layout.
 func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
@@ -291,15 +286,15 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if CardShadowImage != nil {
-		if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
-			op.GeoM.Translate(2, 2)
-			screen.DrawImage(CardShadowImage, op)
-			op.GeoM.Translate(-2, -2)
-		}
+	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
+		op.GeoM.Translate(2, 2)
+		screen.DrawImage(CardShadowImage, op)
+		op.GeoM.Translate(-2, -2)
 	}
 
-	if img != nil {
-		screen.DrawImage(img, op)
+	screen.DrawImage(img, op)
+
+	if c.Movable() {
+		screen.DrawImage(CardMovableImage, op)
 	}
 }
