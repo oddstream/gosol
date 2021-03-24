@@ -36,11 +36,11 @@ var (
 	CardShadowImage *ebiten.Image
 )
 
-// GSM provides global access to the game state manager
-var GSM *GameStateManager = &GameStateManager{}
+// TheGSM provides global access to the game state manager
+var TheGSM *GameStateManager = &GameStateManager{}
 
 // TheUserData holds serialized game progress data
-var TheUserData = &UserData{Copyright: "Copyright ©️ 2021 oddstream.games", Game: "Solitaire", Variant: "Klondike", CardBack: "FlowerBlue", CardStyle: "retro", BackColor: "CornflowerBlue"}
+var TheUserData = &UserData{Game: "Solitaire", Variant: "Klondike", CardStyle: "retro", CardBackPattern: "FlowerBlue", CardBackColor: "CornflowerBlue"}
 
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics
@@ -56,20 +56,20 @@ func NewGame() (*Game, error) {
 
 	TheStatistics = NewStatistics()
 
-	GSM.Switch(NewSplash())
+	TheGSM.Switch(NewSplash())
 
 	return g, nil
 }
 
 // Layout implements ebiten.Game's Layout.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	state := GSM.Get()
+	state := TheGSM.Get()
 	return state.Layout(outsideWidth, outsideHeight)
 }
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	state := GSM.Get()
+	state := TheGSM.Get()
 	if err := state.Update(); err != nil {
 		return err
 	}
@@ -78,6 +78,6 @@ func (g *Game) Update() error {
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	state := GSM.Get()
+	state := TheGSM.Get()
 	state.Draw(screen)
 }

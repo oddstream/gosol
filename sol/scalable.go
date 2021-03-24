@@ -3,6 +3,7 @@ package sol
 import (
 	"bytes"
 	"image"
+	"image/color"
 	"log"
 
 	"github.com/fogleman/gg"
@@ -17,7 +18,7 @@ import (
 
 type ScalableCardImageProvider struct {
 	faceImgs  map[CardID]*ebiten.Image
-	backImg   *ebiten.Image
+	backImgs  map[string]*ebiten.Image
 	shadowImg *ebiten.Image
 }
 
@@ -85,9 +86,9 @@ func createScalableFaceImage(ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createScalableBackImage(width, height int) *ebiten.Image {
+func createScalableBackImage(width, height int, backColor color.Color) *ebiten.Image {
 	dc := gg.NewContext(width, height)
-	dc.SetColor(ExtendedColors[TheUserData.BackColor])
+	dc.SetColor(backColor)
 	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), cardCornerRadius())
 	dc.Fill()
 	dc.SetLineWidth(2)
@@ -116,7 +117,10 @@ func NewScalableCardImageProvider() *ScalableCardImageProvider {
 			ip.faceImgs[ID] = createScalableFaceImage(ID)
 		}
 	}
-	ip.backImg = createScalableBackImage(CardWidth, CardHeight)
+	ip.backImgs = make(map[string]*ebiten.Image)
+	for k, v := range ExtendedColors {
+		ip.backImgs[k] = createScalableBackImage(CardWidth, CardHeight, v)
+	}
 	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight)
 	return ip
 }
@@ -130,15 +134,12 @@ func (ip *ScalableCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
 	return img
 }
 
-func (ip *ScalableCardImageProvider) BackImage(string) *ebiten.Image {
-	// we only have one back image, so ignore the string parameter
-	return ip.backImg
+func (ip *ScalableCardImageProvider) BackImage(colorName string) *ebiten.Image {
+	return ip.backImgs[colorName]
 }
 
 func (ip *ScalableCardImageProvider) BackImages() map[string]*ebiten.Image {
-	return map[string]*ebiten.Image{
-		TheUserData.BackColor: ip.backImg,
-	}
+	return ip.backImgs
 }
 
 func (ip *ScalableCardImageProvider) ShadowImage() *ebiten.Image {

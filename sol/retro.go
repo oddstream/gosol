@@ -36,8 +36,8 @@ var (
 		"FlowerBlack": {X: 405, Y: 4},
 		"FlowerBlue":  {X: 485, Y: 4},
 		"PalmBeach":   {X: 5, Y: 140},
-		"Pattern1":    {X: 85, Y: 140},
-		"Pattern2":    {X: 165, Y: 140},
+		"PatternOne":  {X: 85, Y: 140},
+		"PatternTwo":  {X: 165, Y: 140},
 		"Robot":       {X: 245, Y: 140},
 		"Roses":       {X: 325, Y: 140},
 		"Shell":       {X: 405, Y: 140},
@@ -112,7 +112,9 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 		if backImg == nil {
 			log.Panic("no back image")
 		}
-		ip.backImgs[name] = backImg
+		// use ebiten.NewImageFromImage(backImg) instead of using backImg directly
+		// otherwise image has offset from it's spritesheet when used in fogleman/gg
+		ip.backImgs[name] = ebiten.NewImageFromImage(backImg)
 	}
 
 	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight) // cheeky bit of borrowing, sorry

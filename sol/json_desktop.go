@@ -52,26 +52,29 @@ func loadBytesFromFile(jsonFname string) ([]byte, int, error) {
 
 	file, err := os.Open(path)
 	if err == nil && file != nil {
-
+		var bytes []byte
+		var count int
 		fi, err := file.Stat()
 		if err != nil {
-			log.Fatal("error getting FileInfo for ", path)
+			log.Fatal(err, " getting FileInfo ", path)
 		}
-		bytes := make([]byte, fi.Size()+8)
-
-		var count int
-		count, err = file.Read(bytes)
-		if err != nil {
-			log.Fatal(err)
+		if fi.Size() == 0 {
+			log.Print("empty file ", path)
+		} else {
+			bytes = make([]byte, fi.Size()+8)
+			count, err = file.Read(bytes)
+			if err != nil {
+				log.Fatal(err, " reading ", path)
+			}
 		}
 		err = file.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err, " closing ", path)
 		}
 		println("loaded", path)
 		return bytes, count, nil
 	}
-	println(path, "does not exist")
+	log.Print(err, path)
 	return nil, 0, nil // file does not exist (which is ok)
 }
 
@@ -110,14 +113,14 @@ func (ud *UserData) Load() {
 
 	defer util.Duration(time.Now(), "UserData.Load")
 	bytes, count, err := loadBytesFromFile("userdata.json")
-	if err != nil || count == 0 {
+	if err != nil || count == 0 || bytes == nil {
 		return
 	}
 
 	// golang gotcha reslice buffer to number of bytes actually read
 	err = json.Unmarshal(bytes[:count], ud)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic("UserData.Load Unmarshal", err)
 	}
 
 }
@@ -140,7 +143,7 @@ func (s *Statistics) Load() {
 	defer util.Duration(time.Now(), "Statistics.Load")
 
 	bytes, count, err := loadBytesFromFile("statistics.json")
-	if err != nil || count == 0 {
+	if err != nil || count == 0 || bytes == nil {
 		return
 	}
 
@@ -189,7 +192,7 @@ func (b *Baize) Load(v string) bool {
 	defer util.Duration(time.Now(), "Baize.Load")
 
 	bytes, count, err := loadBytesFromFile(v + ".json")
-	if err != nil || count == 0 {
+	if err != nil || count == 0 || bytes == nil {
 		return false
 	}
 

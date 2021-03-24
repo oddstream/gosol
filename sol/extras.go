@@ -112,9 +112,10 @@ func CreateScalables() {
 	switch TheUserData.CardStyle {
 	case "retro":
 		TheCIP = NewRetroCardImageProvider()
+		CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
 	default:
 		TheCIP = NewScalableCardImageProvider()
+		CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 	}
-	CardBackImage = TheCIP.BackImage(TheUserData.CardBack)
 	CardShadowImage = TheCIP.ShadowImage()
 }

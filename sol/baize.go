@@ -707,8 +707,13 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				}
 			}
 		case "CardBack":
-			TheUserData.CardBack = v.Data
-			CardBackImage = TheCIP.BackImage(TheUserData.CardBack)
+			if TheUserData.CardStyle == "retro" {
+				TheUserData.CardBackPattern = v.Data
+				CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
+			} else {
+				TheUserData.CardBackColor = v.Data
+				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
+			}
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}

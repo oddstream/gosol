@@ -1,3 +1,5 @@
++ scalable card backs from all the extended colors
++ repl.it the DragBy(dx,dy) problem
 + tooltips over hovered icons triggered by (wb *WidgetBase) Update()
   tooltipManager
 + interface for scalable/retro cards

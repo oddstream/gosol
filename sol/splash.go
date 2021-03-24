@@ -74,7 +74,7 @@ func (s *Splash) Update() error {
 	if s.skew < 90 {
 		s.skew++
 	} else {
-		GSM.Switch(NewBaize())
+		TheGSM.Switch(NewBaize())
 	}
 
 	return nil

@@ -518,11 +518,15 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 	}
 }
 
+// ApplyToTail applies a method func to this card and all the others after it in the stack
+// func (p *Pile) ApplyToCards2(fn func(*Card, int, int), dx, dy int) {
+// 	for _, c := range p.Cards {
+// 	  fn(c, dx, dy)
+// 	}
+// }
+
 // DragTailBy repositions all the cards in the tail (from c inclusive)
 func (p *Pile) DragTailBy(dx, dy int) {
-	// would have used https://golang.org/ref/spec#Method_expressions
-	// but couldn't figure out the syntax (TODO)
-	// so using a standalone loop instead
 	for _, tc := range p.Tail {
 		tc.DragBy(dx, dy)
 	}
