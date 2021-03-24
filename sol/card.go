@@ -292,9 +292,13 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(-2, -2)
 	}
 
+	if !c.Movable() {
+		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+	}
+
 	screen.DrawImage(img, op)
 
-	if c.Movable() {
-		screen.DrawImage(CardMovableImage, op)
-	}
+	// if c.Movable() {
+	// 	screen.DrawImage(CardMovableImage, op)
+	// }
 }

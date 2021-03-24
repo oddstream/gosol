@@ -373,7 +373,7 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		}
 
 	case "Tableau":
-		if p.buildFlags&2 == 2 {
+		if p.buildFlags&2 == 2 && piles != nil {
 			pm := powerMoves(piles, p)
 			if len(Tail) > pm {
 				TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
