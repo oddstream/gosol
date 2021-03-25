@@ -12,7 +12,7 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 	return tail
 }
 
-func (b *Baize) IsNewHomeForCard(c *Card) bool {
+func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
 	for _, p := range b.Piles {
 		if p == c.owner {
 			continue
@@ -24,13 +24,13 @@ func (b *Baize) IsNewHomeForCard(c *Card) bool {
 			continue
 		}
 		if p.CanAcceptCard(c) {
-			return true
+			return p
 		}
 	}
-	return false
+	return nil
 }
 
-func (b *Baize) IsNewHomeForTail(tail []*Card) bool {
+func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 	for _, p := range b.Piles {
 		if p == tail[0].owner {
 			continue
@@ -41,21 +41,27 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) bool {
 		if p.CardCount() == 0 && p.localAccept == 0 {
 			continue
 		}
-		// TODO this doesn't detect expected cases (try in Limited)
-		// c1 := tail[0]
-		// c2 := p.Peek()
-		// if c1 != nil && c2 != nil {
-		// 	if c1.Ordinal() == c2.Ordinal() && c1.Suit() == c2.Suit() && c1.owner.Class == c2.owner.Class {
-		// 		println("rejecting", c1.Ordinal(), c1.Suit())
-		// 		return false
-		// 	}
-		// }
 		if p.CanAcceptTail(b.Piles, tail, true) {
-			return true
+			return p
 		}
 	}
-	return false
+	return nil
 }
+
+// func PointlessTailMove(dst *Pile, tail []*Card) bool {
+// 	c1 := tail[0]
+// 	c2 := dst.Peek()
+// 	if c1 != nil && c2 != nil {
+// 		if c1.owner.Class == dst.Class {
+// 			if c1.Ordinal() == c2.Ordinal() {
+// 				if c1.Suit() == c2.Suit() {
+// 					return true
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
 
 func (b *Baize) MarkMovable() {
 
@@ -72,7 +78,7 @@ func (b *Baize) MarkMovable() {
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {
 				if tail := p.DraggableTail(c); tail != nil {
-					if b.IsNewHomeForCard(c) {
+					if dst := b.IsNewHomeForCard(c); dst != nil {
 						c.SetMovable(true)
 					}
 				}
@@ -85,7 +91,7 @@ func (b *Baize) MarkMovable() {
 					continue
 				}
 				if tail := p.DraggableTail(c); tail != nil {
-					if b.IsNewHomeForTail(tail) {
+					if dst := b.IsNewHomeForTail(tail); dst != nil {
 						c.SetMovable(true)
 					}
 				} else {

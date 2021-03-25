@@ -8,7 +8,6 @@ import (
 // SaveableBaize is a reduced struct for converting to JSON
 type SaveableBaize struct {
 	Checksum uint32
-	Seed     int64
 	State    BaizeState
 	Piles    []SaveablePile
 }
@@ -36,7 +35,7 @@ func (b *Baize) Checksum() uint32 {
 
 // Saveable creates a saveable version of the current state
 func (b *Baize) Saveable() SaveableBaize {
-	sav := SaveableBaize{Checksum: b.Checksum(), Seed: b.Seed, State: b.State}
+	sav := SaveableBaize{Checksum: b.Checksum(), State: b.State}
 	for _, p := range b.Piles {
 		sav.Piles = append(sav.Piles, p.Saveable())
 	}
@@ -71,7 +70,6 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		pile.UpdateFromSaved(cardCache, savedPile)
 	}
 
-	b.Seed = sav.Seed // TODO ???
 	b.State = sav.State
 }
 

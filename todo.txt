@@ -1,3 +1,4 @@
++ give up and redo the thing in Java/Rust/Tcl+Tk/Kotlin+KorGE/Godot/Defold
 + problems with mark movable
   shows draggable tail that cannot be moved because of powermoves (FIXED)
   show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
