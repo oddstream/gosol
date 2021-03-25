@@ -5,6 +5,7 @@ import "log"
 // UndoPush pushes the current state onto the undo stack
 func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
+	b.MarkMovable()
 }
 
 // UndoPop pops a state off the undo stack
@@ -43,7 +44,6 @@ func (b *Baize) Undo() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
-	b.MarkMovable()
 }
 
 // SavePosition saves the current Baize state
@@ -72,7 +72,6 @@ func (b *Baize) LoadPosition() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
-	b.MarkMovable()
 }
 
 // RestartGame loads a previously saved Baize state

@@ -1,3 +1,7 @@
++ problems with mark movable
+  shows draggable tail that cannot be moved because of powermoves (FIXED)
+  show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
+  it makes the gameplay different
 + tooltips over hovered icons triggered by (wb *WidgetBase) Update()
   tooltipManager
 + open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
@@ -60,6 +64,8 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x BUG Canfield LoadVariant() doesn't set localAccept?
+x rotate dragged cards? No, creates jagged diagonal edges
 x highlight movable cards
 x bury, disinter in rules
 x interface for scalable/retro cards

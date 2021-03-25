@@ -611,7 +611,6 @@ func (b *Baize) AfterUserMove() {
 		log.Println("not pushing to undo because checksums match")
 	}
 
-	b.MarkMovable()
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
@@ -785,7 +784,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
 				} else {
-					if p.CanAcceptTail(b.Piles, c.owner.Tail) {
+					if p.CanAcceptTail(b.Piles, c.owner.Tail, false) {
 						c.owner.StopDrag(c)
 						b.MoveCards(c, p)
 						b.AfterUserMove()

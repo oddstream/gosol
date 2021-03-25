@@ -89,7 +89,7 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 
 	findCardInCache := func(ID CardID) *Card {
 		for _, c := range cardCache {
-			if sameCard(c.ID, ID) {
+			if SameCardAndPack(c.ID, ID) {
 				return c
 			}
 		}
@@ -97,9 +97,11 @@ func (p *Pile) UpdateFromSaved(cardCache []*Card, sav SaveablePile) {
 	}
 
 	p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
-	p.localAccept = sav.Accept
-	p.localRecycles = sav.Recycles
+
+	p.SetAccept(sav.Accept)
+	p.SetRecycles(sav.Recycles)
 	p.scrunchPercentage = sav.Scrunch
+
 	for _, savedID := range sav.Cards {
 		c := findCardInCache(savedID)
 		if c == nil {

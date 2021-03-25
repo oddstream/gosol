@@ -225,14 +225,18 @@ func (p *Pile) Hidden() bool {
 
 // SetAccept updates the Accept for this pile and updates the background image
 func (p *Pile) SetAccept(ord int) {
-	p.localAccept = ord
-	p.CreateBackgroundImage()
+	if p.localAccept != ord {
+		p.localAccept = ord
+		p.CreateBackgroundImage()
+	}
 }
 
 // SetRecycles updates the Recycles for this pile and updates the background image
 func (p *Pile) SetRecycles(n int) {
-	p.localRecycles = n
-	p.CreateBackgroundImage()
+	if p.localRecycles != n {
+		p.localRecycles = n
+		p.CreateBackgroundImage()
+	}
 }
 
 // CardCount returns the number of cards in this Pile
@@ -316,7 +320,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 }
 
 // CanAcceptTail returns true if this Pile can accept the tail of Cards from another Pile
-func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
+func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card, noToast bool) bool {
 
 	if len(Tail) == 0 { // len() for nil slices is defined as zero
 		log.Fatal("empty tail passed to CanAcceptTail")
@@ -325,14 +329,16 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 	c0 := Tail[0]
 
 	if c0.owner == p {
-		println("cannot drag cards to yourself")
+		// println("cannot drag cards to yourself")
 		return false
 	}
 
 	targetClass := c0.owner.GetStringAttribute("Target")
 	if targetClass != "" {
 		if targetClass != p.Class {
-			TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
+			if !noToast {
+				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
+			}
 			return false
 		}
 	}
@@ -376,10 +382,12 @@ func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card) bool {
 		if p.buildFlags&2 == 2 && piles != nil {
 			pm := powerMoves(piles, p)
 			if len(Tail) > pm {
-				TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
+				if !noToast {
+					TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
+				}
 				return false
 			}
-			println("can drag", len(Tail), "cards")
+			// println("can drag", len(Tail), "cards")
 		}
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
@@ -459,18 +467,6 @@ func (p *Pile) makeTail(c *Card) []*Card {
 	}
 	if len(tail) == 0 {
 		println("error - make empty tail")
-	}
-	return tail
-}
-
-// DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
-func (p *Pile) DraggableTail(c *Card) []*Card {
-	tail := p.makeTail(c)
-	if p.dragFlags&1 == 1 && len(tail) > 1 {
-		return nil
-	}
-	if !isTailConformant(p.dragRules, p.dragFlags, tail) {
-		return nil
 	}
 	return tail
 }

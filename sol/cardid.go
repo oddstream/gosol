@@ -17,7 +17,6 @@ const (
 const packMask uint32 = 0b111100000000
 const suitMask uint32 = 0b000011110000
 const ordinalMask uint32 = 0b1111
-const cardMask uint32 = (packMask | suitMask | ordinalMask)
 const proneFlag uint32 = 0b1000000000000
 const movableFlag uint32 = 0b10000000000000
 
@@ -145,8 +144,14 @@ func NewCardID(pack, suit, ordinal int) CardID {
 	return CardID(u)
 }
 
-func sameCard(ID1, ID2 CardID) bool {
-	return uint32(ID1)&cardMask == uint32(ID2)&cardMask
+// SameCard returns true if the two cards have the same ordinal and suit
+func SameCard(ID1, ID2 CardID) bool {
+	return uint32(ID1)&(suitMask|ordinalMask) == uint32(ID2)&(suitMask|ordinalMask)
+}
+
+// SameCardAndPack returns true if the two card IDs have the same ordinal and suit, and are from the same pack
+func SameCardAndPack(ID1, ID2 CardID) bool {
+	return uint32(ID1)&(packMask|suitMask|ordinalMask) == uint32(ID2)&(packMask|suitMask|ordinalMask)
 }
 
 // SuitStringToInt converts a suit string ("Heart") to an int (HEART)

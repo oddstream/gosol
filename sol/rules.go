@@ -134,7 +134,7 @@ func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	}
 	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
 	n := (1 + emptyCells) * util.Pow(2, emptyCols)
-	println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
+	// println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
 	return n
 }
 
