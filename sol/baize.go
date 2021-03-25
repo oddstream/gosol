@@ -68,6 +68,7 @@ func NewBaize() *Baize {
 		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF:      TheBaize.ShowVariantPicker,
 		ebiten.KeyF2:     TheBaize.ShowCardBackPicker,
+		ebiten.KeyF3:     TheBaize.ShowSettingsDrawer,
 		ebiten.KeyI:      TheBaize.ShowInfo,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
@@ -112,17 +113,17 @@ func (b *Baize) RecallCardsToStock() {
 		// }
 	}
 
-	// if DebugMode {
-	// 	println("cards recalled to stock, now contains", stock.CardCount(), "cards")
-	// 	for _, c := range stock.Cards {
-	// 		if !c.Prone() {
-	// 			log.Fatal("face up card found in stock")
-	// 		}
-	// 		if c.owner != stock {
-	// 			log.Fatal("card in stock belongs to", c.owner.Class)
-	// 		}
-	// 	}
-	// }
+	if DebugMode {
+		println("cards recalled to stock, now contains", b.stock.CardCount(), "cards")
+		for _, c := range b.stock.Cards {
+			if !c.Prone() {
+				log.Fatal("face up card found in stock")
+			}
+			if c.owner != b.stock {
+				log.Fatal("card in stock belongs to", c.owner.Class)
+			}
+		}
+	}
 
 	shuffleCards(b.stock, b.Seed)
 

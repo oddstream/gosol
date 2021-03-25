@@ -20,16 +20,13 @@ var symbolFontBytes []byte
 //go:embed assets/Roboto-Regular.ttf
 var robotoRegularFontBytes []byte
 
-//go:embed assets/Roboto-Medium.ttf
-var robotoMediumFontBytes []byte
-
 var (
 	// RobotoRegular14 used by UI toast
 	RobotoRegular14 font.Face
-	// RobotoRegular24 used by UI nav items
-	RobotoRegular24 font.Face
-	// RobotoMedium24 used by UI
-	RobotoMedium24 font.Face
+	// RobotRegular24 used by UI
+	RobotRegular24 font.Face
+	// Symbol24 used by UI
+	Symbol24 font.Face
 	// CardSymbolRegular is used to draw the suit symbol
 	CardSymbolRegular font.Face
 	// CardSymbolLarge is used to draw the large suit symbol
@@ -54,27 +51,22 @@ func init() {
 		Hinting: font.HintingFull,
 	})
 
-	tt, err = truetype.Parse(robotoMediumFontBytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	RobotoRegular24 = truetype.NewFace(tt, &truetype.Options{
+	RobotRegular24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
 
-	tt, err = truetype.Parse(robotoMediumFontBytes)
+	tt, err = truetype.Parse(symbolFontBytes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	RobotoMedium24 = truetype.NewFace(tt, &truetype.Options{
+
+	Symbol24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
-
 }
 
 // MakeCardFonts creates the fonts used for Card, once size of card is known (or has changed)

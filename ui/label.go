@@ -5,8 +5,8 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -14,7 +14,6 @@ import (
 type Label struct {
 	WidgetBase
 	text        string
-	face        font.Face
 	requestType string
 }
 
@@ -22,16 +21,16 @@ func (l *Label) createImg() *ebiten.Image {
 	dc := gg.NewContext(l.width, l.height)
 	dc.SetRGBA(1, 1, 1, 1)
 	// nota bene - text is drawn with y as a baseline
-	dc.SetFontFace(l.face)
+	dc.SetFontFace(schriftbank.RobotRegular24)
 	dc.DrawString(l.text, 24, float64(l.height)*0.7)
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
 // NewLabel creates a new Label
-func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, face font.Face, requestType string) *Label {
+func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, requestType string) *Label {
 	l := &Label{
 		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
-		text:       text, face: face, requestType: requestType}
+		text:       text, requestType: requestType}
 	l.Activate()
 	return l
 }

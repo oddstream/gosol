@@ -17,6 +17,7 @@ type UI struct {
 	input          *input.Input // place to receive clicks, taps and key presses from
 	toolbar        *Toolbar
 	navDrawer      *NavDrawer
+	settingsDrawer *SettingsDrawer
 	variantPicker  *Picker
 	cardBackPicker *CardBackPicker
 	rules          *Rules
@@ -36,13 +37,14 @@ func New(input *input.Input, pickerContents []string, cardBackPickerContents map
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
 	ui.navDrawer = NewNavDrawer(input)
+	ui.settingsDrawer = NewSettingsDrawer(input)
 	ui.variantPicker = NewPicker(input, pickerContents)
 	ui.cardBackPicker = NewCardBackPicker(input, cardBackPickerContents)
 	ui.rules = NewRules(input) // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar}
-	ui.drawers = []Container{ui.navDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
-	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
+	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
+	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
 
 	return ui
 }
