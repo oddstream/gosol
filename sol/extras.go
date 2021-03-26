@@ -118,5 +118,5 @@ func CreateScalables() {
 		CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 	}
 	CardShadowImage = TheCIP.ShadowImage()
-	CardMovableImage = TheCIP.MovableImage()
+	// CardMovableImage = TheCIP.MovableImage()
 }

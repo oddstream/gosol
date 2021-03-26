@@ -660,14 +660,16 @@ func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
 	case image.Point:
 		// println("image.Point (tap)", v.X, v.Y)
+		// a tap outside any open ui drawer (ie on the baize) closes the drawer
 		if con := b.ui.VisibleDrawer(); con != nil {
 			if !util.InRect(v.X, v.Y, con.Rect) {
 				con.Hide()
 			}
 		} else {
 			c := b.findCardAt(v.X, v.Y)
+			// we've received a tap, so cancel any stroke that has started
 			if b.stroke != nil {
-				println("cancel stroke because tap")
+				// println("cancel stroke because tap")
 				if c != nil {
 					c.owner.CancelDrag(c)
 				}
@@ -676,21 +678,20 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			if c != nil {
 				b.CardTapped(c)
 			} else {
-				p := b.findPileAt(v.X, v.Y)
-				if p != nil {
+				if p := b.findPileAt(v.X, v.Y); p != nil {
 					b.PileTapped(p)
 				}
 			}
 		}
 	case ebiten.Key:
 		// println("ebiten.Key", v)
-		fn, ok := b.commandTable[v]
-		if ok {
+		if fn, ok := b.commandTable[v]; ok {
 			b.ui.HideActiveDrawer()
 			b.ui.HideFAB()
 			fn()
 		}
 	case ui.ChangeRequest:
+		// a widget has sent a change request
 		b.ui.HideActiveDrawer()
 		b.ui.HideFAB()
 		switch v.ChangeRequested {
@@ -716,7 +717,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		case "Highlight":
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
-			println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
+			// println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
 			if TheUserData.HighlightMovable {
 				b.MarkMovable()
 			} else {
@@ -916,7 +917,12 @@ func (b *Baize) Scale() {
 
 	for _, p := range b.Piles {
 		p.CreateBackgroundImage()
-		var tmp = make([]*Card, len(p.Cards))
+		if p.CardCount() == 0 {
+			continue
+		}
+		// because we're about to use copy(), tmp must have a length
+		var tmp = make([]*Card, len(p.Cards), cap(p.Cards)) // https://github.com/golang/go/wiki/SliceTricks#copy
+		// len(tmp) == len(p.Cards)
 		copy(tmp, p.Cards)
 		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
 		for _, c := range tmp {

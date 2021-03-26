@@ -35,7 +35,7 @@ var (
 	// CardShadowImage applies to all cards so is kept globally as an optimization
 	CardShadowImage *ebiten.Image
 	// CardMovableImage applies to all cards so is kept globally as an optimization
-	CardMovableImage *ebiten.Image
+	// CardMovableImage *ebiten.Image
 )
 
 // TheGSM provides global access to the game state manager
