@@ -14,11 +14,6 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-/*
-//go:embed res/drawable-xhdpi/baseline_undo_white_24.png
-var undoBytes []byte
-*/
-
 var IconMap = map[string]image.Image{}
 
 // check is a helper function which streamlines error checking
@@ -82,7 +77,10 @@ func LoadIconMapFromZipFiles() {
 
 	// https://gist.github.com/madevelopers/40b269730df687cdcb8b
 
+	// get the icon .zip files from here:
 	// https://material.io/resources/icons/style=baseline
+	// select Android, white and download the .zip file
+	// edit /home/gilbert/ to match your folders
 
 	println("loading ui icons from zip files")
 
@@ -100,7 +98,7 @@ func LoadIconMapFromZipFiles() {
 	gofile.WriteString("\t_ \"embed\" // go:embed only allowed in Go files that import \"embed\"\n")
 	gofile.WriteString(")\n\n")
 
-	iconNames := []string{"bookmark", "bookmark_add", "close", "done", "done_all", "info", "list", "menu", "restore", "search", "settings", "star", "undo"}
+	iconNames := []string{"bookmark", "bookmark_add", "check_box", "check_box_outline_blank", "close", "done", "done_all", "info", "list", "menu", "restore", "search", "settings", "star", "undo"}
 	for _, iconName := range iconNames {
 		zipFname := fmt.Sprintf("/home/gilbert/Downloads/%s-white-android.zip", iconName)
 		zf, err := zip.OpenReader(zipFname)

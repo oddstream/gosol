@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image"
+	"log"
 	"strconv"
 
 	"github.com/fogleman/gg"
@@ -20,17 +21,22 @@ type Checkbox struct {
 
 func (w *Checkbox) createImg() *ebiten.Image {
 	dc := gg.NewContext(w.width, w.height)
-	dc.SetRGBA(1, 1, 1, 1)
-	// nota bene - text is drawn with y as a baseline
 
-	dc.SetFontFace(schriftbank.Symbol24)
+	var iconName string
 	if w.checked {
-		dc.DrawString(string(rune(0x2611)), 24, float64(w.height)*0.7)
+		iconName = "check_box"
 	} else {
-		dc.DrawString(string(rune(0x2610)), 24, float64(w.height)*0.7)
+		iconName = "check_box_outline_blank"
 	}
+	// same as NavItem
+	img, ok := IconMap[iconName]
+	if !ok || img == nil {
+		log.Fatal(iconName, " not in icon map")
+	}
+	dc.DrawImageAnchored(img, 18, w.height/2, 0, 0.5)
 
-	dc.SetFontFace(schriftbank.RobotRegular24)
+	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(w.text, float64(18+48), float64(w.height)*0.7)
 
 	// uncomment this to show the area we expect the text to occupy

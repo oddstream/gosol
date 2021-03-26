@@ -22,7 +22,7 @@ func (tb *Toolbar) createImg() *ebiten.Image {
 	dc.DrawRectangle(0, 0, float64(tb.width), float64(tb.height))
 	dc.Fill()
 	if tb.title != "" {
-		dc.SetFontFace(schriftbank.RobotRegular24)
+		dc.SetFontFace(schriftbank.RobotoMedium24)
 		dc.SetColor(color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff})
 		dc.DrawStringAnchored(tb.title, float64(tb.width)/2, float64(tb.height)/2, 0.5, 0.5)
 	}

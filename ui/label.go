@@ -21,7 +21,7 @@ func (l *Label) createImg() *ebiten.Image {
 	dc := gg.NewContext(l.width, l.height)
 	dc.SetRGBA(1, 1, 1, 1)
 	// nota bene - text is drawn with y as a baseline
-	dc.SetFontFace(schriftbank.RobotRegular24)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(l.text, 24, float64(l.height)*0.7)
 	return ebiten.NewImageFromImage(dc.Image())
 }

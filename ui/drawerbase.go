@@ -140,6 +140,14 @@ func (db *DrawerBase) StopDrag() {
 	db.yOffsetBase = db.yOffset
 }
 
+// ResetScroll state for this drawer
+func (db *DrawerBase) ResetScroll() {
+	db.xOffset = 0
+	db.xOffsetBase = 0
+	db.yOffset = 0
+	db.yOffsetBase = 0
+}
+
 // DeactivateWidgets stops the widgets from receiving input
 func (db *DrawerBase) DeactivateWidgets() {
 	for _, w := range db.widgets {
@@ -182,6 +190,7 @@ func (db *DrawerBase) Draw(screen *ebiten.Image) {
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(db.x), float64(db.y))
+	// op.ColorM.Scale(1, 1, 1, 0.95)
 	screen.DrawImage(db.img, op)
 
 	for _, w := range db.widgets {

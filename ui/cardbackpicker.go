@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"sort"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 )
@@ -26,9 +28,15 @@ func (u *UI) ShowCardBackPicker(content map[string]*ebiten.Image) {
 		con.Hide()
 	}
 	u.cardBackPicker.widgets = u.cardBackPicker.widgets[:0]
-	for name, img := range content {
-		u.cardBackPicker.widgets = append(u.cardBackPicker.widgets, NewCardBackWidget(u.cardBackPicker, u.input, name, img))
+	strings := []string{}
+	for name := range content {
+		strings = append(strings, name)
 	}
+	sort.Slice(strings, func(i, j int) bool { return strings[i] < strings[j] })
+	for _, name := range strings {
+		u.cardBackPicker.widgets = append(u.cardBackPicker.widgets, NewCardBackWidget(u.cardBackPicker, u.input, name, content[name]))
+	}
+	u.cardBackPicker.ResetScroll()
 	u.cardBackPicker.LayoutWidgets()
 	u.cardBackPicker.Show()
 }

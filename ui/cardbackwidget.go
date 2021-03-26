@@ -27,14 +27,14 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 	// nota bene - text is drawn with y as a baseline
 
 	dc.SetRGBA(1, 1, 1, 1)
-	dc.SetFontFace(schriftbank.RobotRegular24)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(cb.name, float64(24+w+24), float64(cb.height)*0.6)
 
 	// uncomment this to show the area we expect the text to occupy
-	dc.DrawLine(0, float64(0), float64(cb.width), float64(0))
-	dc.DrawLine(0, float64(cb.height), float64(cb.width), float64(cb.height))
-	dc.DrawLine(0, float64(0), float64(cb.width), float64(cb.height))
-	dc.Stroke()
+	// dc.DrawLine(0, float64(0), float64(cb.width), float64(0))
+	// dc.DrawLine(0, float64(cb.height), float64(cb.width), float64(cb.height))
+	// dc.DrawLine(0, float64(0), float64(cb.width), float64(cb.height))
+	// dc.Stroke()
 
 	return ebiten.NewImageFromImage(dc.Image())
 }

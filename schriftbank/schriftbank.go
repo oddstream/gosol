@@ -20,11 +20,14 @@ var symbolFontBytes []byte
 //go:embed assets/Roboto-Regular.ttf
 var robotoRegularFontBytes []byte
 
+//go:embed assets/Roboto-Medium.ttf
+var robotoMediumFontBytes []byte
+
 var (
 	// RobotoRegular14 used by UI toast
 	RobotoRegular14 font.Face
-	// RobotRegular24 used by UI
-	RobotRegular24 font.Face
+	// RobotoMedium24 used by UI
+	RobotoMedium24 font.Face
 	// Symbol24 used by UI
 	Symbol24 font.Face
 	// CardSymbolRegular is used to draw the suit symbol
@@ -51,7 +54,12 @@ func init() {
 		Hinting: font.HintingFull,
 	})
 
-	RobotRegular24 = truetype.NewFace(tt, &truetype.Options{
+	tt, err = truetype.Parse(robotoMediumFontBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	RobotoMedium24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,

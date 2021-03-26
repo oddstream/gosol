@@ -33,7 +33,7 @@ func (n *NavItem) createImg() *ebiten.Image {
 		dc.DrawImageAnchored(img, 18, n.height/2, 0, 0.5)
 	}
 	dc.SetRGBA(1, 1, 1, 1)
-	dc.SetFontFace(schriftbank.RobotRegular24)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(n.text, float64(18+48), float64(n.height)*0.7)
 
 	// uncomment this to show the area we expect the text to occupy

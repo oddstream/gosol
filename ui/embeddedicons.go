@@ -13,6 +13,12 @@ var bookmarkIconBytes []byte
 //go:embed icons/bookmark_add.png
 var bookmark_addIconBytes []byte
 
+//go:embed icons/check_box.png
+var check_boxIconBytes []byte
+
+//go:embed icons/check_box_outline_blank.png
+var check_box_outline_blankIconBytes []byte
+
 //go:embed icons/close.png
 var closeIconBytes []byte
 
@@ -50,6 +56,8 @@ var undoIconBytes []byte
 func LoadIconMapFromEmbedded() {
 	decode("bookmark", bookmarkIconBytes)
 	decode("bookmark_add", bookmark_addIconBytes)
+	decode("check_box", check_boxIconBytes)
+	decode("check_box_outline_blank", check_box_outline_blankIconBytes)
 	decode("close", closeIconBytes)
 	decode("done", doneIconBytes)
 	decode("done_all", done_allIconBytes)
