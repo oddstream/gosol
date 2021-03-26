@@ -93,7 +93,7 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 }
 
 func (b *Baize) ShowCardBackPicker() {
-	b.ui.ShowCardBackPicker()
+	b.ui.ShowCardBackPicker(TheCIP.BackImages())
 }
 
 func NewRetroCardImageProvider() *RetroCardImageProvider {

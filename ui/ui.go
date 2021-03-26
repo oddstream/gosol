@@ -29,7 +29,7 @@ type UI struct {
 }
 
 // New creates a new UI object
-func New(input *input.Input, pickerContents []string, cardBackPickerContents map[string]*ebiten.Image) *UI {
+func New(input *input.Input) *UI {
 	ui := &UI{input: input}
 
 	LoadIconMap()
@@ -38,9 +38,9 @@ func New(input *input.Input, pickerContents []string, cardBackPickerContents map
 	ui.toolbar = NewToolbar(input)
 	ui.navDrawer = NewNavDrawer(input)
 	ui.settingsDrawer = NewSettingsDrawer(input)
-	ui.variantPicker = NewPicker(input, pickerContents)
-	ui.cardBackPicker = NewCardBackPicker(input, cardBackPickerContents)
-	ui.rules = NewRules(input) // contents are added when shown
+	ui.variantPicker = NewVariantPicker(input)
+	ui.cardBackPicker = NewCardBackPicker(input)
+	ui.rules = NewRulesPicker(input) // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar}
 	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}

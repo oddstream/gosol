@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image"
+	"strconv"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -30,7 +31,7 @@ func (w *Checkbox) createImg() *ebiten.Image {
 	}
 
 	dc.SetFontFace(schriftbank.RobotRegular24)
-	dc.DrawString(w.text, 24+48+24, float64(w.height)*0.7)
+	dc.DrawString(w.text, float64(18+48), float64(w.height)*0.7)
 
 	// uncomment this to show the area we expect the text to occupy
 	// dc.DrawLine(0, float64(0), float64(w.width), float64(0))
@@ -76,6 +77,8 @@ func (w *Checkbox) NotifyCallback(event interface{}) {
 		if util.InRect(v.X, v.Y, w.OffsetRect) {
 			w.checked = !w.checked
 			w.img = w.createImg()
+			w.input.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
+
 		}
 	}
 }

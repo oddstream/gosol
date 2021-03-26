@@ -11,17 +11,13 @@ type CardBackPicker struct {
 }
 
 // NewCardBackPicker creates a new container
-func NewCardBackPicker(input *input.Input, content map[string]*ebiten.Image) *CardBackPicker {
+func NewCardBackPicker(input *input.Input) *CardBackPicker {
 	p := &CardBackPicker{DrawerBase: DrawerBase{input: input, x: -400, y: 48, width: 400}} // height will be set when drawn
-	for name, img := range content {
-		p.widgets = append(p.widgets, NewCardBackWidget(p, input, name, img))
-	}
-	p.LayoutWidgets()
 	return p
 }
 
 // ShowCardBackPicker makes the card back picker visible
-func (u *UI) ShowCardBackPicker() {
+func (u *UI) ShowCardBackPicker(content map[string]*ebiten.Image) {
 	con := u.VisibleDrawer()
 	if con == u.cardBackPicker {
 		return
@@ -29,5 +25,10 @@ func (u *UI) ShowCardBackPicker() {
 	if con != nil {
 		con.Hide()
 	}
+	u.cardBackPicker.widgets = u.cardBackPicker.widgets[:0]
+	for name, img := range content {
+		u.cardBackPicker.widgets = append(u.cardBackPicker.widgets, NewCardBackWidget(u.cardBackPicker, u.input, name, img))
+	}
+	u.cardBackPicker.LayoutWidgets()
 	u.cardBackPicker.Show()
 }

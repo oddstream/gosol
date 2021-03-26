@@ -111,7 +111,11 @@ func (p *Pile) GetStringAttribute(key string) string {
 func (p *Pile) GetBoolAttribute(key string) bool {
 	str, exists := p.Attributes[key]
 	if exists {
-		return str == "true" || str == "True" || str == "T" || str == "1"
+		value, err := strconv.ParseBool(str)
+		if err != nil {
+			log.Panic("expecting a bool, got ", str)
+		}
+		return value
 	}
 	return false
 }

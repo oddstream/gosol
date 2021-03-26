@@ -294,5 +294,5 @@ func (b *Baize) rulesContents() []string {
 }
 
 func (b *Baize) ShowRules() {
-	b.ui.ShowRules(b.rulesContents())
+	b.ui.ShowRulesPicker(b.rulesContents())
 }

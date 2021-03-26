@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -57,7 +58,7 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input, pickerContents(), TheCIP.BackImages())
+	TheBaize.ui = ui.New(TheBaize.input)
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
@@ -169,9 +170,7 @@ func (b *Baize) NewVariant(v string) {
 	b.Piles = piles
 
 	b.OldWindowWidth = 0 // force a rescale
-
-	// now we know number of piles and can discover window width; scale the cards before creating them
-	b.Scale()
+	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
 
 	b.stock = b.findPilePrefix("Stock")
 	if b.stock == nil {
@@ -207,9 +206,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.Piles = piles
 
 	b.OldWindowWidth = 0 // force a rescale
-
-	// now we know number of piles and can discover window width; scale the cards before creating them
-	b.Scale()
+	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
 
 	b.stock = b.findPilePrefix("Stock")
 	if b.stock == nil {
@@ -717,6 +714,27 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				TheUserData.CardBackColor = v.Data
 				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 			}
+		case "Highlight":
+			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
+			println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
+			if TheUserData.HighlightMovable {
+				b.MarkMovable()
+			} else {
+				for _, p := range b.Piles {
+					for _, c := range p.Cards {
+						c.SetMovable(false)
+					}
+				}
+			}
+		case "Retro":
+			retro, _ := strconv.ParseBool(v.Data)
+			if retro {
+				TheUserData.CardStyle = "retro"
+			} else {
+				TheUserData.CardStyle = "default"
+			}
+			b.OldWindowWidth = 0 // force a rescale
+			b.Scale()
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}

@@ -9,18 +9,14 @@ type Picker struct {
 	DrawerBase
 }
 
-// NewPicker creates a new container
-func NewPicker(input *input.Input, content []string) *Picker {
+// NewVariantPicker creates a new container
+func NewVariantPicker(input *input.Input) *Picker {
 	p := &Picker{DrawerBase: DrawerBase{input: input, x: -300, y: 48, width: 300}} // height will be set when drawn
-	for _, c := range content {
-		p.widgets = append(p.widgets, NewLabel(p, input, -300, 0, 300, 48, 0, c, "Variant"))
-	}
-	p.LayoutWidgets()
 	return p
 }
 
 // ShowVariantPicker makes the variant picker visible
-func (u *UI) ShowVariantPicker() {
+func (u *UI) ShowVariantPicker(content []string) {
 	con := u.VisibleDrawer()
 	if con == u.variantPicker {
 		return
@@ -28,5 +24,10 @@ func (u *UI) ShowVariantPicker() {
 	if con != nil {
 		con.Hide()
 	}
+	u.variantPicker.widgets = u.variantPicker.widgets[:0]
+	for _, c := range content {
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, u.input, 0, c, "Variant"))
+	}
+	u.variantPicker.LayoutWidgets()
 	u.variantPicker.Show()
 }

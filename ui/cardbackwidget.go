@@ -30,7 +30,11 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 	dc.SetFontFace(schriftbank.RobotRegular24)
 	dc.DrawString(cb.name, float64(24+w+24), float64(cb.height)*0.6)
 
-	// dc.Stroke()
+	// uncomment this to show the area we expect the text to occupy
+	dc.DrawLine(0, float64(0), float64(cb.width), float64(0))
+	dc.DrawLine(0, float64(cb.height), float64(cb.width), float64(cb.height))
+	dc.DrawLine(0, float64(0), float64(cb.width), float64(cb.height))
+	dc.Stroke()
 
 	return ebiten.NewImageFromImage(dc.Image())
 }
@@ -39,9 +43,9 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 func NewCardBackWidget(parent Container, input *input.Input, name string, backImg *ebiten.Image) *CardBackWidget {
 	_, h := backImg.Size()
 	w, _ := parent.Size()
-	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, input: input, x: -w, y: 0, width: w, height: h},
+	// widget x, y will be set by LayoutWidgets
+	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, input: input, width: w, height: h},
 		name: name, backImg: backImg}
-	cb.Activate()
 	return cb
 }
 

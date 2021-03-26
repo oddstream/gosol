@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 )
 
@@ -13,19 +14,11 @@ type SettingsDrawer struct {
 func NewSettingsDrawer(input *input.Input) *SettingsDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
 	d := &SettingsDrawer{DrawerBase: DrawerBase{input: input, width: 256, height: 0, x: -256, y: 48}}
-	d.widgets = []Widget{
-		// NewLabel(n, input, 0, -100, 256, 48, 0, "Title", schriftbank.RobotRegular24, ""),
-		// give -ve x to make sure item is initially drawn off screen
-		// y will be set by LayoutWidgets()
-		NewCheckbox(d, input, "Retro cards", false),
-		NewCheckbox(d, input, "Highlight", true),
-	}
-	d.LayoutWidgets()
 	return d
 }
 
 // ShowSettingsDrawer makes the card back picker visible
-func (u *UI) ShowSettingsDrawer() {
+func (u *UI) ShowSettingsDrawer(retro, highlight bool) {
 	con := u.VisibleDrawer()
 	if con == u.settingsDrawer {
 		return
@@ -33,5 +26,13 @@ func (u *UI) ShowSettingsDrawer() {
 	if con != nil {
 		con.Hide()
 	}
+	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
+	u.settingsDrawer.widgets = []Widget{
+		// widget x, y will be set by LayoutWidgets()
+		NewCheckbox(u.settingsDrawer, u.input, "Retro", retro),
+		NewCheckbox(u.settingsDrawer, u.input, "Highlight", highlight),
+		NewNavItem(u.settingsDrawer, u.input, "settings", "Card back ...", ebiten.KeyF2),
+	}
+	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()
 }

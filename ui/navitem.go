@@ -50,7 +50,6 @@ func NewNavItem(parent Container, input *input.Input, iconName string, text stri
 	w, _ := parent.Size()
 	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: -w, y: 0, width: w, height: 48, align: 0},
 		iconName: iconName, text: text, key: key}
-	n.Activate()
 	return n
 }
 

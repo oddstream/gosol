@@ -27,11 +27,12 @@ func (l *Label) createImg() *ebiten.Image {
 }
 
 // NewLabel creates a new Label
-func NewLabel(parent Container, input *input.Input, x, y, width, height, align int, text string, requestType string) *Label {
+func NewLabel(parent Container, input *input.Input, align int, text string, requestType string) *Label {
+	width, _ := parent.Size()
 	l := &Label{
-		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+		// widget x, y will be set by LayoutWidgets
+		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, width: width, height: 48, align: align},
 		text:       text, requestType: requestType}
-	l.Activate()
 	return l
 }
 

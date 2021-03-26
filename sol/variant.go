@@ -541,15 +541,11 @@ func variantDescription(v string) string {
 	return ""
 }
 
-func pickerContents() []string {
-	var displayNames []string
-	for key := range Variants {
-		displayNames = append(displayNames, key)
-	}
-	sort.Slice(displayNames, func(i, j int) bool { return displayNames[i] < displayNames[j] })
-	return displayNames
-}
-
 func (b *Baize) ShowVariantPicker() {
-	b.ui.ShowVariantPicker()
+	var vnames []string
+	for key := range Variants {
+		vnames = append(vnames, key)
+	}
+	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+	b.ui.ShowVariantPicker(vnames)
 }

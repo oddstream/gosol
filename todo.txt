@@ -2,6 +2,15 @@
 + checkbox widget, can use unicode
   settings drawer doesn't close when widgets are tapped
   instead get state of widgets when it closes and notify baize SettingsClose
++ ui calls to open drawer, pass parameters and create the drawer (at -ve width coords)
+  drawers are destroyed when they are closed
+    nav drawer
+    variant picker
+    settings
+    card back (both types)
+    rules
+  OpenSettings() passes pointer to object that settings drawer uses to set initial state of, eg, checkboxes
+
 + problems with mark movable
   shows draggable tail that cannot be moved because of powermoves (FIXED)
   show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
@@ -16,6 +25,7 @@
   [ ] json_browser.go
   [x] embed icons
   [ ] http server
+  [ ] PWA https://github.com/maxence-charriere/go-app
 + Settings
   Card design (add default) (a slide out picker)
   Animation speed (a slide out picker for slow, medium, fast)
