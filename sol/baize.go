@@ -18,6 +18,9 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+// PilePosition is the position, in baize coords, of a pile
+type PilePosition float32
+
 // BaizeState is either Virgin, Started or Complete
 type BaizeState int
 
@@ -322,9 +325,9 @@ func (b *Baize) findPilePrefix(cls string) *Pile {
 
 // findPileAt finds the pile under the mouse click or touch
 func (b *Baize) findPileAt(x, y int) *Pile {
-	for _, o := range b.Piles {
-		if util.InRect(x, y, o.FannedScreenRect) {
-			return o
+	for _, p := range b.Piles {
+		if util.InRect(x, y, p.FannedScreenRect) {
+			return p
 		}
 	}
 	return nil
@@ -332,7 +335,9 @@ func (b *Baize) findPileAt(x, y int) *Pile {
 
 // findCardAt finds the tile under the mouse click or touch
 func (b *Baize) findCardAt(x, y int) *Card {
-	for _, p := range b.Piles {
+	// go backwards, for King Albert's overlapping reserve piles
+	for j := len(b.Piles) - 1; j >= 0; j-- {
+		p := b.Piles[j]
 		for i := p.CardCount() - 1; i >= 0; i-- {
 			c := p.Cards[i]
 			if util.InRect(x, y, c.ScreenRect) {
@@ -845,7 +850,7 @@ func (b *Baize) ScaleCards() {
 
 	windowWidth, _ := ebiten.WindowSize()
 
-	var maxX int
+	var maxX PilePosition
 	for _, p := range b.Piles {
 		if p.X > maxX {
 			maxX = p.X
@@ -893,7 +898,7 @@ func (b *Baize) ScaleCards() {
 		PilePaddingX = 7
 		CardHeight = 96
 		PilePaddingY = 10
-		cardsWidth := (PilePaddingX + CardWidth) * (maxX + 1) // add 1 for half width card margin
+		cardsWidth := int(PilePosition(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
 		LeftMargin = (windowWidth - cardsWidth) / 2
 	}
 	log.Printf("scaled card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)

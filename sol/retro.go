@@ -19,10 +19,10 @@ var faceBytes []byte
 var backBytes []byte
 
 type RetroCardImageProvider struct {
-	faceImgs   map[CardID]*ebiten.Image
-	backImgs   map[string]*ebiten.Image
-	shadowImg  *ebiten.Image
-	movableImg *ebiten.Image
+	faceImgs  map[CardID]*ebiten.Image
+	backImgs  map[string]*ebiten.Image
+	shadowImg *ebiten.Image
+	// movableImg *ebiten.Image
 }
 
 var (
@@ -119,7 +119,7 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 	}
 
 	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight) // cheeky bit of borrowing, sorry
-	ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
+	// ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
 
 	return ip
 }
@@ -152,6 +152,6 @@ func (ip *RetroCardImageProvider) ShadowImage() *ebiten.Image {
 	return ip.shadowImg
 }
 
-func (ip *RetroCardImageProvider) MovableImage() *ebiten.Image {
-	return ip.movableImg
-}
+// func (ip *RetroCardImageProvider) MovableImage() *ebiten.Image {
+// 	return ip.movableImg
+// }

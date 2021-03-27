@@ -1,16 +1,16 @@
 + give up and redo the thing in Java/Rust/Tcl+Tk/Kotlin+KorGE/Godot/Defold
-+ checkbox widget, can use unicode
-  settings drawer doesn't close when widgets are tapped
-  instead get state of widgets when it closes and notify baize SettingsClose
-+ ui calls to open drawer, pass parameters and create the drawer (at -ve width coords)
-  drawers are destroyed when they are closed
-    nav drawer
-    variant picker
-    settings
-    card back (both types)
-    rules
-  OpenSettings() passes pointer to object that settings drawer uses to set initial state of, eg, checkboxes
 
++ King Albert, can drag any one card out of the pile
+  if dragFlags&4==4 {}
+  remove card from middle of pile, re-fan the remainder
+  if card is not accepted elsewhere it needs to go back (insert card into pile, re-fan the pile)
+  instead of
+    c.owner.DragTailBy(v.Stroke.PositionDiff())
+  use
+    c.DragBy(v.Stroke.PositionDiff())
+  AfterUserMove() needs to refan source Pile (and needs to know to do it)
+  MoveCards() needs to know not to pop and push
+  ...that's a lot of work, just use float X, Y positions and seven overlapping reserves
 + problems with mark movable
   shows draggable tail that cannot be moved because of powermoves (FIXED)
   show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)

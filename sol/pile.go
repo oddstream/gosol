@@ -39,9 +39,9 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class             string // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
-	X, Y              int    // relative position on Baize in CardWidth/Height units (ie not screen coords)
-	Fan               string // ""|"None"|"Down"|"Right"|"Waste"
+	Class             string       // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
+	X, Y              PilePosition // relative position on Baize in CardWidth/Height units (ie not screen coords)
+	Fan               string       // ""|"None"|"Down"|"Right"|"Waste"
 	localAccept       int
 	localRecycles     int
 	Attributes        map[string]string
@@ -56,7 +56,7 @@ type Pile struct {
 }
 
 // NewPile create and fills in a Pile object
-func NewPile(class string, x, y int, fan string, attribs map[string]string) *Pile {
+func NewPile(class string, x, y PilePosition, fan string, attribs map[string]string) *Pile {
 	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
 
 	br, ok := p.GetIntAttribute("Build")
@@ -121,9 +121,18 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 }
 
 func (p *Pile) CreateBackgroundImage() {
+
+	invisible := p.GetBoolAttribute("Invisible")
+	if invisible {
+		p.backgroundImage = nil
+		return
+	}
+
 	dc := gg.NewContext(CardWidth, CardHeight)
+
 	dc.SetColor(colorPile)
 	dc.SetLineWidth(2)
+
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), cardCornerRadius())
 	dc.Stroke()
@@ -156,7 +165,7 @@ func (p *Pile) CreateBackgroundImage() {
 
 // BaizePosition returns the x,y baize coords of this pile
 func (p *Pile) BaizePosition() (int, int) {
-	return LeftMargin + (p.X * (CardWidth + PilePaddingX)), TopMargin + (p.Y * (CardHeight + PilePaddingY))
+	return LeftMargin + int(p.X*PilePosition(CardWidth+PilePaddingX)), TopMargin + int(p.Y*PilePosition(CardHeight+PilePaddingY))
 }
 
 // ScreenPosition returns the x,y baize coords of this pile

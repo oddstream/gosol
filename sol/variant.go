@@ -13,7 +13,7 @@ type VariantInfo struct {
 // PileInfo contains the basic Pile members and a lookup table for it's attributes
 type PileInfo struct {
 	Class      string
-	X, Y       int
+	X, Y       PilePosition
 	Fan        string
 	Attributes map[string]string
 }
@@ -207,6 +207,32 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 5, 1, "Down", map[string]string{"Accept": "0", "Build": "242", "Drag": "42", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
 			{"Tableau", 6, 1, "Down", map[string]string{"Accept": "0", "Build": "242", "Drag": "42", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
 			{"Tableau", 7, 1, "Down", map[string]string{"Accept": "0", "Build": "242", "Drag": "42", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+		},
+	},
+	"King Albert": {
+		Description: "Like Klondike, but with all cards face up and a seven-card reserve instead of stock and waste piles.",
+		Piles: []PileInfo{
+			{"Stock", -2, -2, "None", map[string]string{"Packs": "1", "Build": "0", "Drag": "15"}},
+			{"Reserve", 0, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 0.5, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 1, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 1.5, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 2, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 2.5, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Reserve", 3, 0, "None", map[string]string{"Invisible": "True", "Build": "15", "Drag": "115", "Deal": "u"}},
+			{"Foundation", 5, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 6, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 7, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Foundation", 8, 0, "None", map[string]string{"Accept": "1", "Build": "21", "Drag": "0"}},
+			{"Tableau", 0, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "u"}},
+			{"Tableau", 1, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uu"}},
+			{"Tableau", 2, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuu"}},
+			{"Tableau", 3, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuu"}},
+			{"Tableau", 4, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuuu"}},
+			{"Tableau", 5, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuuuu"}},
+			{"Tableau", 6, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuuuuu"}},
+			{"Tableau", 7, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuuuuuu"}},
+			{"Tableau", 8, 1, "Down", map[string]string{"Build": "42", "Drag": "142", "Deal": "uuuuuuuuu"}},
 		},
 	},
 	"Klondike": {

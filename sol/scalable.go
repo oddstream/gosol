@@ -17,10 +17,10 @@ import (
 // }
 
 type ScalableCardImageProvider struct {
-	faceImgs   map[CardID]*ebiten.Image
-	backImgs   map[string]*ebiten.Image
-	shadowImg  *ebiten.Image
-	movableImg *ebiten.Image
+	faceImgs  map[CardID]*ebiten.Image
+	backImgs  map[string]*ebiten.Image
+	shadowImg *ebiten.Image
+	// movableImg *ebiten.Image
 }
 
 func cardCornerRadius() float64 {
@@ -109,14 +109,14 @@ func createScalableShadowImage(width, height int) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createScalableMovableImage(width, height int) *ebiten.Image {
-	dc := gg.NewContext(width, height)
-	dc.SetColor(ExtendedColors["Gold"])
-	dc.SetLineWidth(2)
-	dc.DrawRoundedRectangle(1, 1, float64(width-2), float64(height-2), cardCornerRadius())
-	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
-}
+// func createScalableMovableImage(width, height int) *ebiten.Image {
+// 	dc := gg.NewContext(width, height)
+// 	dc.SetColor(ExtendedColors["Gold"])
+// 	dc.SetLineWidth(2)
+// 	dc.DrawRoundedRectangle(1, 1, float64(width-2), float64(height-2), cardCornerRadius())
+// 	dc.Stroke()
+// 	return ebiten.NewImageFromImage(dc.Image())
+// }
 
 func NewScalableCardImageProvider() *ScalableCardImageProvider {
 	ip := &ScalableCardImageProvider{}
@@ -132,7 +132,7 @@ func NewScalableCardImageProvider() *ScalableCardImageProvider {
 		ip.backImgs[k] = createScalableBackImage(CardWidth, CardHeight, v)
 	}
 	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight)
-	ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
+	// ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
 	return ip
 }
 
@@ -157,6 +157,6 @@ func (ip *ScalableCardImageProvider) ShadowImage() *ebiten.Image {
 	return ip.shadowImg
 }
 
-func (ip *ScalableCardImageProvider) MovableImage() *ebiten.Image {
-	return ip.movableImg
-}
+// func (ip *ScalableCardImageProvider) MovableImage() *ebiten.Image {
+// 	return ip.movableImg
+// }
