@@ -3,10 +3,10 @@ package sol
 // DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
-	if p.dragFlags&1 == 1 && len(tail) > 1 {
+	if p.Flags&DragFlagSingle == DragFlagSingle && len(tail) > 1 {
 		return nil
 	}
-	if !isTailConformant(p.dragRules, p.dragFlags, tail) {
+	if !isTailConformant(p.Drag, p.Flags, tail) {
 		return nil
 	}
 	return tail
@@ -41,7 +41,7 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 		if p.CardCount() == 0 && p.localAccept == 0 {
 			continue
 		}
-		if p.CanAcceptTail(b.Piles, tail, true) {
+		if b.CanAcceptTail(p, tail, true) {
 			return p
 		}
 	}

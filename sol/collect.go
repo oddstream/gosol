@@ -12,7 +12,7 @@ package sol
 
 func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 	// we already know that dst can accept the card, so don't need to check if dst is empty
-	localSuit := c.owner.buildRules / 10
+	localSuit := c.owner.Build / 10
 	// this is only really for localSuit == 4 (alternate colors)
 	if localSuit != 4 {
 		return true
@@ -66,14 +66,14 @@ func (b *Baize) Collect() {
 			if fp.Class != "Foundation" {
 				continue
 			}
-			if fp.buildFlags&8 == 8 {
+			if fp.Flags&BuildFlagSpider == BuildFlagSpider {
 				if fp.CardCount() == 0 {
 					for _, p := range b.Piles {
 						if p.Class == "Tableau" && p.CardCount() >= 13 {
 							for i := 0; i < p.CardCount(); i++ {
 								c := p.Cards[i]
 								tail := p.makeTail(c)
-								if len(tail) == 13 && isTailConformant(p.buildRules, p.buildFlags, tail) {
+								if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) {
 									b.MoveCards(c, fp)
 									count += 13
 									goto NextFoundationPile
@@ -139,7 +139,7 @@ func (b *Baize) Conformant() bool {
 		return false
 	}
 	for _, p := range b.Piles {
-		if p.Class == "Tableau" && p.buildFlags&8 == 8 {
+		if p.Class == "Tableau" && p.Flags&BuildFlagSpider == BuildFlagSpider {
 			// if tableau contains <some cards><13 conformant cards> then tableau isn't conformant anyway
 			switch p.CardCount() {
 			case 0:

@@ -18,15 +18,17 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// PilePosition is the position, in baize coords, of a pile
-type PilePosition float32
+// PilePositionType is the position, in logical coords, of a Pile on the Baize
+// the leftmost Pile will have X=0, the topmost will have Y=0
+// Piles can be hidden by setting X or Y to negative values
+type PilePositionType int
 
-// BaizeState is either Virgin, Started or Complete
-type BaizeState int
+// BaizeStateType is either Virgin, Started or Complete
+type BaizeStateType int
 
 // Virgin, Started or Complete
 const (
-	Virgin BaizeState = iota
+	Virgin BaizeStateType = iota
 	Started
 	Complete
 )
@@ -38,8 +40,9 @@ type Baize struct {
 	Seed            int64
 	UndoStack       []SaveableBaize
 	SavedPosition   int
+	PowerMoves      bool
 	totalCards      int
-	State           BaizeState
+	State           BaizeStateType
 	stroke          *input.Stroke
 	input           *input.Input
 	ui              *ui.UI
@@ -161,16 +164,15 @@ func (b *Baize) NewVariant(v string) {
 		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
 	}
 	b.Reset()
+
+	if _, exists := Variants[v]; !exists {
+		v = "Klondike"
+	}
 	b.Variant = v
 	TheUserData.Variant = v
+	b.BuildVariant(v)
 	b.ui.SetTitle(v)
 	b.Seed = time.Now().UnixNano()
-
-	piles, ok := buildVariantPiles(b.Variant)
-	if !ok {
-		log.Fatal("unknown variant ", b.Variant)
-	}
-	b.Piles = piles
 
 	b.OldWindowWidth = 0 // force a rescale
 	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
@@ -189,8 +191,12 @@ func (b *Baize) NewVariant(v string) {
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
 
+	if _, exists := Variants[v]; !exists {
+		v = "Klondike"
+	}
 	b.Variant = v
 	TheUserData.Variant = v
+	b.BuildVariant(v)
 	b.ui.SetTitle(v)
 
 	if !b.Load(v) {
@@ -201,12 +207,6 @@ func (b *Baize) LoadVariant(v string) bool {
 	if !ok {
 		log.Panic("error popping extra state from undo stack")
 	}
-
-	piles, ok := buildVariantPiles(b.Variant)
-	if !ok {
-		log.Fatal("unknown variant ", b.Variant)
-	}
-	b.Piles = piles
 
 	b.OldWindowWidth = 0 // force a rescale
 	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
@@ -469,7 +469,7 @@ func (b *Baize) CardTapped(c *Card) {
 			// if p.Class == "Foundation" && p.buildFlags&8==8 {
 			// 	// fake a drag
 			// 	if c.owner.StartDrag(c) {
-			// 		if p.CanAcceptTail(b.Piles, c.owner.Tail) {
+			// 		if b.CanAcceptTail(p, c.owner.Tail) {
 			// 			b.MoveCards(c, p)
 			// 			moved = true
 			// 		}
@@ -641,6 +641,90 @@ func (b *Baize) calcPercentComplete() int {
 	return int(math.Round(float64(count) / float64(b.totalCards) * 100))
 }
 
+// CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
+func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
+
+	if len(Tail) == 0 { // len() for nil slices is defined as zero
+		log.Fatal("empty tail passed to CanAcceptTail")
+	}
+
+	c0 := Tail[0]
+
+	if c0.owner == p {
+		// println("cannot drag cards to yourself")
+		return false
+	}
+
+	targetClass := c0.owner.GetStringAttribute("Target")
+	if targetClass != "" {
+		if targetClass != p.Class {
+			if !noToast {
+				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
+			}
+			return false
+		}
+	}
+
+	switch p.Class {
+	case "Stock":
+		return false // user cannot drag cards to stock
+
+	case "Waste":
+		if c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
+			ctm := c0.owner.GetStringAttribute("CardsToMove")
+			if ctm == "" || ctm == "1" {
+				return true
+			}
+		}
+		return false
+
+	case "Foundation":
+		if p.Flags&BuildFlagSpider == BuildFlagSpider {
+			if len(Tail) != 13 {
+				return false
+			}
+			if p.CardCount() > 0 {
+				return false
+			}
+			return isTailConformant(p.Build, p.Flags, Tail)
+		} else {
+			if len(Tail) != 1 {
+				return false
+			}
+			if p.CardCount() == 0 {
+				if p.localAccept > 0 {
+					return c0.Ordinal() == p.localAccept
+				}
+				return true
+			}
+			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+		}
+
+	case "Tableau":
+		if b.PowerMoves {
+			pm := powerMoves(b.Piles, p)
+			if len(Tail) > pm {
+				if !noToast {
+					TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
+				}
+				return false
+			}
+			// println("can drag", len(Tail), "cards")
+		}
+		if p.CardCount() == 0 {
+			if p.localAccept > 0 {
+				return c0.Ordinal() == p.localAccept
+			}
+			return true
+		}
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+
+	case "Cell":
+		return len(Tail) == 1 && p.CardCount() == 0
+	}
+	return false
+}
+
 // StartDrag return true if the Baize can be dragged (vscrolled)
 func (b *Baize) StartDrag() bool {
 	return true
@@ -809,7 +893,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
 				} else {
-					if p.CanAcceptTail(b.Piles, c.owner.Tail, false) {
+					if b.CanAcceptTail(p, c.owner.Tail, false) {
 						c.owner.StopDrag(c)
 						b.MoveCards(c, p)
 						b.AfterUserMove()
@@ -850,7 +934,7 @@ func (b *Baize) ScaleCards() {
 
 	windowWidth, _ := ebiten.WindowSize()
 
-	var maxX PilePosition
+	var maxX PilePositionType
 	for _, p := range b.Piles {
 		if p.X > maxX {
 			maxX = p.X
@@ -898,7 +982,7 @@ func (b *Baize) ScaleCards() {
 		PilePaddingX = 7
 		CardHeight = 96
 		PilePaddingY = 10
-		cardsWidth := int(PilePosition(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
+		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
 		LeftMargin = (windowWidth - cardsWidth) / 2
 	}
 	log.Printf("scaled card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)

@@ -30,6 +30,9 @@ added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 
 ...then restarted vscode
 
+var m map[string]int
+m["one"]++
+
 ! 71 x 96 = 1:1.352 (Microsoft retro)
 ! 64 x 89 = 1:1.390 (official poker size)
 ! 90 x 130 = 1:1.444 (nice looking scalable)

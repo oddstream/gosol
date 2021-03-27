@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"fmt"
 	"image/color"
 	"log"
 	"strconv"
@@ -39,40 +38,22 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class             string       // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
-	X, Y              PilePosition // relative position on Baize in CardWidth/Height units (ie not screen coords)
-	Fan               string       // ""|"None"|"Down"|"Right"|"Waste"
-	localAccept       int
-	localRecycles     int
-	Attributes        map[string]string
-	Cards             []*Card // array of cards, managed as a stack
-	Tail              []*Card // array of cards currently being dragged
-	buildRules        int
-	buildFlags        int // 1=rank wrap, 2=power moves, 8=spider
-	dragRules         int
-	dragFlags         int           // 1=single card only (no tail)
-	scrunchPercentage int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
-	backgroundImage   *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
+	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
+	X, Y               PilePositionType // relative position on Baize in CardWidth/Height units (ie not screen coords)
+	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteDown"
+	localAccept        int
+	localRecycles      int
+	Attributes         map[string]string
+	Cards              []*Card // array of cards, managed as a stack
+	Tail               []*Card // array of cards currently being dragged
+	Build, Drag, Flags int
+	scrunchPercentage  int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
+	backgroundImage    *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
 }
 
 // NewPile create and fills in a Pile object
-func NewPile(class string, x, y PilePosition, fan string, attribs map[string]string) *Pile {
-	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Attributes: attribs}
-
-	br, ok := p.GetIntAttribute("Build")
-	if !ok {
-		log.Fatal("no Build rules for Pile " + p.Class)
-	}
-	p.buildRules = br % 100
-	p.buildFlags = br / 100
-
-	d, ok := p.GetIntAttribute("Drag")
-	if !ok {
-		log.Fatal("no Drag attribute for Pile " + p.Class)
-	}
-	p.dragRules = d % 100
-	p.dragFlags = d / 100
-
+func NewPile(class string, x, y PilePositionType, fan string, Build, Drag, Flags int, attribs map[string]string) *Pile {
+	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Build: Build, Drag: Drag, Flags: Flags, Attributes: attribs}
 	p.Reset()
 	return p
 }
@@ -165,7 +146,7 @@ func (p *Pile) CreateBackgroundImage() {
 
 // BaizePosition returns the x,y baize coords of this pile
 func (p *Pile) BaizePosition() (int, int) {
-	return LeftMargin + int(p.X*PilePosition(CardWidth+PilePaddingX)), TopMargin + int(p.Y*PilePosition(CardHeight+PilePaddingY))
+	return LeftMargin + int(p.X*PilePositionType(CardWidth+PilePaddingX)), TopMargin + int(p.Y*PilePositionType(CardHeight+PilePaddingY))
 }
 
 // ScreenPosition returns the x,y baize coords of this pile
@@ -317,7 +298,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c)
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
 	case "Tableau":
 		if p.CardCount() == 0 {
 			if p.localAccept > 0 {
@@ -325,93 +306,9 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 			}
 			return true
 		}
-		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c)
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
 	case "Cell":
 		return p.CardCount() == 0
-	}
-	return false
-}
-
-// CanAcceptTail returns true if this Pile can accept the tail of Cards from another Pile
-func (p *Pile) CanAcceptTail(piles []*Pile, Tail []*Card, noToast bool) bool {
-
-	if len(Tail) == 0 { // len() for nil slices is defined as zero
-		log.Fatal("empty tail passed to CanAcceptTail")
-	}
-
-	c0 := Tail[0]
-
-	if c0.owner == p {
-		// println("cannot drag cards to yourself")
-		return false
-	}
-
-	targetClass := c0.owner.GetStringAttribute("Target")
-	if targetClass != "" {
-		if targetClass != p.Class {
-			if !noToast {
-				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
-			}
-			return false
-		}
-	}
-
-	switch p.Class {
-	case "Stock":
-		return false // user cannot drag cards to stock
-
-	case "Waste":
-		if c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
-			ctm := c0.owner.GetStringAttribute("CardsToMove")
-			if ctm == "" || ctm == "1" {
-				return true
-			}
-		}
-		return false
-
-	case "Foundation":
-		if p.buildFlags&8 == 8 {
-			if len(Tail) != 13 {
-				return false
-			}
-			if p.CardCount() > 0 {
-				return false
-			}
-			return isTailConformant(p.buildRules, p.buildFlags, Tail)
-		} else {
-			if len(Tail) != 1 {
-				return false
-			}
-			if p.CardCount() == 0 {
-				if p.localAccept > 0 {
-					return c0.Ordinal() == p.localAccept
-				}
-				return true
-			}
-			return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c0)
-		}
-
-	case "Tableau":
-		if p.buildFlags&2 == 2 && piles != nil {
-			pm := powerMoves(piles, p)
-			if len(Tail) > pm {
-				if !noToast {
-					TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
-				}
-				return false
-			}
-			// println("can drag", len(Tail), "cards")
-		}
-		if p.CardCount() == 0 {
-			if p.localAccept > 0 {
-				return c0.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		return isCardPairConformant(p.buildRules, p.buildFlags, p.Peek(), c0)
-
-	case "Cell":
-		return len(Tail) == 1 && p.CardCount() == 0
 	}
 	return false
 }
@@ -466,6 +363,34 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			}
 			// TODO could try reversing the order of this, do top card last
 		}
+	case "WasteDown":
+		x0, y0 := p.BaizePosition()
+		y1 := y0 + CardWidth/faceFanFactor
+		y2 := y1 + CardWidth/faceFanFactor
+		switch p.CardCount() {
+		case 0:
+			// do nothing, incoming card will be at x,y
+		case 1:
+			// incoming card will be at slot [1]
+			y = y1
+		case 2:
+			// incoming card will be at slot [2]
+			y = y2
+		default: // >=3 cards
+			// incoming card will be at slot [2]
+			y = y2
+			// top card needs to transition from slot[2] to slot[1]
+			i := p.CardCount() - 1
+			p.Cards[i].TransitionTo(x0, y1)
+			// mid card needs to transition from slot[1] to slot[0]
+			i--
+			// p.Cards[i].TransitionTo(x0, y0) not needed will be done by loop below
+			// most cards will be at pile x0,y0
+			for ; i >= 0; i-- {
+				p.Cards[i].TransitionTo(x0, y0)
+			}
+			// TODO could try reversing the order of this, do top card last
+		}
 	}
 	return x, y
 }
@@ -498,14 +423,22 @@ func (p *Pile) StartDrag(c *Card) bool {
 
 	p.Tail = p.makeTail(c)
 
-	if p.dragFlags&1 == 1 && len(p.Tail) > 1 {
+	if p.Flags&DragFlagSingle == DragFlagSingle && len(p.Tail) > 1 {
 		TheBaize.ui.Toast(p.Class + " can only drag a single card")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
 	}
-	if !isTailConformant(p.dragRules, p.dragFlags, p.Tail) {
-		println("non-conformant drag")
+	if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
+		if !(len(p.Tail) == 1 || len(p.Tail) == len(p.Cards)) {
+			TheBaize.ui.Toast("Can only drag a single card or the entire pile")
+			p.ApplyToTail((*Card).Shake)
+			p.Tail = nil
+			return false
+		}
+	}
+	if !isTailConformant(p.Drag, p.Flags, p.Tail) {
+		println("Pile StartDrag non-conformant")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
@@ -578,7 +511,7 @@ func (p *Pile) Conformant() bool {
 		return false
 	}
 	// that leaves Cell, Reserve, Tableau
-	return isTailConformant(p.buildRules, p.buildFlags, p.Cards)
+	return isTailConformant(p.Build, p.Flags, p.Cards)
 }
 
 // BuryCards moves cards with the specified ordinal to the bottom of the stack

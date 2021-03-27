@@ -7,6 +7,11 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+const DragFlagSingle = 1
+const DragFlagSingleOrPile = 2
+const BuildFlagRankWrap = 4
+const BuildFlagSpider = 8
+
 func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 	if cPrev.Prone() || cThis.Prone() {
 		println("prone cards are not conformant")
@@ -38,7 +43,7 @@ func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 		}
 	}
 
-	if flags&1 == 1 { // rank wrap == true
+	if flags&BuildFlagRankWrap == BuildFlagRankWrap { // rank wrap == true
 		switch localRank {
 		case 0: // may not build or move
 			return false
@@ -161,17 +166,17 @@ func englishRules(rules, flags int) string {
 	case 0:
 	case 1:
 		s = s + " and up, eg a 10 goes on a 9."
-		if flags&1 == 1 {
+		if flags&BuildFlagRankWrap == BuildFlagRankWrap {
 			s = s + " Aces are allowed on Kings."
 		}
 	case 2:
 		s = s + " and down, eg a 9 goes on a 10."
-		if flags&1 == 1 {
+		if flags&BuildFlagRankWrap == BuildFlagRankWrap {
 			s = s + " Kings are allowed on Aces."
 		}
 	case 4:
 		s = s + " and either up or down."
-		if flags&1 == 1 {
+		if flags&BuildFlagRankWrap == BuildFlagRankWrap {
 			s = s + " Aces and Kings are allowed on top of each other."
 		}
 	case 5:
@@ -240,19 +245,19 @@ func (b *Baize) rulesContents() []string {
 			fmt.Fprint(&str, "Waste: Cards can be be moved from here to Cells, Tableaux or Foundations.")
 		case "Foundation":
 			fmt.Fprint(&str, "Foundation: Build cards ")
-			fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
-			if p.buildFlags&8 == 8 {
+			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
+			if p.Flags&BuildFlagSpider == BuildFlagSpider {
 				fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
 			}
 		case "Tableau":
-			if p.buildRules == p.dragRules {
+			if p.Build == p.Drag {
 				fmt.Fprint(&str, "Tableau: Build cards ")
-				fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
+				fmt.Fprint(&str, englishRules(p.Build, p.Flags))
 			} else {
 				fmt.Fprint(&str, "Tableau: Build cards ")
-				fmt.Fprint(&str, englishRules(p.buildRules, p.buildFlags))
+				fmt.Fprint(&str, englishRules(p.Build, p.Flags))
 				fmt.Fprint(&str, " Move cards ")
-				fmt.Fprint(&str, englishRules(p.dragRules, p.dragFlags))
+				fmt.Fprint(&str, englishRules(p.Drag, p.Flags))
 			}
 			accept, ok := p.GetIntAttribute("Accept")
 			if !ok {
@@ -265,10 +270,10 @@ func (b *Baize) rulesContents() []string {
 			} else {
 				fmt.Fprint(&str, " No card may be placed on an empty tableaux.")
 			}
-			if p.buildFlags&2 == 2 {
+			if b.PowerMoves {
 				fmt.Fprint(&str, " Strictly, only the top card of each stack may be moved. However, the game automates moves of several cards, when empty tableau columns and empty cells allow.")
 			} else {
-				if p.dragFlags&1 == 1 {
+				if p.Flags&DragFlagSingle == DragFlagSingle {
 					fmt.Fprint(&str, " Only a single card may be moved at once.")
 				} else {
 					fmt.Fprint(&str, " Completed sequences of cards may be moved together.")

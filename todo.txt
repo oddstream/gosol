@@ -1,4 +1,38 @@
-+ give up and redo the thing in Java/Rust/Tcl+Tk/Kotlin+KorGE/Godot/Defold
++ give up and redo the thing in
+    Java
+    Rust
+    Tcl+Tk
+    Kotlin+KorGE
+    Godot
+    Defold
+
++ englishRules() exposes overlap between drag and build flags
+  flags needs to be common to both, or somesuch
+  1 can only drag single card (no pile)
+  2 can only drag single card or entire pile
+  4 build rank wrap
+  8 build spider
+
+  all piles in VariantInfo will have Build, Drag, Flags so get them out of Attributes
+  give names to flags
+    PileFlagDragSingle
+    PileFlagDragSingleOrPile
+    PileFlagBuildRankWrap
+    PileFlagBuildSpider
+  type PileRules struct {
+    Build
+    Drag
+    Flags
+  }
+
+  Pile Class
+  Pile Attribute
+  Pile Flag
+    AcceptFirstPush
+    Build Spider (TableauSpider?)
+    Build Rank Wrap (used in conformant)
+    Drag one Card only
+    Drag one Card or entire Pile only
 
 + King Albert, can drag any one card out of the pile
   if dragFlags&4==4 {}

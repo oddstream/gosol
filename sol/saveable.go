@@ -8,7 +8,7 @@ import (
 // SaveableBaize is a reduced struct for converting to JSON
 type SaveableBaize struct {
 	Checksum uint32
-	State    BaizeState
+	State    BaizeStateType
 	Piles    []SaveablePile
 }
 
@@ -46,7 +46,7 @@ func (b *Baize) Saveable() SaveableBaize {
 // UpdateFromSaveable updates the contents of the Piles from a saved copy of a previous state
 func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 
-	if len(sav.Piles) == 0 {
+	if len(sav.Piles) != len(b.Piles) {
 		log.Panic("bad SaveableBaize passed to UpdateFromSaveable()")
 	}
 
@@ -64,7 +64,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		pile := b.Piles[i]
 		savedPile := sav.Piles[i]
 		if pile.Class != savedPile.Class {
-			log.Panic("saved pile", savedPile.Class, "does not match baize pile", pile.Class)
+			log.Panic("saved pile ", savedPile.Class, " does not match baize pile ", pile.Class)
 		}
 		// always update pile, even if lengths match (TODO copy to Opsole)
 		pile.UpdateFromSaved(cardCache, savedPile)
