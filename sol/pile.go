@@ -47,6 +47,7 @@ type Pile struct {
 	Cards              []*Card // array of cards, managed as a stack
 	Tail               []*Card // array of cards currently being dragged
 	Build, Drag, Flags int
+	scrunchSize        int           // relative (in card positions) size of scrunch height/width
 	scrunchPercentage  int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
 	backgroundImage    *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
 }
@@ -287,8 +288,6 @@ func (p *Pile) Extract(idx int) *Card {
 func (p *Pile) CanAcceptCard(c *Card) bool {
 
 	switch p.Class {
-	case "Stock":
-		return false // user cannot move card to stock
 	case "Waste":
 		return c.owner.Class == "Stock" // user can only move card to waste from stock
 	case "Foundation":
@@ -297,6 +296,10 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 				return c.Ordinal() == p.localAccept
 			}
 			return true
+		}
+		if p.CardCount() == 13 {
+			// with Rank Wrap, you may get >13 cards in a Foundation pile
+			return false
 		}
 		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
 	case "Tableau":
@@ -310,7 +313,7 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 	case "Cell":
 		return p.CardCount() == 0
 	}
-	return false
+	return false // Reserve, Stock, StockSpider, StockScorpion
 }
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
@@ -579,11 +582,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		screen.DrawImage(p.backgroundImage, op)
 	}
 	if DebugMode {
-		if p.CardCount() < 3 {
-			return
-		}
-		s, ok := p.GetIntAttribute("Scrunch")
-		if !ok {
+		if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
 			return
 		}
 		var maxWidth, maxHeight int
@@ -591,9 +590,9 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		case "", "None", "Waste":
 			return
 		case "Down":
-			maxHeight = s * CardHeight
+			maxHeight = p.scrunchSize * CardHeight
 		case "Right":
-			maxWidth = s * CardWidth
+			maxWidth = p.scrunchSize * CardWidth
 		}
 		x0, y0 := p.BaizePosition()
 		if maxWidth > 0 {

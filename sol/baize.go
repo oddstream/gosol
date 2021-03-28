@@ -552,10 +552,15 @@ func (b *Baize) AutoMoves() {
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
 			if aff := p.GetStringAttribute("AutoFillFrom"); aff != "" {
-				if src := b.findPile(aff); src != nil {
-					if c := src.Peek(); c != nil {
-						b.MoveCards(c, p)
+				affPiles := strings.Split(aff, ",")
+				for _, srcPile := range affPiles {
+					if src := b.findPile(srcPile); src != nil {
+						if c := src.Peek(); c != nil {
+							b.MoveCards(c, p)
+							break
+						}
 					}
+
 				}
 			}
 		}
@@ -666,7 +671,7 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 	}
 
 	switch p.Class {
-	case "Stock":
+	case "Stock", "StockSpider", "StockScorpion":
 		return false // user cannot drag cards to stock
 
 	case "Waste":

@@ -6,45 +6,10 @@
     Godot
     Defold
 
-+ englishRules() exposes overlap between drag and build flags
-  flags needs to be common to both, or somesuch
-  1 can only drag single card (no pile)
-  2 can only drag single card or entire pile
-  4 build rank wrap
-  8 build spider
-
-  all piles in VariantInfo will have Build, Drag, Flags so get them out of Attributes
-  give names to flags
-    PileFlagDragSingle
-    PileFlagDragSingleOrPile
-    PileFlagBuildRankWrap
-    PileFlagBuildSpider
-  type PileRules struct {
-    Build
-    Drag
-    Flags
-  }
-
-  Pile Class
-  Pile Attribute
-  Pile Flag
-    AcceptFirstPush
-    Build Spider (TableauSpider?)
-    Build Rank Wrap (used in conformant)
-    Drag one Card only
-    Drag one Card or entire Pile only
-
-+ King Albert, can drag any one card out of the pile
-  if dragFlags&4==4 {}
-  remove card from middle of pile, re-fan the remainder
-  if card is not accepted elsewhere it needs to go back (insert card into pile, re-fan the pile)
-  instead of
-    c.owner.DragTailBy(v.Stroke.PositionDiff())
-  use
-    c.DragBy(v.Stroke.PositionDiff())
-  AfterUserMove() needs to refan source Pile (and needs to know to do it)
-  MoveCards() needs to know not to pop and push
-  ...that's a lot of work, just use float X, Y positions and seven overlapping reserves
++ Study overlap between Class, Build, Drag, Flags, Attributes
+  49 Pile functions
+  4 switch p.Class
++ https://en.wikipedia.org/wiki/Duchess_(solitaire)
 + problems with mark movable
   shows draggable tail that cannot be moved because of powermoves (FIXED)
   show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
@@ -112,6 +77,46 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x calculate scrunch when piles are loaded
+x englishRules() exposes overlap between drag and build flags
+  flags needs to be common to both, or somesuch
+  1 can only drag single card (no pile)
+  2 can only drag single card or entire pile
+  4 build rank wrap
+  8 build spider
+
+  all piles in VariantInfo will have Build, Drag, Flags so get them out of Attributes
+  give names to flags
+    PileFlagDragSingle
+    PileFlagDragSingleOrPile
+    PileFlagBuildRankWrap
+    PileFlagBuildSpider
+  type PileRules struct {
+    Build
+    Drag
+    Flags
+  }
+
+  Pile Class
+  Pile Attribute
+  Pile Flag
+    AcceptFirstPush
+    Build Spider (TableauSpider?)
+    Build Rank Wrap (used in conformant)
+    Drag one Card only
+    Drag one Card or entire Pile only
+
+x King Albert, can drag any one card out of the pile
+  if dragFlags&4==4 {}
+  remove card from middle of pile, re-fan the remainder
+  if card is not accepted elsewhere it needs to go back (insert card into pile, re-fan the pile)
+  instead of
+    c.owner.DragTailBy(v.Stroke.PositionDiff())
+  use
+    c.DragBy(v.Stroke.PositionDiff())
+  AfterUserMove() needs to refan source Pile (and needs to know to do it)
+  MoveCards() needs to know not to pop and push
+  ...that's a lot of work, just use float X, Y positions and seven overlapping reserves
 x BUG Canfield LoadVariant() doesn't set localAccept?
 x rotate dragged cards? No, creates jagged diagonal edges
 x highlight movable cards

@@ -33,6 +33,8 @@ added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 var m map[string]int
 m["one"]++
 
+A nil map behaves like an empty map when reading, but attempts to write to a nil map will cause a runtime panic; don't do that. 
+
 ! 71 x 96 = 1:1.352 (Microsoft retro)
 ! 64 x 89 = 1:1.390 (official poker size)
 ! 90 x 130 = 1:1.444 (nice looking scalable)

@@ -93,11 +93,7 @@ func (p *Pile) scrunch(maxSize int, fnCalcSize func(int) int) {
 // ScrunchCards alters the fan so that cards overlap more to fit in view
 func (p *Pile) ScrunchCards() {
 
-	if p.CardCount() < 3 {
-		return
-	}
-	s, ok := p.GetIntAttribute("Scrunch")
-	if !ok {
+	if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
 		return
 	}
 	switch p.Fan {
@@ -107,8 +103,9 @@ func (p *Pile) ScrunchCards() {
 		// it's a kind of closure
 		// a method expression would be Pile.fannedHeight or (*Pile).fannedHeight
 		// which yields a function value with a regular first parameter taking the place of the receiver
-		p.scrunch(s*CardHeight, p.fannedHeight) // method value
+		p.scrunch(p.scrunchSize*CardHeight, p.fannedHeight) // method value
 	case "Right":
-		p.scrunch(s*CardWidth, p.fannedWidth) // method value
+		p.scrunch(p.scrunchSize*CardWidth, p.fannedWidth) // method value
 	}
+
 }
