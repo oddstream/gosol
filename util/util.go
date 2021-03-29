@@ -137,7 +137,7 @@ func Pluralize(word string, n int) string {
 		return fmt.Sprintf("no %ss", word)
 	}
 	if n == 1 {
-		return fmt.Sprintf("one %s", word)
+		return "1 " + word
 	}
 	return fmt.Sprintf("%d %ss", n, word)
 }

@@ -5,7 +5,7 @@ import "log"
 // UndoPush pushes the current state onto the undo stack
 func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
-	b.MarkMovable()
+	b.HighlightMovable()
 }
 
 // UndoPop pops a state off the undo stack

@@ -6,6 +6,8 @@
     Godot
     Defold
 
++ Stuck if no empty cells or tableaux, and no highlighted cards
++ Check Canfield, Storehouse, Baker's Dozen rules against wiki and book
 + Study overlap between Class, Build, Drag, Flags, Attributes
   49 Pile functions
   4 switch p.Class
@@ -14,7 +16,7 @@
   shows draggable tail that cannot be moved because of powermoves (FIXED)
   show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
   it makes the gameplay different
-+ tooltips over hovered icons triggered by (wb *WidgetBase) Update()
++ tooltips over hovered icons and FAB triggered by (wb *WidgetBase)|(*F FAB) Update()
   tooltipManager
 + open url in browser https://gist.github.com/hyg/9c4afcd91fe24316cbf0
 + fan waste after pop

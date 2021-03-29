@@ -42,6 +42,7 @@ type Baize struct {
 	SavedPosition   int
 	PowerMoves      bool
 	totalCards      int
+	movableCards    int
 	State           BaizeStateType
 	stroke          *input.Stroke
 	input           *input.Input
@@ -286,17 +287,10 @@ func (b *Baize) dealCards() {
 		if disinter, ok := p.GetIntAttribute("Disinter"); ok {
 			p.DisinterCards(disinter)
 		}
-		if p.Class == "Foundation" && p.CardCount() == 1 {
-			if afp := p.GetBoolAttribute("AcceptFirstPush"); afp {
-				ord := p.Peek().Ordinal()
-				for _, fp := range b.Piles {
-					if fp.Class == "Foundation" {
-						fp.SetAccept(ord)
-					}
-				}
-			}
-		}
+		// AcceptFirstPush used to be here
 	}
+
+	b.AutoMoves()
 
 	if DebugMode {
 		if b.stock.Hidden() {
@@ -399,7 +393,7 @@ func (b *Baize) CardTapped(c *Card) {
 	pSrc := c.owner
 
 	// can only tap top card
-	// TODO might be playing Spider &c
+	// TODO might be playing Spider &c and trying to send a conformant pile to Foundation
 	if c != pSrc.Peek() {
 		c.Shake()
 		return
@@ -500,7 +494,6 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 
 	src := c.owner
 	moveFrom := len(src.Cards)
-	tmp := make([]*Card, 0, cap(src.Cards))
 
 	// find the index of the first card we will move
 	for i, sc := range src.Cards {
@@ -515,6 +508,8 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	oldSrcLen := len(src.Cards)
+
+	tmp := make([]*Card, 0, cap(src.Cards))
 
 	// pop the tail off the source and push onto temp stack
 	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
@@ -547,7 +542,18 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 // AutoMoves performs post user-moves
 func (b *Baize) AutoMoves() {
 
-	// TODO move cards to Foundations, using Opsole safe logic
+	for _, p := range b.Piles {
+		if p.Class == "Foundation" && p.CardCount() == 1 {
+			if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
+				ord := p.Peek().Ordinal()
+				for _, fp := range b.Piles {
+					if fp.Class == "Foundation" {
+						fp.SetAccept(ord)
+					}
+				}
+			}
+		}
+	}
 
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
@@ -587,13 +593,12 @@ func (b *Baize) AfterUserMove() {
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
 		} else if b.Conformant() {
-			println("baize is conformant")
 			b.ui.ShowFAB("done_all", ebiten.KeyC)
 		} else {
 			b.ui.HideFAB()
 		}
 	case Complete:
-		println("what are we doing here?")
+		log.Println("what are we doing here?")
 	}
 
 	//
@@ -650,14 +655,13 @@ func (b *Baize) calcPercentComplete() int {
 func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 
 	if len(Tail) == 0 { // len() for nil slices is defined as zero
-		log.Fatal("empty tail passed to CanAcceptTail")
+		log.Panic("empty tail passed to CanAcceptTail")
 	}
 
 	c0 := Tail[0]
 
 	if c0.owner == p {
-		// println("cannot drag cards to yourself")
-		return false
+		return false // Cannot drag cards to yourself
 	}
 
 	targetClass := c0.owner.GetStringAttribute("Target")
@@ -671,11 +675,8 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 	}
 
 	switch p.Class {
-	case "Stock", "StockSpider", "StockScorpion":
-		return false // user cannot drag cards to stock
-
 	case "Waste":
-		if c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
+		if len(Tail) == 1 && c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
 			ctm := c0.owner.GetStringAttribute("CardsToMove")
 			if ctm == "" || ctm == "1" {
 				return true
@@ -684,6 +685,18 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 		return false
 
 	case "Foundation":
+		// Duchess rule
+		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
+			if p.localAccept == 0 {
+				if c0.owner.Class != afp {
+					if !noToast {
+						TheBaize.ui.Toast(fmt.Sprintf("%s can only accept first card from a %s", p.Class, afp))
+					}
+					return false
+				}
+			}
+		}
+		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
 		if p.Flags&BuildFlagSpider == BuildFlagSpider {
 			if len(Tail) != 13 {
 				return false
@@ -710,13 +723,25 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 			pm := powerMoves(b.Piles, p)
 			if len(Tail) > pm {
 				if !noToast {
-					TheBaize.ui.Toast(fmt.Sprintf("Not enough free space to drag %d cards", len(Tail)))
+					TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(Tail)))
 				}
 				return false
 			}
 			// println("can drag", len(Tail), "cards")
 		}
 		if p.CardCount() == 0 {
+			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
+				afList := strings.Split(afAttrib, ",")
+				for _, class := range afList {
+					if c0.owner.Class == class {
+						return true
+					}
+				}
+				if !noToast {
+					b.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
+				}
+				return false
+			}
 			if p.localAccept > 0 {
 				return c0.Ordinal() == p.localAccept
 			}
@@ -727,7 +752,7 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 	case "Cell":
 		return len(Tail) == 1 && p.CardCount() == 0
 	}
-	return false
+	return false // Reserve, Stock, StockSpider, StockScorpion
 }
 
 // StartDrag return true if the Baize can be dragged (vscrolled)
@@ -813,7 +838,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
 			// println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
 			if TheUserData.HighlightMovable {
-				b.MarkMovable()
+				b.HighlightMovable()
 			} else {
 				for _, p := range b.Piles {
 					for _, c := range p.Cards {
@@ -1085,7 +1110,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete()))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d, Movable %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete(), b.movableCards))
 	}
 }
 

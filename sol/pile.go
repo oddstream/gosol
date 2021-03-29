@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"strconv"
@@ -119,24 +120,28 @@ func (p *Pile) CreateBackgroundImage() {
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), cardCornerRadius())
 	dc.Stroke()
 
-	if p.localAccept > 0 && p.localAccept <= 13 {
-		if schriftbank.CardOrdinal != nil {
-			dc.SetFontFace(schriftbank.CardOrdinal)
+	if p.localAccept > 0 {
+		var str string
+		dc.SetFontFace(schriftbank.CardOrdinal)
+		if p.localAccept <= 13 {
+			str = util.OrdinalToShortString(p.localAccept)
+		} else {
+			str = "x"
 		}
-		dc.DrawStringAnchored(util.OrdinalToShortString(p.localAccept), float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
-		dc.SetLineWidth(1)
+		dc.DrawStringAnchored(str, float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
+		// dc.SetLineWidth(1)
 		// dc.DrawLine(0, float64(CardHeight)/6.666, float64(CardWidth), float64(CardHeight)/6.666)
 		// dc.DrawLine(float64(CardWidth)/3.333, 0, float64(CardWidth)/3.333, float64(CardHeight))
-		dc.Stroke()
+		// dc.Stroke()
 	}
+
 	if strings.HasPrefix(p.Class, "Stock") { // never StockSpider?
-		if schriftbank.CardSymbolLarge != nil {
-			dc.SetFontFace(schriftbank.CardSymbolLarge)
-		}
+		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
 			dc.DrawStringAnchored(string(rune(0x2613)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+			// dc.DrawStringAnchored("X", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		} else {
 			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		}
@@ -304,6 +309,16 @@ func (p *Pile) CanAcceptCard(c *Card) bool {
 		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
 	case "Tableau":
 		if p.CardCount() == 0 {
+			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
+				afList := strings.Split(afAttrib, ",")
+				for _, class := range afList {
+					if c.owner.Class == class {
+						return true
+					}
+				}
+				TheBaize.ui.Toast(fmt.Sprintf("%s can only accept a card from %s", p.Class, afAttrib))
+				return false
+			}
 			if p.localAccept > 0 {
 				return c.Ordinal() == p.localAccept
 			}

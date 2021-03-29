@@ -109,3 +109,40 @@ func (p *Pile) ScrunchCards() {
 	}
 
 }
+
+func (b *Baize) calcScrunchSize() {
+	for _, p1 := range b.Piles {
+		if p1.Class != "Tableau" {
+			continue
+		}
+		var rightwardX, downwardY PilePositionType
+		for _, p2 := range b.Piles {
+			if p2.Class != "Tableau" {
+				continue
+			}
+			if p1 == p2 {
+				continue
+			}
+			if p2.Y == p1.Y && p2.X > p1.X {
+				rightwardX = p2.X
+			}
+			if p2.X == p1.X && p2.Y > p1.Y {
+				downwardY = p2.Y
+			}
+		}
+		switch p1.Fan {
+		case "Right":
+			if rightwardX == 0 {
+				p1.scrunchSize = 6
+			} else {
+				p1.scrunchSize = int(rightwardX - p1.X)
+			}
+		case "Down":
+			if downwardY == 0 {
+				p1.scrunchSize = 6
+			} else {
+				p1.scrunchSize = int(downwardY - p1.Y)
+			}
+		}
+	}
+}

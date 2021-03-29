@@ -20,9 +20,9 @@ func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
 		if p.Class == "Cell" {
 			continue
 		}
-		if p.CardCount() == 0 && p.localAccept == 0 {
-			continue
-		}
+		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c.Ordinal()) {
+		// 	continue
+		// }
 		if p.CanAcceptCard(c) {
 			return p
 		}
@@ -32,15 +32,16 @@ func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
 
 func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 	for _, p := range b.Piles {
-		if p == tail[0].owner {
+		c0 := tail[0]
+		if p == c0.owner {
 			continue
 		}
-		if p.Class == "Cell" {
+		if p.Class == "Cell" && len(tail) == 1 {
 			continue
 		}
-		if p.CardCount() == 0 && p.localAccept == 0 {
-			continue
-		}
+		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c0.Ordinal()) {
+		// 	continue
+		// }
 		if b.CanAcceptTail(p, tail, true) {
 			return p
 		}
@@ -63,7 +64,9 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 // 	return false
 // }
 
-func (b *Baize) MarkMovable() {
+func (b *Baize) HighlightMovable() {
+
+	b.movableCards = 0
 
 	if !TheUserData.HighlightMovable {
 		return
@@ -80,6 +83,7 @@ func (b *Baize) MarkMovable() {
 				if tail := p.DraggableTail(c); tail != nil {
 					if dst := b.IsNewHomeForCard(c); dst != nil {
 						c.SetMovable(true)
+						b.movableCards++
 					}
 				}
 			}
@@ -93,6 +97,7 @@ func (b *Baize) MarkMovable() {
 				if tail := p.DraggableTail(c); tail != nil {
 					if dst := b.IsNewHomeForTail(tail); dst != nil {
 						c.SetMovable(true)
+						b.movableCards++
 					}
 				} else {
 					break
