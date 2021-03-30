@@ -9,4 +9,5 @@ type UserData struct {
 	CardBackColor    string
 	CardStyle        string
 	HighlightMovable bool
+	PowerMoves       bool
 }

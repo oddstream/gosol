@@ -43,6 +43,8 @@ A nil map behaves like an empty map when reading, but attempts to write to a nil
 
 ! method goes in Baize if it needs access to Baize.Piles
 ! method goes in Pile if it needs access to Pile.Cards
+! PowerMoves is a global user setting that overrides "can only move one card"
+! User can restart deal without penalty
 
 "Just Enough User Interface" JEUI
 "Minimum User Interface" MUI

@@ -10,7 +10,6 @@ type VariantInfo struct {
 	Description string
 	AKA         []string
 	Wikipedia   string
-	PowerMoves  bool
 	Piles       []PileInfo
 }
 
@@ -37,6 +36,8 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 5, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock"}},
 			{"Foundation", 6, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock"}},
 			{"Foundation", 7, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock"}},
+			// can only move top card or the whole pile
+			// rank wrap tableau
 			{"Tableau", 0, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
 			{"Tableau", 1, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
 			{"Tableau", 2, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
@@ -75,6 +76,7 @@ var Variants = map[string]VariantInfo{
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, -2, "None", 0, 15, 0, map[string]string{}},
+			// can only move one card
 			{"Tableau", 0, 0, "Down", 12, 15, 1, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
 			{"Tableau", 1, 0, "Down", 12, 15, 1, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
 			{"Tableau", 2, 0, "Down", 12, 15, 1, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
@@ -99,6 +101,7 @@ var Variants = map[string]VariantInfo{
 		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, -2, "None", 0, 15, 0, map[string]string{}},
+			// Relaxed by allowing conformant tails to be dragged
 			{"Tableau", 0, 0, "Down", 12, 22, 0, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
 			{"Tableau", 1, 0, "Down", 12, 22, 0, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
 			{"Tableau", 2, 0, "Down", 12, 22, 0, map[string]string{"Accept": "99", "Bury": "13", "Deal": "uuuu"}},
@@ -130,10 +133,11 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 5, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock"}},
 			{"Foundation", 6, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock"}},
 			{"Reserve", 0, 1, "Down", 0, 15, 1, map[string]string{"Deal": "ddddddddddddu"}},
-			{"Tableau", 3, 1, "Down", 42, 42, 2, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 4, 1, "Down", 42, 42, 2, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 5, 1, "Down", 42, 42, 2, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 6, 1, "Down", 42, 42, 2, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
+			// "Cards on the tableau are also moved one unit, provided that the entire column has to be moved."
+			{"Tableau", 3, 1, "Down", 42, 42, 62, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 4, 1, "Down", 42, 42, 62, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 5, 1, "Down", 42, 42, 62, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 6, 1, "Down", 42, 42, 62, map[string]string{"Accept": "99", "AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
 		},
 	},
 	"Duchess": {
@@ -151,10 +155,11 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 3, 2, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Reserve"}},
 			{"Foundation", 4, 2, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Reserve"}},
 			{"Foundation", 5, 2, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Reserve"}},
-			{"Tableau", 2, 3, "Down", 42, 42, 4, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 3, 3, "Down", 42, 42, 4, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 4, 3, "Down", 42, 42, 4, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Tableau", 5, 3, "Down", 42, 42, 4, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
+			// "One card can be moved at a time, but sequences can also be moved as one unit."
+			{"Tableau", 2, 3, "Down", 42, 42, 0, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 3, 3, "Down", 42, 42, 0, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 4, 3, "Down", 42, 42, 0, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
+			{"Tableau", 5, 3, "Down", 42, 42, 0, map[string]string{"AcceptFrom": "Reserve,Waste", "Deal": "u"}},
 		},
 	},
 	"EasyWin": {
@@ -193,7 +198,6 @@ var Variants = map[string]VariantInfo{
 	"Forty And Eight": {
 		Description: "A variation of Forty Thieves that allows the stock to be recycled once.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
-		PowerMoves:  true,
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "1"}},
 			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
@@ -205,20 +209,19 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Tableau", 3, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 4, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 5, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 6, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 7, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 8, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 9, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
-			{"Tableau", 10, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 3, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 4, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 5, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 6, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 7, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 8, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 9, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
+			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
 		},
 	},
 	"Freecell": {
 		Description: "Popular game, unusual because almost all deals are winnable.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
-		PowerMoves:  true,
 		Piles: []PileInfo{
 			{"Stock", -2, -2, "None", 0, 0, 0, map[string]string{"Packs": "1"}},
 			{"Cell", 0, 0, "None", 15, 15, 1, map[string]string{"Accept": "0"}},
@@ -229,20 +232,19 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Tableau", 0, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
-			{"Tableau", 1, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
-			{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
-			{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
-			{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
-			{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
-			{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
-			{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
+			{"Tableau", 0, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
+			{"Tableau", 1, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
+			{"Tableau", 2, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
+			{"Tableau", 3, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuuu"}},
+			{"Tableau", 4, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
+			{"Tableau", 5, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
+			{"Tableau", 6, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
+			{"Tableau", 7, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Deal": "uuuuuu"}},
 		},
 	},
 	"Freecell (Easy)": {
 		Description: "Popular game, unusual because almost all deals are winnable.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
-		PowerMoves:  true,
 		Piles: []PileInfo{
 			{"Stock", -2, -2, "None", 0, 0, 0, map[string]string{"Packs": "1"}},
 			{"Cell", 0, 0, "None", 15, 15, 1, map[string]string{"Accept": "0"}},
@@ -253,39 +255,39 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Tableau", 0, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
-			{"Tableau", 1, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
-			{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
-			{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
-			{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
-			{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
-			{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
-			{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+			{"Tableau", 0, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
+			{"Tableau", 1, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
+			{"Tableau", 2, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
+			{"Tableau", 3, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuuu"}},
+			{"Tableau", 4, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+			{"Tableau", 5, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+			{"Tableau", 6, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+			{"Tableau", 7, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
 		},
 	},
-	"Giant": {
-		Description: "An easier version of Miss Milligan, with no reserve pile to waive or weave onto.",
-		Wikipedia:   "https://en.wikipedia.org/wiki/Miss_Milligan",
-		Piles: []PileInfo{
-			{"StockScorpion", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2"}},
-			{"Foundation", 2, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 3, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 4, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 8, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-			{"Tableau", 9, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
-		},
-	},
+	// "Giant": {
+	// 	Description: "An easier version of Miss Milligan, with no reserve pile to waive or weave onto.",
+	// 	Wikipedia:   "https://en.wikipedia.org/wiki/Miss_Milligan",
+	// 	Piles: []PileInfo{
+	// 		{"StockScorpion", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2"}},
+	// 		{"Foundation", 2, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 3, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 4, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+	// 		{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 8, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 		{"Tableau", 9, 1, "Down", 42, 42, 0, map[string]string{"Deal": "u"}},
+	// 	},
+	// },
 	// // "King Albert": {
 	// // 	Description: "Like Klondike, but with all cards face up and a seven-card reserve instead of stock and waste piles. It is the best known of the three games that are each called Idiot's Delight because of the low chance of winning the game.",
 	// // 	AKA:         []string{"Idiot's Delight"},
@@ -351,7 +353,6 @@ var Variants = map[string]VariantInfo{
 	"Limited": {
 		Description: "A more balanced version of Forty Thieves, with a wider tableaux.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
-		PowerMoves:  true,
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "0"}},
 			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
@@ -363,18 +364,18 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 			{"Foundation", 11, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
-			{"Tableau", 0, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 1, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 2, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 3, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 4, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 5, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 6, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 7, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 8, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 9, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 10, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
-			{"Tableau", 11, 1, "Down", 22, 22, 0, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 0, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 1, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 2, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 3, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 4, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 5, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 6, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 7, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 8, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 9, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 11, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
 		},
 	},
 	// // "Raglan": {
@@ -543,10 +544,10 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 5, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock", "Deal": "2"}},
 			{"Foundation", 6, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock", "Deal": "2"}},
 			{"Reserve", 0, 1, "Down", 0, 15, 1, map[string]string{"Deal": "ddddddddddddu"}},
-			{"Tableau", 3, 1, "Down", 22, 22, 2, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
-			{"Tableau", 4, 1, "Down", 22, 22, 2, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
-			{"Tableau", 5, 1, "Down", 22, 22, 2, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
-			{"Tableau", 6, 1, "Down", 22, 22, 2, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
+			{"Tableau", 3, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
+			{"Tableau", 4, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
+			{"Tableau", 5, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
+			{"Tableau", 6, 1, "Down", 22, 22, 6, map[string]string{"AutoFillFrom": "Reserve", "Deal": "u"}},
 		},
 	},
 	"Thoughtful": {
@@ -682,7 +683,6 @@ func (b *Baize) BuildVariant(v string) {
 		log.Fatal("unknown variant ", v)
 	}
 	b.calcScrunchSize()
-	b.PowerMoves = Variants[v].PowerMoves
 }
 
 func variantDescription(v string) string {

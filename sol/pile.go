@@ -441,11 +441,13 @@ func (p *Pile) StartDrag(c *Card) bool {
 
 	p.Tail = p.makeTail(c)
 
-	if p.Flags&DragFlagSingle == DragFlagSingle && len(p.Tail) > 1 {
-		TheBaize.ui.Toast(p.Class + " can only drag a single card")
-		p.ApplyToTail((*Card).Shake)
-		p.Tail = nil
-		return false
+	if !TheUserData.PowerMoves {
+		if p.Flags&DragFlagSingle == DragFlagSingle && len(p.Tail) > 1 {
+			TheBaize.ui.Toast(p.Class + " can only drag a single card")
+			p.ApplyToTail((*Card).Shake)
+			p.Tail = nil
+			return false
+		}
 	}
 	if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
 		if !(len(p.Tail) == 1 || len(p.Tail) == len(p.Cards)) {

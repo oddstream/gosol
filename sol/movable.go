@@ -1,10 +1,18 @@
 package sol
 
+import (
+	"time"
+
+	"oddstream.games/gosol/util"
+)
+
 // DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
-	if p.Flags&DragFlagSingle == DragFlagSingle && len(tail) > 1 {
-		return nil
+	if !TheUserData.PowerMoves {
+		if p.Flags&DragFlagSingle == DragFlagSingle && len(tail) > 1 {
+			return nil
+		}
 	}
 	if !isTailConformant(p.Drag, p.Flags, tail) {
 		return nil
@@ -71,6 +79,8 @@ func (b *Baize) HighlightMovable() {
 	if !TheUserData.HighlightMovable {
 		return
 	}
+
+	defer util.Duration(time.Now(), "HighlightMovable")
 
 	for _, p := range b.Piles {
 		for _, c := range p.Cards {

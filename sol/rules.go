@@ -270,7 +270,7 @@ func (b *Baize) rulesContents() []string {
 			} else {
 				fmt.Fprint(&str, " No card may be placed on an empty tableaux.")
 			}
-			if b.PowerMoves {
+			if TheUserData.PowerMoves {
 				fmt.Fprint(&str, " Strictly, only the top card of each stack may be moved. However, the game automates moves of several cards, when empty tableau columns and empty cells allow.")
 			} else {
 				if p.Flags&DragFlagSingle == DragFlagSingle {

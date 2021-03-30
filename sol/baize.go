@@ -40,7 +40,6 @@ type Baize struct {
 	Seed            int64
 	UndoStack       []SaveableBaize
 	SavedPosition   int
-	PowerMoves      bool
 	totalCards      int
 	movableCards    int
 	State           BaizeStateType
@@ -719,7 +718,7 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 		}
 
 	case "Tableau":
-		if b.PowerMoves {
+		if TheUserData.PowerMoves {
 			pm := powerMoves(b.Piles, p)
 			if len(Tail) > pm {
 				if !noToast {
@@ -837,6 +836,17 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		case "Highlight":
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
 			// println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
+			if TheUserData.HighlightMovable {
+				b.HighlightMovable()
+			} else {
+				for _, p := range b.Piles {
+					for _, c := range p.Cards {
+						c.SetMovable(false)
+					}
+				}
+			}
+		case "PowerMoves":
+			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
 			if TheUserData.HighlightMovable {
 				b.HighlightMovable()
 			} else {
