@@ -6,7 +6,12 @@
     Godot
     Defold
 
-+ Mark flags=1 for variants which can only moves one card
++ gobs or Protocol Buffers instead of JSON?
++ WASM
+  [ ] json_browser.go
+  [x] embed icons
+  [ ] http server
+  [ ] PWA https://github.com/maxence-charriere/go-app
 + In a game like Simple Simon (and Spider?), % refers to how sorted the tableaux/foundations are
 + Stuck if no empty cells or tableaux, and no highlighted cards
 + Check Canfield, Storehouse, Baker's Dozen rules against wiki and book
@@ -24,11 +29,6 @@
 + fan waste after pop
 + don't save virgin games to json? would need to delete any existing saved game
 + Card.UniqueRect() get area of card shown, with y1 == next card's y0
-+ WASM
-  [ ] json_browser.go
-  [x] embed icons
-  [ ] http server
-  [ ] PWA https://github.com/maxence-charriere/go-app
 + Settings
   Card design (add default) (a slide out picker)
   Animation speed (a slide out picker for slow, medium, fast)
@@ -81,6 +81,7 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x Mistress Mop/Mrs Mop
 x PowerMoves becomes settings option for games where tableaux that only allow single cards to be moved
 x calculate scrunch when piles are loaded
 x englishRules() exposes overlap between drag and build flags

@@ -718,7 +718,7 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 		}
 
 	case "Tableau":
-		if TheUserData.PowerMoves {
+		if TheUserData.PowerMoves && p.Drag&DragFlagSingle == DragFlagSingle {
 			pm := powerMoves(b.Piles, p)
 			if len(Tail) > pm {
 				if !noToast {
@@ -726,7 +726,6 @@ func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
 				}
 				return false
 			}
-			// println("can drag", len(Tail), "cards")
 		}
 		if p.CardCount() == 0 {
 			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {

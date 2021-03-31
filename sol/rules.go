@@ -2,6 +2,7 @@ package sol
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"oddstream.games/gosol/util"
@@ -100,7 +101,7 @@ func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 
 func isTailConformant(rules, flags int, cards []*Card) bool {
 	if len(cards) == 0 {
-		println("isConformant passed empty tail")
+		log.Panic("isTailConformant passed empty tail")
 		return false
 	}
 	if rules == 0 {
@@ -270,14 +271,10 @@ func (b *Baize) rulesContents() []string {
 			} else {
 				fmt.Fprint(&str, " No card may be placed on an empty tableaux.")
 			}
-			if TheUserData.PowerMoves {
-				fmt.Fprint(&str, " Strictly, only the top card of each stack may be moved. However, the game automates moves of several cards, when empty tableau columns and empty cells allow.")
+			if p.Flags&DragFlagSingle == DragFlagSingle {
+				fmt.Fprint(&str, " Only a single card may be moved at once, unless Power Moves is enabled, when the game automates moves of several cards, when empty tableau columns and empty cells allow.")
 			} else {
-				if p.Flags&DragFlagSingle == DragFlagSingle {
-					fmt.Fprint(&str, " Only a single card may be moved at once.")
-				} else {
-					fmt.Fprint(&str, " Completed sequences of cards may be moved together.")
-				}
+				fmt.Fprint(&str, " Completed sequences of cards may be moved together.")
 			}
 			if bury, ok := p.GetIntAttribute("Bury"); ok {
 				buryStr := util.OrdinalToLongString(bury)
