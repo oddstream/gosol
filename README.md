@@ -6,18 +6,18 @@ It currently knows how to play:
 
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)
-* Canfield
+* Canfield (and Storehouse)
 * Forty and Eight
 * Freecell (and Freecell Easy)
-* Klondike Draw One and Three
+* Klondike (Draw One and Draw Three)
 * Limited
-* Scorpion
-* Spider (original and One Suit and Two Suits)
+* Mistress and Mrs Mop
+* Simple Simon
+* Scorpion (and Wasp)
+* Spider (original, One Suit and Two Suits)
 * Spiderette
-* Storehouse Canfield
 * Thoughtful
 * Thumb and Pouch
-* Wasp
 * Will o' the Wisp
 * Yukon
 

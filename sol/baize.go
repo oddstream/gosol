@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image"
 	"log"
-	"math"
 	"os"
 	"runtime"
 	"strconv"
@@ -41,6 +40,7 @@ type Baize struct {
 	UndoStack       []SaveableBaize
 	SavedPosition   int
 	totalCards      int
+	percentComplete int
 	movableCards    int
 	State           BaizeStateType
 	stroke          *input.Stroke
@@ -90,6 +90,7 @@ func (b *Baize) Start() {
 	if NoGameLoad || !b.LoadVariant(b.Variant) {
 		TheBaize.NewVariant(b.Variant)
 	}
+	b.percentComplete = b.calcPercentComplete()
 }
 
 // Reset the Baize
@@ -150,7 +151,7 @@ func (b *Baize) StartGame() {
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
 	if b.State == Started {
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
 	b.Seed = time.Now().UnixNano()
 	b.RecallCardsToStock()
@@ -161,7 +162,7 @@ func (b *Baize) NewGame() {
 func (b *Baize) NewVariant(v string) {
 
 	if b.State == Started {
-		TheStatistics.recordLostGame(b.Variant, b.calcPercentComplete())
+		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
 	b.Reset()
 
@@ -623,6 +624,9 @@ func (b *Baize) AfterUserMove() {
 		log.Println("not pushing to undo because checksums match")
 	}
 
+	//
+
+	b.percentComplete = b.calcPercentComplete()
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
@@ -641,116 +645,22 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 }
 
 func (b *Baize) calcPercentComplete() int {
-	var count int
+	var foundations, sorted, unsorted int
 	for _, p := range b.Piles {
-		if strings.HasPrefix(p.Class, "Foundation") {
-			count += p.CardCount()
+		if p.Class == "Foundation" {
+			foundations++
+		}
+		for i := 0; i < len(p.Cards)-1; i++ {
+			c1 := p.Cards[i]
+			c2 := p.Cards[i+1]
+			if isCardPairConformant(p.Build, p.Flags, c1, c2) {
+				sorted++
+			} else {
+				unsorted++
+			}
 		}
 	}
-	return int(math.Round(float64(count) / float64(b.totalCards) * 100))
-}
-
-// CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
-func (b *Baize) CanAcceptTail(p *Pile, Tail []*Card, noToast bool) bool {
-
-	if len(Tail) == 0 { // len() for nil slices is defined as zero
-		log.Panic("empty tail passed to CanAcceptTail")
-	}
-
-	c0 := Tail[0]
-
-	if c0.owner == p {
-		return false // Cannot drag cards to yourself
-	}
-
-	targetClass := c0.owner.GetStringAttribute("Target")
-	if targetClass != "" {
-		if targetClass != p.Class {
-			if !noToast {
-				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
-			}
-			return false
-		}
-	}
-
-	switch p.Class {
-	case "Waste":
-		if len(Tail) == 1 && c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
-			ctm := c0.owner.GetStringAttribute("CardsToMove")
-			if ctm == "" || ctm == "1" {
-				return true
-			}
-		}
-		return false
-
-	case "Foundation":
-		// Duchess rule
-		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
-			if p.localAccept == 0 {
-				if c0.owner.Class != afp {
-					if !noToast {
-						TheBaize.ui.Toast(fmt.Sprintf("%s can only accept first card from a %s", p.Class, afp))
-					}
-					return false
-				}
-			}
-		}
-		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
-		if p.Flags&BuildFlagSpider == BuildFlagSpider {
-			if len(Tail) != 13 {
-				return false
-			}
-			if p.CardCount() > 0 {
-				return false
-			}
-			return isTailConformant(p.Build, p.Flags, Tail)
-		} else {
-			if len(Tail) != 1 {
-				return false
-			}
-			if p.CardCount() == 0 {
-				if p.localAccept > 0 {
-					return c0.Ordinal() == p.localAccept
-				}
-				return true
-			}
-			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-		}
-
-	case "Tableau":
-		if TheUserData.PowerMoves && p.Drag&DragFlagSingle == DragFlagSingle {
-			pm := powerMoves(b.Piles, p)
-			if len(Tail) > pm {
-				if !noToast {
-					TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(Tail)))
-				}
-				return false
-			}
-		}
-		if p.CardCount() == 0 {
-			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
-				afList := strings.Split(afAttrib, ",")
-				for _, class := range afList {
-					if c0.owner.Class == class {
-						return true
-					}
-				}
-				if !noToast {
-					b.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
-				}
-				return false
-			}
-			if p.localAccept > 0 {
-				return c0.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-
-	case "Cell":
-		return len(Tail) == 1 && p.CardCount() == 0
-	}
-	return false // Reserve, Stock, StockSpider, StockScorpion
+	return int(util.MapValue(float64(sorted)-float64(unsorted)+(float64(foundations)*4), float64(-b.totalCards), float64(b.totalCards), 0, 100))
 }
 
 // StartDrag return true if the Baize can be dragged (vscrolled)
@@ -823,6 +733,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if !TheBaize.LoadVariant(newVariant) {
 					b.NewVariant(newVariant)
 				}
+				b.percentComplete = b.calcPercentComplete()
 			}
 		case "CardBack":
 			if TheUserData.CardStyle == "retro" {
@@ -932,7 +843,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
 				} else {
-					if b.CanAcceptTail(p, c.owner.Tail, false) {
+					if p.CanAcceptTail(c.owner.Tail, false) {
 						c.owner.StopDrag(c)
 						b.MoveCards(c, p)
 						b.AfterUserMove()
@@ -1119,7 +1030,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Percent %d, Movable %d", ms.NumGC, len(b.UndoStack), b.State, b.calcPercentComplete(), b.movableCards))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Complete %d%%, Movable %d", ms.NumGC, len(b.UndoStack), b.State, b.percentComplete, b.movableCards))
 	}
 }
 

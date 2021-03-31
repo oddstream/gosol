@@ -427,6 +427,117 @@ func (p *Pile) makeTail(c *Card) []*Card {
 	return tail
 }
 
+// CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
+func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
+
+	if len(Tail) == 0 { // len() for nil slices is defined as zero
+		log.Panic("empty tail passed to CanAcceptTail")
+	}
+
+	c0 := Tail[0]
+
+	if c0.owner == p {
+		return false // Cannot drag cards to yourself
+	}
+
+	targetClass := c0.owner.GetStringAttribute("Target")
+	if targetClass != "" {
+		if targetClass != p.Class {
+			if !noToast {
+				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
+			}
+			return false
+		}
+	}
+
+	switch p.Class {
+	case "Waste":
+		if len(Tail) == 1 && c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
+			ctm := c0.owner.GetStringAttribute("CardsToMove")
+			if ctm == "" || ctm == "1" {
+				return true
+			}
+		}
+		return false
+
+	case "Foundation":
+		// Duchess rule
+		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
+			if p.localAccept == 0 {
+				if c0.owner.Class != afp {
+					if !noToast {
+						TheBaize.ui.Toast(fmt.Sprintf("%s can only accept first card from a %s", p.Class, afp))
+					}
+					return false
+				}
+			}
+		}
+		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
+		if p.Flags&BuildFlagSpider == BuildFlagSpider {
+			if len(Tail) != 13 {
+				return false
+			}
+			if p.CardCount() > 0 {
+				return false
+			}
+			return isTailConformant(p.Build, p.Flags, Tail)
+		} else {
+			if len(Tail) != 1 {
+				return false
+			}
+			if p.CardCount() == 0 {
+				if p.localAccept > 0 {
+					return c0.Ordinal() == p.localAccept
+				}
+				return true
+			}
+			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+		}
+
+	case "Tableau":
+		if p.Flags&DragFlagSingle == DragFlagSingle {
+			if TheUserData.PowerMoves {
+				pm := powerMoves(TheBaize.Piles, p)
+				if len(Tail) > pm {
+					return false
+				}
+			} else {
+				if len(Tail) > 1 {
+					return false
+				}
+			}
+		}
+		if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
+			if !(len(Tail) == 1 || len(Tail) == c0.owner.CardCount()) {
+				return false
+			}
+		}
+		if p.CardCount() == 0 {
+			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
+				afList := strings.Split(afAttrib, ",")
+				for _, class := range afList {
+					if c0.owner.Class == class {
+						return true
+					}
+				}
+				if !noToast {
+					TheBaize.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
+				}
+				return false
+			}
+			if p.localAccept > 0 {
+				return c0.Ordinal() == p.localAccept
+			}
+			return true
+		}
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+
+	case "Cell":
+		return len(Tail) == 1 && p.CardCount() == 0
+	}
+	return false // Reserve, Stock, StockSpider, StockScorpion
+}
+
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(c *Card) bool {
 
@@ -441,12 +552,22 @@ func (p *Pile) StartDrag(c *Card) bool {
 
 	p.Tail = p.makeTail(c)
 
-	if !TheUserData.PowerMoves {
-		if p.Flags&DragFlagSingle == DragFlagSingle && len(p.Tail) > 1 {
-			TheBaize.ui.Toast(p.Class + " can only drag a single card")
-			p.ApplyToTail((*Card).Shake)
-			p.Tail = nil
-			return false
+	if p.Flags&DragFlagSingle == DragFlagSingle {
+		if TheUserData.PowerMoves {
+			pm := powerMoves(TheBaize.Piles, p)
+			if len(p.Tail) > pm {
+				TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(p.Tail)))
+				p.ApplyToTail((*Card).Shake)
+				p.Tail = nil
+				return false
+			}
+		} else {
+			if len(p.Tail) > 1 {
+				TheBaize.ui.Toast(p.Class + " can only drag a single card")
+				p.ApplyToTail((*Card).Shake)
+				p.Tail = nil
+				return false
+			}
 		}
 	}
 	if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
@@ -458,7 +579,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 		}
 	}
 	if !isTailConformant(p.Drag, p.Flags, p.Tail) {
-		println("Pile StartDrag non-conformant")
+		// println("Pile StartDrag non-conformant")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false

@@ -9,9 +9,16 @@ import (
 // DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
-	if !TheUserData.PowerMoves {
-		if p.Flags&DragFlagSingle == DragFlagSingle && len(tail) > 1 {
-			return nil
+	if p.Flags&DragFlagSingle == DragFlagSingle {
+		if TheUserData.PowerMoves {
+			pm := powerMoves(TheBaize.Piles, p)
+			if len(tail) > pm {
+				return nil
+			}
+		} else {
+			if len(tail) > 1 {
+				return nil
+			}
 		}
 	}
 	if !isTailConformant(p.Drag, p.Flags, tail) {
@@ -50,7 +57,7 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c0.Ordinal()) {
 		// 	continue
 		// }
-		if b.CanAcceptTail(p, tail, true) {
+		if p.CanAcceptTail(tail, true) {
 			return p
 		}
 	}

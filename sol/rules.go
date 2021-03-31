@@ -15,7 +15,7 @@ const BuildFlagSpider = 8
 
 func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 	if cPrev.Prone() || cThis.Prone() {
-		println("prone cards are not conformant")
+		// println("prone cards are not conformant")
 		return false
 	}
 
