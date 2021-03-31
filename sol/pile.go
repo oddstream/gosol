@@ -39,23 +39,19 @@ const (
 
 // Pile is a generic container for cards
 type Pile struct {
-	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
-	X, Y               PilePositionType // relative position on Baize in CardWidth/Height units (ie not screen coords)
-	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteDown"
-	localAccept        int
-	localRecycles      int
-	Attributes         map[string]string
-	Cards              []*Card // array of cards, managed as a stack
-	Tail               []*Card // array of cards currently being dragged
-	Build, Drag, Flags int
-	scrunchSize        int           // relative (in card positions) size of scrunch height/width
-	scrunchPercentage  int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
-	backgroundImage    *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
+	PileInfo
+	localAccept       int
+	localRecycles     int
+	Cards             []*Card       // array of cards, managed as a stack
+	Tail              []*Card       // array of cards currently being dragged
+	scrunchSize       int           // relative (in card positions) size of scrunch height/width
+	scrunchPercentage int           // percentage of compression of fanned cards so they fit on screen (but are harder to read)
+	backgroundImage   *ebiten.Image // rounded rect for this Pile, optionally contains Accept/Recycle symbol
 }
 
 // NewPile create and fills in a Pile object
-func NewPile(class string, x, y PilePositionType, fan string, Build, Drag, Flags int, attribs map[string]string) *Pile {
-	p := &Pile{Class: class, X: x, Y: y, Fan: fan, Build: Build, Drag: Drag, Flags: Flags, Attributes: attribs}
+func NewPile(pi PileInfo) *Pile {
+	p := &Pile{PileInfo: pi}
 	p.Reset()
 	return p
 }
@@ -64,6 +60,9 @@ func NewPile(class string, x, y PilePositionType, fan string, Build, Drag, Flags
 func (p *Pile) Reset() {
 	p.localAccept, _ = p.GetIntAttribute("Accept")
 	p.localRecycles, _ = p.GetIntAttribute("Recycles")
+	// p.Cards
+	// p.Tail
+	// leave scrunchSize, it's calculated
 	p.scrunchPercentage = 100
 	p.CreateBackgroundImage()
 }

@@ -15,9 +15,9 @@ type VariantInfo struct {
 
 // PileInfo contains the basic Pile members and a lookup table for it's attributes
 type PileInfo struct {
-	Class              string
-	X, Y               PilePositionType
-	Fan                string
+	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
+	X, Y               PilePositionType // relative position on Baize in CardWidth/Height units (ie not screen coords)
+	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteDown"
 	Build, Drag, Flags int
 	Attributes         map[string]string
 }
@@ -730,7 +730,7 @@ func (b *Baize) BuildVariant(v string) {
 	b.Piles = nil
 	if vi, exists := Variants[v]; exists {
 		for _, pi := range vi.Piles {
-			p := NewPile(pi.Class, pi.X, pi.Y, pi.Fan, pi.Build, pi.Drag, pi.Flags, pi.Attributes)
+			p := NewPile(pi)
 			b.Piles = append(b.Piles, p)
 		}
 	} else {

@@ -82,27 +82,11 @@ func NewBaize() *Baize {
 		ebiten.KeyX:      TheBaize.Exit,
 	}
 
-	TheBaize.Start()
-	return TheBaize // ugly global-setting kludge
-}
-
-func (b *Baize) Start() {
-	if NoGameLoad || !b.LoadVariant(b.Variant) {
-		TheBaize.NewVariant(b.Variant)
+	if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
+		TheBaize.NewVariant(TheBaize.Variant)
 	}
-	b.percentComplete = b.calcPercentComplete()
-}
 
-// Reset the Baize
-func (b *Baize) Reset() {
-	b.Piles = b.Piles[:0]
-	b.UndoStack = nil
-	b.SavedPosition = 0
-	// the following can stay the same
-	// b.Variant = TheUserData.Variant
-	// b.Seed = time.Now().UnixNano()
-	b.State = Virgin
-	b.stroke = nil
+	return TheBaize // ugly global-setting kludge
 }
 
 // RecallCardsToStock without changing variant or seed
@@ -135,17 +119,10 @@ func (b *Baize) RecallCardsToStock() {
 
 	shuffleCards(b.stock, b.Seed)
 
-	b.UndoStack = nil // StartGame will deal cards then do initial UndoPush()
+	b.UndoStack = nil
 	b.SavedPosition = 0
 	b.State = Virgin
 	b.stroke = nil
-}
-
-// StartGame given existing variant and seed
-func (b *Baize) StartGame() {
-	b.dealCards()
-	b.UndoPush()
-	TheStatistics.welcomeToast(b.Variant)
 }
 
 // NewGame resets Baize and restarts current variant with a new seed
@@ -155,7 +132,10 @@ func (b *Baize) NewGame() {
 	}
 	b.Seed = time.Now().UnixNano()
 	b.RecallCardsToStock()
-	b.StartGame()
+	b.dealCards()
+	b.UndoPush()
+	b.percentComplete = b.calcPercentComplete()
+	TheStatistics.welcomeToast(b.Variant)
 }
 
 // NewVariant resets Baize and starts a new game with a new variant and seed
@@ -164,8 +144,15 @@ func (b *Baize) NewVariant(v string) {
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
-	b.Reset()
 
+	// reset the baize
+	b.Piles = b.Piles[:0]
+	b.UndoStack = nil
+	b.SavedPosition = 0
+	b.State = Virgin
+	b.stroke = nil
+
+	// switch to new variant
 	if _, exists := Variants[v]; !exists {
 		v = "Klondike"
 	}
@@ -186,7 +173,10 @@ func (b *Baize) NewVariant(v string) {
 	b.totalCards = b.stock.CardCount()
 	shuffleCards(b.stock, b.Seed)
 
-	b.StartGame()
+	b.dealCards()
+	b.UndoPush()
+	b.percentComplete = b.calcPercentComplete()
+	TheStatistics.welcomeToast(b.Variant)
 }
 
 // LoadVariant tries to load a game from json resets Baize and continues an old game
@@ -220,8 +210,9 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.totalCards = b.stock.CardCount()
 
 	b.UpdateFromSaveable(sav)
-	b.UndoPush()
 
+	b.UndoPush()
+	b.percentComplete = b.calcPercentComplete()
 	TheStatistics.welcomeToast(b.Variant)
 
 	if b.State == Complete {
@@ -233,15 +224,17 @@ func (b *Baize) LoadVariant(v string) bool {
 
 func (b *Baize) ShowInfo() {
 	TheStatistics.welcomeToast(b.Variant)
-	b.ui.Toast(fmt.Sprintf("You have made %s in this game", util.Pluralize("move", len(b.UndoStack)-1)))
+	b.ui.Toast(fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(b.UndoStack)-1), b.percentComplete))
 	if !b.stock.Hidden() {
 		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", b.stock.CardCount())))
 	}
 }
 
 func (b *Baize) dealCards() {
+	println("dealing", len(b.stock.Cards), "cards from stock")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
+		println(deal)
 		if deal == "" {
 			continue
 		}
@@ -250,19 +243,16 @@ func (b *Baize) dealCards() {
 			case 'u':
 				c := b.stock.Pop() // this will flip card up
 				if c == nil {
-					log.Fatal("out of cards during deal")
+					log.Fatal("out of cards during deal u from ", deal)
 				}
 				if c.Prone() {
 					log.Fatal("popped a face down card from stock")
-				}
-				if c == nil {
-					log.Fatal("out of cards during deal")
 				}
 				p.Push(c)
 			case 'd':
 				c := b.stock.Pop() // this will flip card up
 				if c == nil {
-					log.Fatal("out of cards during deal")
+					log.Fatal("out of cards during deal d from ", deal)
 				}
 				c.FlipDown()
 				p.Push(c)
@@ -272,7 +262,7 @@ func (b *Baize) dealCards() {
 					c := b.stock.Extract(idx)
 					p.Push(c)
 				} else {
-					log.Fatal("cannot find", d, "during deal")
+					log.Fatal("cannot find", d, "during deal from ", deal)
 				}
 			default:
 				println("unknown rune in Deal", d)
@@ -660,7 +650,7 @@ func (b *Baize) calcPercentComplete() int {
 			}
 		}
 	}
-	return int(util.MapValue(float64(sorted)-float64(unsorted)+(float64(foundations)*4), float64(-b.totalCards), float64(b.totalCards), 0, 100))
+	return int(util.MapValue(float64(sorted)-float64(unsorted)+float64(foundations), float64(-b.totalCards), float64(b.totalCards), 0, 100))
 }
 
 // StartDrag return true if the Baize can be dragged (vscrolled)
@@ -733,7 +723,6 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if !TheBaize.LoadVariant(newVariant) {
 					b.NewVariant(newVariant)
 				}
-				b.percentComplete = b.calcPercentComplete()
 			}
 		case "CardBack":
 			if TheUserData.CardStyle == "retro" {

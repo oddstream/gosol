@@ -6,6 +6,7 @@
     Godot
     Defold
 
++ https://en.wikipedia.org/wiki/Capricieuse
 + gobs or Protocol Buffers instead of JSON?
 + WASM
   [ ] json_browser.go
