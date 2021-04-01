@@ -427,7 +427,7 @@ func (p *Pile) makeTail(c *Card) []*Card {
 }
 
 // CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
-func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
+func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	if len(Tail) == 0 { // len() for nil slices is defined as zero
 		log.Panic("empty tail passed to CanAcceptTail")
@@ -442,7 +442,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 	targetClass := c0.owner.GetStringAttribute("Target")
 	if targetClass != "" {
 		if targetClass != p.Class {
-			if !noToast {
+			if canToast {
 				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
 			}
 			return false
@@ -457,6 +457,9 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 				return true
 			}
 		}
+		if canToast {
+			TheBaize.ui.Toast("Can only drag one card from Stock to Waste")
+		}
 		return false
 
 	case "Foundation":
@@ -464,7 +467,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
 			if p.localAccept == 0 {
 				if c0.owner.Class != afp {
-					if !noToast {
+					if canToast {
 						TheBaize.ui.Toast(fmt.Sprintf("%s can only accept first card from a %s", p.Class, afp))
 					}
 					return false
@@ -474,14 +477,27 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
 		if p.Flags&BuildFlagSpider == BuildFlagSpider {
 			if len(Tail) != 13 {
+				if canToast {
+					TheBaize.ui.Toast("Can only drag 13 cards to a Foundation")
+				}
 				return false
 			}
 			if p.CardCount() > 0 {
+				if canToast {
+					TheBaize.ui.Toast("The Foundation must be empty")
+				}
 				return false
 			}
-			return isTailConformant(p.Build, p.Flags, Tail)
+			ok := isTailConformant(p.Build, p.Flags, Tail)
+			if !ok && canToast {
+				TheBaize.ui.Toast("The cards are not in order")
+			}
+			return ok
 		} else {
 			if len(Tail) != 1 {
+				if canToast {
+					TheBaize.ui.Toast("Can only drag one card to Foundations")
+				}
 				return false
 			}
 			if p.CardCount() == 0 {
@@ -490,7 +506,11 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 				}
 				return true
 			}
-			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+			ok := isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+			if !ok && canToast {
+				TheBaize.ui.Toast("The cards are not in order")
+			}
+			return ok
 		}
 
 	case "Tableau":
@@ -498,16 +518,25 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 			if TheUserData.PowerMoves {
 				pm := powerMoves(TheBaize.Piles, p)
 				if len(Tail) > pm {
+					if canToast {
+						TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(Tail)))
+					}
 					return false
 				}
 			} else {
 				if len(Tail) > 1 {
+					if canToast {
+						TheBaize.ui.Toast("You can only drag a single card")
+					}
 					return false
 				}
 			}
 		}
 		if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
 			if !(len(Tail) == 1 || len(Tail) == c0.owner.CardCount()) {
+				if canToast {
+					TheBaize.ui.Toast("You can only drag a single card or the whole pile")
+				}
 				return false
 			}
 		}
@@ -519,7 +548,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 						return true
 					}
 				}
-				if !noToast {
+				if canToast {
 					TheBaize.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
 				}
 				return false
@@ -529,10 +558,21 @@ func (p *Pile) CanAcceptTail(Tail []*Card, noToast bool) bool {
 			}
 			return true
 		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+		ok := isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
+		if !ok && canToast {
+			TheBaize.ui.Toast("The cards are not in order")
+		}
+		return ok
 
 	case "Cell":
-		return len(Tail) == 1 && p.CardCount() == 0
+		ok := len(Tail) == 1 && p.CardCount() == 0
+		if !ok && canToast {
+			TheBaize.ui.Toast("Can only move one card to an empty Cells")
+		}
+		return ok
+	}
+	if canToast {
+		TheBaize.ui.Toast("You cannot move a card there")
 	}
 	return false // Reserve, Stock, StockSpider, StockScorpion
 }

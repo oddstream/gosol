@@ -6,6 +6,11 @@
     Godot
     Defold
 
++ "if the switch has no expression it switches on true. It's therefore possible—and idiomatic—to write an if-else-if-else chain as a switch"
++ Reset statistics for this game/for all games
++ Copy percentComplete, allow restart without loss, to Opsole
++ check Opsole localAccept is set when undoing
+
 + https://en.wikipedia.org/wiki/Capricieuse
 + gobs or Protocol Buffers instead of JSON?
 + WASM
@@ -19,10 +24,9 @@
 + Study overlap between Class, Build, Drag, Flags, Attributes
   49 Pile functions
   4 switch p.Class
-+ https://en.wikipedia.org/wiki/Duchess_(solitaire)
 + problems with mark movable
   shows draggable tail that cannot be moved because of powermoves (FIXED)
-  show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8)
+  show pointless moves when card moves to equivalent position (eg 7 on 8 to a different 8, or empty pile to empty pile)
   it makes the gameplay different
 + tooltips over hovered icons and FAB triggered by (wb *WidgetBase)|(*F FAB) Update()
   tooltipManager
@@ -83,6 +87,7 @@
   Too much duplication between "derived classes"
 
 x Mistress Mop/Mrs Mop
+x https://en.wikipedia.org/wiki/Duchess_(solitaire)
 x PowerMoves becomes settings option for games where tableaux that only allow single cards to be moved
 x calculate scrunch when piles are loaded
 x englishRules() exposes overlap between drag and build flags

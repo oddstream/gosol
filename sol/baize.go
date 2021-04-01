@@ -231,10 +231,8 @@ func (b *Baize) ShowInfo() {
 }
 
 func (b *Baize) dealCards() {
-	println("dealing", len(b.stock.Cards), "cards from stock")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
-		println(deal)
 		if deal == "" {
 			continue
 		}
@@ -265,7 +263,7 @@ func (b *Baize) dealCards() {
 					log.Fatal("cannot find", d, "during deal from ", deal)
 				}
 			default:
-				println("unknown rune in Deal", d)
+				println("unknown rune in Deal", string(d))
 			}
 		}
 	}
@@ -277,7 +275,6 @@ func (b *Baize) dealCards() {
 		if disinter, ok := p.GetIntAttribute("Disinter"); ok {
 			p.DisinterCards(disinter)
 		}
-		// AcceptFirstPush used to be here
 	}
 
 	b.AutoMoves()
@@ -367,7 +364,6 @@ func (b *Baize) PileTapped(p *Pile) {
 		b.AfterUserMove()
 	}
 
-	// println("pile", p.Class, "tapped")
 }
 
 // CardTapped is called when a card has been tapped
@@ -399,8 +395,8 @@ func (b *Baize) CardTapped(c *Card) {
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
-		cardsToMove, _ := pSrc.GetIntAttribute("CardsToMove")
-		if cardsToMove == 0 {
+		cardsToMove, ok := pSrc.GetIntAttribute("CardsToMove")
+		if !ok || cardsToMove == 0 {
 			cardsToMove = 1
 		}
 		for _, p := range b.Piles {
@@ -556,7 +552,6 @@ func (b *Baize) AutoMoves() {
 							break
 						}
 					}
-
 				}
 			}
 		}
@@ -744,7 +739,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				}
 			}
-		case "PowerMoves":
+		case "Power moves":
 			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
 			if TheUserData.HighlightMovable {
 				b.HighlightMovable()
@@ -755,7 +750,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				}
 			}
-		case "Retro":
+		case "Retro cards":
 			retro, _ := strconv.ParseBool(v.Data)
 			if retro {
 				TheUserData.CardStyle = "retro"
@@ -832,7 +827,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
 				} else {
-					if p.CanAcceptTail(c.owner.Tail, false) {
+					if p.CanAcceptTail(c.owner.Tail, true) {
 						c.owner.StopDrag(c)
 						b.MoveCards(c, p)
 						b.AfterUserMove()

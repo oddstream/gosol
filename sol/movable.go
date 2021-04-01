@@ -57,7 +57,7 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c0.Ordinal()) {
 		// 	continue
 		// }
-		if p.CanAcceptTail(tail, true) {
+		if p.CanAcceptTail(tail, false) {
 			return p
 		}
 	}

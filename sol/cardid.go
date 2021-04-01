@@ -14,16 +14,15 @@ const (
 	SPADE   = 4
 )
 
+// CardID holds flags (marked, prone), pack, suit, ordinal
+type CardID uint32
+
+// TODO why aren't these type CardID?
 const packMask uint32 = 0b111100000000
 const suitMask uint32 = 0b000011110000
 const ordinalMask uint32 = 0b1111
 const proneFlag uint32 = 0b1000000000000
 const movableFlag uint32 = 0b10000000000000
-
-// const flagMask uint32 = 0b1111000000000000
-
-// CardID holds flags (marked, prone), pack, suit, ordinal
-type CardID uint32
 
 func (cid CardID) String() string {
 	return fmt.Sprintf("%d %s %d", cid.Pack(), cid.StringSuit(), cid.Ordinal())

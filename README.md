@@ -4,24 +4,36 @@ Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg.
 
 It currently knows how to play:
 
+* American Toad (and the original The Toad)
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)
 * Canfield (and Storehouse)
+* Duchess
+* EasyWin (an easy to win game, for debugging)
 * Forty and Eight
 * Freecell (and Freecell Easy)
-* Klondike (Draw One and Draw Three)
+* Klondike (Draw One, Draw Three and Thoughtful)
 * Limited
 * Mistress and Mrs Mop
 * Simple Simon
 * Scorpion (and Wasp)
 * Spider (original, One Suit and Two Suits)
 * Spiderette
-* Thoughtful
 * Thumb and Pouch
 * Will o' the Wisp
 * Yukon
 
-It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has easy-to-read scalable cards, set via a command line flag `-c=default`. The card width scales to match the window width; the card height is calculated automatically. You can adjust the width:height ratio with `-c=default`, `-c=bridge` or `-c=poker`.
+Some variants have been tried and discarded as being a bit silly:
+
+* Giant
+* King Albert
+* Raglan
+
+Some will never make it here because they a just bad games:
+
+* Pyramid
+
+It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has easy-to-read scalable cards.
 
 It currently has a minimal user interface, and some keyboard shortcuts:
 
@@ -30,11 +42,7 @@ It currently has a minimal user interface, and some keyboard shortcuts:
 * R - restart deal
 * S - save current position ('bookmark')
 * L - load a previously saved position (goto bookmark, handy for Freecell and Simple Simon players)
-* F1 - show the rules
-* F2 - change the card back
 
-I'm currently building up a minimal Material Design UI in a separate package for it, keeping an eye on [Ebiten UI](https://ebitenui.github.io/) for ideas.
-
-It currently doesn't do anything pretty after detecting a completed game, or do any fancy highlighting of moveable cards.
+It currently doesn't do anything pretty after detecting a completed game.
 
 That's a lot of 'currently', but this is a work-in-progress.

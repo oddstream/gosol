@@ -23,8 +23,6 @@ const (
 	shakingCenter
 )
 
-// golang gotcha: go:embed cannot apply to var inside func
-
 // Card object
 type Card struct {
 	ID    CardID // contains flags (prone, marked) pack, suit, ordinal
@@ -170,24 +168,12 @@ func (c *Card) FlipDown() {
 	}
 }
 
-// Flip toggles the card
-// func (c *Card) Flip() {
-// 	if c.prone {
-// 		c.FlipUp()
-// 	} else {
-// 		c.FlipDown()
-// 	}
-// }
-
-// Transitioning returns true if this card is lerping, dragging
+// Transitioning returns true if this card is lerping, dragging or flipping
 func (c *Card) Transitioning() bool {
 	if c.lerpStep < 1.0 {
 		return true
 	}
 	if c.dragging {
-		return true
-	}
-	if c.flipStep != 0 {
 		return true
 	}
 	return false
