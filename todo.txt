@@ -23,7 +23,7 @@
 + WASM
   [ ] json_browser.go
   [x] embed icons
-  [ ] http server
+  [x] http server python3 -m http.server
   [ ] PWA https://github.com/maxence-charriere/go-app
 + In a game like Simple Simon (and Spider?), % refers to how sorted the tableaux/foundations are
 + Stuck if no empty cells or tableaux, and no highlighted cards

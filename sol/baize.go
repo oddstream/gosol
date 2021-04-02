@@ -105,17 +105,17 @@ func (b *Baize) RecallCardsToStock() {
 		// }
 	}
 
-	if DebugMode {
-		println("cards recalled to stock, now contains", b.stock.CardCount(), "cards")
-		for _, c := range b.stock.Cards {
-			if !c.Prone() {
-				log.Fatal("face up card found in stock")
-			}
-			if c.owner != b.stock {
-				log.Fatal("card in stock belongs to", c.owner.Class)
-			}
-		}
-	}
+	// if DebugMode {
+	// 	println("cards recalled to stock, now contains", b.stock.CardCount(), "cards")
+	// 	for _, c := range b.stock.Cards {
+	// 		if !c.Prone() {
+	// 			log.Fatal("face up card found in stock")
+	// 		}
+	// 		if c.owner != b.stock {
+	// 			log.Fatal("card in stock belongs to", c.owner.Class)
+	// 		}
+	// 	}
+	// }
 
 	shuffleCards(b.stock, b.Seed)
 
@@ -372,41 +372,25 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 		   and dealing the cards in the same order as they were picked up.
 		*/
 		if pTapped.localRecycles > 0 {
+			tmp := make([]*Card, 0, 52)
+
 			for _, pTab := range b.Piles {
 				if pTab.Class == "Tableau" {
-					if pTab.CardCount() > 0 {
-						// don't use Pop/Push, cards will be in wrong order
-						b.MoveCards(pTab.Cards[0], b.stock)
-					}
-					pTab.scrunchPercentage = 100 // TODO ugly
+					tmp = append(tmp, pTab.Cards...)
+					pTab.Cards = pTab.Cards[:0]
 				}
 			}
-			if b.stock.CardCount() == 0 {
-				break
-			}
-
-			// use an intermediate stack to make sure cards are redealt in proper order
-			tmp := make([]*Card, 0, cap(b.stock.Cards))
-			for b.stock.CardCount() > 0 {
-				tmp = append(tmp, b.stock.Pop())
-			}
+			// println(len(tmp), "cards collected")
 
 			for _, pTab := range b.Piles {
 				if pTab.Class == "Tableau" {
 					deal := pTab.GetStringAttribute("Deal")
-					for _, d := range deal {
+					for i := 0; i < len(deal); i++ {
 						var c *Card
 						if len(tmp) > 0 {
-							c = tmp[len(tmp)-1]
-							tmp = tmp[:len(tmp)-1]
+							c, tmp = tmp[0], tmp[1:]
 						} else {
 							goto FinishedDealing
-						}
-						switch d {
-						case 'u':
-							c.FlipUp()
-						case 'd':
-							c.FlipDown()
 						}
 						pTab.Push(c)
 					}
