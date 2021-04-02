@@ -8,6 +8,7 @@ It currently knows how to play:
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)
 * Canfield (and Storehouse)
+* Cruel
 * Duchess
 * EasyWin (an easy to win game, for debugging)
 * Forty and Eight

@@ -24,12 +24,13 @@ func (ud *UserData) Load() {
 
 	localStorage := js.Global().Get("window").Get("localStorage")
 	v := localStorage.Get("gosol")
-	// println(v.String())
-	bytes := []byte(v.String())
-	if len(bytes) > 0 {
-		err := json.Unmarshal(bytes[:], ud)
-		if err != nil {
-			log.Fatal(err)
+	if v.String() != "<undefined>" {
+		bytes := []byte(v.String())
+		if len(bytes) > 0 {
+			err := json.Unmarshal(bytes, ud)
+			if err != nil {
+				println("UserData.Load().Unmarshal() error", err)
+			}
 		}
 	}
 }
@@ -43,10 +44,11 @@ func (ud *UserData) Save() {
 
 	bytes, err := json.Marshal(ud)
 	if err != nil {
-		log.Fatal(err)
+		println("UserData.Save().Marshal() error", err)
+	} else {
+		str := string(bytes)
+		localStorage := js.Global().Get("window").Get("localStorage")
+		// localStorage.Set("CompletedLevels", strconv.Itoa(ud.CompletedLevels))
+		localStorage.Set("gosol", str)
 	}
-	str := string(bytes[:])
-	localStorage := js.Global().Get("window").Get("localStorage")
-	// localStorage.Set("CompletedLevels", strconv.Itoa(ud.CompletedLevels))
-	localStorage.Set("gosol", str)
 }

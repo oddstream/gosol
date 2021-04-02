@@ -10,8 +10,15 @@
 + Reset statistics for this game/for all games
 + Copy percentComplete, allow restart without loss, to Opsole
 + check Opsole localAccept is set when undoing
++ func CopyBytesToGo()/CopyBytesToJS()
++ don't use os.Exit() in WASM
 
++ separate class for tmp statck of *Card
++ https://en.wikipedia.org/wiki/Cruel_(solitaire)
+  see StockCruel.lua
++ https://en.wikipedia.org/wiki/Perseverance_(solitaire)
 + https://en.wikipedia.org/wiki/Capricieuse
+
 + gobs or Protocol Buffers instead of JSON?
 + WASM
   [ ] json_browser.go
@@ -47,7 +54,6 @@
   vertical with left padding, container can resize width to fit (picker)
   vertical with left padding, lines wrap (rules, statistics)
 + cannot tap on an animating card, leaves it out of place
-+ Freecell, there was a card in a cell which was not
 + pre-queue for toasts, or add with goroutine, chan and time.Sleep(time.Second) YAGNI
 + Collect() counts as one move, wrong for statistics
 + Scrim rect when nav drawer open? Will sponge up taps and drags. Maybe just alpha down the baize.

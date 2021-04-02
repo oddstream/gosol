@@ -488,11 +488,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 				}
 				return false
 			}
-			ok := isTailConformant(p.Build, p.Flags, Tail)
-			if !ok && canToast {
-				TheBaize.ui.Toast("The cards are not in order")
-			}
-			return ok
+			return isTailConformant(p.Build, p.Flags, Tail)
 		} else {
 			if len(Tail) != 1 {
 				if canToast {
@@ -506,11 +502,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 				}
 				return true
 			}
-			ok := isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-			if !ok && canToast {
-				TheBaize.ui.Toast("The cards are not in order")
-			}
-			return ok
+			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
 		}
 
 	case "Tableau":
@@ -558,11 +550,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 			}
 			return true
 		}
-		ok := isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-		if !ok && canToast {
-			TheBaize.ui.Toast("The cards are not in order")
-		}
-		return ok
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
 
 	case "Cell":
 		ok := len(Tail) == 1 && p.CardCount() == 0

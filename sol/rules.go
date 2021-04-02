@@ -200,6 +200,8 @@ func (b *Baize) rulesContents() []string {
 
 	rules := []string{variantDescription(b.Variant)}
 
+	// TODO show varaint AKA
+
 	for _, pileClass := range uniquePiles {
 		p := b.findPile(pileClass)
 		var str strings.Builder
@@ -232,6 +234,8 @@ func (b *Baize) rulesContents() []string {
 				}
 
 			}
+		case "StockCruel":
+			fmt.Fprint(&str, "Clicking on the stock will collect and then redeal the tableaux stacks. ")
 		case "StockSpider":
 			fmt.Fprintf(&str, "%s: ", "Stock")
 			fmt.Fprint(&str, "Clicking on the stock will transfer one card to each of the tableaux, if all spaces in the tableaux have been filled. ")
