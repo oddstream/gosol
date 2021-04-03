@@ -28,7 +28,6 @@
 + Copy percentComplete, allow restart without loss, to Opsole
 + check Opsole localAccept is set when undoing
 + func CopyBytesToGo()/CopyBytesToJS()
-+ don't use os.Exit() in WASM
 
 + https://en.wikipedia.org/wiki/Cruel_(solitaire)
   see StockCruel.lua
@@ -40,8 +39,10 @@
   [x] json_browser.go
   [x] embed icons
   [x] http server python3 -m http.server
+  [x] WindowSize only works on desktops!
+  [ ] Organization aand naming in localStorage
+  [ ] When to save Baize to localStorage (is cleanup run?)
   [ ] PWA https://github.com/maxence-charriere/go-app
-  [ ] WindowSize only works on desktops!
 
 + Stuck if no empty cells or tableaux, and no highlighted cards
 + Check Canfield, Storehouse, Baker's Dozen rules against wiki and book
@@ -109,6 +110,8 @@
   Stock, StockSpider, Waste, Tableau, Foundation, Reserve, Cell types that "has a" PileBase
   Too much duplication between "derived classes"
 
+x don't use os.Exit(), WindowSize in WASM
+x Cruel, Ripplefan
 x Mistress Mop/Mrs Mop
 x https://en.wikipedia.org/wiki/Duchess_(solitaire)
 x PowerMoves becomes settings option for games where tableaux that only allow single cards to be moved

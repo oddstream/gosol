@@ -1,40 +1,48 @@
 # Gosol
 
-Towards a polymorphic solitaire engine in Go+Ebiten, with help from fogleman/gg. It's an adaptation of my Lua/Solar2D retained mode engine used in the Android game (which was itself an adaptation of my messy vanilla JavaScript/SVG engine used for the online game). The intention is that this version will replace both of those.
+Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg).
+
+It's an adaptation of my [Lua](https://www.lua.org/)/[Solar2D](https://solar2d.com/) retained mode engine used in the Android game (which was itself an adaptation of my messy vanilla JavaScript/SVG engine used for the [online game](https://oddstream/games/Solitaire)). The intention is that this version will replace both of those, and provide Linux, Windows, Android and browser-based versions from the same code base. If I had a Mac there'd be iOS and Mac versions, too.
+
+## Variants
 
 It currently knows how to play:
 
 * American Toad (and the original The Toad)
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)
-* Canfield (and Storehouse)
-* Cruel
+* Canfield, Storehouse
+* Cruel, Ripple Fan
 * Duchess
 * EasyWin (an easy to win game, for debugging)
 * Forty and Eight
-* Freecell (and Freecell Easy)
+* Freecell, Freecell Easy
 * Klondike (Draw One, Draw Three and Thoughtful)
 * Limited
 * Mistress and Mrs Mop
 * Simple Simon
-* Scorpion (and Wasp)
+* Scorpion, Wasp
 * Spider (original, One Suit and Two Suits)
 * Spiderette
 * Thumb and Pouch
 * Will o' the Wisp
 * Yukon
 
-Some variants have been tried and discarded as being a bit silly:
+Some variants have been tried and discarded as being a bit silly (I don't see the point of games that you almost certainly can't win; I like ones that have a 33-66% chance of winnning):
 
+* Agnes Sorel
 * Giant
 * King Albert
 * Raglan
 
-Some will never make it here because they a just bad games:
+Some will never make it here because they are just bad games:
 
+* Accordian
 * Pyramid
 
-It currently has a minimal user interface, and some keyboard shortcuts:
+## User interface
+
+It has an intentionally minimal material-style user interface, and some keyboard shortcuts:
 
 * U - undo
 * N - new deal
@@ -42,8 +50,18 @@ It currently has a minimal user interface, and some keyboard shortcuts:
 * S - save current position ('bookmark')
 * L - load a previously saved position (goto bookmark, handy for Freecell and Simple Simon players)
 
-It currently doesn't do anything pretty after detecting a completed game.
+## Work in Progress
 
-That's a lot of 'currently', but this is a work-in-progress.
+It currently doesn't have any sounds or do anything pretty after detecting a completed game.
+
+I'd like it to have a inter-user high scores table, but the Goolgle Play games services interface and setup is inpenetrable to me at the moment.
+
+## Live playable version
 
 There's a live WASM version [here](https://oddstream.games/gosol/gosol.html).
+
+## Acknowledgements
+
+Original games by Jan Wolter, David Parlett, Paul Alfille, Art Cabral, Albert Morehead, Geoffrey Mott-Smith, Zach Gage and Thomas Warfield.
+
+Retro card back designs by Leslie Kooy and Susan Kare.
