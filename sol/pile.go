@@ -640,6 +640,13 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 	}
 }
 
+// ApplyToCards applys a function to each card in the pile
+func (p *Pile) ApplyToCards(fn func(*Card)) {
+	for _, c := range p.Cards {
+		fn(c)
+	}
+}
+
 // ApplyToTail applies a method func to this card and all the others after it in the stack
 // func (p *Pile) ApplyToCards2(fn func(*Card, int, int), dx, dy int) {
 // 	for _, c := range p.Cards {

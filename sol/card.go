@@ -1,6 +1,8 @@
 package sol
 
 import (
+	"math/rand"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/util"
 )
@@ -41,6 +43,9 @@ type Card struct {
 	flipWidth float64 // scale of the card width while flipping
 
 	shake shakeState
+
+	directionX, directionY int
+	angle, spin            int
 
 	faceImg *ebiten.Image // images used to draw this card
 }
@@ -168,6 +173,31 @@ func (c *Card) FlipDown() {
 	}
 }
 
+// StartSpinning tells the card to start spinning
+func (c *Card) StartSpinning() {
+	var coinToss func() int = func() int {
+		if rand.Float64() < 0.5 {
+			return -1
+		}
+		return 1
+	}
+	c.directionX = coinToss()
+	c.directionY = coinToss()
+	c.spin = coinToss()
+	c.SetMovable(false)
+}
+
+// StopSpinning tells the card to stop spinning and return to it's upright state
+func (c *Card) StopSpinning() {
+	c.directionX, c.directionY = 0, 0
+	c.angle, c.spin = 0, 0
+}
+
+// Spinning returns true if this card is spinning
+func (c *Card) Spinning() bool {
+	return c.directionX != 0 || c.directionY != 0 || c.angle != 0 || c.spin != 0
+}
+
 // Transitioning returns true if this card is lerping, dragging or flipping
 func (c *Card) Transitioning() bool {
 	if c.lerpStep < 1.0 {
@@ -237,6 +267,11 @@ func (c *Card) Update() error {
 			}
 		}
 	}
+	if c.Spinning() {
+		c.baizeX += c.directionX
+		c.baizeY += c.directionY
+		c.angle = (c.angle + c.spin) % 360
+	}
 	return nil
 }
 
@@ -268,6 +303,26 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(float64(-CardWidth/2), 0)
 		op.GeoM.Scale(c.flipWidth, 1.0)
 		op.GeoM.Translate(float64(CardWidth/2), 0)
+	}
+
+	if c.Spinning() {
+		// do this before the baize position translate
+		op.GeoM.Translate(float64(-CardWidth/2), float64(-CardHeight/2))
+		op.GeoM.Rotate(float64(c.angle) * 3.1415926535 / 180.0)
+		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
+
+		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
+		w, h := screen.Size()
+		switch {
+		case c.baizeX > w:
+			c.directionX = -1
+		case c.baizeX < 0:
+			c.directionX = 1
+		case c.baizeY > h:
+			c.directionY = -1
+		case c.baizeY < 0:
+			c.directionY = 1
+		}
 	}
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))

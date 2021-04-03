@@ -77,6 +77,8 @@ func NewBaize() *Baize {
 		ebiten.KeyF:      TheBaize.ShowVariantPicker,
 		ebiten.KeyF2:     TheBaize.ShowCardBackPicker,
 		ebiten.KeyF3:     TheBaize.ShowSettingsDrawer,
+		ebiten.KeyF5:     TheBaize.StartSpinning,
+		ebiten.KeyF6:     TheBaize.StopSpinning,
 		ebiten.KeyI:      TheBaize.ShowInfo,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
@@ -702,6 +704,20 @@ func (b *Baize) DragBy(dx, dy int) {
 func (b *Baize) StopDrag() {
 	// remember the amount of drag so the next drag starts from here
 	b.DragOffsetBaseY = b.DragOffsetY
+}
+
+// StartSpinning tells all the cards to start spinning
+func (b *Baize) StartSpinning() {
+	for _, p := range b.Piles {
+		p.ApplyToCards((*Card).StartSpinning)
+	}
+}
+
+// StopSpinning tells all the cards to stop spinning and return to their upright position
+func (b *Baize) StopSpinning() {
+	for _, p := range b.Piles {
+		p.ApplyToCards((*Card).StopSpinning)
+	}
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
