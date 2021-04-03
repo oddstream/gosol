@@ -185,9 +185,9 @@ func (c *Card) Flipping() bool {
 }
 
 // Layout implements ebiten.Game's Layout.
-func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth, outsideHeight
-}
+// func (c *Card) Layout(outsideWidth, outsideHeight int) (int, int) {
+// 	return outsideWidth, outsideHeight
+// }
 
 // Update the card state (transitions)
 func (c *Card) Update() error {

@@ -12,7 +12,9 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-func createCards(stock *Pile) {
+// create the set of cards, into a stock pile
+// return the number of cards created
+func createCards(stock *Pile) int {
 
 	defer util.Duration(time.Now(), "createCards")
 	packs, ok := stock.GetIntAttribute("Packs")
@@ -43,6 +45,8 @@ func createCards(stock *Pile) {
 			}
 		}
 	}
+
+	return stock.CardCount()
 }
 
 func shuffleCards(stock *Pile, seed int64) {

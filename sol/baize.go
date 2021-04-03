@@ -46,10 +46,10 @@ type Baize struct {
 	stroke          *input.Stroke
 	input           *input.Input
 	ui              *ui.UI
-	stock           *Pile
+	stock           *Pile // shortcut to often used Stock Pile
 	commandTable    map[ebiten.Key]func()
-	DragOffsetY     int
-	DragOffsetBaseY int
+	DragOffsetY     int // value of current vertical drag
+	DragOffsetBaseY int // value last-used vertical drag
 	WindowWidth     int // the most recent window width given to Layout
 	OldWindowWidth  int // the window width last used to scale baize and cards
 }
@@ -170,8 +170,7 @@ func (b *Baize) NewVariant(v string) {
 	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
 	}
-	createCards(b.stock)
-	b.totalCards = b.stock.CardCount()
+	b.totalCards = createCards(b.stock)
 	shuffleCards(b.stock, b.Seed)
 
 	b.dealCards()
@@ -207,8 +206,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
 	}
-	createCards(b.stock)
-	b.totalCards = b.stock.CardCount()
+	b.totalCards = createCards(b.stock)
 
 	b.UpdateFromSaveable(sav)
 
@@ -801,6 +799,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}
+		TheUserData.Save() // save now especially if running on a browser
 	case input.StrokeEvent:
 		// if v.Event != "move" {
 		// 	println("stroke event", v.Event, v.X, v.Y)
@@ -905,6 +904,12 @@ func (b *Baize) NotifyCallback(event interface{}) {
 // ScaleCards calculates new width/height of cards and margins
 func (b *Baize) ScaleCards() {
 
+	const (
+		DefaultRatio = 1.444
+		BridgeRatio  = 1.561
+		PokerRatio   = 1.39
+	)
+
 	var maxX PilePositionType
 	for _, p := range b.Piles {
 		if p.X > maxX {
@@ -928,23 +933,7 @@ func (b *Baize) ScaleCards() {
 		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * 1.444
-		PilePaddingY = int(slotHeight / 10)
-		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = (CardWidth / 2) + PilePaddingX
-	case "poker":
-		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
-		PilePaddingX = int(slotWidth / 10)
-		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * 1.39
-		PilePaddingY = int(slotHeight / 10)
-		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = (CardWidth / 2) + PilePaddingX
-	case "bridge":
-		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
-		PilePaddingX = int(slotWidth / 10)
-		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * 1.561
+		slotHeight := slotWidth * DefaultRatio
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX

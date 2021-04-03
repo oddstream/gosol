@@ -139,10 +139,10 @@ func (p *Pile) CreateBackgroundImage() {
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(string(rune(0x2613)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+			dc.DrawStringAnchored(string(rune(0x2613)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.4)
 			// dc.DrawStringAnchored("X", float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
 		} else {
-			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.5)
+			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.4)
 		}
 		dc.Stroke()
 	}
@@ -722,11 +722,6 @@ func (p *Pile) DisinterCards(ordinal int) {
 
 // Layout the cards in this Pile
 // func (p *Pile) Layout(outsideWidth, outsideHeight int) (int, int) {
-
-// 	for _, c := range p.Cards {
-// 		c.SetPosition(c.BaizePosition())
-// 	}
-
 // 	return outsideWidth, outsideHeight
 // }
 

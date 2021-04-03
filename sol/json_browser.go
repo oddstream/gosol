@@ -16,19 +16,20 @@ import (
 	"syscall/js"
 )
 
+const keyPrefix = "Gosol/"
+
 func loadBytesFromLocalStorage(key string) ([]byte, error) {
 	localStorage := js.Global().Get("window").Get("localStorage")
-	v := localStorage.Get(key)
+	v := localStorage.Get(keyPrefix + key)
 	if v.String() != "<undefined>" {
 		bytes := []byte(v.String())
 		return bytes, nil
 	}
-	return nil, fmt.Errorf("%s undefined", key)
+	return nil, fmt.Errorf("%s undefined", keyPrefix+key)
 }
 
 func saveBytesToLocalStorage(bytes []byte, key string) {
-	localStorage := js.Global().Get("window").Get("localStorage")
-	localStorage.Set(key, string(bytes))
+	js.Global().Get("window").Get("localStorage").Set(keyPrefix+key, string(bytes))
 }
 
 // Load an already existing UserData object from browser localStorage

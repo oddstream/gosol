@@ -11,6 +11,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"runtime"
 
 	// load png decoder in main package
 	_ "image/png"
@@ -21,23 +22,29 @@ import (
 )
 
 func init() {
-	println("processing command line flags")
-	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
-	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
-	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
-	flag.BoolVar(&sol.NoShuffle, "noshuffle", false, "do not shuffle cards")
-	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
-	flag.StringVar(&sol.TheUserData.CardStyle, "c", "retro", "set the card face to retro, default, bridge, or poker")
-	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
+	if runtime.GOARCH != "wasm" {
+		println("processing command line flags")
+		flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
+		flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
+		flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
+		flag.BoolVar(&sol.NoShuffle, "noshuffle", false, "do not shuffle cards")
+		flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
+		flag.StringVar(&sol.TheUserData.CardStyle, "c", "default", "set the card face to retro")
+		flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
+	}
 }
 
 func main() {
 
-	log.SetFlags(0)
+	if runtime.GOARCH != "wasm" {
+		log.SetFlags(0)
+	}
 
 	sol.TheUserData.Load()
 
-	flag.Parse()
+	if runtime.GOARCH != "wasm" {
+		flag.Parse()
+	}
 
 	if sol.DebugMode {
 		for i, a := range os.Args {
