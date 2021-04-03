@@ -10,6 +10,15 @@ $ wc -l **/*.go | sort -nr
 $ shopt -s globstar
 $ shopt | sort
 
+$ GOOS=js GOARCH=wasm go build -o ../oddstream.github.io/gosol/gosol.wasm -ldflags="-s -w" -tags browser 
+open a terminal in /oddstream.github.io/Herding
+$ python3 -m http.server
+(-m mod : run library module as a script (terminates option list))
+open browser at http://0.0.0.0:8000/gomaze.html
+
+$ sudo rm -rf /usr/local/go
+$ sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
+
 added "-tags=desktop" to ~/.vscode/extensions/golang.go-0.23.2/package.json
 				"go.lintFlags": {
 					"type": "array",

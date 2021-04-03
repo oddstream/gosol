@@ -50,7 +50,8 @@ type Baize struct {
 	commandTable    map[ebiten.Key]func()
 	DragOffsetY     int
 	DragOffsetBaseY int
-	OldWindowWidth  int
+	WindowWidth     int // the most recent window width given to Layout
+	OldWindowWidth  int // the window width last used to scale baize and cards
 }
 
 // NewBaize is the factory func for the single Baize object
@@ -904,8 +905,6 @@ func (b *Baize) NotifyCallback(event interface{}) {
 // ScaleCards calculates new width/height of cards and margins
 func (b *Baize) ScaleCards() {
 
-	windowWidth, _ := ebiten.WindowSize()
-
 	var maxX PilePositionType
 	for _, p := range b.Piles {
 		if p.X > maxX {
@@ -926,7 +925,7 @@ func (b *Baize) ScaleCards() {
 	// Card gap is 10% of card width
 	switch TheUserData.CardStyle {
 	default:
-		slotWidth := float64(windowWidth) / float64(maxX+2)
+		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
 		slotHeight := slotWidth * 1.444
@@ -934,7 +933,7 @@ func (b *Baize) ScaleCards() {
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
 	case "poker":
-		slotWidth := float64(windowWidth) / float64(maxX+2)
+		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
 		slotHeight := slotWidth * 1.39
@@ -942,7 +941,7 @@ func (b *Baize) ScaleCards() {
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
 	case "bridge":
-		slotWidth := float64(windowWidth) / float64(maxX+2)
+		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
 		slotHeight := slotWidth * 1.561
@@ -955,7 +954,7 @@ func (b *Baize) ScaleCards() {
 		CardHeight = 96
 		PilePaddingY = 10
 		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
-		LeftMargin = (windowWidth - cardsWidth) / 2
+		LeftMargin = (b.WindowWidth - cardsWidth) / 2
 	}
 	log.Printf("scaled card size %s %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 
@@ -967,8 +966,7 @@ func (b *Baize) ScaleCards() {
 func (b *Baize) Scale() {
 
 	// on startup, b.OldWindowWidth will be 0 so scalables will be built
-	w, _ := ebiten.WindowSize()
-	if w == b.OldWindowWidth {
+	if b.WindowWidth == b.OldWindowWidth {
 		return
 	}
 
@@ -992,11 +990,13 @@ func (b *Baize) Scale() {
 		}
 	}
 
-	b.OldWindowWidth = w
+	b.OldWindowWidth = b.WindowWidth
 }
 
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
+
+	b.WindowWidth = outsideWidth
 
 	b.Scale()
 
@@ -1058,9 +1058,14 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 // Exit this app
 func (b *Baize) Exit() {
+
 	if !NoGameSave {
 		b.Save()
 	}
 	TheUserData.Save()
-	os.Exit(0)
+
+	if runtime.GOARCH != "wasm" {
+		os.Exit(0)
+	}
+
 }

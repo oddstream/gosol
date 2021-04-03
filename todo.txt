@@ -6,14 +6,30 @@
     Godot
     Defold
 
++ use an interface for switching between file & localstorage instead of build tags (no intellisense?)
+  type StorageProvider interface {
+  }
+  "You cannot import "syscall/js" without GOOS=js/GOARCH=wasm"
+  run a web browser in ~/golsol/ folder containing __debug_bin?
+  {
+	"go.toolsEnvVars": {
+		"GOOS": "js",
+		"GOARCH": "wasm"
+	}
+  }
+  two instances of vscode https://groups.google.com/g/golang-nuts/c/2vI1CA76HPI
+
+  https://github.com/dennwc/dom
+
 + "if the switch has no expression it switches on true. It's therefore possible—and idiomatic—to write an if-else-if-else chain as a switch"
+
 + Reset statistics for this game/for all games
+
 + Copy percentComplete, allow restart without loss, to Opsole
 + check Opsole localAccept is set when undoing
 + func CopyBytesToGo()/CopyBytesToJS()
 + don't use os.Exit() in WASM
 
-+ separate class for tmp statck of *Card
 + https://en.wikipedia.org/wiki/Cruel_(solitaire)
   see StockCruel.lua
 + https://en.wikipedia.org/wiki/Perseverance_(solitaire)
@@ -21,11 +37,12 @@
 
 + gobs or Protocol Buffers instead of JSON?
 + WASM
-  [ ] json_browser.go
+  [x] json_browser.go
   [x] embed icons
   [x] http server python3 -m http.server
   [ ] PWA https://github.com/maxence-charriere/go-app
-+ In a game like Simple Simon (and Spider?), % refers to how sorted the tableaux/foundations are
+  [ ] WindowSize only works on desktops!
+
 + Stuck if no empty cells or tableaux, and no highlighted cards
 + Check Canfield, Storehouse, Baker's Dozen rules against wiki and book
 + Study overlap between Class, Build, Drag, Flags, Attributes

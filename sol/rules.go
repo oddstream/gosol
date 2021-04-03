@@ -131,7 +131,7 @@ func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 			}
 		case "Tableau":
 			// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
-			if p == pDraggingTo && pDraggingTo.CardCount() == 0 {
+			if p == pDraggingTo && (pDraggingTo.CardCount() == 0 || pDraggingTo.localAccept == 99) {
 				// empty column doesn't count
 			} else if p.CardCount() == 0 {
 				emptyCols++

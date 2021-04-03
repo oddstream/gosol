@@ -34,8 +34,6 @@ Some will never make it here because they a just bad games:
 
 * Pyramid
 
-It uses the Microsoft solitaire retro card set by default, but as these don't scale prettily it also has easy-to-read scalable cards.
-
 It currently has a minimal user interface, and some keyboard shortcuts:
 
 * U - undo
@@ -47,3 +45,5 @@ It currently has a minimal user interface, and some keyboard shortcuts:
 It currently doesn't do anything pretty after detecting a completed game.
 
 That's a lot of 'currently', but this is a work-in-progress.
+
+There's a live WASM version [here](https://oddstream.games/gosol/gosol.html).
