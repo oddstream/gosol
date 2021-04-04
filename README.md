@@ -50,11 +50,10 @@ It has an intentionally minimal material-style user interface, and some keyboard
 * S - save current position ('bookmark')
 * L - load a previously saved position (goto bookmark, handy for Freecell and Simple Simon players)
 
-## Work in Progress
+## TODO
 
-It currently doesn't have any sounds or do anything pretty after detecting a completed game.
-
-I'd like it to have a inter-user high scores table, but the Goolgle Play games services interface and setup is inpenetrable to me at the moment.
+* Sounds
+* I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
 
 ## Live playable version
 

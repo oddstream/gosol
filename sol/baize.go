@@ -415,6 +415,11 @@ func (b *Baize) CardTapped(c *Card) {
 		return
 	}
 
+	if c.Spinning() {
+		c.Flip()
+		return
+	}
+
 	pSrc := c.owner
 
 	// can only tap top card
@@ -616,6 +621,7 @@ func (b *Baize) AfterUserMove() {
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
+			b.StartSpinning()
 		} else if b.Conformant() {
 			b.ui.ShowFAB("done_all", ebiten.KeyC)
 		} else {
@@ -716,7 +722,17 @@ func (b *Baize) StartSpinning() {
 // StopSpinning tells all the cards to stop spinning and return to their upright position
 func (b *Baize) StopSpinning() {
 	for _, p := range b.Piles {
-		p.ApplyToCards((*Card).StopSpinning)
+		if p.CardCount() == 0 {
+			continue
+		}
+		// because we're about to use copy(), tmp must have a length
+		var tmp = make([]*Card, len(p.Cards), cap(p.Cards)) // https://github.com/golang/go/wiki/SliceTricks#copy
+		// len(tmp) == len(p.Cards)
+		copy(tmp, p.Cards)
+		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
+		for _, c := range tmp {
+			p.Push(c)
+		}
 	}
 }
 

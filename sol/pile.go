@@ -271,6 +271,7 @@ func (p *Pile) Pop() *Card {
 
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
+	c.StopSpinning()
 	if strings.HasPrefix(p.Class, "Stock") {
 		c.FlipDown()
 	}
@@ -572,7 +573,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
 	// 	return false // cannot take cards off foundation
 	// }
-	if c.Transitioning() || c.Flipping() {
+	if c.Transitioning() || c.Flipping() || c.Spinning() {
 		println("unwise to drag an animating card")
 		return false
 	}

@@ -45,7 +45,7 @@ type Card struct {
 	shake shakeState
 
 	directionX, directionY int
-	angle, spin            int
+	angle, spin            float64
 
 	faceImg *ebiten.Image // images used to draw this card
 }
@@ -173,17 +173,26 @@ func (c *Card) FlipDown() {
 	}
 }
 
+// Flip turns the card over
+func (c *Card) Flip() {
+	if c.Prone() {
+		c.FlipUp()
+	} else {
+		c.FlipDown()
+	}
+}
+
 // StartSpinning tells the card to start spinning
 func (c *Card) StartSpinning() {
-	var coinToss func() int = func() int {
-		if rand.Float64() < 0.5 {
-			return -1
-		}
-		return 1
-	}
-	c.directionX = coinToss()
-	c.directionY = coinToss()
-	c.spin = coinToss()
+	// var coinToss func() int = func() int {
+	// 	if rand.Float64() < 0.5 {
+	// 		return -1
+	// 	}
+	// 	return 1
+	// }
+	c.directionX = rand.Intn(3) - 1
+	c.directionY = rand.Intn(3) - 1
+	c.spin = rand.Float64() - 0.5
 	c.SetMovable(false)
 }
 
@@ -270,7 +279,10 @@ func (c *Card) Update() error {
 	if c.Spinning() {
 		c.baizeX += c.directionX
 		c.baizeY += c.directionY
-		c.angle = (c.angle + c.spin) % 360
+		c.angle += c.spin
+		if c.angle > 360 {
+			c.angle -= 360
+		}
 	}
 	return nil
 }
@@ -308,20 +320,20 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	if c.Spinning() {
 		// do this before the baize position translate
 		op.GeoM.Translate(float64(-CardWidth/2), float64(-CardHeight/2))
-		op.GeoM.Rotate(float64(c.angle) * 3.1415926535 / 180.0)
+		op.GeoM.Rotate(c.angle * 3.1415926535 / 180.0)
 		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
 
 		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
 		w, h := screen.Size()
 		switch {
-		case c.baizeX > w:
-			c.directionX = -1
+		case c.baizeX+CardWidth > w:
+			c.directionX = -c.directionX
 		case c.baizeX < 0:
-			c.directionX = 1
-		case c.baizeY > h:
-			c.directionY = -1
+			c.directionX = -c.directionX
+		case c.baizeY+CardHeight > h:
+			c.directionY = -c.directionY
 		case c.baizeY < 0:
-			c.directionY = 1
+			c.directionY = -c.directionY
 		}
 	}
 
