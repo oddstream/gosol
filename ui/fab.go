@@ -82,7 +82,7 @@ func (f *FAB) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
 		if util.InRect(v.X, v.Y, f.Rect) {
-			println("FAB notify", f.key)
+			// println("FAB notify", f.key)
 			f.input.Notify(f.key)
 		}
 	}

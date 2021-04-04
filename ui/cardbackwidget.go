@@ -69,7 +69,7 @@ func (cb *CardBackWidget) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("Label image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, cb.OffsetRect) {
-			println("card back notify", cb.name)
+			// println("card back notify", cb.name)
 			cb.input.Notify(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
 		}
 	}

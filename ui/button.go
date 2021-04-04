@@ -59,7 +59,7 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("IconButton image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			log.Println("icon button notify", b.key)
+			// log.Println("icon button notify", b.key)
 			b.input.Notify(b.key)
 		}
 	}

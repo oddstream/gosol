@@ -190,8 +190,8 @@ func (c *Card) StartSpinning() {
 	// 	}
 	// 	return 1
 	// }
-	c.directionX = rand.Intn(3) - 1
-	c.directionY = rand.Intn(3) - 1
+	c.directionX = rand.Intn(9) - 4
+	c.directionY = rand.Intn(9) - 4
 	c.spin = rand.Float64() - 0.5
 	c.SetMovable(false)
 }
@@ -282,6 +282,8 @@ func (c *Card) Update() error {
 		c.angle += c.spin
 		if c.angle > 360 {
 			c.angle -= 360
+		} else if c.angle < 0 {
+			c.angle += 360
 		}
 	}
 	return nil
@@ -321,19 +323,20 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		// do this before the baize position translate
 		op.GeoM.Translate(float64(-CardWidth/2), float64(-CardHeight/2))
 		op.GeoM.Rotate(c.angle * 3.1415926535 / 180.0)
+		// op.GeoM.Scale(0.5, 0.5)
 		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
 
 		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
 		w, h := screen.Size()
 		switch {
 		case c.baizeX+CardWidth > w:
-			c.directionX = -c.directionX
+			c.directionX = -rand.Intn(5)
 		case c.baizeX < 0:
-			c.directionX = -c.directionX
+			c.directionX = rand.Intn(5)
 		case c.baizeY+CardHeight > h:
-			c.directionY = -c.directionY
+			c.directionY = -rand.Intn(5)
 		case c.baizeY < 0:
-			c.directionY = -c.directionY
+			c.directionY = rand.Intn(5)
 		}
 	}
 

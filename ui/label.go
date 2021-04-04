@@ -59,7 +59,7 @@ func (l *Label) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("Label image.Point", v.X, v.Y)
 		if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
-			println("label notify", l.requestType, ":=", l.text)
+			// println("label notify", l.requestType, ":=", l.text)
 			l.input.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
 		}
 	}

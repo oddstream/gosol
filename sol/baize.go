@@ -731,6 +731,7 @@ func (b *Baize) StopSpinning() {
 		copy(tmp, p.Cards)
 		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
 		for _, c := range tmp {
+			c.FlipUp()
 			p.Push(c)
 		}
 	}

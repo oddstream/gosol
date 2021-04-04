@@ -76,7 +76,7 @@ func (n *NavItem) NotifyCallback(event interface{}) {
 	case image.Point:
 		// println("NavItem image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, n.OffsetRect) {
-			println("NavItem notify", n.key)
+			// println("NavItem notify", n.key)
 			n.input.Notify(n.key)
 		}
 	}
