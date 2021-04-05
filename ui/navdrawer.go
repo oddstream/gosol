@@ -24,6 +24,7 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		NewNavItem(n, input, "bookmark_add", "Bookmark", ebiten.KeyS),
 		NewNavItem(n, input, "bookmark", "Goto bookmark", ebiten.KeyL),
 		NewNavItem(n, input, "list", "Rules...", ebiten.KeyF1),
+		NewNavItem(n, input, "info", "Statistics...", ebiten.KeyF4),
 		NewNavItem(n, input, "settings", "Settings...", ebiten.KeyF3),
 		NewNavItem(n, input, "close", "Save and exit", ebiten.KeyX),
 	}

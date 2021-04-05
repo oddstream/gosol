@@ -25,6 +25,12 @@ const (
 	shakingCenter
 )
 
+/*
+	Cards have several states: idle, being dragged, transitioning, shaking, spinning, flipping
+	You'd think that cards should have a 'state' enum, but the states can overlap (eg a card
+	can transition and flip at the same time)
+*/
+
 // Card object
 type Card struct {
 	ID    CardID // contains flags (prone, marked) pack, suit, ordinal
@@ -44,10 +50,10 @@ type Card struct {
 
 	shake shakeState
 
-	directionX, directionY int
-	angle, spin            float64
+	directionX, directionY int     // direction vector when card is spinning
+	angle, spin            float64 // current angle and spin when card is spinning
 
-	faceImg *ebiten.Image // images used to draw this card
+	faceImg *ebiten.Image // image used to draw this card
 }
 
 // NewCard is a factory for Card objects
@@ -146,7 +152,7 @@ func (c *Card) Shake() {
 	if c.shake != notShaking {
 		return
 	}
-	if c.lerpStep < 1.0 || c.dragging {
+	if c.Transitioning() {
 		return
 	}
 	// hijack the lerping src, dst positions
@@ -198,8 +204,7 @@ func (c *Card) StartSpinning() {
 
 // StopSpinning tells the card to stop spinning and return to it's upright state
 func (c *Card) StopSpinning() {
-	c.directionX, c.directionY = 0, 0
-	c.angle, c.spin = 0, 0
+	c.directionX, c.directionY, c.angle, c.spin = 0, 0, 0, 0
 }
 
 // Spinning returns true if this card is spinning
@@ -243,7 +248,7 @@ func (c *Card) Update() error {
 			c.baizeX, c.baizeY = int(c.dstX), int(c.dstY)
 		}
 	}
-	if c.flipStep != 0.0 {
+	if c.Flipping() {
 		c.flipWidth += c.flipStep
 		if c.flipWidth <= 0 {
 			c.flipStep = flipStepAmount // now make card wider
@@ -312,7 +317,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if c.flipStep != 0 {
+	if c.Flipping() {
 		// img = ebiten.NewImageFromImage(img)
 		op.GeoM.Translate(float64(-CardWidth/2), 0)
 		op.GeoM.Scale(c.flipWidth, 1.0)
@@ -331,21 +336,25 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		switch {
 		case c.baizeX+CardWidth > w:
 			c.directionX = -rand.Intn(5)
+			c.spin = rand.Float64() - 0.5
 		case c.baizeX < 0:
 			c.directionX = rand.Intn(5)
+			c.spin = rand.Float64() - 0.5
 		case c.baizeY+CardHeight > h:
 			c.directionY = -rand.Intn(5)
+			c.spin = rand.Float64() - 0.5
 		case c.baizeY < 0:
 			c.directionY = rand.Intn(5)
+			c.spin = rand.Float64() - 0.5
 		}
 	}
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
 	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
-		op.GeoM.Translate(2, 2)
+		op.GeoM.Translate(4, 4)
 		screen.DrawImage(CardShadowImage, op)
-		op.GeoM.Translate(-2, -2)
+		op.GeoM.Translate(-4, -4)
 	}
 
 	if TheUserData.HighlightMovable && !c.Movable() {

@@ -30,7 +30,7 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 	if !ok {
 		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
 		s.StatsMap[v] = stats
-		println("statistics has encountered a new variant ", v)
+		println("statistics has encountered a new variant", v)
 	}
 	return stats
 }
@@ -127,15 +127,47 @@ func (s *Statistics) wonToast(v string, moves int) {
 				util.Pluralize("game", stats.Won),
 				util.Pluralize("game", stats.Lost),
 				((stats.Won*100)/(stats.Won+stats.Lost))))
-		if stats.CurrStreak > 0 {
-			toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
-		}
-		if stats.CurrStreak < 0 {
-			toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
-		}
 	}
 
 	for _, t := range toasts {
 		TheBaize.ui.Toast(t)
 	}
+}
+
+func (s *Statistics) ShowStatistics() {
+	var toasts = []string{}
+
+	stats, ok := s.StatsMap[TheBaize.Variant]
+	if !ok || stats.Won+stats.Lost == 0 {
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", TheBaize.Variant))
+	} else {
+		if stats.BestPercent == 0 {
+			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s", util.Pluralize("attempt", stats.Lost)))
+		} else if stats.BestPercent < 100 {
+			toasts = append(toasts, fmt.Sprintf("Your best score is %d%% in %s", stats.BestPercent, util.Pluralize("attempt", stats.Lost)))
+		} else {
+			toasts = append(toasts,
+				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+					util.Pluralize("game", stats.Won),
+					util.Pluralize("game", stats.Lost),
+					((stats.Won*100)/(stats.Won+stats.Lost))))
+			if stats.BestWinningMoves != stats.WorstWinningMoves {
+				toasts = append(toasts, fmt.Sprintf("Your best number of winning moves is %d, average %d, your worst is %d",
+					stats.BestWinningMoves,
+					(stats.BestWinningMoves+stats.WorstWinningMoves)/2,
+					stats.WorstWinningMoves))
+			}
+			if stats.CurrStreak > 0 {
+				toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
+			}
+			if stats.CurrStreak < 0 {
+				toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
+			}
+		}
+	}
+	toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.UndoStack)-1), TheBaize.percentComplete))
+	if !TheBaize.stock.Hidden() {
+		toasts = append(toasts, fmt.Sprintf("The stock contains %s", util.Pluralize("card", TheBaize.stock.CardCount())))
+	}
+	TheBaize.ui.ShowTextDrawer(toasts)
 }

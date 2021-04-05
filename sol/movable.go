@@ -6,7 +6,7 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// DraggableTail indicates if a tail from this card can be dragged or not with triggering any visible changes
+// DraggableTail indicates if a tail from this card can be dragged or not without triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
 	if p.Flags&DragFlagSingle == DragFlagSingle {

@@ -21,8 +21,10 @@ func (b *Baize) UndoPop() (SaveableBaize, bool) {
 // UndoPeekChecksum peeks the state at the top of the undo stack
 func (b *Baize) UndoPeekChecksum() (uint32, bool) {
 	if len(b.UndoStack) > 0 {
-		sav := b.UndoStack[len(b.UndoStack)-1]
-		return sav.Checksum, true
+		// sav := b.UndoStack[len(b.UndoStack)-1]
+		// return sav.Checksum, true
+		return b.UndoStack[len(b.UndoStack)-1].Checksum, true
+
 	}
 	return 0, false
 }
@@ -40,7 +42,7 @@ func (b *Baize) Undo() {
 
 	sav, ok = b.UndoPop() // removes previous state for examination
 	if !ok {
-		log.Panic("error popping second from undo stack")
+		log.Panic("error popping second state from undo stack")
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state

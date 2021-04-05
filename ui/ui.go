@@ -20,7 +20,7 @@ type UI struct {
 	settingsDrawer *SettingsDrawer
 	variantPicker  *Picker
 	cardBackPicker *CardBackPicker
-	rules          *Rules
+	textDrawer     *TextDrawer
 	fab            *FAB
 	containers     []Container
 	bars           []Container
@@ -40,11 +40,11 @@ func New(input *input.Input) *UI {
 	ui.settingsDrawer = NewSettingsDrawer(input)
 	ui.variantPicker = NewVariantPicker(input)
 	ui.cardBackPicker = NewCardBackPicker(input)
-	ui.rules = NewRulesPicker(input) // contents are added when shown
+	ui.textDrawer = NewTextDrawer(input) // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar}
-	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
-	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.rules}
+	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
+	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
 
 	return ui
 }

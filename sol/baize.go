@@ -73,13 +73,13 @@ func NewBaize() *Baize {
 		ebiten.KeyS:      TheBaize.SavePosition,
 		ebiten.KeyL:      TheBaize.LoadPosition,
 		ebiten.KeyC:      TheBaize.Collect,
-		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF:      TheBaize.ShowVariantPicker,
+		ebiten.KeyF1:     TheBaize.ShowRules,
 		ebiten.KeyF2:     TheBaize.ShowCardBackPicker,
 		ebiten.KeyF3:     TheBaize.ShowSettingsDrawer,
+		ebiten.KeyF4:     TheStatistics.ShowStatistics,
 		ebiten.KeyF5:     TheBaize.StartSpinning,
 		ebiten.KeyF6:     TheBaize.StopSpinning,
-		ebiten.KeyI:      TheBaize.ShowInfo,
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
@@ -221,14 +221,6 @@ func (b *Baize) LoadVariant(v string) bool {
 	}
 
 	return true
-}
-
-func (b *Baize) ShowInfo() {
-	TheStatistics.welcomeToast(b.Variant)
-	b.ui.Toast(fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(b.UndoStack)-1), b.percentComplete))
-	if !b.stock.Hidden() {
-		b.ui.Toast(fmt.Sprintf("The stock contains %s", util.Pluralize("card", b.stock.CardCount())))
-	}
 }
 
 func (b *Baize) dealCards() {
@@ -562,6 +554,15 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	if !strings.HasPrefix(src.Class, "Stock") {
 		if tc := src.Peek(); tc != nil {
 			tc.FlipUp()
+		}
+	}
+	// special case: waste may need refanning if we took a card from it
+	if src.Class == "Waste" {
+		tmp := make([]*Card, len(src.Cards), cap(src.Cards))
+		copy(tmp, src.Cards)
+		src.Cards = src.Cards[:0]
+		for _, wc := range tmp {
+			src.Push(wc)
 		}
 	}
 	src.ScrunchCards()

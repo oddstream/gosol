@@ -422,7 +422,7 @@ func (p *Pile) makeTail(c *Card) []*Card {
 		}
 	}
 	if len(tail) == 0 {
-		println("error - make empty tail")
+		log.Panic("Pile.makeTail made an empty tail")
 	}
 	return tail
 }
@@ -631,7 +631,7 @@ func (p *Pile) CancelDrag(c *Card) {
 	p.Tail = nil
 }
 
-// ApplyToTail applies a method func to this card and all the others after it in the stack
+// ApplyToTail applies a method func to this card and all the others after it in the tail
 func (p *Pile) ApplyToTail(fn func(*Card)) {
 	// https://golang.org/ref/spec#Method_expressions
 	// (*Card).CancelDrag yields a function with the signature func(*Card)
@@ -642,13 +642,15 @@ func (p *Pile) ApplyToTail(fn func(*Card)) {
 }
 
 // ApplyToCards applys a function to each card in the pile
+// caller must use a method expression, eg (*Card).StartSpinning, yielding a function value
+// with a regular first parameter taking the place of the receiver
 func (p *Pile) ApplyToCards(fn func(*Card)) {
 	for _, c := range p.Cards {
 		fn(c)
 	}
 }
 
-// ApplyToTail applies a method func to this card and all the others after it in the stack
+// ApplyToCards2 applies a method func to this card and all the others after it in the stack
 // func (p *Pile) ApplyToCards2(fn func(*Card, int, int), dx, dy int) {
 // 	for _, c := range p.Cards {
 // 	  fn(c, dx, dy)

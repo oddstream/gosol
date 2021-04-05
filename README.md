@@ -28,17 +28,19 @@ It currently knows how to play:
 * Will o' the Wisp
 * Yukon
 
-Some variants have been tried and discarded as being a bit silly (I don't see the point of games that you almost certainly can't win; I like ones that have a 33-66% chance of winnning):
+Some variants have been tried and discarded as being a bit silly:
 
 * Agnes Sorel
 * Giant
 * King Albert
 * Raglan
 
-Some will never make it here because they are just bad games:
+(I don't see the point of games that you almost certainly can't win; I like ones that have a 33-66% chance of winnning.)
+
+Some will never make it here because they are just poor games:
 
 * Accordian
-* Pyramid
+* Pyramid (or any card matching variant)
 
 ## User interface
 
@@ -57,7 +59,7 @@ It has an intentionally minimal material-style user interface, and some keyboard
 
 ## Live playable version
 
-There's a live WASM version [here](https://oddstream.games/gosol/gosol.html).
+There's a live WASM version [here](https://oddstream.games/gosol/gosol.html). (Currently an 8 MByte download, I must get that down.)
 
 ## Acknowledgements
 
