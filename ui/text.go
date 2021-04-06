@@ -23,7 +23,7 @@ func (w *Text) createImg() *ebiten.Image {
 	dc.SetFontFace(schriftbank.RobotoRegular14)
 	y := w.lineHeight
 	for _, str := range w.lines {
-		dc.DrawString(str, 24, float64(y))
+		dc.DrawString(str, 24, float64(y-8)) // move up a little to stop descenders being clipped on last line
 		y += w.lineHeight
 	}
 	// uncomment this line to visualize text box
@@ -39,7 +39,7 @@ func (w *Text) calcHeights() {
 	// MeasureString says this text, requested to be 48 high, is 14 high
 	w.lines = dc.WordWrap(w.text, float64(w.width-48)) // 24 padding left and right
 	w.lineHeight = 24
-	w.height = w.lineHeight*len(w.lines) + w.lineHeight
+	w.height = w.lineHeight * len(w.lines) // + w.lineHeight
 }
 
 // NewText creates a new Text

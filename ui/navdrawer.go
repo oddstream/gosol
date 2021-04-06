@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"runtime"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 )
@@ -29,9 +27,6 @@ func NewNavDrawer(input *input.Input) *NavDrawer {
 		NewNavItem(n, input, "close", "Save and exit", ebiten.KeyX),
 	}
 	n.LayoutWidgets()
-	if runtime.GOARCH == "wasm" {
-		n.widgets[7].Deactivate()
-	}
 	return n
 }
 

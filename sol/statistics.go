@@ -163,6 +163,7 @@ func (s *Statistics) ShowStatistics() {
 			if stats.CurrStreak < 0 {
 				toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 			}
+			toasts = append(toasts, fmt.Sprintf("Your best streak is %d, your worst is %d", stats.BestStreak, stats.WorstStreak))
 		}
 	}
 	toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.UndoStack)-1), TheBaize.percentComplete))

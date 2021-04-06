@@ -101,7 +101,7 @@ func createScalableBackImage(width, height int, backColor color.Color) *ebiten.I
 
 func createScalableShadowImage(width, height int) *ebiten.Image {
 	dc := gg.NewContext(width, height)
-	dc.SetRGBA(0.1, 0.1, 0.1, 0.9)
+	dc.SetRGBA(0, 0, 0, 0.5)
 	dc.SetLineWidth(2)
 	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), cardCornerRadius())
 	dc.Fill()

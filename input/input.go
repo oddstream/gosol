@@ -56,7 +56,7 @@ func (i *Input) Update() {
 		xNow, yNow := ebiten.CursorPosition()
 		// distance := util.DistanceInt(i.xPressed, i.yPressed, xNow, yNow)
 		// can't use distance < n because card will be animating
-		if elapsed < 150 || (i.xPressed == xNow && i.yPressed == yNow) {
+		if elapsed < 200 || (i.xPressed == xNow && i.yPressed == yNow) {
 			i.Notify(image.Point{X: xNow, Y: yNow})
 		}
 	}

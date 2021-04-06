@@ -72,15 +72,14 @@ func (db *DrawerBase) FindWidgetAt(x, y int) Widget {
 // LayoutWidgets that belong to this container
 // by setting the x,y of each relative to their parent
 func (db *DrawerBase) LayoutWidgets() {
+	const padding = 8
 	var x, y int
-	y = 24 // vertical padding = half the height of a standard widget
-
+	y = padding
 	for _, w := range db.widgets {
 		w.SetPosition(x, y+db.yOffset)
 		_, widgetHeight := w.Size()
-		y += widgetHeight
+		y += widgetHeight + padding
 	}
-	// println("yOffset is", p.yOffset)
 }
 
 // Show starts to animate the drawer on screen from the left

@@ -757,7 +757,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		}
 		var maxWidth, maxHeight int
 		switch p.Fan {
-		case "", "None", "Waste":
+		case "", "None", "Waste", "WasteDown":
 			return
 		case "Down":
 			maxHeight = p.scrunchSize * CardHeight
@@ -788,7 +788,6 @@ func (p *Pile) DrawStaticCards(screen *ebiten.Image) {
 func (p *Pile) DrawTransitioningCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
 		if c.Transitioning() {
-			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.ID.String(), c.screenX, c.screenY))
 			c.Draw(screen)
 		}
 	}
@@ -798,7 +797,6 @@ func (p *Pile) DrawTransitioningCards(screen *ebiten.Image) {
 func (p *Pile) DrawFlippingCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
 		if c.Flipping() {
-			// ebitenutil.DebugPrint(screen, fmt.Sprintf("dragging card %s %d,%d", c.ID.String(), c.screenX, c.screenY))
 			c.Draw(screen)
 		}
 	}

@@ -9,6 +9,7 @@ import (
 type VariantInfo struct {
 	Description string
 	AKA         []string
+	Related     []string
 	Wikipedia   string
 	Piles       []PileInfo
 }
@@ -26,6 +27,7 @@ type PileInfo struct {
 var Variants = map[string]VariantInfo{
 	"American Toad": {
 		Description: "This game is similar to Canfield except that the tableau builds down in suit, and a partial tableau stack cannot be moved (only the top card or entire stack can be moved).",
+		Related:     []string{"The Toad"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
 		Piles: []PileInfo{
 			{"Foundation", 0, 0, "None", 21, 0, 4, map[string]string{"AcceptFirstPush": "Stock", "Deal": "u"}},
@@ -124,6 +126,7 @@ var Variants = map[string]VariantInfo{
 	"Canfield": {
 		Description: "Canfield has a 1 in 30 chance of winning. According to legend, it is originally a casino game, named after the casino owner who is said to have invented it.",
 		AKA:         []string{"Demon"},
+		Related:     []string{"Storehouse"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "CardsToMove": "3"}},
@@ -142,6 +145,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"Cruel": {
 		Description: "Published by Microsoft in 1990, Cruel is based on Perseverance, and allows an unlimited number of tableaux redeals.",
+		Related:     []string{"Ripple Fan"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Cruel_(solitaire)",
 		Piles: []PileInfo{
 			{"StockCruel", 0, 0, "None", 0, 15, 0, map[string]string{"Recycles": "9999"}},
@@ -166,6 +170,7 @@ var Variants = map[string]VariantInfo{
 	"Duchess": {
 		Description: "Related to Canfield, and quite easy to win. Move the top card from one of the reserves to a foundation to start the game.",
 		AKA:         []string{"Glenwood"},
+		Related:     []string{"Canfield", "Storehouse"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "1", "CardsToMove": "1"}},
@@ -220,6 +225,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"Forty And Eight": {
 		Description: "A variation of Forty Thieves that allows the stock to be recycled once.",
+		Related:     []string{"Forty Thieves", "Limited"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "1"}},
@@ -336,6 +342,7 @@ var Variants = map[string]VariantInfo{
 	"Klondike": {
 		Description: "The well-known solitaire variant.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
+		Related:     []string{"Thoughtful"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999"}},
@@ -375,6 +382,7 @@ var Variants = map[string]VariantInfo{
 	},
 	"Limited": {
 		Description: "A more balanced version of Forty Thieves, with a wider tableaux.",
+		Related:     []string{"Forty Thieves", "Forty and Eight"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(card_game)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "0"}},
@@ -425,6 +433,7 @@ var Variants = map[string]VariantInfo{
 	// // },
 	"Mistress Mop": {
 		Description: "A simple game with no stock or waste, that plays like Freecell, Spider and Simple Simon. A single-pack version of Mrs Mop.",
+		Related:     []string{"Mrs Mop"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Mrs._Mop",
 		Piles: []PileInfo{
 			{"Stock", -2, -2, "None", 0, 0, 0, map[string]string{"Packs": "1"}},
@@ -452,6 +461,7 @@ The game seems easy at first, but when played, winning is difficult and it is ra
 If you can make a couple of spaces you can sort many non-suit sequences into suit sequences.
 Making four spaces pretty much guarantees a win. Finding columns all of whose cards can be built on others is therefore a good tactic.`,
 		Wikipedia: "https://en.wikipedia.org/wiki/Mrs._Mop",
+		Related:   []string{"Mistress Mop"},
 		Piles: []PileInfo{
 			{"Stock", -2, -2, "None", 0, 15, 0, map[string]string{"Packs": "2"}},
 			{"Foundation", 5, -2, "None", 22, 0, 8, map[string]string{"Accept": "13"}},
@@ -479,6 +489,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Ripple Fan": {
 		Description: "An easier version of Cruel.",
+		Related:     []string{"Cruel"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Cruel_(solitaire)",
 		Piles: []PileInfo{
 			{"StockCruel", 0, 0, "None", 0, 15, 0, map[string]string{"Recycles": "9999"}},
@@ -503,6 +514,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Scorpion": {
 		Description: "Related to Spider, with a method of game play like Yukon.",
+		Related:     []string{"Wasp"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
 		Piles: []PileInfo{
 			{"StockScorpion", 0, 0, "None", 0, 15, 0, nil},
@@ -542,6 +554,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Spider": {
 		Description: "The game originates in 1949, and its name comes from a spider's eight legs, referencing the eight foundation piles that must be filled to win the game.",
+		Related:     []string{"Spiderette", "Will o' the Wisp"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2"}},
@@ -617,6 +630,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Spiderette": {
 		Description: "A compact version of Spider.",
+		Related:     []string{"Spider", "Will o' the Wisp"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "4", "Suits": "Spade"}},
@@ -636,6 +650,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	"Storehouse": {
 		Description: "An easier version of Canfield.",
 		AKA:         []string{"Thirteen Up"},
+		Related:     []string{"Canfield"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "1", "CardsToMove": "1"}},
@@ -654,6 +669,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	"Thoughtful": {
 		Description: "Klondike, but with all the cards face up.",
 		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
+		Related:     []string{"Klondike"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999"}},
@@ -673,6 +689,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"The Toad": {
 		Description: "As described in the 1908 by Hapgood, it is similar to Canfield except that the tableau builds down in suit, and a partial tableau stack cannot be moved (only the top card or entire stack can be moved). With two passes through the stock, it's hard to imagine how you could lose a game.",
+		Related:     []string{"American Toad"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "1"}},
@@ -698,6 +715,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Thumb and Pouch": {
 		Description: "An easy variant of Klondike, where a card in the tableau can be built upon another that is any suit other than its own (e.g. spades cannot be placed over spades) and spaces can be filled by any card or sequence.",
+		Related:     []string{"Klondike"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)#Variations",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "0"}},
@@ -717,6 +735,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Wasp": {
 		Description: "An easier version of Scorpion, related to Spider, with a method of game play like Yukon.",
+		Related:     []string{"Scorpion"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
 		Piles: []PileInfo{
 			{"StockScorpion", 0, 0, "None", 0, 15, 0, nil},
@@ -735,6 +754,7 @@ Making four spaces pretty much guarantees a win. Finding columns all of whose ca
 	},
 	"Will o' the Wisp": {
 		Description: "Invented by Geoffrey Mott-Smith, it is played the same way as Spiderette.",
+		Related:     []string{"Spider", "Spiderette"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 		Piles: []PileInfo{
 			{"StockSpider", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "4", "Suits": "Spade"}},

@@ -351,10 +351,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if c.flipStep == 0 && (c.lerpStep < 1.0 || c.dragging) {
-		op.GeoM.Translate(4, 4)
+	if c.Transitioning() && !c.Flipping() {
+		offset := float64(CardWidth) / 30
+		op.GeoM.Translate(offset, offset)
 		screen.DrawImage(CardShadowImage, op)
-		op.GeoM.Translate(-4, -4)
+		op.GeoM.Translate(-offset, -offset)
 	}
 
 	if TheUserData.HighlightMovable && !c.Movable() {
