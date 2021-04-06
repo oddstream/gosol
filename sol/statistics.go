@@ -167,7 +167,7 @@ func (s *Statistics) ShowStatistics() {
 		}
 	}
 	toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.UndoStack)-1), TheBaize.percentComplete))
-	if !TheBaize.stock.Hidden() {
+	if !TheBaize.stock.Hidden() && TheBaize.stock.CardCount() > 0 {
 		toasts = append(toasts, fmt.Sprintf("The stock contains %s", util.Pluralize("card", TheBaize.stock.CardCount())))
 	}
 	TheBaize.ui.ShowTextDrawer(toasts)

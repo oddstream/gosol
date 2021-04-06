@@ -2,14 +2,12 @@ package sol
 
 import (
 	"fmt"
-	"image/color"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -40,8 +38,8 @@ const (
 // Pile is a generic container for cards
 type Pile struct {
 	PileInfo
-	localAccept       int
-	localRecycles     int
+	localAccept       int           // ordinal this pile can accept when empty (0=accept anything, 99=won't accept anything)
+	localRecycles     int           // number of recycles left (stock only, could be in Baize)
 	Cards             []*Card       // array of cards, managed as a stack
 	Tail              []*Card       // array of cards currently being dragged
 	scrunchSize       int           // relative (in card positions) size of scrunch height/width
@@ -657,7 +655,7 @@ func (p *Pile) ApplyToCards(fn func(*Card)) {
 // 	}
 // }
 
-// DragTailBy repositions all the cards in the tail (from c inclusive)
+// DragTailBy repositions all the cards in the tail
 func (p *Pile) DragTailBy(dx, dy int) {
 	for _, tc := range p.Tail {
 		tc.DragBy(dx, dy)
@@ -751,27 +749,27 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(float64(x), float64(y))
 		screen.DrawImage(p.backgroundImage, op)
 	}
-	if DebugMode {
-		if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
-			return
-		}
-		var maxWidth, maxHeight int
-		switch p.Fan {
-		case "", "None", "Waste", "WasteDown":
-			return
-		case "Down":
-			maxHeight = p.scrunchSize * CardHeight
-		case "Right":
-			maxWidth = p.scrunchSize * CardWidth
-		}
-		x0, y0 := p.BaizePosition()
-		if maxWidth > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
-		}
-		if maxHeight > 0 {
-			ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
-		}
-	}
+	// if DebugMode {
+	// 	if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
+	// 		return
+	// 	}
+	// 	var maxWidth, maxHeight int
+	// 	switch p.Fan {
+	// 	case "", "None", "Waste", "WasteDown":
+	// 		return
+	// 	case "Down":
+	// 		maxHeight = p.scrunchSize * CardHeight
+	// 	case "Right":
+	// 		maxWidth = p.scrunchSize * CardWidth
+	// 	}
+	// 	x0, y0 := p.BaizePosition()
+	// 	if maxWidth > 0 {
+	// 		ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
+	// 	}
+	// 	if maxHeight > 0 {
+	// 		ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
+	// 	}
+	// }
 }
 
 // DrawStaticCards renders the Cards in the Pile into the screen

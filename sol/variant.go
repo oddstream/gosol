@@ -123,6 +123,40 @@ var Variants = map[string]VariantInfo{
 			{"Foundation", 8, 3, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
 		},
 	},
+	"Bisley": {
+		Description: "A game where you build cards up and down on the tableaux. It gets stuck near the end unless you plan ahead.",
+		Wikipedia:   "https://en.wikipedia.org/wiki/Bisley_(solitaire)",
+		Piles: []PileInfo{
+			{"Stock", -2, -2, "None", 0, 15, 0, nil},
+			// Foundation A one higher and the same suit
+			{"Foundation", 0, 1, "None", 21, 0, 0, map[string]string{"Deal": "1"}},
+			{"Foundation", 1, 1, "None", 21, 0, 0, map[string]string{"Deal": "1"}},
+			{"Foundation", 2, 1, "None", 21, 0, 0, map[string]string{"Deal": "1"}},
+			{"Foundation", 3, 1, "None", 21, 0, 0, map[string]string{"Deal": "1"}},
+			// Foundation B one lower and the same suit
+			{"Foundation", 0, 0, "None", 22, 0, 0, map[string]string{"Accept": "13"}},
+			{"Foundation", 1, 0, "None", 22, 0, 0, map[string]string{"Accept": "13"}},
+			{"Foundation", 2, 0, "None", 22, 0, 0, map[string]string{"Accept": "13"}},
+			{"Foundation", 3, 0, "None", 22, 0, 0, map[string]string{"Accept": "13"}},
+			// Tableaux one higher or one lower and the same suit
+			// rest of Morehead & Mott-Smiths tableaux instructions appear wrong, so ignored, use wikipedia version instead
+			// "Then four columns of three cards are placed overlapping each other separately under the aces."
+			{"Tableau", 0, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuu"}},
+			{"Tableau", 1, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuu"}},
+			{"Tableau", 2, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuu"}},
+			{"Tableau", 3, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuu"}},
+			// "After that, nine columns of four cards, also overlapping each other, are dealt to the right of the aces and first four columns."
+			{"Tableau", 4, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 5, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 6, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 7, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 8, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 9, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 10, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 11, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+			{"Tableau", 12, 2, "Down", 24, 24, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
+		},
+	},
 	"Canfield": {
 		Description: "Canfield has a 1 in 30 chance of winning. According to legend, it is originally a casino game, named after the casino owner who is said to have invented it.",
 		AKA:         []string{"Demon"},
