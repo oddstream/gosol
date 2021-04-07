@@ -46,6 +46,8 @@ func createCards(stock *Pile) int {
 		}
 	}
 
+	// TestShuffle(stock)
+
 	return stock.CardCount()
 }
 
@@ -87,13 +89,29 @@ func shuffleCards(stock *Pile, seed int64) {
 	// 	stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i]
 	// }
 
+	// TestShuffle shows that the 7 has a consistently lower distribution; shuffling twice corrects this
+	rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
 	rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
 
-	// for i, c := range sh.cards {
-	// 	println(i, c.ID.String())
-	// }
-
 }
+
+// func TestShuffle(stock *Pile) {
+// 	const cycles int = 500000
+// 	dist := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+// 	for i := 0; i < cycles; i++ {
+// 		sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
+// 		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
+// 		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
+// 		for j, c := range stock.Cards {
+// 			if c.Ordinal() == j {
+// 				dist[j]++
+// 			}
+// 		}
+// 	}
+// 	for i := 1; i < len(dist); i++ {
+// 		println(i, dist[i])
+// 	}
+// }
 
 func findCard(cards []*Card, card rune) (int, bool) {
 	// card should be one of 123456789ABCD
