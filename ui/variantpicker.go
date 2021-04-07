@@ -2,6 +2,7 @@ package ui
 
 import (
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Picker object (hamburger button, variant name, undo, help buttons)
@@ -26,7 +27,7 @@ func (u *UI) ShowVariantPicker(content []string) {
 	}
 	u.variantPicker.widgets = u.variantPicker.widgets[:0]
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, u.input, 0, c, "Variant"))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, u.input, 0, c, schriftbank.RobotoMedium24, "Variant"))
 	}
 	u.variantPicker.LayoutWidgets()
 	u.variantPicker.Show()

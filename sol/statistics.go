@@ -141,6 +141,8 @@ func (s *Statistics) ShowStatistics() {
 	if !ok || stats.Won+stats.Lost == 0 {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", TheBaize.Variant))
 	} else {
+		toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.UndoStack)-1), TheBaize.percentComplete))
+
 		if stats.BestPercent == 0 {
 			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s", util.Pluralize("attempt", stats.Lost)))
 		} else if stats.BestPercent < 100 {
@@ -166,7 +168,6 @@ func (s *Statistics) ShowStatistics() {
 			toasts = append(toasts, fmt.Sprintf("Your best streak is %d, your worst is %d", stats.BestStreak, stats.WorstStreak))
 		}
 	}
-	toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.UndoStack)-1), TheBaize.percentComplete))
 	if !TheBaize.stock.Hidden() && TheBaize.stock.CardCount() > 0 {
 		toasts = append(toasts, fmt.Sprintf("The stock contains %s", util.Pluralize("card", TheBaize.stock.CardCount())))
 	}

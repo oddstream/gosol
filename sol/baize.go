@@ -138,6 +138,8 @@ func (b *Baize) NewGame() {
 	b.dealCards()
 	b.UndoPush()
 	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 }
 
@@ -178,6 +180,8 @@ func (b *Baize) NewVariant(v string) {
 	b.dealCards()
 	b.UndoPush()
 	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 }
 
@@ -214,6 +218,8 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	b.UndoPush()
 	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 
 	if b.State == Complete {
@@ -658,6 +664,8 @@ func (b *Baize) AfterUserMove() {
 	//
 
 	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {

@@ -16,6 +16,7 @@ type Input struct {
 	observers          sync.Map // sync.Map is not type safe, it is similar to a map[interface{}]interface{}
 	timePressed        time.Time
 	xPressed, yPressed int
+	id                 ebiten.TouchID
 }
 
 // NewInput Input object constructor
@@ -48,6 +49,8 @@ func (i *Input) Notify(event interface{}) {
 // Update the state of the Input object
 func (i *Input) Update() {
 
+	// TODO refactor this mess
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		i.xPressed, i.yPressed = ebiten.CursorPosition()
 		i.timePressed = time.Now()
@@ -58,6 +61,20 @@ func (i *Input) Update() {
 		// can't use distance < n because card will be animating
 		if elapsed < 200 || (i.xPressed == xNow && i.yPressed == yNow) {
 			i.Notify(image.Point{X: xNow, Y: yNow})
+		}
+	} else {
+		ids := inpututil.JustPressedTouchIDs()
+		if len(ids) > 0 {
+			i.id = ids[0]
+			i.xPressed, i.yPressed = ebiten.CursorPosition()
+			i.timePressed = time.Now()
+		}
+		if inpututil.IsTouchJustReleased(i.id) {
+			elapsed := time.Since(i.timePressed) / 1000 / 1000 // convert nano- to milli- seconds
+			xNow, yNow := ebiten.CursorPosition()
+			if elapsed < 200 || (i.xPressed == xNow && i.yPressed == yNow) {
+				i.Notify(image.Point{X: xNow, Y: yNow})
+			}
 		}
 	}
 

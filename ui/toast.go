@@ -93,7 +93,7 @@ func (tm *ToastManager) Draw(screen *ebiten.Image) {
 	}
 	sx, sy := screen.Size()
 	var tx, ty int
-	ty = sy - 10
+	ty = sy - 10 - 24 // 10 padding, 24 height of statusbar
 	// for _, t := range tm.toasts {
 	for i := len(tm.toasts) - 1; i >= 0; i-- {
 		t := tm.toasts[i]

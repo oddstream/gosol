@@ -5,8 +5,8 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
 	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -14,25 +14,37 @@ import (
 type Label struct {
 	WidgetBase
 	text        string
+	fontFace    font.Face
 	requestType string
 }
 
 func (l *Label) createImg() *ebiten.Image {
+	// println("Label createImg", l.x, l.y, l.width, l.height, l.text)
 	dc := gg.NewContext(l.width, l.height)
 	dc.SetRGBA(1, 1, 1, 1)
-	// nota bene - text is drawn with y as a baseline
-	dc.SetFontFace(schriftbank.RobotoMedium24)
-	dc.DrawString(l.text, 24, float64(l.height)*0.7)
+	dc.SetFontFace(l.fontFace)
+	// nota bene - text is drawn with y as a baseline, descenders may be clipped
+	dc.DrawString(l.text, 0, float64(l.height)*0.7)
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
+func measureText(text string, fontFace font.Face) (int, int) {
+	dc := gg.NewContext(8, 8)
+	dc.SetFontFace(fontFace)
+	width, height := dc.MeasureString(text)
+	return int(width), int(height)
+}
+
 // NewLabel creates a new Label
-func NewLabel(parent Container, input *input.Input, align int, text string, requestType string) *Label {
-	width, _ := parent.Size()
+func NewLabel(parent Container, input *input.Input, align int, text string, fontFace font.Face, requestType string) *Label {
+
+	width, height := measureText(text, fontFace)
+
 	l := &Label{
 		// widget x, y will be set by LayoutWidgets
-		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, width: width, height: 48, align: align},
-		text:       text, requestType: requestType}
+		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, width: int(width), height: int(height), align: align},
+		text:       text, fontFace: fontFace, requestType: requestType}
+	l.Activate()
 	return l
 }
 
@@ -63,4 +75,10 @@ func (l *Label) NotifyCallback(event interface{}) {
 			l.input.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
 		}
 	}
+}
+
+func (l *Label) UpdateText(text string) {
+	l.text = text
+	l.width, l.height = measureText(l.text, l.fontFace)
+	l.img = l.createImg()
 }

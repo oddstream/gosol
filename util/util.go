@@ -26,15 +26,14 @@ func Lerp(v0 float64, v1 float64, t float64) float64 {
 
 // Smoothstep see http://sol.gfxile.net/interpolation/
 func Smoothstep(A float64, B float64, v float64) float64 {
-	v = (v) * (v) * (3 - 2*(v)) // smoothstep
-	// v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10)	// smootherstep
+	v = (v) * (v) * (3 - 2*(v))
 	X := (B * v) + (A * (1.0 - v))
 	return X
 }
 
 // Smootherstep see http://sol.gfxile.net/interpolation/
 func Smootherstep(A float64, B float64, v float64) float64 {
-	v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10) // smootherstep
+	v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10)
 	X := (B * v) + (A * (1.0 - v))
 	return X
 }
@@ -144,7 +143,7 @@ func Pluralize(word string, n int) string {
 
 // Contains tells whether a contains x.
 // func SearchStrings(a []string, x string) int
-// assumes the input slice is sorted
+// assumes the input slice is sorted; func Contains does not
 func Contains(a []string, x string) bool {
 	for _, n := range a {
 		if x == n {

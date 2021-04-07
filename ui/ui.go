@@ -16,6 +16,7 @@ var (
 type UI struct {
 	input          *input.Input // place to receive clicks, taps and key presses from
 	toolbar        *Toolbar
+	statusbar      *Statusbar
 	navDrawer      *NavDrawer
 	settingsDrawer *SettingsDrawer
 	variantPicker  *Picker
@@ -36,15 +37,16 @@ func New(input *input.Input) *UI {
 
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar(input)
+	ui.statusbar = NewStatusbar(input)
 	ui.navDrawer = NewNavDrawer(input)
 	ui.settingsDrawer = NewSettingsDrawer(input)
 	ui.variantPicker = NewVariantPicker(input)
 	ui.cardBackPicker = NewCardBackPicker(input)
 	ui.textDrawer = NewTextDrawer(input) // contents are added when shown
 
-	ui.bars = []Container{ui.toolbar}
+	ui.bars = []Container{ui.toolbar, ui.statusbar}
 	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
-	ui.containers = []Container{ui.toolbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
+	ui.containers = []Container{ui.toolbar, ui.statusbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
 
 	return ui
 }
@@ -92,6 +94,9 @@ func (u *UI) HideActiveDrawer() {
 
 // Layout implements Ebiten's Layout
 func (u *UI) Layout(outsideWidth, outsideHeight int) (int, int) {
+	for _, con := range u.containers {
+		con.Layout(outsideWidth, outsideHeight)
+	}
 	return outsideWidth, outsideHeight
 }
 

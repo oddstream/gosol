@@ -18,6 +18,7 @@ type IconButton struct {
 }
 
 func (b *IconButton) createImg() *ebiten.Image {
+	// println("button createImg", b.iconName)
 	dc := gg.NewContext(b.width, b.height)
 	img, ok := IconMap[b.iconName]
 	if !ok || img == nil {

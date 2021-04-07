@@ -23,6 +23,11 @@ func NewWidgetBase(parent Container, input *input.Input, width, height, x, y, al
 	return wb
 }
 
+// Parent of this widget
+func (wb *WidgetBase) Parent() Container {
+	return wb.parent
+}
+
 // Size of the widget
 func (wb *WidgetBase) Size() (int, int) {
 	return wb.width, wb.height
@@ -69,13 +74,20 @@ func (wb *WidgetBase) Update() {
 
 // Draw the widget
 func (wb *WidgetBase) Draw(screen *ebiten.Image) {
-	// don't draw a widget unless it is fully contained within it's parent
-	parentLeft, parentTop, _, parentBottom := wb.parent.Rect()
-	_, _, _, widgetBottom := wb.OffsetRect()
-	_, widgetHeight := wb.Size()
-	if widgetBottom > parentBottom || widgetBottom-widgetHeight < parentTop {
+
+	if wb.img == nil {
 		return
 	}
+
+	// don't draw a widget unless it is fully contained within it's parent
+	// parentLeft, parentTop, _, parentBottom := wb.parent.Rect()
+	// _, _, _, widgetBottom := wb.OffsetRect()
+	// _, widgetHeight := wb.Size()
+	// if widgetBottom > parentBottom || widgetBottom-widgetHeight < parentTop {
+	// 	return
+	// }
+	parentLeft, parentTop, _, _ := wb.parent.Rect()
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(parentLeft+wb.x), float64(parentTop+wb.y))
 	if wb.disabled {
@@ -87,7 +99,5 @@ func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 			op.GeoM.Translate(2, 2)
 		}
 	}
-	if wb.img != nil {
-		screen.DrawImage(wb.img, op)
-	}
+	screen.DrawImage(wb.img, op)
 }

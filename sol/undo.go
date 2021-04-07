@@ -46,6 +46,9 @@ func (b *Baize) Undo() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
+	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 }
 
 // SavePosition saves the current Baize state

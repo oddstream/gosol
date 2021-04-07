@@ -18,6 +18,7 @@ type BarBase struct {
 }
 
 func (bb *BarBase) createImg() *ebiten.Image {
+	// println("BarBase createImg", bb.x, bb.y, bb.width, bb.height)
 	dc := gg.NewContext(bb.width, bb.height)
 	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
 	dc.DrawRectangle(0, 0, float64(bb.width), float64(bb.height))
@@ -62,18 +63,20 @@ func (bb *BarBase) FindWidgetAt(x, y int) Widget {
 // LayoutWidgets that belong to this container
 // by setting the x,y of each relative to their parent
 func (bb *BarBase) LayoutWidgets() {
-	nextLeft := 0
-	nextRight := bb.width - 48
+	nextLeft := 24
+	nextRight := bb.width - 24
 	for _, w := range bb.widgets {
 		widgetWidth, widgetHeight := w.Size()
+		_, parentHeight := w.Parent().Size()
+		var y int = parentHeight/2 - widgetHeight/2
 		switch w.Align() {
 		case -1: // left align
-			w.SetPosition(nextLeft, bb.y)
+			w.SetPosition(nextLeft, y)
 			nextLeft += widgetWidth + 24 // add padding for big fingers
 		case 0: // center
-			w.SetPosition(bb.width/2-widgetWidth/2, bb.y+widgetHeight/2)
+			w.SetPosition(bb.width/2-widgetWidth/2, y)
 		case 1: // right align
-			w.SetPosition(nextRight, bb.y)
+			w.SetPosition(nextRight-widgetWidth, y)
 			nextRight -= widgetWidth + 24 // add padding for big fingers
 		}
 	}
@@ -118,6 +121,16 @@ func (bb *BarBase) Visible() bool {
 	return true
 }
 
+// Layout implements Ebiten's Layout
+func (bb *BarBase) Layout(outsideWidth, outsideHeight int) (int, int) {
+	if bb.img == nil || outsideWidth != bb.width {
+		bb.width = outsideWidth
+		bb.img = bb.createImg()
+		bb.LayoutWidgets()
+	}
+	return outsideWidth, outsideHeight
+}
+
 // Update the toolbar
 func (bb *BarBase) Update() {
 	for _, w := range bb.widgets {
@@ -127,11 +140,8 @@ func (bb *BarBase) Update() {
 
 // Draw the bar
 func (bb *BarBase) Draw(screen *ebiten.Image) {
-	w, _ := screen.Size()
-	if bb.img == nil || w != bb.width {
-		bb.width = w
-		bb.img = bb.createImg()
-		bb.LayoutWidgets()
+	if bb.img == nil {
+		return
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(bb.x), float64(bb.y))

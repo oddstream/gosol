@@ -30,11 +30,11 @@ func (n *NavItem) createImg() *ebiten.Image {
 		if !ok || img == nil {
 			log.Fatal(n.iconName, " not in icon map")
 		}
-		dc.DrawImageAnchored(img, 18, n.height/2, 0, 0.5)
+		dc.DrawImageAnchored(img, 0, n.height/2, 0, 0.5)
 	}
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
-	dc.DrawString(n.text, float64(18+48), float64(n.height)*0.7)
+	dc.DrawString(n.text, float64(48), float64(n.height)*0.7)
 
 	// uncomment this to show the area we expect the text to occupy
 	// dc.DrawLine(0, float64(0), float64(n.width), float64(0))

@@ -7,6 +7,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+// The following is taken from https://ebiten.org/examples/drag.html
+
 // StrokeSource represents a input device to provide strokes.
 type StrokeSource interface {
 	Position() (int, int)
@@ -72,24 +74,34 @@ type StrokeEvent struct {
 	X, Y   int
 }
 
+// NewStroke create a new Stroke object
+func NewStroke(source StrokeSource) *Stroke {
+	x, y := source.Position()
+	return &Stroke{
+		source: source,
+		initX:  x,
+		initY:  y,
+		currX:  x,
+		currY:  y,
+	}
+}
+
 // StartStroke returns a pointer to a new Stroke if one is just starting
 func StartStroke(observer Observer) *Stroke {
+	var s *Stroke
 	// Stroke always starts immediately otherwise weird lag (tap will cancel drag)
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		var source StrokeSource = &MouseStrokeSource{}
-		x, y := source.Position()
-		s := &Stroke{
-			source: source,
-			initX:  x,
-			initY:  y,
-			currX:  x,
-			currY:  y,
-		}
+		s = NewStroke(&MouseStrokeSource{})
+	}
+	ids := inpututil.JustPressedTouchIDs()
+	if len(ids) > 0 {
+		s = NewStroke(&TouchStrokeSource{ID: ids[0]})
+	}
+	if s != nil {
 		s.Add(observer)
 		s.Notify(StrokeEvent{Event: "start", Stroke: s, X: s.initX, Y: s.initY})
-		return s
 	}
-	return nil
+	return s
 }
 
 // Update is called once per frame and updates the Stroke object

@@ -377,7 +377,6 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			for ; i >= 0; i-- {
 				p.Cards[i].TransitionTo(x0, y0)
 			}
-			// TODO could try reversing the order of this, do top card last
 		}
 	case "WasteDown":
 		x0, y0 := p.BaizePosition()
@@ -405,7 +404,6 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 			for ; i >= 0; i-- {
 				p.Cards[i].TransitionTo(x0, y0)
 			}
-			// TODO could try reversing the order of this, do top card last
 		}
 	}
 	return x, y
@@ -666,10 +664,10 @@ func (p *Pile) DragTailBy(dx, dy int) {
 func (p *Pile) Complete() bool {
 	// a game is complete when all piles except foundations are empty
 
-	cw, ok := p.GetIntAttribute("CompleteWhen")
-	if ok {
-		return p.CardCount() == cw
-	}
+	// cw, ok := p.GetIntAttribute("CompleteWhen")
+	// if ok {
+	// 	return p.CardCount() == cw
+	// }
 
 	if !strings.HasPrefix(p.Class, "Foundation") {
 		return p.CardCount() == 0

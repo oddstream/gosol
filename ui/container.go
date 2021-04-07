@@ -16,6 +16,7 @@ type Container interface {
 	Visible() bool
 	Show()
 	Hide()
+	Layout(int, int) (int, int)
 	Update()
 	Draw(*ebiten.Image)
 }

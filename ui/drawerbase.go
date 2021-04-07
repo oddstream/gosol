@@ -72,8 +72,9 @@ func (db *DrawerBase) FindWidgetAt(x, y int) Widget {
 // LayoutWidgets that belong to this container
 // by setting the x,y of each relative to their parent
 func (db *DrawerBase) LayoutWidgets() {
-	const padding = 8
+	const padding = 24
 	var x, y int
+	x = padding
 	y = padding
 	for _, w := range db.widgets {
 		w.SetPosition(x, y+db.yOffset)
@@ -152,6 +153,11 @@ func (db *DrawerBase) DeactivateWidgets() {
 	for _, w := range db.widgets {
 		db.input.Remove(w)
 	}
+}
+
+// Layout implements Ebiten's Layout
+func (db *DrawerBase) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return outsideWidth, outsideHeight
 }
 
 // Update the Drawer
