@@ -27,7 +27,6 @@ func (f *FAB) createImg() *ebiten.Image {
 	dc.Stroke()
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawImageAnchored(IconMap[f.iconName], f.width/2, f.height/2, 0.5, 0.5)
-	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 

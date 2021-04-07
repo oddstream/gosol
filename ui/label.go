@@ -24,7 +24,14 @@ func (l *Label) createImg() *ebiten.Image {
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.SetFontFace(l.fontFace)
 	// nota bene - text is drawn with y as a baseline, descenders may be clipped
-	dc.DrawString(l.text, 0, float64(l.height)*0.7)
+	dc.DrawString(l.text, 0, float64(l.height)*0.8)
+
+	// uncomment this to show the area we expect the text to occupy
+	// dc.DrawLine(0, float64(0), float64(l.width), float64(0))
+	// dc.DrawLine(0, float64(l.height), float64(l.width), float64(l.height))
+	// dc.DrawLine(0, float64(0), float64(l.width), float64(l.height))
+	// dc.Stroke()
+
 	return ebiten.NewImageFromImage(dc.Image())
 }
 

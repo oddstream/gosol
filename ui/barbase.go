@@ -21,7 +21,6 @@ func (bb *BarBase) createImg() *ebiten.Image {
 	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, float64(bb.width), float64(bb.height))
 	dc.Fill()
-	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
@@ -129,7 +128,7 @@ func (bb *BarBase) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
-// Update the toolbar
+// Update the bar
 func (bb *BarBase) Update() {
 	for _, w := range bb.widgets {
 		w.Update()

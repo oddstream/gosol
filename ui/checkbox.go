@@ -33,11 +33,11 @@ func (w *Checkbox) createImg() *ebiten.Image {
 	if !ok || img == nil {
 		log.Fatal(iconName, " not in icon map")
 	}
-	dc.DrawImageAnchored(img, 0, w.height/2, 0, 0.5)
+	dc.DrawImage(img, 0, w.height/4)
 
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
-	dc.DrawString(w.text, float64(48), float64(w.height)*0.7)
+	dc.DrawString(w.text, float64(48), float64(w.height)*0.8)
 
 	// uncomment this to show the area we expect the text to occupy
 	// dc.DrawLine(0, float64(0), float64(w.width), float64(0))

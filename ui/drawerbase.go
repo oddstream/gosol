@@ -30,7 +30,6 @@ func (db *DrawerBase) createImg() *ebiten.Image {
 	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, float64(db.width), float64(db.height))
 	dc.Fill()
-	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 

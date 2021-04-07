@@ -25,7 +25,6 @@ func (b *IconButton) createImg() *ebiten.Image {
 		log.Println(b.iconName, " not in icon map")
 	}
 	dc.DrawImageAnchored(img, b.width/2, b.height/2, 0.5, 0.5)
-	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
