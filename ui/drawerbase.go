@@ -121,7 +121,7 @@ func (db *DrawerBase) DragBy(dx, dy int) {
 
 	numWidgets := len(db.widgets)
 	_, widgetHeight := db.widgets[0].Size()
-	widgetHeight += 14 // see Picker.LayoutWidgets, which uses 24 (widget height) + 14 as vertical spacing
+	widgetHeight += 24 // see Picker.LayoutWidgets, which uses (widget height) + 24 as vertical padding
 	_, pickerHeight := db.Size()
 	// println("picker height", pickerHeight, "widget height", widgetHeight)
 	visibleWidgets := pickerHeight / widgetHeight
@@ -157,6 +157,13 @@ func (db *DrawerBase) DeactivateWidgets() {
 
 // Layout implements Ebiten's Layout
 func (db *DrawerBase) Layout(outsideWidth, outsideHeight int) (int, int) {
+	const toolbarHeight int = 48   // draw drawer below toolbar
+	const statusbarHeight int = 24 // draw drawer above statusbar
+	if db.img == nil || db.height != outsideHeight-toolbarHeight-statusbarHeight {
+		db.height = outsideHeight - toolbarHeight - statusbarHeight
+		db.img = db.createImg()
+		db.LayoutWidgets()
+	}
 	return outsideWidth, outsideHeight
 }
 
@@ -186,13 +193,10 @@ func (db *DrawerBase) Update() {
 // Draw the Drawer
 func (db *DrawerBase) Draw(screen *ebiten.Image) {
 
-	const toolbarHeight int = 48 // draw drawer below toolbar
-
-	_, screenHeight := screen.Size()
-	if db.img == nil || screenHeight != toolbarHeight+db.height {
-		db.height = screenHeight - toolbarHeight
-		db.img = db.createImg()
+	if db.img == nil {
+		return
 	}
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(db.x), float64(db.y))
 	// op.ColorM.Scale(1, 1, 1, 0.95)

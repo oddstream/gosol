@@ -51,7 +51,8 @@ It has an intentionally minimal material-style user interface, and some keyboard
 * R - restart deal
 * S - save current position ('bookmark')
 * L - load a previously saved position (goto bookmark, handy for Freecell and Simple Simon players)
-
+* C - collect cards to the foundations
+ 
 ## TODO
 
 * Sounds
