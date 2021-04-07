@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/schriftbank"
@@ -50,7 +48,7 @@ func (u *UI) Toast(message string) {
 	h := float64(48) // ignore measured height, force height to be 48
 
 	dc = gg.NewContext(int(w), int(h))
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
+	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, w, h)
 	dc.Fill()
 	dc.Stroke()

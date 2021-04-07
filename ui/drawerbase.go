@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
@@ -29,8 +27,7 @@ type DrawerBase struct {
 
 func (db *DrawerBase) createImg() *ebiten.Image {
 	dc := gg.NewContext(db.width, db.height)
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
-	// dc.SetColor(color.RGBA{R: 0, G: 0, B: 0, A: 0xff})
+	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, float64(db.width), float64(db.height))
 	dc.Fill()
 	dc.Stroke()

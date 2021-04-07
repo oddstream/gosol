@@ -3,13 +3,15 @@ package ui
 
 import (
 	_ "embed" // go:embed only allowed in Go files that import "embed"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 )
 
 var (
-	GenerateIcons bool = false
+	GenerateIcons   bool        = false
+	BackgroundColor color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xff}
 )
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.

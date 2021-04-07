@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"image/color"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
@@ -20,7 +18,7 @@ type BarBase struct {
 func (bb *BarBase) createImg() *ebiten.Image {
 	// println("BarBase createImg", bb.x, bb.y, bb.width, bb.height)
 	dc := gg.NewContext(bb.width, bb.height)
-	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
+	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, float64(bb.width), float64(bb.height))
 	dc.Fill()
 	dc.Stroke()

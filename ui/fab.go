@@ -29,7 +29,6 @@ func (f *FAB) createImg() *ebiten.Image {
 	dc.DrawImageAnchored(IconMap[f.iconName], f.width/2, f.height/2, 0.5, 0.5)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
-
 }
 
 func NewFAB(input *input.Input, iconName string, key ebiten.Key) *FAB {
@@ -104,7 +103,7 @@ func (f *FAB) Update() {
 func (f *FAB) Draw(screen *ebiten.Image) {
 	w, h := screen.Size()
 	f.x = w - f.width - (f.width / 2)
-	f.y = h - f.height - (f.height / 2)
+	f.y = h - f.height - (f.height / 2) - 24 // statusbar is 24 high
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(f.x), float64(f.y))
 	screen.DrawImage(f.img, op)

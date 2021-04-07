@@ -14,7 +14,7 @@ type Toolbar struct {
 // func (tb *Toolbar) createImg() *ebiten.Image {
 // 	// override BarBase.createImg to draw title
 // 	dc := gg.NewContext(tb.width, tb.height) // should always be 48,48
-// 	dc.SetColor(color.RGBA{R: 0x32, G: 0x32, B: 0x32, A: 0xff})
+// 	dc.SetColor(BackgroundColor)
 // 	dc.DrawRectangle(0, 0, float64(tb.width), float64(tb.height))
 // 	dc.Fill()
 // 	if tb.title == "" {
