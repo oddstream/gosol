@@ -137,9 +137,6 @@ func (b *Baize) NewGame() {
 	b.RecallCardsToStock()
 	b.dealCards()
 	b.UndoPush()
-	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 }
 
@@ -179,9 +176,6 @@ func (b *Baize) NewVariant(v string) {
 
 	b.dealCards()
 	b.UndoPush()
-	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 }
 
@@ -217,9 +211,6 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.UpdateFromSaveable(sav)
 
 	b.UndoPush()
-	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
 	TheStatistics.welcomeToast(b.Variant)
 
 	if b.State == Complete {
@@ -661,11 +652,6 @@ func (b *Baize) AfterUserMove() {
 		log.Println("not pushing to undo because checksums match")
 	}
 
-	//
-
-	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
@@ -1083,7 +1069,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, Undo %d, State %d, Complete %d%%, Movable %d", ms.NumGC, len(b.UndoStack), b.State, b.percentComplete, b.movableCards))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("NumGC %v, State %d, Movable %d", ms.NumGC, b.State, b.movableCards))
 	}
 }
 

@@ -6,6 +6,9 @@ import "log"
 func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
 	b.HighlightMovable()
+	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetMoves(len(b.UndoStack) - 1)
+	b.ui.SetPercent(b.percentComplete)
 }
 
 // UndoPop pops a state off the undo stack
@@ -46,9 +49,6 @@ func (b *Baize) Undo() {
 	}
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
-	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
 }
 
 // SavePosition saves the current Baize state

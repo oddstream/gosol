@@ -80,13 +80,13 @@ func (wb *WidgetBase) Draw(screen *ebiten.Image) {
 	}
 
 	// don't draw a widget unless it is fully contained within it's parent
-	// parentLeft, parentTop, _, parentBottom := wb.parent.Rect()
-	// _, _, _, widgetBottom := wb.OffsetRect()
-	// _, widgetHeight := wb.Size()
-	// if widgetBottom > parentBottom || widgetBottom-widgetHeight < parentTop {
-	// 	return
-	// }
-	parentLeft, parentTop, _, _ := wb.parent.Rect()
+	parentLeft, parentTop, _, parentBottom := wb.parent.Rect()
+	_, _, _, widgetBottom := wb.OffsetRect()
+	_, widgetHeight := wb.Size()
+	if widgetBottom > parentBottom || widgetBottom-widgetHeight < parentTop {
+		return
+	}
+	// parentLeft, parentTop, _, _ := wb.parent.Rect()
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(parentLeft+wb.x), float64(parentTop+wb.y))

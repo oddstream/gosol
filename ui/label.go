@@ -78,7 +78,9 @@ func (l *Label) NotifyCallback(event interface{}) {
 }
 
 func (l *Label) UpdateText(text string) {
-	l.text = text
-	l.width, l.height = measureText(l.text, l.fontFace)
-	l.img = l.createImg()
+	if l.text != text {
+		l.text = text
+		l.width, l.height = measureText(l.text, l.fontFace)
+		l.img = l.createImg()
+	}
 }

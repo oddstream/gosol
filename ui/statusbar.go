@@ -20,7 +20,7 @@ func NewStatusbar(input *input.Input) *Statusbar {
 	sb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets()
 		NewLabel(sb, input, -1, "Moves", schriftbank.RobotoRegular14, ""),
-		NewLabel(sb, input, 1, "Percent", schriftbank.RobotoRegular14, ""),
+		NewLabel(sb, input, 1, "Complete", schriftbank.RobotoRegular14, ""),
 	}
 	return sb
 }
@@ -28,14 +28,14 @@ func NewStatusbar(input *input.Input) *Statusbar {
 // SetMoves of the statusbar
 func (u *UI) SetMoves(moves int) {
 	var l *Label = u.statusbar.widgets[0].(*Label)
-	l.UpdateText(fmt.Sprintf("Moves: %d", moves))
+	l.UpdateText(fmt.Sprintf("Moves %d", moves))
 	// u.statusbar.LayoutWidgets()
 }
 
 // SetPercent of the statusbar
 func (u *UI) SetPercent(percent int) {
 	var l *Label = u.statusbar.widgets[1].(*Label)
-	l.UpdateText(fmt.Sprintf("Complete: %d%%", percent))
+	l.UpdateText(fmt.Sprintf("Complete %d%%", percent))
 	// u.statusbar.LayoutWidgets()
 }
 
