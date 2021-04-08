@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -36,7 +35,6 @@ const (
 type Baize struct {
 	Piles           []*Pile
 	Variant         string
-	Seed            int64
 	UndoStack       []SaveableBaize
 	SavedPosition   int
 	totalCards      int
@@ -62,7 +60,7 @@ func NewBaize() *Baize {
 	// bug lurking here; scalables start at 71x96, which is the size needed for CardBackPicker
 	CreateScalables() // sets global TheCIP (sorry)
 
-	TheBaize = &Baize{Variant: TheUserData.Variant, Seed: time.Now().UnixNano()}
+	TheBaize = &Baize{Variant: TheUserData.Variant}
 	TheBaize.input = input.NewInput()
 	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
 	TheBaize.ui = ui.New(TheBaize.input)
@@ -119,13 +117,6 @@ func (b *Baize) RecallCardsToStock() {
 	// 		}
 	// 	}
 	// }
-
-	shuffleCards(b.stock, b.Seed)
-
-	b.UndoStack = nil
-	b.SavedPosition = 0
-	b.State = Virgin
-	b.stroke = nil
 }
 
 // NewGame resets Baize and restarts current variant with a new seed
@@ -133,8 +124,16 @@ func (b *Baize) NewGame() {
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
-	b.Seed = time.Now().UnixNano()
 	b.RecallCardsToStock()
+
+	b.ShuffleStock()
+
+	// reset the Baize
+	b.UndoStack = nil
+	b.SavedPosition = 0
+	b.State = Virgin
+	b.stroke = nil
+
 	b.dealCards()
 	b.UndoPush()
 	TheStatistics.welcomeToast(b.Variant)
@@ -147,7 +146,7 @@ func (b *Baize) NewVariant(v string) {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
 
-	// reset the baize
+	// reset Baize
 	b.Piles = b.Piles[:0]
 	b.UndoStack = nil
 	b.SavedPosition = 0
@@ -162,17 +161,12 @@ func (b *Baize) NewVariant(v string) {
 	TheUserData.Variant = v
 	b.BuildVariant(v)
 	b.ui.SetTitle(v)
-	b.Seed = time.Now().UnixNano()
 
 	b.OldWindowWidth = 0 // force a rescale
 	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
 
-	b.stock = b.findPilePrefix("Stock")
-	if b.stock == nil {
-		log.Fatal("Cannot find stock pile to create cards with")
-	}
-	b.totalCards = createCards(b.stock)
-	shuffleCards(b.stock, b.Seed)
+	b.CreateStock()
+	b.ShuffleStock()
 
 	b.dealCards()
 	b.UndoPush()
@@ -190,6 +184,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.BuildVariant(v)
 	b.ui.SetTitle(v)
 
+	// load the undo stack from json
 	if !b.Load(v) {
 		return false
 	}
@@ -202,11 +197,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.OldWindowWidth = 0 // force a rescale
 	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
 
-	b.stock = b.findPilePrefix("Stock")
-	if b.stock == nil {
-		log.Fatal("Cannot find stock pile to create cards with")
-	}
-	b.totalCards = createCards(b.stock)
+	b.CreateStock()
 
 	b.UpdateFromSaveable(sav)
 

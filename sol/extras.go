@@ -12,18 +12,23 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// create the set of cards, into a stock pile
-// return the number of cards created
-func createCards(stock *Pile) int {
+// CreateStock creates the stock cards
+func (b *Baize) CreateStock() {
 
-	defer util.Duration(time.Now(), "createCards")
-	packs, ok := stock.GetIntAttribute("Packs")
+	defer util.Duration(time.Now(), "CreateStock")
+
+	b.stock = b.findPilePrefix("Stock")
+	if b.stock == nil {
+		log.Fatal("Cannot find stock pile to create cards with")
+	}
+
+	packs, ok := b.stock.GetIntAttribute("Packs")
 	if !ok || packs == 0 {
 		packs = 1
 	}
 
 	var createSuitStrings []string
-	attribSuits := stock.GetStringAttribute("Suits")
+	attribSuits := b.stock.GetStringAttribute("Suits")
 	if attribSuits == "" {
 		createSuitStrings = []string{"Club", "Diamond", "Heart", "Spade"}
 	} else {
@@ -39,21 +44,23 @@ func createCards(stock *Pile) int {
 		for _, suit := range createSuitInts {
 			for ord := 1; ord < 14; ord++ {
 				c := NewCard(pack, suit, ord)
-				c.owner = stock
-				c.SetPosition(stock.BaizePosition())
-				stock.Cards = append(stock.Cards, c)
+				c.owner = b.stock
+				c.SetPosition(b.stock.BaizePosition())
+				b.stock.Cards = append(b.stock.Cards, c)
 			}
 		}
 	}
 
 	// TestShuffle(stock)
 
-	return stock.CardCount()
+	b.totalCards = b.stock.CardCount()
 }
 
-func shuffleCards(stock *Pile, seed int64) {
+func (b *Baize) ShuffleStock() {
 
-	defer util.Duration(time.Now(), "shuffleCards")
+	defer util.Duration(time.Now(), "ShuffleStock")
+
+	cards := b.stock.Cards
 
 	// sort cards in order before shuffle (why?)
 	/*
@@ -68,14 +75,14 @@ func shuffleCards(stock *Pile, seed int64) {
 			}
 		}
 	*/
-	sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
+	sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
 
 	if NoShuffle {
 		println("not shuffling cards")
 		return
 	}
 
-	rand.Seed(seed)
+	rand.Seed(time.Now().UnixNano())
 
 	// println("-ordered------------")
 	// for i, c := range sh.cards {
@@ -90,8 +97,8 @@ func shuffleCards(stock *Pile, seed int64) {
 	// }
 
 	// TestShuffle shows that the 7 has a consistently lower distribution; shuffling twice corrects this
-	rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
-	rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
+	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 
 }
 

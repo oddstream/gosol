@@ -59,12 +59,8 @@ func (b *Baize) SavePosition() {
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
-	if b.SavedPosition == 0 {
+	if b.SavedPosition == 0 || b.SavedPosition > len(b.UndoStack) {
 		b.ui.Toast("No bookmark")
-		return
-	}
-	if b.SavedPosition > len(b.UndoStack) {
-		log.Panic("error with saved position")
 		return
 	}
 	var sav SaveableBaize
