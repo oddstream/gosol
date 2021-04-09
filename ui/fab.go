@@ -11,14 +11,12 @@ import (
 
 type FAB struct {
 	WidgetBase
-	img           *ebiten.Image
-	x, y          int // position relative to parent
-	width, height int
-	iconName      string
-	key           ebiten.Key
+	iconName string
+	key      ebiten.Key
 }
 
 func (f *FAB) createImg() *ebiten.Image {
+	// WidgetBase doesn't have a default createImg
 	dc := gg.NewContext(f.width, f.height)
 	dc.SetColor(color.RGBA{R: 0x64, G: 0x95, B: 0xed, A: 0xff}) // CornflowerBlue
 	dc.DrawCircle(float64(f.width/2), float64(f.height/2), float64(f.height/2))
@@ -30,19 +28,17 @@ func (f *FAB) createImg() *ebiten.Image {
 }
 
 func NewFAB(parent Container, iconName string, key ebiten.Key) *FAB {
-	// conceptually, a FAB is a toolbar button widget
-	f := &FAB{WidgetBase: WidgetBase{parent: parent}, width: 72, height: 72, iconName: iconName, key: key}
-	// x, y will be set by Draw()
-	f.img = f.createImg()
+	f := &FAB{WidgetBase: WidgetBase{parent: parent, x: 0, y: 0, width: 72, height: 72}, iconName: iconName, key: key}
+	f.Activate()
 	return f
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (f *FAB) NotifyCallback(event interface{}) {
+	// println("FAB NotifyCallback")
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
-		if util.InRect(v.X, v.Y, f.Rect) {
-			// println("FAB notify", f.key)
+		if util.InRect(v.X, v.Y, f.OffsetRect) {
 			f.parent.Notify(f.key)
 		}
 	}
@@ -60,29 +56,48 @@ func (f *FAB) Deactivate() {
 	f.img = f.createImg()
 }
 
-func (f *FAB) Update() {
+//
+
+type FABBar struct {
+	BarBase
 }
 
-func (f *FAB) Draw(screen *ebiten.Image) {
-	w, h := screen.Size()
-	f.x = w - f.width - (f.width / 2)
-	f.y = h - f.height - (f.height / 2) - 24 // statusbar is 24 high
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(f.x), float64(f.y))
-	screen.DrawImage(f.img, op)
+func (fb *FABBar) createImg() *ebiten.Image {
+	// override BarBase createImg to create transparent image
+	dc := gg.NewContext(fb.width, fb.height)
+	dc.SetRGBA(0, 0, 0, 0)
+	dc.DrawRectangle(0, 0, float64(fb.width), float64(fb.height))
+	dc.Fill()
+	return ebiten.NewImageFromImage(dc.Image())
 }
+
+func NewFABBar() *FABBar {
+	fb := &FABBar{BarBase: BarBase{x: 0, y: 0, width: 72, height: 72}}
+	fb.img = fb.createImg()
+	// no widgets yet
+	return fb
+}
+
+// Layout implements Ebiten's Layout
+func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
+	// override BarBase.Layout to get position near bottom right of screen
+	if len(fb.widgets) == 0 {
+		fb.x = outsideWidth
+		fb.y = outsideHeight
+	} else {
+		fb.x = outsideWidth - fb.width - (fb.width / 2)
+		fb.y = outsideHeight - fb.height - (fb.height / 2) - 24 // statusbar is 24 high
+	}
+	return outsideWidth, outsideHeight
+}
+
+//
 
 func (u *UI) ShowFAB(iconName string, key ebiten.Key) {
-	if u.fab == nil {
-		u.fab = NewFAB(u.toolbar, iconName, key)
-		u.fab.Activate()
-	}
+	u.fabbar.widgets = nil
+	u.fabbar.widgets = append(u.fabbar.widgets, NewFAB(u.fabbar, iconName, key))
 }
 
 func (u *UI) HideFAB() {
-	if u.fab == nil {
-		return
-	}
-	u.fab.Deactivate()
-	u.fab = nil
+	u.fabbar.widgets = nil
 }

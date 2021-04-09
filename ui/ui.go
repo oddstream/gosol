@@ -18,12 +18,12 @@ var (
 type UI struct {
 	toolbar        *Toolbar
 	statusbar      *Statusbar
+	fabbar         *FABBar
 	navDrawer      *NavDrawer
 	settingsDrawer *SettingsDrawer
 	variantPicker  *Picker
 	cardBackPicker *CardBackPicker
 	textDrawer     *TextDrawer
-	fab            *FAB
 	containers     []Container
 	bars           []Container
 	drawers        []Container
@@ -39,15 +39,16 @@ func New() *UI {
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar()
 	ui.statusbar = NewStatusbar()
+	ui.fabbar = NewFABBar()
 	ui.navDrawer = NewNavDrawer()
 	ui.settingsDrawer = NewSettingsDrawer()
 	ui.variantPicker = NewVariantPicker()
 	ui.cardBackPicker = NewCardBackPicker()
 	ui.textDrawer = NewTextDrawer() // contents are added when shown
 
-	ui.bars = []Container{ui.toolbar, ui.statusbar}
+	ui.bars = []Container{ui.toolbar, ui.statusbar, ui.fabbar}
 	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
-	ui.containers = []Container{ui.toolbar, ui.statusbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
+	ui.containers = []Container{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
 
 	return ui
 }
@@ -116,9 +117,6 @@ func (u *UI) Update() {
 	for _, con := range u.containers {
 		con.Update()
 	}
-	if u.fab != nil {
-		u.fab.Update()
-	}
 	u.toastManager.Update()
 }
 
@@ -126,9 +124,6 @@ func (u *UI) Update() {
 func (u *UI) Draw(screen *ebiten.Image) {
 	for _, con := range u.containers {
 		con.Draw(screen)
-	}
-	if u.fab != nil {
-		u.fab.Draw(screen)
 	}
 	u.toastManager.Draw(screen)
 }

@@ -107,7 +107,7 @@ func (db *DrawerBase) Visible() bool {
 // StartDrag this container, if it is allowed
 func (db *DrawerBase) StartDrag(stroke *input.Stroke) bool {
 	// println("start drag with offset base", db.yOffsetBase)
-	println("DrawerBase start drag")
+	// println("DrawerBase start drag")
 
 	db.stroke = stroke
 	for _, w := range db.widgets {
@@ -139,7 +139,7 @@ func (db *DrawerBase) DragBy(dx, dy int) {
 
 // StopDrag this widget
 func (db *DrawerBase) StopDrag() {
-	println("DrawerBase stop drag")
+	// println("DrawerBase stop drag")
 
 	for _, w := range db.widgets {
 		if !w.Disabled() {

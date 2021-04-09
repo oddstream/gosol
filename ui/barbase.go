@@ -87,7 +87,7 @@ func (bb *BarBase) LayoutWidgets() {
 
 // StartDrag this container, if it is allowed
 func (bb *BarBase) StartDrag(stroke *input.Stroke) bool {
-	println("BarBase start drag, adding widgets")
+	// println("BarBase start drag, adding widgets")
 	bb.stroke = stroke
 	for _, w := range bb.widgets {
 		if !w.Disabled() {
@@ -104,7 +104,7 @@ func (bb *BarBase) DragBy(dx, dy int) {
 
 // StopDrag this widget
 func (bb *BarBase) StopDrag() {
-	println("BarBase stop drag, removing widgets")
+	// println("BarBase stop drag, removing widgets")
 	for _, w := range bb.widgets {
 		if !w.Disabled() {
 			bb.stroke.Remove(w)
@@ -114,9 +114,9 @@ func (bb *BarBase) StopDrag() {
 }
 
 func (bb *BarBase) Notify(event interface{}) {
-	println("BarBase Notify() 1")
+	// println("BarBase Notify() 1")
 	if bb.stroke != nil {
-		println("BarBase Notify() 2")
+		// println("BarBase Notify() 2")
 		bb.stroke.Notify(event)
 	}
 }

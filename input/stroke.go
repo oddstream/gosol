@@ -127,7 +127,7 @@ func (s *Stroke) Update() {
 
 		// send a tap/image.Point event *before* sending a stroke stop event, as the latter will cause owner to dispose of the stroke
 		if elapsed < 200 || (s.initX == s.currX && s.initY == s.currY) {
-			println("Stroke.Update() sending a tap/image.Point event")
+			// println("Stroke.Update() sending a tap/image.Point event")
 			s.Notify(image.Point{X: s.currX, Y: s.currY})
 		}
 		s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})

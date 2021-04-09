@@ -76,6 +76,8 @@ func NewBaize() *Baize {
 		ebiten.KeyF4:     TheStatistics.ShowStatistics,
 		ebiten.KeyF5:     TheBaize.StartSpinning,
 		ebiten.KeyF6:     TheBaize.StopSpinning,
+		ebiten.KeyF7:     func() { TheBaize.ui.ShowFAB("star", ebiten.KeyN) },
+		ebiten.KeyF8:     func() { TheBaize.ui.HideFAB() },
 		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
 		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
 		ebiten.KeyX:      TheBaize.Exit,
@@ -242,7 +244,7 @@ func (b *Baize) dealCards() {
 					log.Fatal("cannot find", d, "during deal from ", deal)
 				}
 			default:
-				println("unknown rune in Deal", string(d))
+				log.Panic("unknown rune in Deal", string(d))
 			}
 		}
 	}
@@ -260,7 +262,7 @@ func (b *Baize) dealCards() {
 
 	if DebugMode {
 		if b.stock.Hidden() {
-			println(b.stock.CardCount(), "cards remaining in hidden stock")
+			log.Println(b.stock.CardCount(), "cards remaining in hidden stock")
 		}
 	}
 }
@@ -389,7 +391,7 @@ func (b *Baize) CardTapped(c *Card) {
 	// println("card",c.ID.String(),"tapped")
 
 	if c.Transitioning() || c.Flipping() {
-		println("cannot tap an animating card")
+		log.Println("cannot tap an animating card ", c.String())
 		return
 	}
 
@@ -532,7 +534,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	if oldSrcLen == len(src.Cards) {
-		println("nothing happened in MoveCards")
+		log.Println("nothing happened in MoveCards")
 		return
 	}
 
@@ -728,7 +730,7 @@ func (b *Baize) StopSpinning() {
 func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
 	case image.Point:
-		println("Baize.NotifyCallback() image.Point (tap)", v.X, v.Y)
+		// println("Baize.NotifyCallback() image.Point (tap)", v.X, v.Y)
 		// a tap outside any open ui drawer (ie on the baize) closes the drawer
 		if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
 			con.Hide()
@@ -752,7 +754,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		}
 	case ebiten.Key:
-		println("Baize.NotifyCallback() ebiten.Key", v)
+		// println("Baize.NotifyCallback() ebiten.Key", v)
 		if fn, ok := b.commandTable[v]; ok {
 			b.ui.HideActiveDrawer()
 			b.ui.HideFAB()
@@ -760,7 +762,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		}
 	case ui.ChangeRequest:
 		// a widget has sent a change request
-		println("Baize.NotifyCallback() ChangeRequest", v.ChangeRequested)
+		// println("Baize.NotifyCallback() ChangeRequest", v.ChangeRequested)
 		b.ui.HideActiveDrawer()
 		b.ui.HideFAB()
 		switch v.ChangeRequested {
@@ -801,19 +803,19 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		case "Mute sounds":
 			b.ui.Toast("Not implemented yet")
 		default:
-			println("unknown change request", v.ChangeRequested, v.Data)
+			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}
 		TheUserData.Save() // save now especially if running on a browser
 	case input.StrokeEvent:
-		if v.Event != "move" {
-			println("Baize.NotifyCallback() stroke event", v.Event, v.X, v.Y)
-		}
+		// if v.Event != "move" {
+		// 	println("Baize.NotifyCallback() stroke event", v.Event, v.X, v.Y)
+		// }
 		switch v.Event {
 		case "start":
 			// try UI Container > Card > Pile > Baize
 			b.stroke = v.Stroke
 			if con := b.ui.FindContainerAt(v.X, v.Y); con != nil {
-				println("found container")
+				// println("found container")
 				if con.StartDrag(b.stroke) {
 					b.stroke.SetDraggedObject(con)
 				} else {
@@ -823,7 +825,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				if c := b.findCardAt(v.X, v.Y); c != nil {
 					b.stroke.SetDraggedObject(c)
 					if !c.owner.StartDrag(c) {
-						println("cancel stroke because drag not allowed")
+						log.Println("cancel stroke because drag not allowed")
 						v.Stroke.Cancel()
 					}
 				} else {
@@ -835,7 +837,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 							// println("starting baize drag")
 							b.stroke.SetDraggedObject(b)
 						} else {
-							println("cancel stroke because not over a card")
+							log.Println("cancel stroke because not over a card")
 							v.Stroke.Cancel()
 						}
 					}
@@ -843,7 +845,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		case "move":
 			if v.Stroke.DraggedObject() == nil {
-				println("move stroke with nil dragged object")
+				println("*** move stroke with nil dragged object ***")
 				break
 			}
 			switch v.Stroke.DraggedObject().(type) { // type switch
@@ -863,11 +865,11 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				}
 				b2.DragBy(v.Stroke.PositionDiff())
 			default:
-				println("unknown move dragging object")
+				println("*** unknown move dragging object ***")
 			}
 		case "stop":
 			if v.Stroke.DraggedObject() == nil {
-				println("stop stroke with nil dragged object")
+				println("*** stop stroke with nil dragged object ***")
 				break
 			}
 			switch v.Stroke.DraggedObject().(type) { // type switch
@@ -881,7 +883,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					c.owner.CancelDrag(c)
 				} else {
 					if len(c.owner.Tail) == 0 {
-						println("stop dragging card - empty tail")
+						println("*** stop dragging card - empty tail ***")
 						c.owner.CancelDrag(c)
 					} else {
 						if p.CanAcceptTail(c.owner.Tail, true) {
@@ -894,8 +896,8 @@ func (b *Baize) NotifyCallback(event interface{}) {
 					}
 				}
 			case *Pile:
-				p := v.Stroke.DraggedObject().(*Pile)
-				println("stop dragging pile", p.Class)
+				// p := v.Stroke.DraggedObject().(*Pile)
+				// println("stop dragging pile", p.Class)
 				// do nothing
 			case *Baize:
 				// println("stop dragging baize")
@@ -905,10 +907,10 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				}
 				b2.StopDrag()
 			default:
-				println("stop dragging unknown object")
+				println("*** stop dragging unknown object ***")
 			}
 		default:
-			println("unknown stroke event", v.Event)
+			println("*** unknown stroke event", v.Event)
 			// case "cancel":
 			// 	// c := v.Stroke.DraggingObject().(*Card)
 			// 	c := v.Stroke.DraggedCard()
@@ -918,7 +920,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			// 	b.stroke = nil
 		}
 	default:
-		println("Baize.NotifyCallback() unknown notification received", v)
+		println("*** Baize.NotifyCallback() unknown notification received", v)
 	}
 }
 

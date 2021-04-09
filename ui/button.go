@@ -62,7 +62,9 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 			b.parent.Notify(b.key)
 		}
 	case input.StrokeEvent:
-		println("IconButton stroke event", v.Event)
+		println("IconButton stroke event")
+	case ebiten.Key:
+		println("IconButton key event")
 	default:
 		println("IconButton unknown event type")
 	}
