@@ -1,11 +1,10 @@
 package ui
 
 import (
-	"image"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
 )
 
@@ -72,11 +71,13 @@ func (l *Label) NotifyCallback(event interface{}) {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		// println("Label image.Point", v.X, v.Y)
-		if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
-			// println("label notify", l.requestType, ":=", l.text)
-			l.parent.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
+	case input.StrokeEvent:
+		switch v.Event {
+		case "tap":
+			if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
+				// println("label notify", l.requestType, ":=", l.text)
+				l.parent.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
+			}
 		}
 	}
 }

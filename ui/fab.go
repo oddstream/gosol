@@ -1,11 +1,11 @@
 package ui
 
 import (
-	"image"
 	"image/color"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
 )
 
@@ -37,9 +37,12 @@ func NewFAB(parent Container, iconName string, key ebiten.Key) *FAB {
 func (f *FAB) NotifyCallback(event interface{}) {
 	// println("FAB NotifyCallback")
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		if util.InRect(v.X, v.Y, f.OffsetRect) {
-			f.parent.Notify(f.key)
+	case input.StrokeEvent:
+		switch v.Event {
+		case "tap":
+			if util.InRect(v.X, v.Y, f.OffsetRect) {
+				f.parent.Notify(f.key)
+			}
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"image"
 	"log"
 
 	"github.com/fogleman/gg"
@@ -55,14 +54,15 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		println("IconButton image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			println("IconButton sending notify to parent", b.key)
-			b.parent.Notify(b.key)
-		}
 	case input.StrokeEvent:
-		println("IconButton stroke event", v.Event)
+		switch v.Event {
+		case "tap":
+			println("IconButton tap event", v.X, v.Y)
+			if util.InRect(v.X, v.Y, b.OffsetRect) {
+				println("IconButton sending notify to parent", b.key)
+				b.parent.Notify(b.key)
+			}
+		}
 	case ebiten.Key:
 		println("IconButton key event", v)
 	default:

@@ -1,12 +1,12 @@
 package ui
 
 import (
-	"image"
 	"log"
 	"strconv"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -75,12 +75,14 @@ func (w *Checkbox) NotifyCallback(event interface{}) {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		// println("Checkbox image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, w.OffsetRect) {
-			w.checked = !w.checked
-			w.img = w.createImg()
-			w.parent.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
+	case input.StrokeEvent:
+		switch v.Event {
+		case "tap":
+			if util.InRect(v.X, v.Y, w.OffsetRect) {
+				w.checked = !w.checked
+				w.img = w.createImg()
+				w.parent.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
+			}
 		}
 	}
 }

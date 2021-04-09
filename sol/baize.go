@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"image"
 	"log"
 	"os"
 	"runtime"
@@ -729,30 +728,6 @@ func (b *Baize) StopSpinning() {
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
-	case image.Point:
-		// println("Baize.NotifyCallback() image.Point (tap)", v.X, v.Y)
-		// a tap outside any open ui drawer (ie on the baize) closes the drawer
-		if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
-			con.Hide()
-		} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
-			// not a tap on a UI container, so must be on a pile or a card
-			c := b.findCardAt(v.X, v.Y)
-			// we've received a tap, so cancel any stroke that has started
-			if b.stroke != nil {
-				// println("cancel stroke because tap")
-				if c != nil {
-					c.owner.CancelDrag(c)
-				}
-				b.stroke.Cancel()
-			}
-			if c != nil {
-				b.CardTapped(c)
-			} else {
-				if p := b.findPileAt(v.X, v.Y); p != nil {
-					b.PileTapped(p)
-				}
-			}
-		}
 	case ebiten.Key:
 		// println("Baize.NotifyCallback() ebiten.Key", v)
 		if fn, ok := b.commandTable[v]; ok {
@@ -934,6 +909,30 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				b2.StopDrag()
 			default:
 				println("*** cancel dragging unknown object ***")
+			}
+		case "tap":
+			// println("Baize.NotifyCallback() tap", v.X, v.Y)
+			// a tap outside any open ui drawer (ie on the baize) closes the drawer
+			if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
+				con.Hide()
+			} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
+				// not a tap on a UI container, so must be on a pile or a card
+				c := b.findCardAt(v.X, v.Y)
+				// we've received a tap, so cancel any stroke that has started
+				if b.stroke != nil {
+					// println("cancel stroke because tap")
+					if c != nil {
+						c.owner.CancelDrag(c)
+					}
+					b.stroke.Cancel()
+				}
+				if c != nil {
+					b.CardTapped(c)
+				} else {
+					if p := b.findPileAt(v.X, v.Y); p != nil {
+						b.PileTapped(p)
+					}
+				}
 			}
 		default:
 			println("*** unknown stroke event", v.Event)

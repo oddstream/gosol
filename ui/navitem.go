@@ -1,11 +1,11 @@
 package ui
 
 import (
-	"image"
 	"log"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -70,11 +70,12 @@ func (n *NavItem) NotifyCallback(event interface{}) {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		// println("NavItem image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, n.OffsetRect) {
-			// println("NavItem notify", n.key)
-			n.parent.Notify(n.key)
+	case input.StrokeEvent:
+		switch v.Event {
+		case "tap":
+			if util.InRect(v.X, v.Y, n.OffsetRect) {
+				n.parent.Notify(n.key)
+			}
 		}
 	}
 }

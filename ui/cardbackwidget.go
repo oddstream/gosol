@@ -1,10 +1,9 @@
 package ui
 
 import (
-	"image"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -65,11 +64,12 @@ func (cb *CardBackWidget) Deactivate() {
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (cb *CardBackWidget) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case image.Point:
-		// println("Label image.Point", v.X, v.Y)
-		if util.InRect(v.X, v.Y, cb.OffsetRect) {
-			// println("card back notify", cb.name)
-			cb.parent.Notify(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
+	case input.StrokeEvent:
+		switch v.Event {
+		case "tap":
+			if util.InRect(v.X, v.Y, cb.OffsetRect) {
+				cb.parent.Notify(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
+			}
 		}
 	}
 }
