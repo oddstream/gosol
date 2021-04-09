@@ -3,7 +3,6 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -43,12 +42,12 @@ func (w *Text) calcHeights() {
 }
 
 // NewText creates a new Text
-func NewText(parent Container, input *input.Input, text string) *Text {
+func NewText(parent Container, text string) *Text {
 	width, _ := parent.Size()
 	// widget x, y will be set by LayoutWidgets
 	// widget height will be set when wordwrapping in createImg
 	w := &Text{
-		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, width: width},
+		WidgetBase: WidgetBase{parent: parent, img: nil, width: width},
 		text:       text}
 	w.calcHeights()
 	return w
@@ -58,14 +57,14 @@ func NewText(parent Container, input *input.Input, text string) *Text {
 func (w *Text) Activate() {
 	w.disabled = false
 	w.img = w.createImg()
-	w.input.Add(w)
+	// w.input.Add(w)
 }
 
 // Deactivate tells the input we no longer need notofications
 func (w *Text) Deactivate() {
 	w.disabled = true
 	w.img = w.createImg()
-	w.input.Remove(w)
+	// w.input.Remove(w)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens

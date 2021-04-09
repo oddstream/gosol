@@ -9,7 +9,7 @@ import (
 
 type BarBase struct {
 	img           *ebiten.Image
-	input         *input.Input
+	stroke        *input.Stroke
 	widgets       []Widget
 	x, y          int
 	width, height int
@@ -85,23 +85,39 @@ func (bb *BarBase) LayoutWidgets() {
 // 	bb.widgets[n] = w
 // }
 
-// StartDrag this widget, if it is allowed
-func (bb *BarBase) StartDrag() bool {
-	return false // no widget dragging in bars
+// StartDrag this container, if it is allowed
+func (bb *BarBase) StartDrag(stroke *input.Stroke) bool {
+	println("BarBase start drag, adding widgets")
+	bb.stroke = stroke
+	for _, w := range bb.widgets {
+		if !w.Disabled() {
+			stroke.Add(w)
+		}
+	}
+	return true
 }
 
 // DragBy this widget
 func (bb *BarBase) DragBy(dx, dy int) {
+	// you can't drag a bar
 }
 
 // StopDrag this widget
 func (bb *BarBase) StopDrag() {
+	println("BarBase stop drag, removing widgets")
+	for _, w := range bb.widgets {
+		if !w.Disabled() {
+			bb.stroke.Remove(w)
+		}
+	}
+	bb.stroke = nil
 }
 
-// DeactivateWidgets stops the widgets from receiving input
-func (bb *BarBase) DeactivateWidgets() {
-	for _, w := range bb.widgets {
-		bb.input.Remove(w)
+func (bb *BarBase) Notify(event interface{}) {
+	println("BarBase Notify() 1")
+	if bb.stroke != nil {
+		println("BarBase Notify() 2")
+		bb.stroke.Notify(event)
 	}
 }
 

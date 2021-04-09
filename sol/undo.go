@@ -5,7 +5,7 @@ import "log"
 // UndoPush pushes the current state onto the undo stack
 func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
-	b.HighlightMovable()
+	b.MarkMovable()
 	b.percentComplete = b.calcPercentComplete()
 	b.ui.SetMoves(len(b.UndoStack) - 1)
 	b.ui.SetPercent(b.percentComplete)

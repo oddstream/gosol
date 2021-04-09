@@ -5,7 +5,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -40,11 +39,11 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 }
 
 // NewCardBackWidget creates a new cardBack widget for the CardBackPicker
-func NewCardBackWidget(parent Container, input *input.Input, name string, backImg *ebiten.Image) *CardBackWidget {
+func NewCardBackWidget(parent Container, name string, backImg *ebiten.Image) *CardBackWidget {
 	_, h := backImg.Size()
 	w, _ := parent.Size()
 	// widget x, y will be set by LayoutWidgets
-	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, input: input, width: w, height: h},
+	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, width: w, height: h},
 		name: name, backImg: backImg}
 	return cb
 }
@@ -53,14 +52,14 @@ func NewCardBackWidget(parent Container, input *input.Input, name string, backIm
 func (cb *CardBackWidget) Activate() {
 	cb.disabled = false
 	cb.img = cb.createImg()
-	cb.input.Add(cb)
+	// cb.input.Add(cb)
 }
 
 // Deactivate tells the input we no longer need notifications
 func (cb *CardBackWidget) Deactivate() {
 	cb.disabled = true
 	cb.img = cb.createImg()
-	cb.input.Remove(cb)
+	// cb.input.Remove(cb)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
@@ -70,7 +69,7 @@ func (cb *CardBackWidget) NotifyCallback(event interface{}) {
 		// println("Label image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, cb.OffsetRect) {
 			// println("card back notify", cb.name)
-			cb.input.Notify(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
+			cb.parent.Notify(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
 		}
 	}
 }

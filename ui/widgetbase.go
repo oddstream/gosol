@@ -2,14 +2,12 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
 )
 
 // WidgetBase is a button that displays a single rune
 type WidgetBase struct {
 	parent        Container
-	input         *input.Input
 	img           *ebiten.Image
 	align         int
 	disabled      bool
@@ -18,8 +16,8 @@ type WidgetBase struct {
 }
 
 // NewWidgetBase creates a new WidgetBase
-func NewWidgetBase(parent Container, input *input.Input, width, height, x, y, align int) *WidgetBase {
-	wb := &WidgetBase{parent: parent, input: input, width: width, height: height, x: x, y: y, align: align}
+func NewWidgetBase(parent Container, width, height, x, y, align int) *WidgetBase {
+	wb := &WidgetBase{parent: parent, width: width, height: height, x: x, y: y, align: align}
 	return wb
 }
 
@@ -66,6 +64,11 @@ func (wb *WidgetBase) SetPosition(x, y int) {
 // Align returns the x axis alignment (-1, 0, 1)
 func (wb *WidgetBase) Align() int {
 	return wb.align
+}
+
+// Disabled returns the disabled status
+func (wb *WidgetBase) Disabled() bool {
+	return wb.disabled
 }
 
 // Update the state of this widget

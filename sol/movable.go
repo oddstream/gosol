@@ -1,11 +1,5 @@
 package sol
 
-import (
-	"time"
-
-	"oddstream.games/gosol/util"
-)
-
 // DraggableTail indicates if a tail from this card can be dragged or not without triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
@@ -32,9 +26,9 @@ func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
 		if p == c.owner {
 			continue
 		}
-		if p.Class == "Cell" {
-			continue
-		}
+		// if p.Class == "Cell" {
+		// 	continue
+		// }
 		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c.Ordinal()) {
 		// 	continue
 		// }
@@ -51,9 +45,9 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 		if p == c0.owner {
 			continue
 		}
-		if p.Class == "Cell" && len(tail) == 1 {
-			continue
-		}
+		// if p.Class == "Cell" && len(tail) == 1 {
+		// 	continue
+		// }
 		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c0.Ordinal()) {
 		// 	continue
 		// }
@@ -64,36 +58,17 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 	return nil
 }
 
-// func PointlessTailMove(dst *Pile, tail []*Card) bool {
-// 	c1 := tail[0]
-// 	c2 := dst.Peek()
-// 	if c1 != nil && c2 != nil {
-// 		if c1.owner.Class == dst.Class {
-// 			if c1.Ordinal() == c2.Ordinal() {
-// 				if c1.Suit() == c2.Suit() {
-// 					return true
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return false
-// }
-
-func (b *Baize) HighlightMovable() {
+func (b *Baize) MarkMovable() {
 
 	b.movableCards = 0
-
-	if !TheUserData.HighlightMovable {
-		return
-	}
-
-	defer util.Duration(time.Now(), "HighlightMovable")
 
 	for _, p := range b.Piles {
 		for _, c := range p.Cards {
 			c.SetMovable(false)
 		}
 		switch p.Class {
+		case "Stock", "StockSpider", "StockScorpion":
+			b.movableCards += p.CardCount()
 		case "Waste", "Reserve":
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {

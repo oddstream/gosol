@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 )
 
 // SettingsDrawer slide out modal menu
@@ -11,9 +10,9 @@ type SettingsDrawer struct {
 }
 
 // NewSettingsDrawer creates the SettingsDrawer object; it starts life off screen to the left
-func NewSettingsDrawer(input *input.Input) *SettingsDrawer {
+func NewSettingsDrawer() *SettingsDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	d := &SettingsDrawer{DrawerBase: DrawerBase{input: input, width: 256, height: 0, x: -256, y: 48}}
+	d := &SettingsDrawer{DrawerBase: DrawerBase{width: 256, height: 0, x: -256, y: 48}}
 	return d
 }
 
@@ -29,10 +28,11 @@ func (u *UI) ShowSettingsDrawer(retro, highlight, powerMoves bool) {
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.settingsDrawer.widgets = []Widget{
 		// widget x, y will be set by LayoutWidgets()
-		NewCheckbox(u.settingsDrawer, u.input, "Highlight", highlight),
-		NewCheckbox(u.settingsDrawer, u.input, "Power moves", powerMoves),
-		NewCheckbox(u.settingsDrawer, u.input, "Retro cards", retro),
-		NewNavItem(u.settingsDrawer, u.input, "settings", "Card back ...", ebiten.KeyF2),
+		NewCheckbox(u.settingsDrawer, "Highlight", highlight),
+		NewCheckbox(u.settingsDrawer, "Power moves", powerMoves),
+		NewCheckbox(u.settingsDrawer, "Mute sounds", true),
+		NewCheckbox(u.settingsDrawer, "Retro cards", retro),
+		NewNavItem(u.settingsDrawer, "settings", "Card back ...", ebiten.KeyF2),
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()

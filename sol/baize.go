@@ -11,6 +11,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
@@ -42,7 +43,6 @@ type Baize struct {
 	movableCards    int
 	State           BaizeStateType
 	stroke          *input.Stroke
-	input           *input.Input
 	ui              *ui.UI
 	stock           *Pile // shortcut to often used Stock Pile
 	commandTable    map[ebiten.Key]func()
@@ -61,9 +61,7 @@ func NewBaize() *Baize {
 	CreateScalables() // sets global TheCIP (sorry)
 
 	TheBaize = &Baize{Variant: TheUserData.Variant}
-	TheBaize.input = input.NewInput()
-	TheBaize.input.Add(TheBaize) // TheBaize.NotifyCallback() will receive input event notifications
-	TheBaize.ui = ui.New(TheBaize.input)
+	TheBaize.ui = ui.New()
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
@@ -639,6 +637,9 @@ func (b *Baize) AfterUserMove() {
 	// println(oldChecksum, newChecksum)
 	if oldChecksum != newChecksum {
 		b.UndoPush()
+		if b.State == Started && b.movableCards == 0 {
+			b.ui.Toast("No movable cards")
+		}
 	} else {
 		log.Println("not pushing to undo because checksums match")
 	}
@@ -727,13 +728,12 @@ func (b *Baize) StopSpinning() {
 func (b *Baize) NotifyCallback(event interface{}) {
 	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
 	case image.Point:
-		// println("image.Point (tap)", v.X, v.Y)
+		println("Baize.NotifyCallback() image.Point (tap)", v.X, v.Y)
 		// a tap outside any open ui drawer (ie on the baize) closes the drawer
-		if con := b.ui.VisibleDrawer(); con != nil {
-			if !util.InRect(v.X, v.Y, con.Rect) {
-				con.Hide()
-			}
-		} else {
+		if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
+			con.Hide()
+		} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
+			// not a tap on a UI container, so must be on a pile or a card
 			c := b.findCardAt(v.X, v.Y)
 			// we've received a tap, so cancel any stroke that has started
 			if b.stroke != nil {
@@ -752,7 +752,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		}
 	case ebiten.Key:
-		// println("ebiten.Key", v)
+		println("Baize.NotifyCallback() ebiten.Key", v)
 		if fn, ok := b.commandTable[v]; ok {
 			b.ui.HideActiveDrawer()
 			b.ui.HideFAB()
@@ -760,6 +760,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 		}
 	case ui.ChangeRequest:
 		// a widget has sent a change request
+		println("Baize.NotifyCallback() ChangeRequest", v.ChangeRequested)
 		b.ui.HideActiveDrawer()
 		b.ui.HideFAB()
 		switch v.ChangeRequested {
@@ -785,27 +786,9 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 		case "Highlight":
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
-			// println("TheUserData.HighlightMovable :=", TheUserData.HighlightMovable)
-			if TheUserData.HighlightMovable {
-				b.HighlightMovable()
-			} else {
-				for _, p := range b.Piles {
-					for _, c := range p.Cards {
-						c.SetMovable(false)
-					}
-				}
-			}
 		case "Power moves":
 			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
-			if TheUserData.HighlightMovable {
-				b.HighlightMovable()
-			} else {
-				for _, p := range b.Piles {
-					for _, c := range p.Cards {
-						c.SetMovable(false)
-					}
-				}
-			}
+			b.MarkMovable() // re-run this
 		case "Retro cards":
 			retro, _ := strconv.ParseBool(v.Data)
 			if retro {
@@ -815,38 +798,46 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			}
 			b.OldWindowWidth = 0 // force a rescale
 			b.Scale()
+		case "Mute sounds":
+			b.ui.Toast("Not implemented yet")
 		default:
 			println("unknown change request", v.ChangeRequested, v.Data)
 		}
 		TheUserData.Save() // save now especially if running on a browser
 	case input.StrokeEvent:
-		// if v.Event != "move" {
-		// 	println("stroke event", v.Event, v.X, v.Y)
-		// }
+		if v.Event != "move" {
+			println("Baize.NotifyCallback() stroke event", v.Event, v.X, v.Y)
+		}
 		switch v.Event {
 		case "start":
+			// try UI Container > Card > Pile > Baize
 			b.stroke = v.Stroke
-			if con := b.ui.VisibleDrawer(); con != nil {
-				if util.InRect(v.X, v.Y, con.Rect) && con.StartDrag() {
+			if con := b.ui.FindContainerAt(v.X, v.Y); con != nil {
+				println("found container")
+				if con.StartDrag(b.stroke) {
 					b.stroke.SetDraggedObject(con)
 				} else {
 					v.Stroke.Cancel()
 				}
 			} else {
-				c := b.findCardAt(v.X, v.Y)
-				if c != nil {
+				if c := b.findCardAt(v.X, v.Y); c != nil {
 					b.stroke.SetDraggedObject(c)
 					if !c.owner.StartDrag(c) {
 						println("cancel stroke because drag not allowed")
 						v.Stroke.Cancel()
 					}
 				} else {
-					if b.StartDrag() {
-						// println("starting baize drag")
-						b.stroke.SetDraggedObject(b)
+					if p := b.findPileAt(v.X, v.Y); p != nil {
+						// we can't really drag piles, but nevertheless...
+						b.stroke.SetDraggedObject(p)
 					} else {
-						println("cancel stroke because not over a card")
-						v.Stroke.Cancel()
+						if b.StartDrag() {
+							// println("starting baize drag")
+							b.stroke.SetDraggedObject(b)
+						} else {
+							println("cancel stroke because not over a card")
+							v.Stroke.Cancel()
+						}
 					}
 				}
 			}
@@ -856,12 +847,14 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				break
 			}
 			switch v.Stroke.DraggedObject().(type) { // type switch
-			case *Card:
-				c := v.Stroke.DraggedObject().(*Card)
-				c.owner.DragTailBy(v.Stroke.PositionDiff())
 			case ui.Container:
 				con := v.Stroke.DraggedObject().(ui.Container)
 				con.DragBy(v.Stroke.PositionDiff())
+			case *Card:
+				c := v.Stroke.DraggedObject().(*Card)
+				c.owner.DragTailBy(v.Stroke.PositionDiff())
+			case *Pile:
+				// do nothing
 			case *Baize:
 				// println("baize drag")
 				b2 := v.Stroke.DraggedObject().(*Baize)
@@ -878,32 +871,41 @@ func (b *Baize) NotifyCallback(event interface{}) {
 				break
 			}
 			switch v.Stroke.DraggedObject().(type) { // type switch
+			case ui.Container:
+				con := v.Stroke.DraggedObject().(ui.Container)
+				con.StopDrag()
 			case *Card:
 				c := v.Stroke.DraggedObject().(*Card)
 				p := b.largestIntersection(c)
 				if p == nil || p == c.owner {
 					c.owner.CancelDrag(c)
 				} else {
-					if p.CanAcceptTail(c.owner.Tail, true) {
-						c.owner.StopDrag(c)
-						b.MoveCards(c, p)
-						b.AfterUserMove()
-					} else {
+					if len(c.owner.Tail) == 0 {
+						println("stop dragging card - empty tail")
 						c.owner.CancelDrag(c)
+					} else {
+						if p.CanAcceptTail(c.owner.Tail, true) {
+							c.owner.StopDrag(c)
+							b.MoveCards(c, p)
+							b.AfterUserMove()
+						} else {
+							c.owner.CancelDrag(c)
+						}
 					}
 				}
-			case ui.Container:
-				con := v.Stroke.DraggedObject().(ui.Container)
-				con.StopDrag()
+			case *Pile:
+				p := v.Stroke.DraggedObject().(*Pile)
+				println("stop dragging pile", p.Class)
+				// do nothing
 			case *Baize:
-				// println("stop baize drag")
+				// println("stop dragging baize")
 				b2 := v.Stroke.DraggedObject().(*Baize)
 				if b2 != b {
 					println("baize drag - something has gone terribly wrong")
 				}
 				b2.StopDrag()
 			default:
-				println("unknown stop dragging object")
+				println("stop dragging unknown object")
 			}
 		default:
 			println("unknown stroke event", v.Event)
@@ -916,7 +918,7 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			// 	b.stroke = nil
 		}
 	default:
-		println("unknown notification received", v)
+		println("Baize.NotifyCallback() unknown notification received", v)
 	}
 }
 
@@ -1017,8 +1019,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update the baize state (transitions, user input)
 func (b *Baize) Update() error {
 
-	b.input.Update() // detect mouse taps and keyboard input
-
 	if b.stroke == nil {
 		input.StartStroke(b) // this will set b.stroke when "start" received
 	} else {
@@ -1033,6 +1033,12 @@ func (b *Baize) Update() error {
 	}
 
 	b.ui.Update()
+
+	for k := ebiten.Key(0); k <= ebiten.KeyMax; k++ {
+		if inpututil.IsKeyJustReleased(k) {
+			b.NotifyCallback(k)
+		}
+	}
 
 	return nil
 }

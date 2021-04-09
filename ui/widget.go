@@ -11,6 +11,7 @@ type Widget interface {
 	OffsetRect() (int, int, int, int)
 	SetPosition(int, int)
 	Align() int
+	Disabled() bool
 	Activate()
 	Deactivate()
 	Update()

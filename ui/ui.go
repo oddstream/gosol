@@ -6,7 +6,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/util"
 )
 
 var (
@@ -16,7 +16,6 @@ var (
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
-	input          *input.Input // place to receive clicks, taps and key presses from
 	toolbar        *Toolbar
 	statusbar      *Statusbar
 	navDrawer      *NavDrawer
@@ -32,19 +31,19 @@ type UI struct {
 }
 
 // New creates a new UI object
-func New(input *input.Input) *UI {
-	ui := &UI{input: input}
+func New() *UI {
+	ui := &UI{}
 
 	LoadIconMap()
 
 	ui.toastManager = &ToastManager{}
-	ui.toolbar = NewToolbar(input)
-	ui.statusbar = NewStatusbar(input)
-	ui.navDrawer = NewNavDrawer(input)
-	ui.settingsDrawer = NewSettingsDrawer(input)
-	ui.variantPicker = NewVariantPicker(input)
-	ui.cardBackPicker = NewCardBackPicker(input)
-	ui.textDrawer = NewTextDrawer(input) // contents are added when shown
+	ui.toolbar = NewToolbar()
+	ui.statusbar = NewStatusbar()
+	ui.navDrawer = NewNavDrawer()
+	ui.settingsDrawer = NewSettingsDrawer()
+	ui.variantPicker = NewVariantPicker()
+	ui.cardBackPicker = NewCardBackPicker()
+	ui.textDrawer = NewTextDrawer() // contents are added when shown
 
 	ui.bars = []Container{ui.toolbar, ui.statusbar}
 	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.cardBackPicker, ui.textDrawer}
@@ -68,18 +67,28 @@ func New(input *input.Input) *UI {
 // 	return nil
 // }
 
-// func (u *UI) FindContainerAt(x, y int) Container {
-// 	for _, con := range u.containers {
-// 		if util.InRect(x, y, con.Rect) {
-// 			return con
-// 		}
-// 	}
-// 	return nil
-// }
+func (u *UI) FindContainerAt(x, y int) Container {
+	for _, con := range u.containers {
+		if util.InRect(x, y, con.Rect) {
+			return con
+		}
+	}
+	return nil
+}
 
 // VisibleDrawer returns the drawer that is currently open
 func (u *UI) VisibleDrawer() Container {
 	for _, con := range u.drawers {
+		if con.Visible() {
+			return con
+		}
+	}
+	return nil
+}
+
+// VisibleContainer returns the drawer that is currently open
+func (u *UI) VisibleContainer() Container {
+	for _, con := range u.containers {
 		if con.Visible() {
 			return con
 		}

@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -11,8 +10,8 @@ type Picker struct {
 }
 
 // NewVariantPicker creates a new container
-func NewVariantPicker(input *input.Input) *Picker {
-	p := &Picker{DrawerBase: DrawerBase{input: input, x: -300, y: 48, width: 300}} // height will be set when drawn
+func NewVariantPicker() *Picker {
+	p := &Picker{DrawerBase: DrawerBase{x: -300, y: 48, width: 300}} // height will be set when drawn
 	return p
 }
 
@@ -27,7 +26,7 @@ func (u *UI) ShowVariantPicker(content []string) {
 	}
 	u.variantPicker.widgets = u.variantPicker.widgets[:0]
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, u.input, 0, c, schriftbank.RobotoMedium24, "Variant"))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "Variant"))
 	}
 	u.variantPicker.LayoutWidgets()
 	u.variantPicker.Show()

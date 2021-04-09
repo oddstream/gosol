@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -13,14 +12,14 @@ type Statusbar struct {
 }
 
 // NewStatusbar creates a new statusbar
-func NewStatusbar(input *input.Input) *Statusbar {
+func NewStatusbar() *Statusbar {
 	// img will created first time it's drawn if width == 0
-	sb := &Statusbar{BarBase: BarBase{input: input, x: 0, y: 0, width: 0, height: 24}}
+	sb := &Statusbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 24}}
 
 	sb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets()
-		NewLabel(sb, input, -1, "Moves", schriftbank.RobotoRegular14, ""),
-		NewLabel(sb, input, 1, "Complete", schriftbank.RobotoRegular14, ""),
+		NewLabel(sb, -1, "Moves", schriftbank.RobotoRegular14, ""),
+		NewLabel(sb, 1, "Complete", schriftbank.RobotoRegular14, ""),
 	}
 	return sb
 }
@@ -28,14 +27,21 @@ func NewStatusbar(input *input.Input) *Statusbar {
 // SetMoves of the statusbar
 func (u *UI) SetMoves(moves int) {
 	var l *Label = u.statusbar.widgets[0].(*Label)
-	l.UpdateText(fmt.Sprintf("Moves %d", moves))
+	switch moves {
+	case 0:
+		l.UpdateText("NO MOVES MADE")
+	case 1:
+		l.UpdateText("1 MOVE")
+	default:
+		l.UpdateText(fmt.Sprintf("%d MOVES", moves))
+	}
 	// u.statusbar.LayoutWidgets()
 }
 
 // SetPercent of the statusbar
 func (u *UI) SetPercent(percent int) {
 	var l *Label = u.statusbar.widgets[1].(*Label)
-	l.UpdateText(fmt.Sprintf("Complete %d%%", percent))
+	l.UpdateText(fmt.Sprintf("%d%% COMPLETE", percent))
 	// u.statusbar.LayoutWidgets()
 }
 

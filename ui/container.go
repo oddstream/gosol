@@ -1,6 +1,9 @@
 package ui
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
+)
 
 // Container contains a list of widgets
 type Container interface {
@@ -9,10 +12,10 @@ type Container interface {
 	Rect() (int, int, int, int)
 	FindWidgetAt(int, int) Widget
 	LayoutWidgets()
-	DeactivateWidgets()
-	StartDrag() bool
+	StartDrag(*input.Stroke) bool
 	DragBy(int, int)
 	StopDrag()
+	Notify(interface{})
 	Visible() bool
 	Show()
 	Hide()

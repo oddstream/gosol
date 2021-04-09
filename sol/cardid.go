@@ -14,15 +14,18 @@ const (
 	SPADE   = 4
 )
 
-// CardID holds flags (marked, prone), pack, suit, ordinal
-type CardID uint32
+// CardID holds flags (movable, prone &c), pack, suit, ordinal
+// CardID is crammed like this to make JSON smaller
+type CardID uint16
 
-// TODO why aren't these type CardID?
-const packMask uint32 = 0b111100000000
-const suitMask uint32 = 0b000011110000
-const ordinalMask uint32 = 0b1111
-const proneFlag uint32 = 0b1000000000000
-const movableFlag uint32 = 0b10000000000000
+const (
+	packMask    CardID = 0b0000111100000000
+	suitMask    CardID = 0b0000000011110000
+	ordinalMask CardID = 0b0000000000001111
+	proneFlag   CardID = 0b0001000000000000
+	movableFlag CardID = 0b0010000000000000
+	helpfulFlag CardID = 0b0100000000000000
+)
 
 func (cid CardID) String() string {
 	return fmt.Sprintf("%d %s %d", cid.Pack(), cid.StringSuit(), cid.Ordinal())
@@ -39,7 +42,7 @@ func (cid CardID) String() string {
 
 // Pack returns the pack number buried in the card id
 func (cid CardID) Pack() int {
-	return int((uint32(cid) & packMask) >> 8)
+	return int((cid & packMask) >> 8)
 }
 
 // Pack returns the pack number this card belongs to
@@ -49,7 +52,7 @@ func (c *Card) Pack() int {
 
 // Suit returns the suit number buried in the card id
 func (cid CardID) Suit() int {
-	return int((uint32(cid) & suitMask) >> 4)
+	return int((cid & suitMask) >> 4)
 }
 
 // StringSuit returns the suit number buried in the card id, expressed as a string
@@ -69,7 +72,7 @@ func (c *Card) StringSuit() string {
 
 // Ordinal returns the ordinal number buried in the card id
 func (cid CardID) Ordinal() int {
-	return int(uint32(cid) & ordinalMask)
+	return int(cid & ordinalMask)
 }
 
 // Ordinal returns the face value of this card 1..13
@@ -79,7 +82,7 @@ func (c *Card) Ordinal() int {
 
 // Prone returns the prone flag buried in the card id
 func (cid CardID) Prone() bool {
-	return uint32(cid)&proneFlag == proneFlag
+	return cid&proneFlag == proneFlag
 }
 
 // Prone returns true if the card is face down, false if it is face up
@@ -89,7 +92,7 @@ func (c *Card) Prone() bool {
 
 // Movable returns the movable flag buried in the card id
 func (cid CardID) Movable() bool {
-	return uint32(cid)&movableFlag == movableFlag
+	return cid&movableFlag == movableFlag
 }
 
 // Movable returns true if the card is marked as movable, false if it is unmarked
@@ -100,18 +103,18 @@ func (c *Card) Movable() bool {
 // SetProne true or false
 func (c *Card) SetProne(prone bool) {
 	if prone {
-		c.ID = CardID(uint32(c.ID) | proneFlag)
+		c.ID = c.ID | proneFlag
 	} else {
-		c.ID = CardID(uint32(c.ID) & ^proneFlag)
+		c.ID = c.ID & (^proneFlag)
 	}
 }
 
 // SetMovable set the "this card is movable" flag
 func (c *Card) SetMovable(movable bool) {
 	if movable {
-		c.ID = CardID(uint32(c.ID) | movableFlag)
+		c.ID = c.ID | movableFlag
 	} else {
-		c.ID = CardID(uint32(c.ID) & ^movableFlag)
+		c.ID = c.ID & (^movableFlag)
 	}
 }
 
@@ -145,12 +148,12 @@ func NewCardID(pack, suit, ordinal int) CardID {
 
 // SameCard returns true if the two cards have the same ordinal and suit
 func SameCard(ID1, ID2 CardID) bool {
-	return uint32(ID1)&(suitMask|ordinalMask) == uint32(ID2)&(suitMask|ordinalMask)
+	return ID1&(suitMask|ordinalMask) == ID2&(suitMask|ordinalMask)
 }
 
 // SameCardAndPack returns true if the two card IDs have the same ordinal and suit, and are from the same pack
 func SameCardAndPack(ID1, ID2 CardID) bool {
-	return uint32(ID1)&(packMask|suitMask|ordinalMask) == uint32(ID2)&(packMask|suitMask|ordinalMask)
+	return ID1&(packMask|suitMask|ordinalMask) == ID2&(packMask|suitMask|ordinalMask)
 }
 
 // SuitStringToInt converts a suit string ("Heart") to an int (HEART)

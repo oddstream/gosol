@@ -1,7 +1,9 @@
 package input
 
 import (
+	"image"
 	"sync"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -53,9 +55,8 @@ type Stroke struct {
 	// current X,Y represents the current position
 	currX, currY int
 
-	// startTime time.Time
+	timeStart time.Time
 
-	// starting  bool
 	released  bool
 	cancelled bool
 
@@ -78,11 +79,12 @@ type StrokeEvent struct {
 func NewStroke(source StrokeSource) *Stroke {
 	x, y := source.Position()
 	return &Stroke{
-		source: source,
-		initX:  x,
-		initY:  y,
-		currX:  x,
-		currY:  y,
+		source:    source,
+		initX:     x,
+		initY:     y,
+		currX:     x,
+		currY:     y,
+		timeStart: time.Now(),
 	}
 }
 
@@ -119,6 +121,15 @@ func (s *Stroke) Update() {
 
 	if s.source.IsJustReleased() {
 		s.released = true
+		elapsed := time.Since(s.timeStart) / 1000 / 1000 // convert nano- to milli- seconds
+		// distance := util.DistanceInt(i.xPressed, i.yPressed, xNow, yNow)
+		// can't use distance < n because card will be animating
+
+		// send a tap/image.Point event *before* sending a stroke stop event, as the latter will cause owner to dispose of the stroke
+		if elapsed < 200 || (s.initX == s.currX && s.initY == s.currY) {
+			println("Stroke.Update() sending a tap/image.Point event")
+			s.Notify(image.Point{X: s.currX, Y: s.currY})
+		}
 		s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
 
@@ -161,11 +172,22 @@ func (s *Stroke) SetDraggedObject(object interface{}) {
 
 // Add this observer to the list
 func (s *Stroke) Add(observer Observer) {
+	// println("Stroke.Add()", observer)
 	s.observers.Store(observer, struct{}{})
+	// count := 0
+	// s.observers.Range(func(key, value interface{}) bool {
+	// 	if key == nil {
+	// 		return false
+	// 	}
+	// 	count++
+	// 	return true
+	// })
+	// println(count, "observers")
 }
 
 // Remove this observer from the list
 func (s *Stroke) Remove(observer Observer) {
+	// println("Stroke.Remove()", observer)
 	s.observers.Delete(observer)
 }
 

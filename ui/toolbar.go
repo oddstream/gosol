@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -12,16 +11,16 @@ type Toolbar struct {
 }
 
 // NewToolbar creates a new toolbar
-func NewToolbar(input *input.Input) *Toolbar {
+func NewToolbar() *Toolbar {
 	// img will created first time it's drawn if width == 0
-	tb := &Toolbar{BarBase: BarBase{input: input, x: 0, y: 0, width: 0, height: 48}}
+	tb := &Toolbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 48}}
 
 	tb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets() (y will always be 0 in a toolbar)
-		NewIconButton(tb, input, 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
-		NewLabel(tb, input, 0, "title", schriftbank.RobotoMedium24, ""),
-		NewIconButton(tb, input, 0, 0, 48, 48, 1, "undo", ebiten.KeyU),
-		NewIconButton(tb, input, 0, 0, 48, 48, 1, "done", ebiten.KeyC),
+		NewIconButton(tb, 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
+		NewLabel(tb, 0, "title", schriftbank.RobotoMedium24, ""),
+		NewIconButton(tb, 0, 0, 48, 48, 1, "undo", ebiten.KeyU),
+		NewIconButton(tb, 0, 0, 48, 48, 1, "done", ebiten.KeyC),
 	}
 	return tb
 }

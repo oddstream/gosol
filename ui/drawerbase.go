@@ -15,7 +15,7 @@ const (
 
 type DrawerBase struct {
 	img              *ebiten.Image
-	input            *input.Input
+	stroke           *input.Stroke
 	widgets          []Widget
 	x, y             int
 	width, height    int
@@ -104,9 +104,17 @@ func (db *DrawerBase) Visible() bool {
 	return db.x == 0
 }
 
-// StartDrag this widget, if it is allowed
-func (db *DrawerBase) StartDrag() bool {
+// StartDrag this container, if it is allowed
+func (db *DrawerBase) StartDrag(stroke *input.Stroke) bool {
 	// println("start drag with offset base", db.yOffsetBase)
+	println("DrawerBase start drag")
+
+	db.stroke = stroke
+	for _, w := range db.widgets {
+		if !w.Disabled() {
+			stroke.Add(w)
+		}
+	}
 	return true
 }
 
@@ -131,9 +139,23 @@ func (db *DrawerBase) DragBy(dx, dy int) {
 
 // StopDrag this widget
 func (db *DrawerBase) StopDrag() {
+	println("DrawerBase stop drag")
+
+	for _, w := range db.widgets {
+		if !w.Disabled() {
+			db.stroke.Remove(w)
+		}
+	}
+	db.stroke = nil
 	// remember the amount of drag incase the widgets are dragged again
 	db.xOffsetBase = db.xOffset
 	db.yOffsetBase = db.yOffset
+}
+
+func (db *DrawerBase) Notify(event interface{}) {
+	if db.stroke != nil {
+		db.stroke.Notify(event)
+	}
 }
 
 // ResetScroll state for this drawer
@@ -142,13 +164,6 @@ func (db *DrawerBase) ResetScroll() {
 	db.xOffsetBase = 0
 	db.yOffset = 0
 	db.yOffsetBase = 0
-}
-
-// DeactivateWidgets stops the widgets from receiving input
-func (db *DrawerBase) DeactivateWidgets() {
-	for _, w := range db.widgets {
-		db.input.Remove(w)
-	}
 }
 
 // Layout implements Ebiten's Layout

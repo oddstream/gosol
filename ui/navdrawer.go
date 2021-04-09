@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 )
 
 // NavDrawer slide out modal menu
@@ -11,20 +10,20 @@ type NavDrawer struct {
 }
 
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
-func NewNavDrawer(input *input.Input) *NavDrawer {
+func NewNavDrawer() *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	n := &NavDrawer{DrawerBase: DrawerBase{input: input, width: 256, height: 0, x: -256, y: 48}}
+	n := &NavDrawer{DrawerBase: DrawerBase{width: 256, height: 0, x: -256, y: 48}}
 	n.widgets = []Widget{
 		// widget x, y will be set by LayoutWidgets()
-		NewNavItem(n, input, "star", "New deal", ebiten.KeyN),
-		NewNavItem(n, input, "restore", "Restart deal", ebiten.KeyR),
-		NewNavItem(n, input, "search", "Find game...", ebiten.KeyF),
-		NewNavItem(n, input, "bookmark_add", "Bookmark", ebiten.KeyS),
-		NewNavItem(n, input, "bookmark", "Goto bookmark", ebiten.KeyL),
-		NewNavItem(n, input, "list", "Rules...", ebiten.KeyF1),
-		NewNavItem(n, input, "info", "Statistics...", ebiten.KeyF4),
-		NewNavItem(n, input, "settings", "Settings...", ebiten.KeyF3),
-		NewNavItem(n, input, "close", "Save and exit", ebiten.KeyX),
+		NewNavItem(n, "star", "New deal", ebiten.KeyN),
+		NewNavItem(n, "restore", "Restart deal", ebiten.KeyR),
+		NewNavItem(n, "search", "Find game...", ebiten.KeyF),
+		NewNavItem(n, "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(n, "bookmark", "Goto bookmark", ebiten.KeyL),
+		NewNavItem(n, "list", "Rules...", ebiten.KeyF1),
+		NewNavItem(n, "info", "Statistics...", ebiten.KeyF4),
+		NewNavItem(n, "settings", "Settings...", ebiten.KeyF3),
+		NewNavItem(n, "close", "Save and exit", ebiten.KeyX),
 	}
 	n.LayoutWidgets()
 	return n

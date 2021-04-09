@@ -7,7 +7,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -49,10 +48,10 @@ func (w *Checkbox) createImg() *ebiten.Image {
 }
 
 // NewCheckbox creates a new Checkbox
-func NewCheckbox(parent Container, input *input.Input, text string, checked bool) *Checkbox {
+func NewCheckbox(parent Container, text string, checked bool) *Checkbox {
 	width, _ := parent.Size()
 	w := &Checkbox{
-		WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: 0, y: 0, width: width, height: 48},
+		WidgetBase: WidgetBase{parent: parent, img: nil, x: 0, y: 0, width: width, height: 48},
 		text:       text, checked: checked}
 	w.Activate()
 	return w
@@ -62,14 +61,12 @@ func NewCheckbox(parent Container, input *input.Input, text string, checked bool
 func (w *Checkbox) Activate() {
 	w.disabled = false
 	w.img = w.createImg()
-	w.input.Add(w)
 }
 
 // Deactivate tells the input we no longer need notofications
 func (w *Checkbox) Deactivate() {
 	w.disabled = true
 	w.img = w.createImg()
-	w.input.Remove(w)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
@@ -83,8 +80,7 @@ func (w *Checkbox) NotifyCallback(event interface{}) {
 		if util.InRect(v.X, v.Y, w.OffsetRect) {
 			w.checked = !w.checked
 			w.img = w.createImg()
-			w.input.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
-
+			w.parent.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
 		}
 	}
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -46,9 +45,9 @@ func (n *NavItem) createImg() *ebiten.Image {
 }
 
 // NewNavItem creates a new NavItem
-func NewNavItem(parent Container, input *input.Input, iconName string, text string, key ebiten.Key) *NavItem {
+func NewNavItem(parent Container, iconName string, text string, key ebiten.Key) *NavItem {
 	w, _ := parent.Size()
-	n := &NavItem{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: -w, y: 0, width: w, height: 48, align: 0},
+	n := &NavItem{WidgetBase: WidgetBase{parent: parent, img: nil, x: -w, y: 0, width: w, height: 48, align: 0},
 		iconName: iconName, text: text, key: key}
 	return n
 }
@@ -57,14 +56,12 @@ func NewNavItem(parent Container, input *input.Input, iconName string, text stri
 func (n *NavItem) Activate() {
 	n.disabled = false
 	n.img = n.createImg() // incase disabled flag has changed
-	n.input.Add(n)
 }
 
 // Deactivate tells the input we no longer need notifications
 func (n *NavItem) Deactivate() {
 	n.disabled = true
 	n.img = n.createImg() // incase disabled flag has changed
-	n.input.Remove(n)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
@@ -77,7 +74,7 @@ func (n *NavItem) NotifyCallback(event interface{}) {
 		// println("NavItem image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, n.OffsetRect) {
 			// println("NavItem notify", n.key)
-			n.input.Notify(n.key)
+			n.parent.Notify(n.key)
 		}
 	}
 }

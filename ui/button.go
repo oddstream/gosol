@@ -29,38 +29,41 @@ func (b *IconButton) createImg() *ebiten.Image {
 }
 
 // NewIconButton creates a new IconButton
-func NewIconButton(parent Container, input *input.Input, x, y, width, height, align int, iconName string, key ebiten.Key) *IconButton {
-	b := &IconButton{WidgetBase: WidgetBase{parent: parent, input: input, img: nil, x: x, y: y, width: width, height: height, align: align},
+func NewIconButton(parent Container, x, y, width, height, align int, iconName string, key ebiten.Key) *IconButton {
+	b := &IconButton{WidgetBase: WidgetBase{parent: parent, img: nil, x: x, y: y, width: width, height: height, align: align},
 		iconName: iconName, key: key}
 	b.Activate()
 	return b
 }
 
-// Activate tells the input we need notifications
+// Activate this widget
 func (b *IconButton) Activate() {
 	b.disabled = false
 	b.img = b.createImg()
-	b.input.Add(b)
 }
 
-// Deactivate tells the input we no longer need notifications
+// Deactivate this widget
 func (b *IconButton) Deactivate() {
 	b.disabled = true
 	b.img = b.createImg()
-	b.input.Remove(b)
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (b *IconButton) NotifyCallback(event interface{}) {
+	println("IconButton NotifyCallback, disabled", b.disabled)
 	if b.disabled {
 		return
 	}
 	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
 	case image.Point:
-		// println("IconButton image.Point", v.X, v.Y)
+		println("IconButton image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			// log.Println("icon button notify", b.key)
-			b.input.Notify(b.key)
+			log.Println("icon button sending notify to parent", b.key)
+			b.parent.Notify(b.key)
 		}
+	case input.StrokeEvent:
+		println("IconButton stroke event", v.Event)
+	default:
+		println("IconButton unknown event type")
 	}
 }
