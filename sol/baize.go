@@ -909,6 +909,32 @@ func (b *Baize) NotifyCallback(event interface{}) {
 			default:
 				println("*** stop dragging unknown object ***")
 			}
+		case "cancel":
+			if v.Stroke.DraggedObject() == nil {
+				println("*** cancel stroke with nil dragged object ***")
+				break
+			}
+			switch v.Stroke.DraggedObject().(type) { // type switch
+			case ui.Container:
+				con := v.Stroke.DraggedObject().(ui.Container)
+				con.StopDrag()
+			case *Card:
+				c := v.Stroke.DraggedObject().(*Card)
+				c.owner.CancelDrag(c)
+			case *Pile:
+				// p := v.Stroke.DraggedObject().(*Pile)
+				// println("stop dragging pile", p.Class)
+				// do nothing
+			case *Baize:
+				// println("stop dragging baize")
+				b2 := v.Stroke.DraggedObject().(*Baize)
+				if b2 != b {
+					println("baize drag - something has gone terribly wrong")
+				}
+				b2.StopDrag()
+			default:
+				println("*** cancel dragging unknown object ***")
+			}
 		default:
 			println("*** unknown stroke event", v.Event)
 			// case "cancel":

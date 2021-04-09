@@ -552,7 +552,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 	case "Cell":
 		ok := len(Tail) == 1 && p.CardCount() == 0
 		if !ok && canToast {
-			TheBaize.ui.Toast("Can only move one card to an empty Cells")
+			TheBaize.ui.Toast("Can only have one card in a Cell")
 		}
 		return ok
 	}
@@ -569,8 +569,12 @@ func (p *Pile) StartDrag(c *Card) bool {
 	// if strings.HasPrefix(c.owner.Class, "Foundation") {
 	// 	return false // cannot take cards off foundation
 	// }
-	if c.Transitioning() || c.Flipping() || c.Spinning() {
-		println("unwise to drag an animating card")
+	if c.Spinning() {
+		c.Flip()
+		return false
+	}
+	if c.Transitioning() || c.Flipping() {
+		println("unwise to drag an animating or flipping card")
 		return false
 	}
 

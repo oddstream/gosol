@@ -58,13 +58,13 @@ func (b *IconButton) NotifyCallback(event interface{}) {
 	case image.Point:
 		println("IconButton image.Point", v.X, v.Y)
 		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			log.Println("icon button sending notify to parent", b.key)
+			println("IconButton sending notify to parent", b.key)
 			b.parent.Notify(b.key)
 		}
 	case input.StrokeEvent:
-		println("IconButton stroke event")
+		println("IconButton stroke event", v.Event)
 	case ebiten.Key:
-		println("IconButton key event")
+		println("IconButton key event", v)
 	default:
 		println("IconButton unknown event type")
 	}

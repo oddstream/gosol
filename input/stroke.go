@@ -129,8 +129,10 @@ func (s *Stroke) Update() {
 		if elapsed < 200 || (s.initX == s.currX && s.initY == s.currY) {
 			// println("Stroke.Update() sending a tap/image.Point event")
 			s.Notify(image.Point{X: s.currX, Y: s.currY})
+			s.Notify(StrokeEvent{Event: "cancel", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
+		} else {
+			s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 		}
-		s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
 
 }
