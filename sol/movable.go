@@ -1,5 +1,7 @@
 package sol
 
+import "oddstream.games/gosol/util"
+
 // DraggableTail indicates if a tail from this card can be dragged or not without triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
@@ -21,7 +23,8 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 	return tail
 }
 
-func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
+func (b *Baize) NewHomesForCard(c *Card) []*Pile {
+	homes := []*Pile{}
 	for _, p := range b.Piles {
 		if p == c.owner {
 			continue
@@ -33,13 +36,14 @@ func (b *Baize) IsNewHomeForCard(c *Card) *Pile {
 		// 	continue
 		// }
 		if p.CanAcceptCard(c) {
-			return p
+			homes = append(homes, p)
 		}
 	}
-	return nil
+	return homes
 }
 
-func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
+func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
+	homes := []*Pile{}
 	for _, p := range b.Piles {
 		c0 := tail[0]
 		if p == c0.owner {
@@ -52,10 +56,28 @@ func (b *Baize) IsNewHomeForTail(tail []*Card) *Pile {
 		// 	continue
 		// }
 		if p.CanAcceptTail(tail, false) {
-			return p
+			homes = append(homes, p)
 		}
 	}
-	return nil
+	return homes
+}
+
+func setMovable(dst *Pile, tail []*Card) {
+	c0 := tail[0]
+	var m int
+	switch {
+	case dst.Class == "Foundation":
+		m = 3
+	case dst.Class == "Cell":
+		m = 1
+	case dst.CardCount() == 0 && len(tail) == c0.owner.CardCount():
+		m = 1
+	case dst.CardCount() == 0 && dst.localAccept == 0:
+		m = 1
+	default:
+		m = 2
+	}
+	c0.movable = util.Max(c0.movable, m)
 }
 
 func (b *Baize) MarkMovable() {
@@ -64,7 +86,7 @@ func (b *Baize) MarkMovable() {
 
 	for _, p := range b.Piles {
 		for _, c := range p.Cards {
-			c.SetMovable(false)
+			c.movable = 0
 		}
 		switch p.Class {
 		case "Stock", "StockSpider", "StockScorpion":
@@ -73,26 +95,41 @@ func (b *Baize) MarkMovable() {
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {
 				if tail := p.DraggableTail(c); tail != nil {
-					if dst := b.IsNewHomeForCard(c); dst != nil {
-						c.SetMovable(true)
+					if homes := b.NewHomesForCard(c); len(homes) > 0 {
 						b.movableCards++
+						for _, dst := range homes {
+							setMovable(dst, tail)
+						}
 					}
 				}
 			}
 		case "Tableau", "Cell":
 			// check all cards upwards until finding an undraggable one
-			for i := len(p.Cards) - 1; i >= 0; i-- {
-				c := p.Cards[i]
+			// for i := len(p.Cards) - 1; i >= 0; i-- {
+			// 	c := p.Cards[i]
+			// 	if c.Prone() {
+			// 		continue
+			// 	}
+			// 	if tail := p.DraggableTail(c); tail != nil {
+			// 		if dst := b.IsNewHomeForTail(tail); dst != nil {
+			// 			setMovable(dst, tail)
+			// 			b.movableCards++
+			// 		}
+			// 	} else {
+			// 		break
+			// 	}
+			// }
+			for _, c := range p.Cards {
 				if c.Prone() {
 					continue
 				}
 				if tail := p.DraggableTail(c); tail != nil {
-					if dst := b.IsNewHomeForTail(tail); dst != nil {
-						c.SetMovable(true)
+					if homes := b.NewHomesForTail(tail); len(homes) > 0 {
 						b.movableCards++
+						for _, dst := range homes {
+							setMovable(dst, tail)
+						}
 					}
-				} else {
-					break
 				}
 			}
 		}

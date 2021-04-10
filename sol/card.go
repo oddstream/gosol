@@ -1,9 +1,11 @@
 package sol
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/util"
 )
 
@@ -52,6 +54,8 @@ type Card struct {
 
 	directionX, directionY int     // direction vector when card is spinning
 	angle, spin            float64 // current angle and spin when card is spinning
+
+	movable int // 0=not movable, 1=movable but boring, 2=movable and possibly helpful, 3=movable to foundation
 
 	faceImg *ebiten.Image // image used to draw this card
 }
@@ -199,7 +203,7 @@ func (c *Card) StartSpinning() {
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 4
 	c.spin = rand.Float64() - 0.5
-	c.SetMovable(false)
+	c.movable = 0
 }
 
 // StopSpinning tells the card to stop spinning and return to it's upright state
@@ -358,12 +362,15 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(-offset, -offset)
 	}
 
-	if TheUserData.HighlightMovable && !c.Movable() {
+	if TheUserData.HighlightMovable && (c.movable == 0 || c.movable == 1) {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 
 	screen.DrawImage(img, op)
 
+	if c.movable > 0 {
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)
+	}
 	// if c.Movable() {
 	// 	screen.DrawImage(CardMovableImage, op)
 	// }

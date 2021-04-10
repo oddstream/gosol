@@ -23,8 +23,6 @@ const (
 	suitMask    CardID = 0b0000000011110000
 	ordinalMask CardID = 0b0000000000001111
 	proneFlag   CardID = 0b0001000000000000
-	movableFlag CardID = 0b0010000000000000
-	helpfulFlag CardID = 0b0100000000000000
 )
 
 func (cid CardID) String() string {
@@ -90,31 +88,12 @@ func (c *Card) Prone() bool {
 	return c.ID.Prone()
 }
 
-// Movable returns the movable flag buried in the card id
-func (cid CardID) Movable() bool {
-	return cid&movableFlag == movableFlag
-}
-
-// Movable returns true if the card is marked as movable, false if it is unmarked
-func (c *Card) Movable() bool {
-	return c.ID.Movable()
-}
-
 // SetProne true or false
 func (c *Card) SetProne(prone bool) {
 	if prone {
 		c.ID = c.ID | proneFlag
 	} else {
 		c.ID = c.ID & (^proneFlag)
-	}
-}
-
-// SetMovable set the "this card is movable" flag
-func (c *Card) SetMovable(movable bool) {
-	if movable {
-		c.ID = c.ID | movableFlag
-	} else {
-		c.ID = c.ID & (^movableFlag)
 	}
 }
 

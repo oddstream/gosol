@@ -38,6 +38,10 @@ func (b *Baize) Undo() {
 		b.ui.Toast("Nothing to undo")
 		return
 	}
+	if b.State == Complete {
+		b.ui.Toast("Cannot undo a completed game")
+		return
+	}
 	sav, ok := b.UndoPop() // removes current state
 	if !ok {
 		log.Panic("error popping current state from undo stack")
@@ -53,6 +57,10 @@ func (b *Baize) Undo() {
 
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
+	if b.State == Complete {
+		b.ui.Toast("Cannot bookmark a completed game")
+		return
+	}
 	b.SavedPosition = len(b.UndoStack)
 	b.ui.Toast("Position bookmarked")
 }
@@ -61,6 +69,10 @@ func (b *Baize) SavePosition() {
 func (b *Baize) LoadPosition() {
 	if b.SavedPosition == 0 || b.SavedPosition > len(b.UndoStack) {
 		b.ui.Toast("No bookmark")
+		return
+	}
+	if b.State == Complete {
+		b.ui.Toast("Cannot undo a completed game")
 		return
 	}
 	var sav SaveableBaize

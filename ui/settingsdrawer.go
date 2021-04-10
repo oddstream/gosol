@@ -28,7 +28,7 @@ func (u *UI) ShowSettingsDrawer(retro, highlight, powerMoves bool) {
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.settingsDrawer.widgets = []Widget{
 		// widget x, y will be set by LayoutWidgets()
-		NewCheckbox(u.settingsDrawer, "Highlight", highlight),
+		NewCheckbox(u.settingsDrawer, "Show hints", highlight),
 		NewCheckbox(u.settingsDrawer, "Power moves", powerMoves),
 		NewCheckbox(u.settingsDrawer, "Mute sounds", true),
 		NewCheckbox(u.settingsDrawer, "Retro cards", retro),

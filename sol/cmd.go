@@ -42,7 +42,7 @@ func (b *Baize) Execute(cmd interface{}) {
 				TheUserData.CardBackColor = v.Data
 				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 			}
-		case "Highlight":
+		case "Show hints":
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
 		case "Power moves":
 			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)

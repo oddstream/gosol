@@ -8,6 +8,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+type (
+	// Observable https://gist.github.com/patrickmn/1549985
+	Observable interface {
+		Add(Observer)
+		Notify(StrokeEvent)
+		Remove(Observer)
+	}
+
+	// Observer https://gist.github.com/patrickmn/1549985
+	Observer interface {
+		NotifyCallback(StrokeEvent)
+	}
+)
+
 // The following is taken from https://ebiten.org/examples/drag.html
 
 // StrokeSource represents a input device to provide strokes.
