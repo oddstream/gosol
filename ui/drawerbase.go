@@ -152,12 +152,6 @@ func (db *DrawerBase) StopDrag() {
 	db.yOffsetBase = db.yOffset
 }
 
-func (db *DrawerBase) Notify(event interface{}) {
-	if db.stroke != nil {
-		db.stroke.Notify(event)
-	}
-}
-
 // ResetScroll state for this drawer
 func (db *DrawerBase) ResetScroll() {
 	db.xOffset = 0

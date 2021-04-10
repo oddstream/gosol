@@ -173,7 +173,7 @@ func (s *Stroke) SetDraggedObject(object interface{}) {
 
 // Add this observer to the list
 func (s *Stroke) Add(observer Observer) {
-	// println("Stroke.Add()", observer)
+	// fmt.Printf("Stroke Add() %T\n", observer)
 	s.observers.Store(observer, struct{}{})
 	// count := 0
 	// s.observers.Range(func(key, value interface{}) bool {
@@ -188,17 +188,17 @@ func (s *Stroke) Add(observer Observer) {
 
 // Remove this observer from the list
 func (s *Stroke) Remove(observer Observer) {
-	// println("Stroke.Remove()", observer)
 	s.observers.Delete(observer)
 }
 
 // Notify observers that an event has happened
-func (s *Stroke) Notify(event interface{}) {
+func (s *Stroke) Notify(event StrokeEvent) {
 	// cannot range over a value of type sync.Map
 	s.observers.Range(func(key, value interface{}) bool {
 		if key == nil {
 			return false
 		}
+		// fmt.Printf("Notifying a %T\n", key)
 		key.(Observer).NotifyCallback(event)
 		return true
 	})

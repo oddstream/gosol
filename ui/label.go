@@ -66,18 +66,15 @@ func (l *Label) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (l *Label) NotifyCallback(event interface{}) {
+func (l *Label) NotifyCallback(v input.StrokeEvent) {
 	if l.disabled {
 		return
 	}
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case input.StrokeEvent:
-		switch v.Event {
-		case "tap":
-			if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
-				// println("label notify", l.requestType, ":=", l.text)
-				l.parent.Notify(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
-			}
+	switch v.Event {
+	case "tap":
+		if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
+			// println("label notify", l.requestType, ":=", l.text)
+			cmdFn(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
 		}
 	}
 }

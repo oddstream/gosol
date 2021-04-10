@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -60,7 +59,7 @@ func NewBaize() *Baize {
 	CreateScalables() // sets global TheCIP (sorry)
 
 	TheBaize = &Baize{Variant: TheUserData.Variant}
-	TheBaize.ui = ui.New()
+	TheBaize.ui = ui.New(TheBaize.Execute)
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
@@ -726,226 +725,165 @@ func (b *Baize) StopSpinning() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (b *Baize) NotifyCallback(event interface{}) {
-	switch v := event.(type) { // type switch https://tour.golang.org/methods/16
-	case ebiten.Key:
-		// println("Baize.NotifyCallback() ebiten.Key", v)
-		if fn, ok := b.commandTable[v]; ok {
-			b.ui.HideActiveDrawer()
-			b.ui.HideFAB()
-			fn()
-		}
-	case ui.ChangeRequest:
-		// a widget has sent a change request
-		// println("Baize.NotifyCallback() ChangeRequest", v.ChangeRequested)
-		b.ui.HideActiveDrawer()
-		b.ui.HideFAB()
-		switch v.ChangeRequested {
-		case "Variant":
-			newVariant := v.Data
-			if newVariant == "" {
-				println("unknown variant", v.Data)
-				break
-			}
-			if newVariant != b.Variant {
-				b.Save()
-				if !TheBaize.LoadVariant(newVariant) {
-					b.NewVariant(newVariant)
-				}
-			}
-		case "CardBack":
-			if TheUserData.CardStyle == "retro" {
-				TheUserData.CardBackPattern = v.Data
-				CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
+func (b *Baize) NotifyCallback(v input.StrokeEvent) {
+	switch v.Event {
+	case "start":
+		// try UI Container > Card > Pile > Baize
+		b.stroke = v.Stroke
+		if con := b.ui.FindContainerAt(v.X, v.Y); con != nil {
+			// println("found container")
+			if con.StartDrag(b.stroke) {
+				b.stroke.SetDraggedObject(con)
 			} else {
-				TheUserData.CardBackColor = v.Data
-				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
+				v.Stroke.Cancel()
 			}
-		case "Highlight":
-			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
-		case "Power moves":
-			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
-			b.MarkMovable() // re-run this
-		case "Retro cards":
-			retro, _ := strconv.ParseBool(v.Data)
-			if retro {
-				TheUserData.CardStyle = "retro"
-			} else {
-				TheUserData.CardStyle = "default"
-			}
-			b.OldWindowWidth = 0 // force a rescale
-			b.Scale()
-		case "Mute sounds":
-			b.ui.Toast("Not implemented yet")
-		default:
-			log.Panic("unknown change request", v.ChangeRequested, v.Data)
-		}
-		TheUserData.Save() // save now especially if running on a browser
-	case input.StrokeEvent:
-		// if v.Event != "move" {
-		// 	println("Baize.NotifyCallback() stroke event", v.Event, v.X, v.Y)
-		// }
-		switch v.Event {
-		case "start":
-			// try UI Container > Card > Pile > Baize
-			b.stroke = v.Stroke
-			if con := b.ui.FindContainerAt(v.X, v.Y); con != nil {
-				// println("found container")
-				if con.StartDrag(b.stroke) {
-					b.stroke.SetDraggedObject(con)
-				} else {
+		} else {
+			if c := b.findCardAt(v.X, v.Y); c != nil {
+				b.stroke.SetDraggedObject(c)
+				if !c.owner.StartDrag(c) {
+					log.Println("cancel stroke because drag not allowed")
 					v.Stroke.Cancel()
 				}
 			} else {
-				if c := b.findCardAt(v.X, v.Y); c != nil {
-					b.stroke.SetDraggedObject(c)
-					if !c.owner.StartDrag(c) {
-						log.Println("cancel stroke because drag not allowed")
+				if p := b.findPileAt(v.X, v.Y); p != nil {
+					// we can't really drag piles, but nevertheless...
+					b.stroke.SetDraggedObject(p)
+				} else {
+					if b.StartDrag() {
+						// println("starting baize drag")
+						b.stroke.SetDraggedObject(b)
+					} else {
+						log.Println("cancel stroke because not over a card")
 						v.Stroke.Cancel()
 					}
-				} else {
-					if p := b.findPileAt(v.X, v.Y); p != nil {
-						// we can't really drag piles, but nevertheless...
-						b.stroke.SetDraggedObject(p)
-					} else {
-						if b.StartDrag() {
-							// println("starting baize drag")
-							b.stroke.SetDraggedObject(b)
-						} else {
-							log.Println("cancel stroke because not over a card")
-							v.Stroke.Cancel()
-						}
-					}
 				}
 			}
-		case "move":
-			if v.Stroke.DraggedObject() == nil {
-				println("*** move stroke with nil dragged object ***")
-				break
+		}
+	case "move":
+		if v.Stroke.DraggedObject() == nil {
+			println("*** move stroke with nil dragged object ***")
+			break
+		}
+		switch v.Stroke.DraggedObject().(type) { // type switch
+		case ui.Container:
+			con := v.Stroke.DraggedObject().(ui.Container)
+			con.DragBy(v.Stroke.PositionDiff())
+		case *Card:
+			c := v.Stroke.DraggedObject().(*Card)
+			c.owner.DragTailBy(v.Stroke.PositionDiff())
+		case *Pile:
+			// do nothing
+		case *Baize:
+			// println("baize drag")
+			b2 := v.Stroke.DraggedObject().(*Baize)
+			if b2 != b {
+				println("baize drag - something has gone terribly wrong")
 			}
-			switch v.Stroke.DraggedObject().(type) { // type switch
-			case ui.Container:
-				con := v.Stroke.DraggedObject().(ui.Container)
-				con.DragBy(v.Stroke.PositionDiff())
-			case *Card:
-				c := v.Stroke.DraggedObject().(*Card)
-				c.owner.DragTailBy(v.Stroke.PositionDiff())
-			case *Pile:
-				// do nothing
-			case *Baize:
-				// println("baize drag")
-				b2 := v.Stroke.DraggedObject().(*Baize)
-				if b2 != b {
-					println("baize drag - something has gone terribly wrong")
-				}
-				b2.DragBy(v.Stroke.PositionDiff())
-			default:
-				println("*** unknown move dragging object ***")
-			}
-		case "stop":
-			if v.Stroke.DraggedObject() == nil {
-				println("*** stop stroke with nil dragged object ***")
-				break
-			}
-			switch v.Stroke.DraggedObject().(type) { // type switch
-			case ui.Container:
-				con := v.Stroke.DraggedObject().(ui.Container)
-				con.StopDrag()
-			case *Card:
-				c := v.Stroke.DraggedObject().(*Card)
-				p := b.largestIntersection(c)
-				if p == nil || p == c.owner {
+			b2.DragBy(v.Stroke.PositionDiff())
+		default:
+			println("*** unknown move dragging object ***")
+		}
+	case "stop":
+		if v.Stroke.DraggedObject() == nil {
+			println("*** stop stroke with nil dragged object ***")
+			break
+		}
+		switch v.Stroke.DraggedObject().(type) { // type switch
+		case ui.Container:
+			con := v.Stroke.DraggedObject().(ui.Container)
+			con.StopDrag()
+		case *Card:
+			c := v.Stroke.DraggedObject().(*Card)
+			p := b.largestIntersection(c)
+			if p == nil || p == c.owner {
+				c.owner.CancelDrag(c)
+			} else {
+				if len(c.owner.Tail) == 0 {
+					println("*** stop dragging card - empty tail ***")
 					c.owner.CancelDrag(c)
 				} else {
-					if len(c.owner.Tail) == 0 {
-						println("*** stop dragging card - empty tail ***")
-						c.owner.CancelDrag(c)
+					if p.CanAcceptTail(c.owner.Tail, true) {
+						c.owner.StopDrag(c)
+						b.MoveCards(c, p)
+						b.AfterUserMove()
 					} else {
-						if p.CanAcceptTail(c.owner.Tail, true) {
-							c.owner.StopDrag(c)
-							b.MoveCards(c, p)
-							b.AfterUserMove()
-						} else {
-							c.owner.CancelDrag(c)
-						}
-					}
-				}
-			case *Pile:
-				// p := v.Stroke.DraggedObject().(*Pile)
-				// println("stop dragging pile", p.Class)
-				// do nothing
-			case *Baize:
-				// println("stop dragging baize")
-				b2 := v.Stroke.DraggedObject().(*Baize)
-				if b2 != b {
-					println("baize drag - something has gone terribly wrong")
-				}
-				b2.StopDrag()
-			default:
-				println("*** stop dragging unknown object ***")
-			}
-		case "cancel":
-			if v.Stroke.DraggedObject() == nil {
-				println("*** cancel stroke with nil dragged object ***")
-				break
-			}
-			switch v.Stroke.DraggedObject().(type) { // type switch
-			case ui.Container:
-				con := v.Stroke.DraggedObject().(ui.Container)
-				con.StopDrag()
-			case *Card:
-				c := v.Stroke.DraggedObject().(*Card)
-				c.owner.CancelDrag(c)
-			case *Pile:
-				// p := v.Stroke.DraggedObject().(*Pile)
-				// println("stop dragging pile", p.Class)
-				// do nothing
-			case *Baize:
-				// println("stop dragging baize")
-				b2 := v.Stroke.DraggedObject().(*Baize)
-				if b2 != b {
-					println("baize drag - something has gone terribly wrong")
-				}
-				b2.StopDrag()
-			default:
-				println("*** cancel dragging unknown object ***")
-			}
-		case "tap":
-			// println("Baize.NotifyCallback() tap", v.X, v.Y)
-			// a tap outside any open ui drawer (ie on the baize) closes the drawer
-			if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
-				con.Hide()
-			} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
-				// not a tap on a UI container, so must be on a pile or a card
-				c := b.findCardAt(v.X, v.Y)
-				// we've received a tap, so cancel any stroke that has started
-				if b.stroke != nil {
-					// println("cancel stroke because tap")
-					if c != nil {
 						c.owner.CancelDrag(c)
 					}
-					b.stroke.Cancel()
-				}
-				if c != nil {
-					b.CardTapped(c)
-				} else {
-					if p := b.findPileAt(v.X, v.Y); p != nil {
-						b.PileTapped(p)
-					}
 				}
 			}
+		case *Pile:
+			// p := v.Stroke.DraggedObject().(*Pile)
+			// println("stop dragging pile", p.Class)
+			// do nothing
+		case *Baize:
+			// println("stop dragging baize")
+			b2 := v.Stroke.DraggedObject().(*Baize)
+			if b2 != b {
+				println("baize drag - something has gone terribly wrong")
+			}
+			b2.StopDrag()
 		default:
-			println("*** unknown stroke event", v.Event)
-			// case "cancel":
-			// 	// c := v.Stroke.DraggingObject().(*Card)
-			// 	c := v.Stroke.DraggedCard()
-			// 	if c != nil {
-			// 		c.owner.CancelDrag(c)
-			// 	}
-			// 	b.stroke = nil
+			println("*** stop dragging unknown object ***")
+		}
+	case "cancel":
+		if v.Stroke.DraggedObject() == nil {
+			println("*** cancel stroke with nil dragged object ***")
+			break
+		}
+		switch v.Stroke.DraggedObject().(type) { // type switch
+		case ui.Container:
+			con := v.Stroke.DraggedObject().(ui.Container)
+			con.StopDrag()
+		case *Card:
+			c := v.Stroke.DraggedObject().(*Card)
+			c.owner.CancelDrag(c)
+		case *Pile:
+			// p := v.Stroke.DraggedObject().(*Pile)
+			// println("stop dragging pile", p.Class)
+			// do nothing
+		case *Baize:
+			// println("stop dragging baize")
+			b2 := v.Stroke.DraggedObject().(*Baize)
+			if b2 != b {
+				println("baize drag - something has gone terribly wrong")
+			}
+			b2.StopDrag()
+		default:
+			println("*** cancel dragging unknown object ***")
+		}
+	case "tap":
+		// println("Baize.NotifyCallback() tap", v.X, v.Y)
+		// a tap outside any open ui drawer (ie on the baize) closes the drawer
+		if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
+			con.Hide()
+		} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
+			// not a tap on a UI container, so must be on a pile or a card
+			c := b.findCardAt(v.X, v.Y)
+			// we've received a tap, so cancel any stroke that has started
+			if b.stroke != nil {
+				// println("cancel stroke because tap")
+				if c != nil {
+					c.owner.CancelDrag(c)
+				}
+				b.stroke.Cancel()
+			}
+			if c != nil {
+				b.CardTapped(c)
+			} else {
+				if p := b.findPileAt(v.X, v.Y); p != nil {
+					b.PileTapped(p)
+				}
+			}
 		}
 	default:
-		println("*** Baize.NotifyCallback() unknown notification received", v)
+		println("*** unknown stroke event", v.Event)
+		// case "cancel":
+		// 	// c := v.Stroke.DraggingObject().(*Card)
+		// 	c := v.Stroke.DraggedCard()
+		// 	if c != nil {
+		// 		c.owner.CancelDrag(c)
+		// 	}
+		// 	b.stroke = nil
 	}
 }
 
@@ -1063,7 +1001,7 @@ func (b *Baize) Update() error {
 
 	for k := ebiten.Key(0); k <= ebiten.KeyMax; k++ {
 		if inpututil.IsKeyJustReleased(k) {
-			b.NotifyCallback(k)
+			b.Execute(k)
 		}
 	}
 

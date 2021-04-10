@@ -48,24 +48,17 @@ func (b *IconButton) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (b *IconButton) NotifyCallback(event interface{}) {
-	println("IconButton NotifyCallback, disabled", b.disabled)
+func (b *IconButton) NotifyCallback(v input.StrokeEvent) {
+	// log.Printf("IconButton NotifyCallback, type=%T, disabled=%t\n", event, b.disabled)
 	if b.disabled {
 		return
 	}
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case input.StrokeEvent:
-		switch v.Event {
-		case "tap":
-			println("IconButton tap event", v.X, v.Y)
-			if util.InRect(v.X, v.Y, b.OffsetRect) {
-				println("IconButton sending notify to parent", b.key)
-				b.parent.Notify(b.key)
-			}
+	// log.Printf("IconButton Event=%s (%T) Stroke=%T Object=%T", v.Event, v.Event, v.Stroke, v.Object)
+	switch v.Event {
+	case "tap":
+		if util.InRect(v.X, v.Y, b.OffsetRect) {
+			// println("IconButton sending command", b.key)
+			cmdFn(b.key)
 		}
-	case ebiten.Key:
-		println("IconButton key event", v)
-	default:
-		println("IconButton unknown event type")
 	}
 }

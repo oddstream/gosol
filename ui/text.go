@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -68,7 +69,7 @@ func (w *Text) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *Text) NotifyCallback(event interface{}) {
+func (w *Text) NotifyCallback(input.StrokeEvent) {
 }
 
 // Update the state of this widget

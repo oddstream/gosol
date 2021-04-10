@@ -15,7 +15,6 @@ type Container interface {
 	StartDrag(*input.Stroke) bool
 	DragBy(int, int)
 	StopDrag()
-	Notify(interface{})
 	Visible() bool
 	Show()
 	Hide()

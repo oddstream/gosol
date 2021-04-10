@@ -1,6 +1,9 @@
 package ui
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/input"
+)
 
 // Widget is an interface for widget objects
 type Widget interface {
@@ -16,5 +19,5 @@ type Widget interface {
 	Deactivate()
 	Update()
 	Draw(*ebiten.Image)
-	NotifyCallback(interface{})
+	NotifyCallback(input.StrokeEvent)
 }

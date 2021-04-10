@@ -30,8 +30,11 @@ type UI struct {
 	toastManager   *ToastManager
 }
 
+var cmdFn func(interface{})
+
 // New creates a new UI object
-func New() *UI {
+func New(fn func(interface{})) *UI {
+	cmdFn = fn
 	ui := &UI{}
 
 	LoadIconMap()

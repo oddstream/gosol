@@ -113,14 +113,6 @@ func (bb *BarBase) StopDrag() {
 	bb.stroke = nil
 }
 
-func (bb *BarBase) Notify(event interface{}) {
-	// println("BarBase Notify() 1")
-	if bb.stroke != nil {
-		// println("BarBase Notify() 2")
-		bb.stroke.Notify(event)
-	}
-}
-
 // Show the bar
 func (bb *BarBase) Show() {
 }

@@ -34,15 +34,12 @@ func NewFAB(parent Container, iconName string, key ebiten.Key) *FAB {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (f *FAB) NotifyCallback(event interface{}) {
+func (f *FAB) NotifyCallback(v input.StrokeEvent) {
 	// println("FAB NotifyCallback")
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case input.StrokeEvent:
-		switch v.Event {
-		case "tap":
-			if util.InRect(v.X, v.Y, f.OffsetRect) {
-				f.parent.Notify(f.key)
-			}
+	switch v.Event {
+	case "tap":
+		if util.InRect(v.X, v.Y, f.OffsetRect) {
+			cmdFn(f.key)
 		}
 	}
 }

@@ -65,17 +65,14 @@ func (n *NavItem) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (n *NavItem) NotifyCallback(event interface{}) {
+func (n *NavItem) NotifyCallback(v input.StrokeEvent) {
 	if n.disabled {
 		return
 	}
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case input.StrokeEvent:
-		switch v.Event {
-		case "tap":
-			if util.InRect(v.X, v.Y, n.OffsetRect) {
-				n.parent.Notify(n.key)
-			}
+	switch v.Event {
+	case "tap":
+		if util.InRect(v.X, v.Y, n.OffsetRect) {
+			cmdFn(n.key)
 		}
 	}
 }

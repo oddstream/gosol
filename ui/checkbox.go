@@ -70,19 +70,16 @@ func (w *Checkbox) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *Checkbox) NotifyCallback(event interface{}) {
+func (w *Checkbox) NotifyCallback(v input.StrokeEvent) {
 	if w.disabled {
 		return
 	}
-	switch v := event.(type) { // Type switch https://tour.golang.org/methods/16
-	case input.StrokeEvent:
-		switch v.Event {
-		case "tap":
-			if util.InRect(v.X, v.Y, w.OffsetRect) {
-				w.checked = !w.checked
-				w.img = w.createImg()
-				w.parent.Notify(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
-			}
+	switch v.Event {
+	case "tap":
+		if util.InRect(v.X, v.Y, w.OffsetRect) {
+			w.checked = !w.checked
+			w.img = w.createImg()
+			cmdFn(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
 		}
 	}
 }
