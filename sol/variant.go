@@ -466,7 +466,7 @@ var Variants = map[string]VariantInfo{
 	// // 	},
 	// // },
 	"Mistress Mop": {
-		Description: "A simple game with no stock or waste, that plays like Freecell, Spider and Simple Simon. A single-pack version of Mrs Mop.",
+		Description: "A simple game with no stock or waste, that plays like Freecell, Spider and Simple Simon. A single-pack version of Mrs Mop. The four cells mean that every game should be winnable.",
 		Related:     []string{"Mrs Mop"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Mrs._Mop",
 		Piles: []PileInfo{
@@ -556,10 +556,10 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 			{"Foundation", 4, 0, "None", 22, 0, 8, map[string]string{"Accept": "13"}},
 			{"Foundation", 5, 0, "None", 22, 0, 8, map[string]string{"Accept": "13"}},
 			{"Foundation", 6, 0, "None", 22, 0, 8, map[string]string{"Accept": "13"}},
-			{"Tableau", 0, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "uuuuuuu"}},
+			{"Tableau", 0, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "ddduuuu"}},
 			{"Tableau", 1, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "ddduuuu"}},
 			{"Tableau", 2, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "ddduuuu"}},
-			{"Tableau", 3, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "ddduuuu"}},
+			{"Tableau", 3, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "uuuuuuu"}},
 			{"Tableau", 4, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "uuuuuuu"}},
 			{"Tableau", 5, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "uuuuuuu"}},
 			{"Tableau", 6, 1, "Down", 22, 15, 8, map[string]string{"Accept": "13", "Deal": "uuuuuuu"}},

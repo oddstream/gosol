@@ -24,7 +24,7 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 }
 
 func (b *Baize) NewHomesForCard(c *Card) []*Pile {
-	homes := []*Pile{}
+	var homes []*Pile
 	for _, p := range b.Piles {
 		if p == c.owner {
 			continue
@@ -43,7 +43,7 @@ func (b *Baize) NewHomesForCard(c *Card) []*Pile {
 }
 
 func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
-	homes := []*Pile{}
+	var homes []*Pile
 	for _, p := range b.Piles {
 		c0 := tail[0]
 		if p == c0.owner {
@@ -71,8 +71,10 @@ func setMovable(dst *Pile, tail []*Card) {
 	case dst.Class == "Cell":
 		m = 1
 	case dst.CardCount() == 0 && len(tail) == c0.owner.CardCount():
+		// moving an entire pile to another empty pile
 		m = 1
-	case dst.CardCount() == 0 && dst.localAccept == 0:
+	case len(tail) == 1 && dst.CardCount() == 0 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
+		// moving a single card to an empty pile of the same type
 		m = 1
 	default:
 		m = 2

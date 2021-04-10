@@ -1005,6 +1005,10 @@ func (b *Baize) Update() error {
 		}
 	}
 
+	// if _, yoff := ebiten.Wheel(); yoff != 0 {
+	// 	b.DragBy(0, int(yoff*24))
+	// }
+
 	return nil
 }
 

@@ -368,7 +368,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	screen.DrawImage(img, op)
 
-	if c.movable > 0 {
+	if DebugMode && c.movable > 0 {
 		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)
 	}
 	// if c.Movable() {

@@ -198,9 +198,9 @@ func (p *Pile) FannedBaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 			}
 		}
 		switch p.Fan {
-		case "Right":
+		case "Right", "Waste":
 			x1 = x + CardWidth
-		case "Down":
+		case "Down", "WasteDown":
 			y1 = y + CardHeight
 		}
 	}
