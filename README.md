@@ -11,10 +11,12 @@ It currently knows how to play:
 * American Toad (and the original The Toad)
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)
+* Busy Aces
 * Canfield, Storehouse
 * Cruel, Ripple Fan
 * Duchess
 * EasyWin (an easy to win game, for debugging)
+* Fortune's Favor
 * Forty and Eight
 * Freecell, Freecell Easy
 * Klondike (Draw One, Draw Three and Thoughtful)

@@ -110,6 +110,7 @@ func StartStroke(observer Observer) *Stroke {
 	}
 	ids := inpututil.JustPressedTouchIDs()
 	if len(ids) > 0 {
+		println(len(ids), "touch IDs, first is", ids[0])
 		s = NewStroke(&TouchStrokeSource{ID: ids[0]})
 	}
 	if s != nil {
