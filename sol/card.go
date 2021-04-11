@@ -1,11 +1,9 @@
 package sol
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/util"
 )
 
@@ -362,15 +360,23 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(-offset, -offset)
 	}
 
-	if TheUserData.HighlightMovable && (c.movable == 0 || c.movable == 1) {
-		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+	if TheUserData.HighlightMovable && !c.Spinning() {
+		switch c.movable {
+		case 0:
+			op.ColorM.Scale(0.85, 0.85, 0.85, 1)
+		case 1:
+			op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+		case 2:
+			op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+		}
 	}
 
 	screen.DrawImage(img, op)
 
-	if DebugMode && c.movable > 0 {
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)
-	}
+	// if DebugMode && c.movable > 0 {
+	// 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)
+	// }
+
 	// if c.Movable() {
 	// 	screen.DrawImage(CardMovableImage, op)
 	// }

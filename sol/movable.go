@@ -23,25 +23,6 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 	return tail
 }
 
-func (b *Baize) NewHomesForCard(c *Card) []*Pile {
-	var homes []*Pile
-	for _, p := range b.Piles {
-		if p == c.owner {
-			continue
-		}
-		// if p.Class == "Cell" {
-		// 	continue
-		// }
-		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c.Ordinal()) {
-		// 	continue
-		// }
-		if p.CanAcceptCard(c) {
-			homes = append(homes, p)
-		}
-	}
-	return homes
-}
-
 func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
 	var homes []*Pile
 	for _, p := range b.Piles {
@@ -49,12 +30,6 @@ func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
 		if p == c0.owner {
 			continue
 		}
-		// if p.Class == "Cell" && len(tail) == 1 {
-		// 	continue
-		// }
-		// if p.CardCount() == 0 && (p.localAccept == 0 || p.localAccept == c0.Ordinal()) {
-		// 	continue
-		// }
 		if p.CanAcceptTail(tail, false) {
 			homes = append(homes, p)
 		}
@@ -73,9 +48,9 @@ func setMovable(dst *Pile, tail []*Card) {
 	case dst.CardCount() == 0 && len(tail) == c0.owner.CardCount():
 		// moving an entire pile to another empty pile
 		m = 1
-	case len(tail) == 1 && dst.CardCount() == 0 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
-		// moving a single card to an empty pile of the same type
-		m = 1
+	// case len(tail) == 1 && dst.CardCount() == 0 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
+	// 	// moving a single card to an empty pile of the same type
+	// 	m = 1
 	default:
 		m = 2
 	}
@@ -97,7 +72,7 @@ func (b *Baize) MarkMovable() {
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {
 				if tail := p.DraggableTail(c); tail != nil {
-					if homes := b.NewHomesForCard(c); len(homes) > 0 {
+					if homes := b.NewHomesForTail(tail); len(homes) > 0 {
 						b.movableCards++
 						for _, dst := range homes {
 							setMovable(dst, tail)
@@ -106,21 +81,6 @@ func (b *Baize) MarkMovable() {
 				}
 			}
 		case "Tableau", "Cell":
-			// check all cards upwards until finding an undraggable one
-			// for i := len(p.Cards) - 1; i >= 0; i-- {
-			// 	c := p.Cards[i]
-			// 	if c.Prone() {
-			// 		continue
-			// 	}
-			// 	if tail := p.DraggableTail(c); tail != nil {
-			// 		if dst := b.IsNewHomeForTail(tail); dst != nil {
-			// 			setMovable(dst, tail)
-			// 			b.movableCards++
-			// 		}
-			// 	} else {
-			// 		break
-			// 	}
-			// }
 			for _, c := range p.Cards {
 				if c.Prone() {
 					continue

@@ -289,44 +289,7 @@ func (p *Pile) Extract(idx int) *Card {
 
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
-
-	switch p.Class {
-	case "Waste":
-		return c.owner.Class == "Stock" // user can only move card to waste from stock
-	case "Foundation":
-		if p.CardCount() == 0 {
-			if p.localAccept > 0 {
-				return c.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		if p.CardCount() == 13 {
-			// with Rank Wrap, you may get >13 cards in a Foundation pile
-			return false
-		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
-	case "Tableau":
-		if p.CardCount() == 0 {
-			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
-				afList := strings.Split(afAttrib, ",")
-				for _, class := range afList {
-					if c.owner.Class == class {
-						return true
-					}
-				}
-				TheBaize.ui.Toast(fmt.Sprintf("%s can only accept a card from %s", p.Class, afAttrib))
-				return false
-			}
-			if p.localAccept > 0 {
-				return c.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c)
-	case "Cell":
-		return p.CardCount() == 0
-	}
-	return false // Reserve, Stock, StockSpider, StockScorpion
+	return p.CanAcceptTail([]*Card{c}, true)
 }
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
@@ -449,8 +412,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 	switch p.Class {
 	case "Waste":
 		if len(Tail) == 1 && c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
-			ctm := c0.owner.GetStringAttribute("CardsToMove")
-			if ctm == "" || ctm == "1" {
+			if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
 				return true
 			}
 		}
@@ -460,6 +422,13 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 		return false
 
 	case "Foundation":
+		if p.CardCount() == 13 {
+			// with rank wrap, may get >13 cards in a foundation
+			// if canToast {
+			// 	TheBaize.ui.Toast("Can only have 13 cards in a Foundation")
+			// }
+			return false
+		}
 		// Duchess rule
 		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
 			if p.localAccept == 0 {
