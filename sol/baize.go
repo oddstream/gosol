@@ -152,13 +152,10 @@ func (b *Baize) NewVariant(v string) {
 	b.stroke = nil
 
 	// switch to new variant
-	if _, exists := Variants[v]; !exists {
-		v = "Klondike"
-	}
-	b.Variant = v
-	TheUserData.Variant = v
-	b.BuildVariant(v)
-	b.ui.SetTitle(v)
+	b.Variant = findVariant(v) // v is now invalid
+	TheUserData.Variant = b.Variant
+	b.BuildVariant(b.Variant)
+	b.ui.SetTitle(b.Variant)
 
 	b.OldWindowWidth = 0 // force a rescale
 	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
@@ -174,16 +171,13 @@ func (b *Baize) NewVariant(v string) {
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
 
-	if _, exists := Variants[v]; !exists {
-		v = "Klondike"
-	}
-	b.Variant = v
-	TheUserData.Variant = v
-	b.BuildVariant(v)
-	b.ui.SetTitle(v)
+	b.Variant = findVariant(v) // v is now invalid
+	TheUserData.Variant = b.Variant
+	b.BuildVariant(b.Variant)
+	b.ui.SetTitle(b.Variant)
 
 	// load the undo stack from json
-	if !b.Load(v) {
+	if !b.Load(b.Variant) {
 		return false
 	}
 

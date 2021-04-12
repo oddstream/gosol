@@ -55,7 +55,6 @@ var Variants = map[string]VariantInfo{
 	},
 	"Australian": {
 		Description: "A combination of Klondike and Scorpion.",
-		AKA:         []string{"Australian Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "0"}},
@@ -336,6 +335,34 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuuu"}},
 		},
 	},
+	"Forty Thieves": {
+		Description: "Napoleon at St Helena is quite difficult to win, and luck-of-the-draw is a significant factor. It is also popularly known as Forty Thieves. Napoleon often played solitaire after his final exile to the island of St Helena, and this is said to be the version he probably played. Along with its variants, it is one of the most popular two-deck solitaire games. The winning chances have been estimated as 1 in 10 games, with success typically dependent on your ability to clear one or more columns.",
+		AKA:         []string{"Napoleon at St Helena", "Roosevelt at San Juan", "Big Forty", "Le Cadran"},
+		Related:     []string{"Forty and Eight", "Indian", "Josephine", "Limited", "Lucas", "Maria", "Number Ten", "Rank and File", "Red and Black", "Sixty Thieves", "Streets"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Napoleon_at_St_Helena",
+		Piles: []PileInfo{
+			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "0"}},
+			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
+			{"Foundation", 3, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 4, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Tableau", 1, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 2, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 3, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 4, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 5, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 6, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 7, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 8, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 9, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuuu"}},
+		},
+	},
 	"Freecell": {
 		Description: "Popular game, unusual because almost all deals are winnable.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
@@ -450,7 +477,6 @@ var Variants = map[string]VariantInfo{
 	},
 	"Klondike (Draw Three)": {
 		Description: "The well-known solitaire variant.",
-		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "1", "Target": "Waste", "Recycles": "9999", "CardsToMove": "3"}},
@@ -495,6 +521,36 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 9, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
 			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
 			{"Tableau", 11, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+		},
+	},
+	"Lucas": {
+		Description: "An easier version of Napoleon at St Helena (Forty Thieves).",
+		Related:     []string{"Forty and Eight", "Indian", "Josephine", "Limited", "Lucas", "Maria", "Number Ten", "Rank and File", "Red and Black", "Sixty Thieves", "Streets"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Napoleon_at_St_Helena",
+		Piles: []PileInfo{
+			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "0"}},
+			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
+			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 11, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Foundation", 12, 0, "None", 21, 0, 0, map[string]string{"Accept": "1", "Deal": "1"}},
+			{"Tableau", 0, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 1, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 2, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 3, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 4, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 5, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 6, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 7, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 8, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 9, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 10, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 11, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
+			{"Tableau", 12, 1, "Down", 22, 22, 1, map[string]string{"Deal": "uuu"}},
 		},
 	},
 	// // "Raglan": {
@@ -756,7 +812,6 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 	},
 	"Thoughtful": {
 		Description: "Klondike, but with all the cards face up.",
-		AKA:         []string{"Patience", "American Patience", "Fascination", "Triangle", "Demon Patience"},
 		Related:     []string{"Klondike"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		Piles: []PileInfo{
@@ -889,13 +944,29 @@ func (b *Baize) BuildVariant(v string) {
 			b.Piles = append(b.Piles, p)
 		}
 	} else {
-		log.Fatal("unknown variant ", v)
+		log.Fatal("BuildVariant() unknown variant ", v)
 	}
 	b.calcScrunchSize()
 }
 
-func variantDescription(v string) string {
-	if vi, exists := Variants[v]; exists {
+// findVariant given a name or an AKA, return actual name;
+// default to "Klondike" so this never fails
+func findVariant(name string) string {
+	for k, v := range Variants {
+		if k == name {
+			return name
+		}
+		for _, aka := range v.AKA {
+			if aka == name {
+				return k
+			}
+		}
+	}
+	return "Klondike"
+}
+
+func variantDescription(name string) string {
+	if vi, exists := Variants[name]; exists {
 		return vi.Description
 	}
 	return ""
@@ -903,8 +974,11 @@ func variantDescription(v string) string {
 
 func (b *Baize) ShowVariantPicker() {
 	var vnames []string
-	for key := range Variants {
-		vnames = append(vnames, key)
+	for k, v := range Variants {
+		vnames = append(vnames, k)
+		for _, aka := range v.AKA {
+			vnames = append(vnames, aka)
+		}
 	}
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
 	b.ui.ShowVariantPicker(vnames)

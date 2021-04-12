@@ -199,7 +199,17 @@ func (b *Baize) rulesContents() []string {
 		}
 	}
 
-	rules := []string{variantDescription(b.Variant)}
+	vi, ok := Variants[b.Variant]
+	if !ok {
+		log.Fatal("rulesContents unknown variant", b.Variant)
+	}
+	rules := []string{vi.Description}
+	if len(vi.AKA) > 0 {
+		rules = append(rules, "AKA: "+strings.Join(vi.AKA, ", "))
+	}
+	if len(vi.Related) > 0 {
+		rules = append(rules, "Related: "+strings.Join(vi.Related, ", "))
+	}
 
 	// TODO show variant AKA, Related
 

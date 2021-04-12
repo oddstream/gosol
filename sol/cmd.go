@@ -25,7 +25,7 @@ func (b *Baize) Execute(cmd interface{}) {
 		case "Variant":
 			newVariant := v.Data
 			if newVariant == "" {
-				println("unknown variant", v.Data)
+				println("ChangeRequest unknown variant", v.Data)
 				break
 			}
 			if newVariant != b.Variant {
