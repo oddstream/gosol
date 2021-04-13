@@ -42,15 +42,15 @@ func setMovable(dst *Pile, tail []*Card) {
 	var m int
 	switch {
 	case dst.Class == "Foundation":
-		m = 3
+		m = 4
 	case dst.Class == "Cell":
 		m = 1
 	case dst.CardCount() == 0 && len(tail) == c0.owner.CardCount():
 		// moving an entire pile to another empty pile
 		m = 1
-	// case len(tail) == 1 && dst.CardCount() == 0 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
-	// 	// moving a single card to an empty pile of the same type
-	// 	m = 1
+	case len(tail) == 1 && dst.CardCount() == 0 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
+		// moving a single card to an empty pile of the same type
+		m = 1
 	default:
 		m = 2
 	}

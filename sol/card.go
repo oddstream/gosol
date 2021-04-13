@@ -1,9 +1,13 @@
 package sol
 
 import (
+	"fmt"
 	"math/rand"
+	"strings"
 
+	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -361,17 +365,33 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if TheUserData.HighlightMovable && !c.Spinning() {
-		switch c.movable {
-		case 0:
-			op.ColorM.Scale(0.85, 0.85, 0.85, 1)
-		case 1:
-			op.ColorM.Scale(0.9, 0.9, 0.9, 1)
-		case 2:
-			op.ColorM.Scale(0.95, 0.95, 0.95, 1)
-		}
+		var colorValue float64 = util.MapValue(float64(c.movable), 0, 4, 0.8, 1)
+		op.ColorM.Scale(colorValue, colorValue, colorValue, 1)
+		// switch c.movable {
+		// case 0:
+		// 	op.ColorM.Scale(0.85, 0.85, 0.85, 1)
+		// case 1:
+		// 	op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+		// case 2:
+		// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+		// }
 	}
 
 	screen.DrawImage(img, op)
+
+	if !c.Flipping() && !c.owner.Hidden() {
+		if strings.HasPrefix(c.owner.Class, "Stock") && c.owner.Peek() == c {
+			dc := gg.NewContext(CardWidth, CardHeight)
+			dc.SetRGBA(1, 1, 1, 0.25)
+			dc.SetFontFace(schriftbank.CardOrdinal)
+			str := fmt.Sprintf("%d", c.owner.CardCount())
+			dc.DrawStringAnchored(str, float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
+			dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
+			dc.Stroke()
+			img := ebiten.NewImageFromImage(dc.Image())
+			screen.DrawImage(img, op)
+		}
+	}
 
 	// if DebugMode && c.movable > 0 {
 	// 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)

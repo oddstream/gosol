@@ -61,6 +61,7 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant}
 	TheBaize.ui = ui.New(TheBaize.Execute)
 	TheBaize.commandTable = map[ebiten.Key]func(){
+		ebiten.KeyA:      TheBaize.StockTapped,
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
 		ebiten.KeyU:      TheBaize.Undo,
@@ -377,6 +378,13 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 
 }
 
+// StockTapped simulates a click on the top card of the Stock pile
+func (b *Baize) StockTapped() {
+	if c := b.stock.Peek(); c != nil {
+		b.CardTapped(c)
+	}
+}
+
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
@@ -641,14 +649,14 @@ func (b *Baize) AfterUserMove() {
 }
 
 func (b *Baize) largestIntersection(c *Card) *Pile {
-	var largest int = 0
+	var largestArea int = 0
 	var pile *Pile = nil
 	cx0, cy0, cx1, cy1 := c.BaizeRect()
 	for _, p := range b.Piles {
 		px0, py0, px1, py1 := p.FannedBaizeRect()
-		i := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
-		if i > largest {
-			largest = i
+		area := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
+		if area > largestArea {
+			largestArea = area
 			pile = p
 		}
 	}

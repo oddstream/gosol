@@ -81,7 +81,7 @@ func createScalableFaceImage(ID CardID) *ebiten.Image {
 	} else if ID.Ordinal() == 1 || ID.Ordinal() > 10 {
 		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		dc.DrawStringAnchored(string(r), float64(CardWidth)/2, float64(CardHeight)/1.75, 0.5, 0.5)
-		dc.Stroke()
+		// dc.Stroke()
 	}
 
 	return ebiten.NewImageFromImage(dc.Image())

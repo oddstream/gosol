@@ -140,7 +140,7 @@ func (s *Stroke) Update() {
 		// can't use distance < n because card will be animating
 
 		// send a tap event *before* sending a stroke stop event, as the latter will cause owner to dispose of the stroke
-		if elapsed < 200 || (s.initX == s.currX && s.initY == s.currY) {
+		if elapsed < 500 || (s.initX == s.currX && s.initY == s.currY) {
 			// println("Stroke.Update() sending a tap event")
 			s.Notify(StrokeEvent{Event: "tap", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 			s.Notify(StrokeEvent{Event: "cancel", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})

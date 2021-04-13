@@ -718,6 +718,12 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		x, y := p.ScreenPosition()
 		op.GeoM.Translate(float64(x), float64(y))
+		if x, y := ebiten.CursorPosition(); util.InRect(x, y, p.ScreenRect) {
+			op.ColorM.Scale(1, 1, 1, 0.5)
+			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+				op.GeoM.Translate(2, 2)
+			}
+		}
 		screen.DrawImage(p.backgroundImage, op)
 	}
 	// if DebugMode {

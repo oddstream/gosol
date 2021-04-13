@@ -58,14 +58,17 @@ func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 // Collect automatically moves cards to the Foundations
 func (b *Baize) Collect() {
 
+	var foundations []*Pile
+	for _, fp := range b.Piles {
+		if fp.Class == "Foundation" {
+			foundations = append(foundations, fp)
+		}
+	}
 	var count, totalCount int
 	for {
 		count = 0
 		// iterate over foundations and pull cards to them
-		for _, fp := range b.Piles {
-			if fp.Class != "Foundation" {
-				continue
-			}
+		for _, fp := range foundations {
 			if fp.Flags&BuildFlagSpider == BuildFlagSpider {
 				if fp.CardCount() == 0 {
 					for _, p := range b.Piles {
