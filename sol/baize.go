@@ -653,15 +653,42 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 	var pile *Pile = nil
 	cx0, cy0, cx1, cy1 := c.BaizeRect()
 	for _, p := range b.Piles {
+		if p == c.owner {
+			continue
+		}
 		px0, py0, px1, py1 := p.FannedBaizeRect()
 		area := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
-		if area > largestArea {
+		if area > largestArea && p.CanAcceptTail(c.owner.Tail, false) {
 			largestArea = area
 			pile = p
 		}
 	}
 	return pile
 }
+
+// func (b *Baize) largestAcceptingIntersection(c *Card) *Pile {
+// 	type PileArea struct {
+// 		pile *Pile
+// 		area int
+// 	}
+// 	var pileAreas []PileArea = nil
+// 	cx0, cy0, cx1, cy1 := c.BaizeRect()
+// 	for _, p := range b.Piles {
+// 		if c.owner == p {
+// 			continue
+// 		}
+// 		px0, py0, px1, py1 := p.FannedBaizeRect()
+// 		area := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
+// 		if area > 0 && p.CanAcceptTail(c.owner.Tail, false) {
+// 			pileAreas = append(pileAreas, PileArea{pile: p, area: area})
+// 		}
+// 	}
+// 	if len(pileAreas) == 0 {
+// 		return nil
+// 	}
+// 	sort.Slice(pileAreas, func(i,j int) bool {return pileAreas[i].area < pileAreas[j].area})
+// 	return pileAreas[0].pile
+// }
 
 func (b *Baize) calcPercentComplete() int {
 	var foundations, sorted, unsorted int
@@ -805,8 +832,19 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 					c.owner.CancelDrag(c)
 				} else {
 					if p.CanAcceptTail(c.owner.Tail, true) {
-						c.owner.StopDrag(c)
-						b.MoveCards(c, p)
+						c.owner.StopDrag(c) // this makes the Tail = nil
+						if c.owner == b.stock && p.Class == "Waste" {
+							cardsToMove, ok := c.owner.GetIntAttribute("CardsToMove")
+							if !ok || cardsToMove == 0 {
+								cardsToMove = 1
+							}
+							for cardsToMove > 0 && b.stock.CardCount() > 0 {
+								cardsToMove--
+								b.MoveCards(b.stock.Peek(), p) // this reassigns c.owner to p
+							}
+						} else {
+							b.MoveCards(c, p)
+						}
 						b.AfterUserMove()
 					} else {
 						c.owner.CancelDrag(c)

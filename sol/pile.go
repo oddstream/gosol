@@ -411,14 +411,14 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	switch p.Class {
 	case "Waste":
-		if len(Tail) == 1 && c0.owner.Class == "Stock" { // user can drag a single card from stock to waste
-			if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
-				return true
-			}
+		if len(Tail) == 1 && c0.owner.Class == "Stock" {
+			// if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
+			return true
+			// }
 		}
-		if canToast {
-			TheBaize.ui.Toast("Can only drag one card from Stock to Waste")
-		}
+		// if canToast {
+		// 	TheBaize.ui.Toast("Can only drag one card from Stock to Waste")
+		// }
 		return false
 
 	case "Foundation":
@@ -714,16 +714,17 @@ func (p *Pile) Update() error {
 
 // Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
-	if p.backgroundImage != nil {
+	if p.backgroundImage != nil && p.CardCount() == 0 {
 		op := &ebiten.DrawImageOptions{}
 		x, y := p.ScreenPosition()
 		op.GeoM.Translate(float64(x), float64(y))
-		if x, y := ebiten.CursorPosition(); util.InRect(x, y, p.ScreenRect) {
-			op.ColorM.Scale(1, 1, 1, 0.5)
-			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-				op.GeoM.Translate(2, 2)
-			}
-		}
+		// the following makes dragging a bit laggy
+		// if x, y := ebiten.CursorPosition(); util.InRect(x, y, p.ScreenRect) {
+		// 	op.ColorM.Scale(1, 1, 1, 0.5)
+		// 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && strings.HasPrefix(p.Class, "Stock") {
+		// 		op.GeoM.Translate(2, 2)
+		// 	}
+		// }
 		screen.DrawImage(p.backgroundImage, op)
 	}
 	// if DebugMode {
@@ -753,7 +754,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 func (p *Pile) DrawStaticCards(screen *ebiten.Image) {
 	// draw dragging/lerping cards last so they appear on top
 	for _, c := range p.Cards {
-		if !c.Transitioning() && !c.Flipping() {
+		if !c.Transitioning() && !c.Flipping() && !c.Dragging() {
 			c.Draw(screen)
 		}
 	}
@@ -762,7 +763,7 @@ func (p *Pile) DrawStaticCards(screen *ebiten.Image) {
 // DrawTransitioningCards renders the Cards in the Pile into the screen
 func (p *Pile) DrawTransitioningCards(screen *ebiten.Image) {
 	for _, c := range p.Cards {
-		if c.Transitioning() {
+		if c.Transitioning() || c.Dragging() {
 			c.Draw(screen)
 		}
 	}

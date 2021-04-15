@@ -1,8 +1,8 @@
 package sol
 
 import (
-	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 
 	"github.com/fogleman/gg"
@@ -218,15 +218,17 @@ func (c *Card) Spinning() bool {
 	return c.directionX != 0 || c.directionY != 0 || c.angle != 0 || c.spin != 0
 }
 
-// Transitioning returns true if this card is lerping, dragging or flipping
+// Transitioning returns true if this card is lerping
 func (c *Card) Transitioning() bool {
 	if c.lerpStep < 1.0 {
 		return true
 	}
-	if c.dragging {
-		return true
-	}
 	return false
+}
+
+// Dragging returns true if this card is being dragged
+func (c *Card) Dragging() bool {
+	return c.dragging
 }
 
 // Flipping returns true if this card is flipping
@@ -357,11 +359,16 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if c.Transitioning() && !c.Flipping() {
-		offset := float64(CardWidth) / 30
+	if (c.Transitioning() || c.Dragging()) && !c.Flipping() {
+		offset := float64(CardWidth) / 50
 		op.GeoM.Translate(offset, offset)
 		screen.DrawImage(CardShadowImage, op)
 		op.GeoM.Translate(-offset, -offset)
+	}
+
+	if c.Dragging() {
+		offset := float64(CardWidth) / 50
+		op.GeoM.Translate(-offset, -offset) // move the card
 	}
 
 	if TheUserData.HighlightMovable && !c.Spinning() {
@@ -382,12 +389,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	if !c.Flipping() && !c.owner.Hidden() {
 		if strings.HasPrefix(c.owner.Class, "Stock") && c.owner.Peek() == c {
 			dc := gg.NewContext(CardWidth, CardHeight)
-			dc.SetRGBA(1, 1, 1, 0.25)
+			dc.SetRGBA(1, 1, 1, 0.1)
 			dc.SetFontFace(schriftbank.CardOrdinal)
-			str := fmt.Sprintf("%d", c.owner.CardCount())
-			dc.DrawStringAnchored(str, float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
-			dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
-			dc.Stroke()
+			dc.DrawStringAnchored(strconv.Itoa(c.owner.CardCount()), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
+			// dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
+			// dc.Stroke()
 			img := ebiten.NewImageFromImage(dc.Image())
 			screen.DrawImage(img, op)
 		}
