@@ -117,7 +117,8 @@ func (p *Pile) CreateBackgroundImage() {
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), cardCornerRadius())
 	dc.Stroke()
 
-	if p.localAccept > 0 {
+	switch {
+	case p.localAccept > 0:
 		var str string
 		dc.SetFontFace(schriftbank.CardOrdinal)
 		if p.localAccept <= 13 {
@@ -130,9 +131,8 @@ func (p *Pile) CreateBackgroundImage() {
 		// dc.DrawLine(0, float64(CardHeight)/6.666, float64(CardWidth), float64(CardHeight)/6.666)
 		// dc.DrawLine(float64(CardWidth)/3.333, 0, float64(CardWidth)/3.333, float64(CardHeight))
 		// dc.Stroke()
-	}
 
-	if strings.HasPrefix(p.Class, "Stock") { // never StockSpider?
+	case strings.HasPrefix(p.Class, "Stock"): // never StockSpider?
 		dc.SetFontFace(schriftbank.CardSymbolLarge)
 		if p.localRecycles == 0 {
 			// anything put here either doesn't render (0x1F6AB) or looks ugly
@@ -143,7 +143,13 @@ func (p *Pile) CreateBackgroundImage() {
 			dc.DrawStringAnchored(string(rune(0x2672)), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.4)
 		}
 		dc.Stroke()
+
+	case p.Class == "Reserve":
+		dc.SetFontFace(schriftbank.CardOrdinal)
+		dc.DrawStringAnchored("x", float64(CardWidth)/3.333, float64(CardHeight)/6.666, 0.5, 0.5)
+		dc.Stroke()
 	}
+
 	p.backgroundImage = ebiten.NewImageFromImage(dc.Image())
 }
 
@@ -524,6 +530,11 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 			TheBaize.ui.Toast("Can only have one card in a Cell")
 		}
 		return ok
+	case "Reserve":
+		if canToast {
+			TheBaize.ui.Toast("You cannot move a card to a Reserve")
+		}
+		return false
 	}
 	if canToast {
 		TheBaize.ui.Toast("You cannot move a card there")

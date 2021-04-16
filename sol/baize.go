@@ -390,10 +390,10 @@ func (b *Baize) CardTapped(c *Card) {
 
 	// println("card",c.ID.String(),"tapped")
 
-	if c.Transitioning() || c.Flipping() {
-		log.Println("cannot tap an animating card ", c.String())
-		return
-	}
+	// if c.Transitioning() || c.Flipping() {
+	// 	log.Println("cannot tap an animating card ", c.String())
+	// 	return
+	// }
 
 	if c.Spinning() {
 		c.Flip()
@@ -461,31 +461,41 @@ func (b *Baize) CardTapped(c *Card) {
 				break
 			}
 		}
-	case "Tableau", "Waste", "Cell", "Reserve":
-		for _, p := range b.Piles {
-			if p.Class == "Foundation" {
-				if p.CanAcceptCard(c) {
-					b.MoveCards(c, p)
-					moved = true
-					break
-				}
-			}
-			// if p.Class == "Foundation" && p.buildFlags&8==8 {
-			// 	// fake a drag
-			// 	if c.owner.StartDrag(c) {
-			// 		if b.CanAcceptTail(p, c.owner.Tail) {
-			// 			b.MoveCards(c, p)
-			// 			moved = true
-			// 		}
-			// 		p.CancelDrag(c)
-			// 	}
-			// 	if moved {
-			// 		break
-			// 	}
-			// }
-		}
-	default:
-		println("clueless when tapping on a", pSrc.Class, "card")
+		// case "Tableau", "Waste", "Cell", "Reserve":
+		// 	for _, p := range b.Piles {
+		// 		if p.Class == "Foundation" {
+		// 			if p.CanAcceptTail([]*Card{c}, false) {
+		// 				b.MoveCards(c, p)
+		// 				moved = true
+		// 				break
+		// 			}
+		// 		}
+		// 		// TODO maybe fake a drag if p.buildFlags&8==8
+		// 	}
+		// 	if !moved {
+		// 		// auto-move card if there is only one other place it can go
+		// 		var targets []*Pile
+		// 		for _, p := range b.Piles {
+		// 			if p == c.owner {
+		// 				continue
+		// 			}
+		// 			if p.CanAcceptTail([]*Card{c}, false) {
+		// 				targets = append(targets, p)
+		// 			}
+		// 		}
+		// 		switch len(targets) {
+		// 		case 0:
+		// 		case 1:
+		// 			b.MoveCards(c, targets[0])
+		// 			moved = true
+		// 		default:
+		// 			TheBaize.ui.Toast("Cannot auto-move card because there is more than one possible destination")
+		// 		}
+		// 	}
+		// case "Foundation":
+		// 	TheBaize.ui.Toast("You cannot move cards from a foundation")
+		// default:
+		// 	println("clueless when tapping on a", pSrc.Class, "card")
 	}
 
 	if moved {
@@ -496,7 +506,6 @@ func (b *Baize) CardTapped(c *Card) {
 		}
 	}
 
-	// TODO else test other piles to see if this card is accepted?
 }
 
 // MoveCards from one pile to another, always from card downwards (inclusive)
@@ -658,7 +667,8 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 		}
 		px0, py0, px1, py1 := p.FannedBaizeRect()
 		area := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
-		if area > largestArea && p.CanAcceptTail(c.owner.Tail, false) {
+		// can't test for AcceptTail here as it would filter out warning toasts
+		if area > largestArea /*&& p.CanAcceptTail(c.owner.Tail, false)*/ {
 			largestArea = area
 			pile = p
 		}
@@ -907,11 +917,12 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 // ScaleCards calculates new width/height of cards and margins
 func (b *Baize) ScaleCards() {
 
-	const (
-		DefaultRatio = 1.444
-		BridgeRatio  = 1.561
-		PokerRatio   = 1.39
-	)
+	// const (
+	// 	DefaultRatio = 1.444
+	// 	BridgeRatio  = 1.561
+	// 	PokerRatio   = 1.39
+	// 	OpsoleRatio  = 1.5556 // 3.5/2.25
+	// )
 
 	var maxX PilePositionType
 	for _, p := range b.Piles {
@@ -936,7 +947,7 @@ func (b *Baize) ScaleCards() {
 		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * DefaultRatio
+		slotHeight := slotWidth * 1.5
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
