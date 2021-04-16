@@ -639,7 +639,7 @@ func (b *Baize) AfterUserMove() {
 	// println(oldChecksum, newChecksum)
 	if oldChecksum != newChecksum {
 		b.UndoPush()
-		if b.State == Started && b.movableCards == 0 {
+		if b.State == Started && b.movableCards == 0 && b.stock.localRecycles == 0 {
 			b.ui.Toast("No movable cards")
 		}
 	} else {
@@ -665,30 +665,6 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 	}
 	return pile
 }
-
-// func (b *Baize) largestAcceptingIntersection(c *Card) *Pile {
-// 	type PileArea struct {
-// 		pile *Pile
-// 		area int
-// 	}
-// 	var pileAreas []PileArea = nil
-// 	cx0, cy0, cx1, cy1 := c.BaizeRect()
-// 	for _, p := range b.Piles {
-// 		if c.owner == p {
-// 			continue
-// 		}
-// 		px0, py0, px1, py1 := p.FannedBaizeRect()
-// 		area := util.OverlapArea(cx0, cy0, cx1, cy1, px0, py0, px1, py1)
-// 		if area > 0 && p.CanAcceptTail(c.owner.Tail, false) {
-// 			pileAreas = append(pileAreas, PileArea{pile: p, area: area})
-// 		}
-// 	}
-// 	if len(pileAreas) == 0 {
-// 		return nil
-// 	}
-// 	sort.Slice(pileAreas, func(i,j int) bool {return pileAreas[i].area < pileAreas[j].area})
-// 	return pileAreas[0].pile
-// }
 
 func (b *Baize) calcPercentComplete() int {
 	var foundations, sorted, unsorted int
@@ -834,6 +810,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 					if p.CanAcceptTail(c.owner.Tail, true) {
 						c.owner.StopDrag(c) // this makes the Tail = nil
 						if c.owner == b.stock && p.Class == "Waste" {
+							// special case: dragging a card from Stock to Waste in Canfield, Klondike (Draw Three)
 							cardsToMove, ok := c.owner.GetIntAttribute("CardsToMove")
 							if !ok || cardsToMove == 0 {
 								cardsToMove = 1

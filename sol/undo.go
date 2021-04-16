@@ -7,6 +7,7 @@ func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
 	b.MarkMovable()
 	b.percentComplete = b.calcPercentComplete()
+	b.ui.SetStock(b.stock.CardCount())
 	b.ui.SetMoves(len(b.UndoStack) - 1)
 	b.ui.SetPercent(b.percentComplete)
 }

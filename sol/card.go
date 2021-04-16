@@ -2,12 +2,8 @@ package sol
 
 import (
 	"math/rand"
-	"strconv"
-	"strings"
 
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -220,10 +216,7 @@ func (c *Card) Spinning() bool {
 
 // Transitioning returns true if this card is lerping
 func (c *Card) Transitioning() bool {
-	if c.lerpStep < 1.0 {
-		return true
-	}
-	return false
+	return c.lerpStep < 1.0
 }
 
 // Dragging returns true if this card is being dragged
@@ -374,30 +367,23 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	if TheUserData.HighlightMovable && !c.Spinning() {
 		var colorValue float64 = util.MapValue(float64(c.movable), 0, 4, 0.8, 1)
 		op.ColorM.Scale(colorValue, colorValue, colorValue, 1)
-		// switch c.movable {
-		// case 0:
-		// 	op.ColorM.Scale(0.85, 0.85, 0.85, 1)
-		// case 1:
-		// 	op.ColorM.Scale(0.9, 0.9, 0.9, 1)
-		// case 2:
-		// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
-		// }
 	}
 
 	screen.DrawImage(img, op)
 
-	if !c.Flipping() && !c.owner.Hidden() {
-		if strings.HasPrefix(c.owner.Class, "Stock") && c.owner.Peek() == c {
-			dc := gg.NewContext(CardWidth, CardHeight)
-			dc.SetRGBA(1, 1, 1, 0.1)
-			dc.SetFontFace(schriftbank.CardOrdinal)
-			dc.DrawStringAnchored(strconv.Itoa(c.owner.CardCount()), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
-			// dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
-			// dc.Stroke()
-			img := ebiten.NewImageFromImage(dc.Image())
-			screen.DrawImage(img, op)
-		}
-	}
+	// TODO the following slows down rendering too much; find another way of displaying number of cards in stock
+	// if !c.Flipping() && !c.owner.Hidden() {
+	// 	if strings.HasPrefix(c.owner.Class, "Stock") && c.owner.Peek() == c {
+	// 		dc := gg.NewContext(CardWidth, CardHeight)
+	// 		dc.SetRGBA(1, 1, 1, 0.1)
+	// 		dc.SetFontFace(schriftbank.CardOrdinal)
+	// 		dc.DrawStringAnchored(strconv.Itoa(c.owner.CardCount()), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
+	// 		// dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
+	// 		// dc.Stroke()
+	// 		img := ebiten.NewImageFromImage(dc.Image())
+	// 		screen.DrawImage(img, op)
+	// 	}
+	// }
 
 	// if DebugMode && c.movable > 0 {
 	// 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)

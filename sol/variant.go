@@ -229,6 +229,32 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 11, 1, "Down", 22, 22, 1, map[string]string{"Accept": "99", "Deal": "uuuu"}},
 		},
 	},
+	"Double Klondike": {
+		Description: "A two-pack version of the well-known solitaire variant. Three cards at a time are dealt from the stock to the waste, and you get unlimited stock recycles.",
+		Related:     []string{"Klondike", "Jumbo"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+		Piles: []PileInfo{
+			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "CardsToMove": "3", "Target": "Waste", "Recycles": "9999"}},
+			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
+			{"Foundation", 3, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 4, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "u"}},
+			{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "du"}},
+			{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddu"}},
+			{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddu"}},
+			{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddu"}},
+			{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddddu"}},
+			{"Tableau", 8, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddddu"}},
+			{"Tableau", 9, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddddddu"}},
+			{"Tableau", 10, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddddddu"}},
+		},
+	},
 	"Duchess": {
 		Description: "Related to Canfield, and quite easy to win. Move the top card from one of the reserves to a foundation to start the game.",
 		AKA:         []string{"Glenwood"},
@@ -407,6 +433,32 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 5, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
 			{"Tableau", 6, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
 			{"Tableau", 7, 1, "Down", 42, 42, 1, map[string]string{"Accept": "0", "Bury": "13", "Disinter": "1", "Deal": "uuuuuu"}},
+		},
+	},
+	"Gargantua": {
+		Description: "A two-pack version of the well-known solitaire variant. This version only allows two passes through the stock.",
+		Related:     []string{"Double Klondike"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+		Piles: []PileInfo{
+			{"Stock", 0, 0, "None", 0, 15, 0, map[string]string{"Packs": "2", "Target": "Waste", "Recycles": "1"}},
+			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
+			{"Foundation", 3, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 4, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 5, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 6, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 7, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 8, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 9, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Foundation", 10, 0, "None", 21, 0, 0, map[string]string{"Accept": "1"}},
+			{"Tableau", 2, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "u"}},
+			{"Tableau", 3, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "du"}},
+			{"Tableau", 4, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddu"}},
+			{"Tableau", 5, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddu"}},
+			{"Tableau", 6, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddu"}},
+			{"Tableau", 7, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddddu"}},
+			{"Tableau", 8, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddddu"}},
+			{"Tableau", 9, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "dddddddu"}},
+			{"Tableau", 10, 1, "Down", 42, 42, 0, map[string]string{"Accept": "13", "Deal": "ddddddddu"}},
 		},
 	},
 	// "Giant": {
@@ -991,20 +1043,18 @@ func findVariant(name string) string {
 	return "Klondike"
 }
 
-func variantDescription(name string) string {
-	if vi, exists := Variants[name]; exists {
-		return vi.Description
-	}
-	return ""
-}
+// func variantDescription(name string) string {
+// 	if vi, exists := Variants[name]; exists {
+// 		return vi.Description
+// 	}
+// 	return ""
+// }
 
 func (b *Baize) ShowVariantPicker() {
 	var vnames []string
 	for k, v := range Variants {
 		vnames = append(vnames, k)
-		for _, aka := range v.AKA {
-			vnames = append(vnames, aka)
-		}
+		vnames = append(vnames, v.AKA...)
 	}
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
 	b.ui.ShowVariantPicker(vnames)

@@ -714,11 +714,11 @@ func (p *Pile) Update() error {
 
 // Draw renders the Pile into the screen
 func (p *Pile) Draw(screen *ebiten.Image) {
-	if p.backgroundImage != nil && p.CardCount() == 0 {
+	if p.backgroundImage != nil {
 		op := &ebiten.DrawImageOptions{}
 		x, y := p.ScreenPosition()
 		op.GeoM.Translate(float64(x), float64(y))
-		// the following makes dragging a bit laggy
+		// the following makes dragging a bit laggy, even with no cards
 		// if x, y := ebiten.CursorPosition(); util.InRect(x, y, p.ScreenRect) {
 		// 	op.ColorM.Scale(1, 1, 1, 0.5)
 		// 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && strings.HasPrefix(p.Class, "Stock") {
