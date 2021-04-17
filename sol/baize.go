@@ -461,41 +461,41 @@ func (b *Baize) CardTapped(c *Card) {
 				break
 			}
 		}
-		// case "Tableau", "Waste", "Cell", "Reserve":
-		// 	for _, p := range b.Piles {
-		// 		if p.Class == "Foundation" {
-		// 			if p.CanAcceptTail([]*Card{c}, false) {
-		// 				b.MoveCards(c, p)
-		// 				moved = true
-		// 				break
-		// 			}
-		// 		}
-		// 		// TODO maybe fake a drag if p.buildFlags&8==8
-		// 	}
-		// 	if !moved {
-		// 		// auto-move card if there is only one other place it can go
-		// 		var targets []*Pile
-		// 		for _, p := range b.Piles {
-		// 			if p == c.owner {
-		// 				continue
-		// 			}
-		// 			if p.CanAcceptTail([]*Card{c}, false) {
-		// 				targets = append(targets, p)
-		// 			}
-		// 		}
-		// 		switch len(targets) {
-		// 		case 0:
-		// 		case 1:
-		// 			b.MoveCards(c, targets[0])
-		// 			moved = true
-		// 		default:
-		// 			TheBaize.ui.Toast("Cannot auto-move card because there is more than one possible destination")
-		// 		}
-		// 	}
-		// case "Foundation":
-		// 	TheBaize.ui.Toast("You cannot move cards from a foundation")
-		// default:
-		// 	println("clueless when tapping on a", pSrc.Class, "card")
+	case "Tableau", "Waste", "Cell", "Reserve":
+		for _, p := range b.Piles {
+			if p.Class == "Foundation" {
+				if p.CanAcceptTail([]*Card{c}, false) {
+					b.MoveCards(c, p)
+					moved = true
+					break
+				}
+			}
+			// TODO maybe fake a drag if p.buildFlags&8==8
+		}
+	// 	if !moved {
+	// 		// auto-move card if there is only one other place it can go
+	// 		var targets []*Pile
+	// 		for _, p := range b.Piles {
+	// 			if p == c.owner {
+	// 				continue
+	// 			}
+	// 			if p.CanAcceptTail([]*Card{c}, false) {
+	// 				targets = append(targets, p)
+	// 			}
+	// 		}
+	// 		switch len(targets) {
+	// 		case 0:
+	// 		case 1:
+	// 			b.MoveCards(c, targets[0])
+	// 			moved = true
+	// 		default:
+	// 			TheBaize.ui.Toast("Cannot auto-move card because there is more than one possible destination")
+	// 		}
+	// 	}
+	case "Foundation":
+		TheBaize.ui.Toast("You cannot move cards from a Foundation")
+	default:
+		println("clueless when tapping on a", pSrc.Class, "card")
 	}
 
 	if moved {

@@ -450,7 +450,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 		if p.Flags&BuildFlagSpider == BuildFlagSpider {
 			if len(Tail) != 13 {
 				if canToast {
-					TheBaize.ui.Toast("Can only drag 13 cards to a Foundation")
+					TheBaize.ui.Toast("You can only drag 13 cards to a Foundation")
 				}
 				return false
 			}
@@ -464,7 +464,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 		} else {
 			if len(Tail) != 1 {
 				if canToast {
-					TheBaize.ui.Toast("Can only drag one card to Foundations")
+					TheBaize.ui.Toast("CYou can only drag one card to a Foundation")
 				}
 				return false
 			}
@@ -527,7 +527,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 	case "Cell":
 		ok := len(Tail) == 1 && p.CardCount() == 0
 		if !ok && canToast {
-			TheBaize.ui.Toast("Can only have one card in a Cell")
+			TheBaize.ui.Toast("You can only have one card in a Cell")
 		}
 		return ok
 	case "Reserve":
@@ -580,14 +580,13 @@ func (p *Pile) StartDrag(c *Card) bool {
 	}
 	if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
 		if !(len(p.Tail) == 1 || len(p.Tail) == len(p.Cards)) {
-			TheBaize.ui.Toast("Can only drag a single card or the entire pile")
+			TheBaize.ui.Toast("You can only drag a single card or the entire pile")
 			p.ApplyToTail((*Card).Shake)
 			p.Tail = nil
 			return false
 		}
 	}
 	if !isTailConformant(p.Drag, p.Flags, p.Tail) {
-		// println("Pile StartDrag non-conformant")
 		p.ApplyToTail((*Card).Shake)
 		p.Tail = nil
 		return false
