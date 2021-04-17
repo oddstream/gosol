@@ -6,7 +6,7 @@ It's an adaptation of my [Lua](https://www.lua.org/)/[Solar2D](https://solar2d.c
 
 ## Variants
 
-It currently knows how to play:
+It currently knows how to play a few games, including:
 
 * American Toad (and the original The Toad)
 * Australian
@@ -17,10 +17,9 @@ It currently knows how to play:
 * Duchess
 * EasyWin (an easy to win game, for debugging)
 * Fortune's Favor
-* Forty and Eight
+* Forty Thieves (and Forty and Eight, Maria, Limited, Lucas)
 * Freecell, Freecell Easy
 * Klondike (Draw One, Draw Three and Thoughtful)
-* Limited
 * Mistress and Mrs Mop
 * Simple Simon
 * Scorpion, Wasp
@@ -49,14 +48,31 @@ Some will never make it here because they are just poor games:
 It has an intentionally minimal material-style user interface, and some keyboard shortcuts:
 
 * U - undo
-* N - new deal
+* N - new deal (resign current game, if started)
 * R - restart deal
 * S - save current position ('bookmark')
 * L - load a previously saved position (goto bookmark, handy for Freecell and Simple Simon players)
 * C - collect cards to the foundations
- 
+
+Tapping a card has a few shortcuts:
+
+* Tap the top Stock card to deal one or three cards to the Waste pile, or deal cards to the tableaux if playing a Spider variant
+* Tap a card to send it to a Foundation (you can't currently tap a pile in a Spider game to send 13 cards to a Foundation)
+
+## Other features
+
+* Unlimited undo
+* Bookmarking positions
+* Scalable and retro card designs
+* Movable card highlighting (the more useful a move looks, the more the card gets highlighted)
+* Statistics (including percent compete and streaks - streaks are great)
+* Cards spin prettily when you complete a game
+
+A lot a features have been tried and discarded, in order to keep the game (and player) focused. Weniger aber besser, as [Dieter Rams](https://en.wikipedia.org/wiki/Dieter_Rams) taught us. Just because a feature *can* be implemented, does not mean it *should* be.
+
 ## TODO
 
+* Figure out why the touch interface isn't working properly
 * Sounds
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
 
