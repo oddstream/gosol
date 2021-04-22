@@ -12,7 +12,7 @@
       "program": "${workspaceFolder}",
       "args": ["-debug"],
       // "args": ["-debug", "-generateicons"],
-      "buildFlags": "-tags desktop"
+      "buildFlags": "-tags=desktop"
     }
   ]
 }

@@ -57,7 +57,7 @@ func (b *Baize) Execute(cmd interface{}) {
 			b.OldWindowWidth = 0 // force a rescale
 			b.Scale()
 		case "Mute sounds":
-			b.ui.Toast("Not implemented yet")
+			TheUserData.MuteSounds, _ = strconv.ParseBool(v.Data)
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

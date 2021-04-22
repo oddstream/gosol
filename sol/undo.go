@@ -52,6 +52,7 @@ func (b *Baize) Undo() {
 	if !ok {
 		log.Panic("error popping second state from undo stack")
 	}
+	PlaySound("OpenPackage")
 	b.UpdateFromSaveable(sav)
 	b.UndoPush() // replace current state
 }

@@ -127,12 +127,8 @@ func (s *Stroke) Update() {
 		return
 	}
 
-	x, y := s.source.Position()
-	if s.currX != x || s.currY != y {
-		s.currX, s.currY = x, y
-		s.Notify(StrokeEvent{Event: "move", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
-	}
-
+	// test release before testing move
+	// to make the "dropping while moving" problem better
 	if s.source.IsJustReleased() {
 		s.released = true
 		elapsed := time.Since(s.timeStart) / 1000 / 1000 // convert nano- to milli- seconds
@@ -147,6 +143,12 @@ func (s *Stroke) Update() {
 		} else {
 			s.Notify(StrokeEvent{Event: "stop", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 		}
+	}
+
+	x, y := s.source.Position()
+	if s.currX != x || s.currY != y {
+		s.currX, s.currY = x, y
+		s.Notify(StrokeEvent{Event: "move", Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 	}
 
 }

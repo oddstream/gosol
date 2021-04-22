@@ -3,7 +3,6 @@ package ui
 import (
 	"archive/zip"
 	"bytes"
-	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"fmt"
 	"image"
 	"io/ioutil"

@@ -10,4 +10,5 @@ type UserData struct {
 	CardStyle        string
 	HighlightMovable bool
 	PowerMoves       bool
+	MuteSounds       bool
 }

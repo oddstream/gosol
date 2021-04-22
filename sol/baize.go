@@ -182,6 +182,8 @@ func (b *Baize) LoadVariant(v string) bool {
 		return false
 	}
 
+	PlaySound("Fan")
+
 	sav, ok := b.UndoPop() // removes extra pushed state
 	if !ok {
 		log.Panic("error popping extra state from undo stack")
@@ -205,6 +207,7 @@ func (b *Baize) LoadVariant(v string) bool {
 }
 
 func (b *Baize) dealCards() {
+	PlaySound("Fan")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
@@ -229,7 +232,7 @@ func (b *Baize) dealCards() {
 				c.FlipDown()
 				p.Push(c)
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D':
-				idx, ok := findCard(b.stock.Cards, d)
+				idx, ok := findHexCard(b.stock.Cards, d)
 				if ok {
 					c := b.stock.Extract(idx)
 					p.Push(c)
@@ -547,6 +550,8 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		return
 	}
 
+	PlaySound("Place")
+
 	// flip up an exposed source card
 	if !strings.HasPrefix(src.Class, "Stock") {
 		if tc := src.Peek(); tc != nil {
@@ -617,6 +622,7 @@ func (b *Baize) AfterUserMove() {
 		if b.Complete() {
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
+			PlaySound("Complete")
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
 			b.StartSpinning()

@@ -10,33 +10,33 @@ package sol
 ]]
 */
 
-// func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
-// 	// we already know that dst can accept the card, so don't need to check if dst is empty
-// 	localSuit := c.owner.Build / 10
-// 	// this is only really for localSuit == 4 (alternate colors)
-// 	if localSuit != 4 {
-// 		return true
-// 	}
-// 	// TODO are all the lower ranked cards of the opposite color to c already on the Foundations?
-// 	for _, p := range b.Piles {
-// 		if p.Class == "Foundation" {
-// 			if p == dst {
-// 				continue
-// 			}
-// 			fc := p.Peek()
-// 			if fc == nil {
-// 				continue
-// 			}
-// 			if fc.Color() == c.Color() {
-// 				continue
-// 			}
-// 			if fc.Ordinal() < c.Ordinal()-1 {
-// 				return false
-// 			}
-// 		}
-// 	}
-// 	return true
-// }
+func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
+	// we already know that dst can accept the card, so don't need to check if dst is empty
+	localSuit := c.owner.Build / 10
+	// this is only really for localSuit == 4 (alternate colors)
+	if localSuit != 4 {
+		return true
+	}
+	// TODO are all the lower ranked cards of the opposite color to c already on the Foundations?
+	for _, p := range b.Piles {
+		if p.Class == "Foundation" {
+			if p == dst {
+				continue
+			}
+			fc := p.Peek()
+			if fc == nil {
+				continue
+			}
+			if fc.Color() == c.Color() {
+				continue
+			}
+			if fc.Ordinal() < c.Ordinal()-1 {
+				return false
+			}
+		}
+	}
+	return true
+}
 
 func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 	var count int
@@ -45,7 +45,7 @@ func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 		if c == nil {
 			break
 		}
-		if dst.CanAcceptCard(c) /*&& b.safeCheck(c, dst)*/ {
+		if dst.CanAcceptCard(c) && b.safeCheck(c, dst) {
 			b.MoveCards(c, dst)
 			count++
 		} else {

@@ -51,7 +51,9 @@ func (b *Baize) CreateStock() {
 		}
 	}
 
-	// TestShuffle(stock)
+	// if DebugMode {
+	// 	TestShuffle(b.stock)
+	// }
 
 	b.totalCards = b.stock.CardCount()
 }
@@ -96,31 +98,31 @@ func (b *Baize) ShuffleStock() {
 	// 	stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i]
 	// }
 
-	// TestShuffle shows that the 7 has a consistently lower distribution; shuffling twice corrects this
-	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 
 }
 
-// func TestShuffle(stock *Pile) {
-// 	const cycles int = 500000
-// 	dist := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-// 	for i := 0; i < cycles; i++ {
-// 		sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
-// 		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
-// 		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
-// 		for j, c := range stock.Cards {
-// 			if c.Ordinal() == j {
-// 				dist[j]++
-// 			}
-// 		}
-// 	}
-// 	for i := 1; i < len(dist); i++ {
-// 		println(i, dist[i])
-// 	}
-// }
+func TestShuffle(stock *Pile) {
+	const cycles int = 100000
+	dist := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for i := 0; i < cycles; i++ {
+		sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
+		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
+		for j, c := range stock.Cards {
+			// 1 % 13 = 1
+			// 13 % 13 = 0
+			if c.Ordinal()%13 == j {
+				dist[j]++
+			}
+		}
+	}
+	for i := 0; i < len(dist); i++ {
+		println(i, dist[i])
+	}
+}
 
-func findCard(cards []*Card, card rune) (int, bool) {
+func findHexCard(cards []*Card, card rune) (int, bool) {
 	// card should be one of 123456789ABCD
 	i64, err := strconv.ParseInt(string(card), 16, 0)
 	if err != nil {
