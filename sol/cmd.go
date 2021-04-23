@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/ui"
 )
 
@@ -58,6 +59,7 @@ func (b *Baize) Execute(cmd interface{}) {
 			b.Scale()
 		case "Mute sounds":
 			TheUserData.MuteSounds, _ = strconv.ParseBool(v.Data)
+			sound.Mute(TheUserData.MuteSounds)
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

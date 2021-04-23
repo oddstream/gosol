@@ -17,7 +17,7 @@ func NewSettingsDrawer() *SettingsDrawer {
 }
 
 // ShowSettingsDrawer makes the card back picker visible
-func (u *UI) ShowSettingsDrawer(retro, highlight, powerMoves bool) {
+func (u *UI) ShowSettingsDrawer(retro, highlight, powerMoves, muteSounds bool) {
 	con := u.VisibleDrawer()
 	if con == u.settingsDrawer {
 		return
@@ -30,7 +30,7 @@ func (u *UI) ShowSettingsDrawer(retro, highlight, powerMoves bool) {
 		// widget x, y will be set by LayoutWidgets()
 		NewCheckbox(u.settingsDrawer, "Highlights", highlight),
 		NewCheckbox(u.settingsDrawer, "Power moves", powerMoves),
-		NewCheckbox(u.settingsDrawer, "Mute sounds", true),
+		NewCheckbox(u.settingsDrawer, "Mute sounds", muteSounds),
 		NewCheckbox(u.settingsDrawer, "Retro cards", retro),
 		NewNavItem(u.settingsDrawer, "settings", "Card back ...", ebiten.KeyF2),
 	}

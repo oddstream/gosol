@@ -11,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
 )
@@ -182,8 +183,6 @@ func (b *Baize) LoadVariant(v string) bool {
 		return false
 	}
 
-	PlaySound("Fan")
-
 	sav, ok := b.UndoPop() // removes extra pushed state
 	if !ok {
 		log.Panic("error popping extra state from undo stack")
@@ -207,7 +206,7 @@ func (b *Baize) LoadVariant(v string) bool {
 }
 
 func (b *Baize) dealCards() {
-	PlaySound("Fan")
+	sound.Play("Fan")
 	for _, p := range b.Piles {
 		deal := p.GetStringAttribute("Deal")
 		if deal == "" {
@@ -550,7 +549,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		return
 	}
 
-	PlaySound("Place")
+	sound.Play("Place")
 
 	// flip up an exposed source card
 	if !strings.HasPrefix(src.Class, "Stock") {
@@ -622,7 +621,7 @@ func (b *Baize) AfterUserMove() {
 		if b.Complete() {
 			b.State = Complete
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
-			PlaySound("Complete")
+			sound.Play("Complete")
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
 			b.StartSpinning()

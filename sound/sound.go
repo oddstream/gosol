@@ -1,4 +1,4 @@
-package sol
+package sound
 
 import (
 	"bytes"
@@ -13,81 +13,83 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-//go:embed assets/audio/cardFan1.wav
+//go:embed assets/cardFan1.wav
 var cardFan1Bytes []byte
 
-//go:embed assets/audio/cardFan2.wav
+//go:embed assets/cardFan2.wav
 var cardFan2Bytes []byte
 
-//go:embed assets/audio/cardOpenPackage1.wav
+//go:embed assets/cardOpenPackage1.wav
 var cardOpenPackage1Bytes []byte
 
-//go:embed assets/audio/cardOpenPackage2.wav
+//go:embed assets/cardOpenPackage2.wav
 var cardOpenPackage2Bytes []byte
 
-//go:embed assets/audio/cardPlace1.wav
+//go:embed assets/cardPlace1.wav
 var cardPlace1Bytes []byte
 
-//go:embed assets/audio/cardPlace2.wav
+//go:embed assets/cardPlace2.wav
 var cardPlace2Bytes []byte
 
-//go:embed assets/audio/cardPlace3.wav
+//go:embed assets/cardPlace3.wav
 var cardPlace3Bytes []byte
 
-//go:embed assets/audio/cardPlace4.wav
+//go:embed assets/cardPlace4.wav
 var cardPlace4Bytes []byte
 
-//go:embed assets/audio/cardShove1.wav
+//go:embed assets/cardShove1.wav
 var cardShove1Bytes []byte
 
-//go:embed assets/audio/cardShove2.wav
+//go:embed assets/cardShove2.wav
 var cardShove2Bytes []byte
 
-//go:embed assets/audio/cardShove3.wav
+//go:embed assets/cardShove3.wav
 var cardShove3Bytes []byte
 
-//go:embed assets/audio/cardShove4.wav
+//go:embed assets/cardShove4.wav
 var cardShove4Bytes []byte
 
-//go:embed assets/audio/cardShuffle.wav
+//go:embed assets/cardShuffle.wav
 var cardShuffleBytes []byte
 
-//go:embed assets/audio/cardSlide1.wav
+//go:embed assets/cardSlide1.wav
 var cardSlide1Bytes []byte
 
-//go:embed assets/audio/cardSlide2.wav
+//go:embed assets/cardSlide2.wav
 var cardSlide2Bytes []byte
 
-//go:embed assets/audio/cardSlide3.wav
+//go:embed assets/cardSlide3.wav
 var cardSlide3Bytes []byte
 
-//go:embed assets/audio/cardSlide4.wav
+//go:embed assets/cardSlide4.wav
 var cardSlide4Bytes []byte
 
-//go:embed assets/audio/cardSlide5.wav
+//go:embed assets/cardSlide5.wav
 var cardSlide5Bytes []byte
 
-//go:embed assets/audio/cardSlide6.wav
+//go:embed assets/cardSlide6.wav
 var cardSlide6Bytes []byte
 
-//go:embed assets/audio/cardSlide7.wav
+//go:embed assets/cardSlide7.wav
 var cardSlide7Bytes []byte
 
-//go:embed assets/audio/cardSlide8.wav
+//go:embed assets/cardSlide8.wav
 var cardSlide8Bytes []byte
 
-//go:embed assets/audio/cardTakeOutPackage1.wav
+//go:embed assets/cardTakeOutPackage1.wav
 var cardTakeOutPackage1Bytes []byte
 
-//go:embed assets/audio/cardTakeOutPackage2.wav
+//go:embed assets/cardTakeOutPackage2.wav
 var cardTakeOutPackage2Bytes []byte
 
-//go:embed assets/audio/complete.wav
+//go:embed assets/complete.wav
 var completeBytes []byte
 
 var audioContext *audio.Context
 
 var soundMap map[string]*audio.Player
+
+var MuteSound bool
 
 func decode(name string, wavbytes []byte) {
 	d, err := wav.Decode(audioContext, bytes.NewReader(wavbytes))
@@ -144,8 +146,12 @@ var soundRandomizer = map[string]int{
 	"Complete":       0,
 }
 
-func PlaySound(name string) {
-	if TheUserData.MuteSounds {
+func Mute(mute bool) {
+	MuteSound = mute
+}
+
+func Play(name string) {
+	if MuteSound {
 		return
 	}
 	n, ok := soundRandomizer[name]

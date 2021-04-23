@@ -4,6 +4,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
 
@@ -85,6 +86,7 @@ func (db *DrawerBase) Show() {
 		w.Activate()
 	}
 	db.aniState = aniRight
+	sound.Play("Slide1")
 }
 
 // Hide starts to animate the drawer off screen to the left
@@ -97,6 +99,7 @@ func (db *DrawerBase) Hide() {
 	} else {
 		db.aniState = aniLeft
 	}
+	sound.Play("Slide2")
 }
 
 // Visible returns true if the NavDrawer is showing

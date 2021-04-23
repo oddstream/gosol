@@ -67,13 +67,13 @@ Tapping a card has a few shortcuts:
 * Movable card highlighting (the more useful a move looks, the more the card gets highlighted)
 * Statistics (including percent compete and streaks - streaks are great)
 * Cards spin prettily when you complete a game
+* Slightly randomized sounds
 
 A lot a features have been tried and discarded, in order to keep the game (and player) focused. Weniger aber besser, as [Dieter Rams](https://en.wikipedia.org/wiki/Dieter_Rams) taught us. Just because a feature *can* be implemented, does not mean it *should* be.
 
 ## TODO
 
 * Figure out why the touch interface isn't working properly
-* Sounds
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
 
 ## Live playable version

@@ -18,6 +18,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gosol/sol"
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/ui"
 )
 
@@ -41,6 +42,7 @@ func main() {
 	}
 
 	sol.TheUserData.Load()
+	sound.Mute(sol.TheUserData.MuteSounds)
 
 	if runtime.GOARCH != "wasm" {
 		flag.Parse()

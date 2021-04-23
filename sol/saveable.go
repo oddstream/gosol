@@ -3,6 +3,8 @@ package sol
 import (
 	"hash/crc32"
 	"log"
+
+	"oddstream.games/gosol/sound"
 )
 
 // SaveableBaize is a reduced struct for converting to JSON
@@ -59,6 +61,8 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		// }
 		cardCache = append(cardCache, p.Cards...) // append a slice to a slice
 	}
+
+	sound.Play("OpenPackage")
 
 	for i := 0; i < len(b.Piles); i++ {
 		pile := b.Piles[i]
