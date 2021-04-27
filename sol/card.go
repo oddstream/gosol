@@ -352,16 +352,19 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
 
-	if (c.Transitioning() || c.Dragging()) && !c.Flipping() {
-		offset := float64(CardWidth) / 50
-		op.GeoM.Translate(offset, offset)
-		screen.DrawImage(CardShadowImage, op)
-		op.GeoM.Translate(-offset, -offset)
-	}
-
-	if c.Dragging() {
-		offset := float64(CardWidth) / 50
-		op.GeoM.Translate(-offset, -offset) // move the card
+	if !c.Flipping() {
+		switch {
+		case c.Transitioning():
+			offset := float64(CardWidth) / 50.0
+			op.GeoM.Translate(offset, offset)
+			screen.DrawImage(CardShadowImage, op)
+			op.GeoM.Translate(-offset, -offset)
+		case c.Dragging():
+			offset := float64(CardWidth) / 25.0
+			op.GeoM.Translate(offset, offset)
+			screen.DrawImage(CardShadowImage, op)
+			op.GeoM.Translate(-offset/2, -offset/2)
+		}
 	}
 
 	if TheUserData.HighlightMovable && !c.Spinning() {

@@ -84,8 +84,6 @@ func (b *Baize) ShuffleStock() {
 		return
 	}
 
-	rand.Seed(time.Now().UnixNano())
-
 	// println("-ordered------------")
 	// for i, c := range sh.cards {
 	// 	println(i, c.ID.String())
@@ -99,12 +97,15 @@ func (b *Baize) ShuffleStock() {
 	// }
 
 	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
+	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 }
 
 func TestShuffle(stock *Pile) {
-	const cycles int = 100000
+	const cycles int = 500000
 	dist := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for i := 0; i < cycles; i++ {
 		sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })

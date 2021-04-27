@@ -154,11 +154,11 @@ func Play(name string) {
 	if MuteSound {
 		return
 	}
-	n, ok := soundRandomizer[name]
-	if !ok {
-		println(name, " not found in sound randomizer")
-		// caller may have passed a full/specific name, eg Slide1, so try to play that
-	}
+	n := soundRandomizer[name]
+	// if !ok {
+	// println(name, " not found in sound randomizer")
+	// caller may have passed a full/specific name, eg Slide1, so try to play that
+	// }
 	var fullName string
 	if n == 0 {
 		fullName = name
@@ -170,9 +170,7 @@ func Play(name string) {
 	if !ok {
 		log.Panic(fullName, " not found in sound map")
 	}
-	if audioPlayer.IsPlaying() {
-		log.Println("audioPlayer is already playing ", fullName)
-	} else {
+	if !audioPlayer.IsPlaying() {
 		audioPlayer.Rewind()
 		audioPlayer.Play()
 	}
