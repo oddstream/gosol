@@ -549,7 +549,14 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		return
 	}
 
-	sound.Play("Place")
+	switch dst.Class {
+	case "Foundation":
+		sound.Play("Slide")
+	case "Waste":
+		sound.Play("Shove")
+	default:
+		sound.Play("Place")
+	}
 
 	// flip up an exposed source card
 	if !strings.HasPrefix(src.Class, "Stock") {

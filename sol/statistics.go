@@ -168,8 +168,5 @@ func (s *Statistics) ShowStatistics() {
 			toasts = append(toasts, fmt.Sprintf("Your best streak is %d, your worst is %d", stats.BestStreak, stats.WorstStreak))
 		}
 	}
-	// if !TheBaize.stock.Hidden() && TheBaize.stock.CardCount() > 0 {
-	// 	toasts = append(toasts, fmt.Sprintf("The stock contains %s", util.Pluralize("card", TheBaize.stock.CardCount())))
-	// }
 	TheBaize.ui.ShowTextDrawer(toasts)
 }

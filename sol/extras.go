@@ -3,7 +3,6 @@ package sol
 import (
 	"log"
 	"math/rand"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -77,7 +76,14 @@ func (b *Baize) ShuffleStock() {
 			}
 		}
 	*/
-	sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
+
+	/*
+		used to restart the same game by reusing the random seed
+		but no longer do that (now we unwind the undo stack)
+		so we no longer need to sort cards into order before shuffle
+
+		sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
+	*/
 
 	if NoShuffle {
 		println("not shuffling cards")
@@ -96,19 +102,31 @@ func (b *Baize) ShuffleStock() {
 	// 	stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i]
 	// }
 
-	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	// tmp := make([]*Card, len(cards), cap(cards))
+	// copy(tmp, cards)
 
-	rand.Seed(time.Now().UnixNano())
+	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
+	rand.Seed(time.Now().Unix())
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	// rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+
+	// var notShuffled int
+	// for i := 0; i < len(tmp); i++ {
+	// 	if tmp[i] == cards[i] {
+	// 		println("not shuffled at", i)
+	// 		notShuffled++
+	// 	}
+	// }
+	// if notShuffled > 0 {
+	// 	println(notShuffled, "cards not shuffled")
+	// }
 }
 
 func TestShuffle(stock *Pile) {
 	const cycles int = 500000
 	dist := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for i := 0; i < cycles; i++ {
-		sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
+		// sort.Slice(stock.Cards, func(i, j int) bool { return stock.Cards[i].ID < stock.Cards[j].ID })
 		rand.Shuffle(len(stock.Cards), func(i, j int) { stock.Cards[i], stock.Cards[j] = stock.Cards[j], stock.Cards[i] })
 		for j, c := range stock.Cards {
 			// 1 % 13 = 1

@@ -8,6 +8,9 @@ func (b *Baize) UndoPush() {
 	b.MarkMovable()
 	b.percentComplete = b.calcPercentComplete()
 	b.ui.SetStock(b.stock.CardCount())
+	if w := b.findPile("Waste"); w != nil {
+		b.ui.SetWaste(w.CardCount())
+	}
 	b.ui.SetMoves(len(b.UndoStack) - 1)
 	b.ui.SetPercent(b.percentComplete)
 }
