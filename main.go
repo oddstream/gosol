@@ -72,7 +72,8 @@ func main() {
 		}
 		ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
 		ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
-		ebiten.SetScreenClearedEveryFrame(false)
+		ebiten.SetWindowIcon(sol.WindowIcons())
+		// ebiten.SetScreenClearedEveryFrame(false)
 	}
 
 	defer func() {
