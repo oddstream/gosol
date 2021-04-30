@@ -1085,6 +1085,12 @@ func (b *Baize) Exit() {
 	if !NoGameSave {
 		b.Save()
 	}
+
+	if runtime.GOARCH != "wasm" {
+		TheUserData.WindowX, TheUserData.WindowY = ebiten.WindowPosition()
+		TheUserData.WindowWidth, TheUserData.WindowHeight = ebiten.WindowSize()
+	}
+
 	TheUserData.Save()
 
 	if runtime.GOARCH != "wasm" {

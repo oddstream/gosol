@@ -561,7 +561,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	p.Tail = p.makeTail(c)
 
 	if p.Flags&DragFlagSingle == DragFlagSingle {
-		if TheUserData.PowerMoves {
+		if TheUserData.PowerMoves && p.Class == "Tableau" {
 			pm := powerMoves(TheBaize.Piles, p)
 			if len(p.Tail) > pm {
 				TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(p.Tail)))

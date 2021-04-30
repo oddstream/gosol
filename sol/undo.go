@@ -10,6 +10,9 @@ func (b *Baize) UndoPush() {
 	b.ui.SetStock(b.stock.CardCount())
 	if w := b.findPile("Waste"); w != nil {
 		b.ui.SetWaste(w.CardCount())
+	} else {
+		// may have changed variant
+		b.ui.SetWaste(0)
 	}
 	b.ui.SetMoves(len(b.UndoStack) - 1)
 	b.ui.SetPercent(b.percentComplete)

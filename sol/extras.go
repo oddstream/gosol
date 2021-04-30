@@ -107,8 +107,9 @@ func (b *Baize) ShuffleStock() {
 
 	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
 	rand.Seed(time.Now().Unix())
-	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
-	// rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	for i := 0; i < 12; i++ {
+		rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	}
 
 	// var notShuffled int
 	// for i := 0; i < len(tmp); i++ {
@@ -119,6 +120,8 @@ func (b *Baize) ShuffleStock() {
 	// }
 	// if notShuffled > 0 {
 	// 	println(notShuffled, "cards not shuffled")
+	// } else {
+	// 	println("all cards shuffled")
 	// }
 }
 

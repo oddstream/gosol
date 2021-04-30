@@ -39,7 +39,7 @@ func makeConfigDir() {
 	// if path is already a directory, MkdirAll does nothing and returns nil
 }
 
-func loadBytesFromFile(jsonFname string) ([]byte, int, error) {
+func loadBytesFromFile(jsonFname string, leaveNoTrace bool) ([]byte, int, error) {
 
 	if runtime.GOARCH == "wasm" {
 		log.Fatal("WASM detected")
@@ -72,6 +72,9 @@ func loadBytesFromFile(jsonFname string) ([]byte, int, error) {
 			log.Fatal(err, " closing ", path)
 		}
 		println("loaded", path)
+		if leaveNoTrace {
+			os.Remove(path)
+		}
 		return bytes, count, nil
 	}
 	log.Print(err, path)
@@ -112,7 +115,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 func (ud *UserData) Load() {
 
 	defer util.Duration(time.Now(), "UserData.Load")
-	bytes, count, err := loadBytesFromFile("userdata.json")
+	bytes, count, err := loadBytesFromFile("userdata.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
 	}
@@ -142,7 +145,7 @@ func (ud *UserData) Save() {
 func (s *Statistics) Load() {
 	defer util.Duration(time.Now(), "Statistics.Load")
 
-	bytes, count, err := loadBytesFromFile("statistics.json")
+	bytes, count, err := loadBytesFromFile("statistics.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
 	}
@@ -172,7 +175,8 @@ func (s *Statistics) Save() {
 func (b *Baize) Save() {
 	defer util.Duration(time.Now(), "Baize.Save")
 
-	if len(b.UndoStack) == 0 {
+	// do not bother to save virgin or completed games
+	if len(b.UndoStack) == 0 || b.State != Started {
 		return
 	}
 
@@ -191,7 +195,7 @@ func (b *Baize) Save() {
 func (b *Baize) Load(v string) bool {
 	defer util.Duration(time.Now(), "Baize.Load")
 
-	bytes, count, err := loadBytesFromFile(v + ".json")
+	bytes, count, err := loadBytesFromFile(v+".json", true)
 	if err != nil || count == 0 || bytes == nil {
 		return false
 	}

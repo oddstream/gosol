@@ -58,17 +58,32 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// default window size is 640, 480
-	ebiten.SetWindowSize(1920/2, 1000) // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetScreenClearedEveryFrame(false)
+
+	if runtime.GOARCH != "wasm" {
+		// default window size is 640, 480
+		if sol.TheUserData.WindowWidth == 0 || sol.TheUserData.WindowHeight == 0 {
+			// not yet set/saved, so use sensible values
+			ebiten.SetWindowSize(1920/2, 1000) // does nothing when runtime.GOARCH == "wasm"
+		} else {
+			ebiten.SetWindowSize(sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight)
+		}
+		if sol.TheUserData.WindowX != 0 && sol.TheUserData.WindowY != 0 {
+			ebiten.SetWindowPosition(sol.TheUserData.WindowX, sol.TheUserData.WindowY)
+		}
+		ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
+		ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
+		ebiten.SetScreenClearedEveryFrame(false)
+	}
 
 	defer func() {
-		println("cleanup")
+		println("main defer cleanup")
 		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}
+		// if runtime.GOARCH != "wasm" {
+		// 	sol.TheUserData.WindowX, sol.TheUserData.WindowY = ebiten.WindowPosition()
+		// 	sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight = ebiten.WindowSize()
+		// }
 		sol.TheUserData.Save()
 	}()
 
