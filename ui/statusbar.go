@@ -39,6 +39,7 @@ func (u *UI) SetStock(cards int) {
 	default:
 		l.UpdateText(fmt.Sprintf("STOCK: %d", cards))
 	}
+	u.statusbar.LayoutWidgets()
 }
 
 // SetWaste of the statusbar
@@ -54,6 +55,7 @@ func (u *UI) SetWaste(cards int) {
 	default:
 		l.UpdateText(fmt.Sprintf("WASTE: %d", cards))
 	}
+	u.statusbar.LayoutWidgets()
 }
 
 // SetMoves of the statusbar
@@ -69,14 +71,14 @@ func (u *UI) SetMoves(moves int) {
 	default:
 		l.UpdateText(fmt.Sprintf("MOVES: %d", moves))
 	}
-	// u.statusbar.LayoutWidgets()
+	u.statusbar.LayoutWidgets()
 }
 
 // SetPercent of the statusbar
 func (u *UI) SetPercent(percent int) {
 	var l *Label = u.statusbar.widgets[3].(*Label)
 	l.UpdateText(fmt.Sprintf("COMPLETE: %d%%", percent))
-	// u.statusbar.LayoutWidgets()
+	u.statusbar.LayoutWidgets()
 }
 
 // Layout implements Ebiten's Layout

@@ -18,6 +18,9 @@ type Label struct {
 
 func (l *Label) createImg() *ebiten.Image {
 	// println("Label createImg", l.x, l.y, l.width, l.height, l.text)
+	if l.width == 0 || l.height == 0 {
+		return nil // prevent ebiten.NewImageFromImage panic
+	}
 	dc := gg.NewContext(l.width, l.height)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.SetFontFace(l.fontFace)
@@ -83,6 +86,7 @@ func (l *Label) UpdateText(text string) {
 	if l.text != text {
 		l.text = text
 		l.width, l.height = measureText(l.text, l.fontFace)
+		// println("text:", text, "width:", l.width, "height:", l.height)
 		l.img = l.createImg()
 	}
 }
