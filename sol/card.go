@@ -50,7 +50,8 @@ type Card struct {
 
 	shake shakeState
 
-	directionX, directionY int     // direction vector when card is spinning
+	directionX, directionY int // direction vector when card is spinning
+	directionZ, scaleZ     float64
 	angle, spin            float64 // current angle and spin when card is spinning
 
 	movable int // 0=not movable, 1=movable but boring, 2=movable and possibly helpful, 3=movable to foundation
@@ -200,6 +201,8 @@ func (c *Card) StartSpinning() {
 	// }
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 4
+	c.directionZ = (rand.Float64() - 0.5) / 100
+	c.scaleZ = 1.0
 	c.spin = rand.Float64() - 0.5
 	c.movable = 0
 }
@@ -207,6 +210,7 @@ func (c *Card) StartSpinning() {
 // StopSpinning tells the card to stop spinning and return to it's upright state
 func (c *Card) StopSpinning() {
 	c.directionX, c.directionY, c.angle, c.spin = 0, 0, 0, 0
+	c.scaleZ = 1.0
 }
 
 // Spinning returns true if this card is spinning
@@ -285,6 +289,11 @@ func (c *Card) Update() error {
 	if c.Spinning() {
 		c.baizeX += c.directionX
 		c.baizeY += c.directionY
+		c.scaleZ += c.directionZ
+		if c.scaleZ < 0.5 || c.scaleZ > 1.5 {
+			c.directionZ = -c.directionZ
+			// c.Flip()
+		}
 		c.angle += c.spin
 		if c.angle > 360 {
 			c.angle -= 360
@@ -329,7 +338,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		// do this before the baize position translate
 		op.GeoM.Translate(float64(-CardWidth/2), float64(-CardHeight/2))
 		op.GeoM.Rotate(c.angle * 3.1415926535 / 180.0)
-		// op.GeoM.Scale(0.5, 0.5)
+		op.GeoM.Scale(c.scaleZ, c.scaleZ)
 		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
 
 		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
