@@ -9,6 +9,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -70,8 +71,8 @@ func main() {
 		if sol.TheUserData.WindowX != 0 && sol.TheUserData.WindowY != 0 {
 			ebiten.SetWindowPosition(sol.TheUserData.WindowX, sol.TheUserData.WindowY)
 		}
-		ebiten.SetWindowResizable(true)    // does nothing when runtime.GOARCH == "wasm"
-		ebiten.SetWindowTitle("Solitaire") // does nothing when runtime.GOARCH == "wasm"
+		ebiten.SetWindowResizable(true)                                                                 // does nothing when runtime.GOARCH == "wasm"
+		ebiten.SetWindowTitle(fmt.Sprintf("Oddstream Solitaire (%s/%s)", runtime.GOOS, runtime.GOARCH)) // does nothing when runtime.GOARCH == "wasm"
 		ebiten.SetWindowIcon(sol.WindowIcons())
 		// ebiten.SetScreenClearedEveryFrame(false)
 	}

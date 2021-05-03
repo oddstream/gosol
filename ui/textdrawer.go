@@ -1,5 +1,7 @@
 package ui
 
+import "strings"
+
 // TextDrawer provides a drawer for displaying rules of the current variant
 type TextDrawer struct {
 	DrawerBase
@@ -23,7 +25,11 @@ func (u *UI) ShowTextDrawer(content []string) {
 
 	u.textDrawer.widgets = nil
 	for _, c := range content { // content may be nil
-		u.textDrawer.widgets = append(u.textDrawer.widgets, NewText(u.textDrawer, c))
+		if strings.HasPrefix(c, "https://") {
+			u.textDrawer.widgets = append(u.textDrawer.widgets, NewTextUrl(u.textDrawer, c))
+		} else {
+			u.textDrawer.widgets = append(u.textDrawer.widgets, NewText(u.textDrawer, c))
+		}
 	}
 	u.textDrawer.LayoutWidgets()
 	u.textDrawer.Show()

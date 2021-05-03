@@ -77,7 +77,7 @@ func loadBytesFromFile(jsonFname string, leaveNoTrace bool) ([]byte, int, error)
 		}
 		return bytes, count, nil
 	}
-	log.Print(err, path)
+	// log.Print(err, path)
 	return nil, 0, nil // file does not exist (which is ok)
 }
 

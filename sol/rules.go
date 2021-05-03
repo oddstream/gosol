@@ -211,8 +211,6 @@ func (b *Baize) rulesContents() []string {
 		rules = append(rules, "Related: "+strings.Join(vi.Related, ", "))
 	}
 
-	// TODO show variant AKA, Related
-
 	for _, pileClass := range uniquePiles {
 		p := b.findPile(pileClass)
 		var str strings.Builder
@@ -305,6 +303,10 @@ func (b *Baize) rulesContents() []string {
 			fmt.Fprint(&str, "Reserve: stores multiple cards of any type. You cannot move a card to a reserve.")
 		}
 		rules = append(rules, str.String())
+	}
+
+	if len(vi.Wikipedia) > 0 {
+		rules = append(rules, vi.Wikipedia)
 	}
 
 	return rules
