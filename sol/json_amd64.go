@@ -1,5 +1,3 @@
-// +build desktop
-
 package sol
 
 import (

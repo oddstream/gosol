@@ -14,10 +14,8 @@ import (
 // TextUrl is a widget that displays a clickable url
 type TextUrl struct {
 	WidgetBase
-	text       string
-	url        string
-	lines      []string
-	lineHeight int
+	text string
+	url  string
 }
 
 func (w *TextUrl) createImg() *ebiten.Image {
@@ -26,11 +24,7 @@ func (w *TextUrl) createImg() *ebiten.Image {
 	dc.SetRGBA(0.5, 0.5, 1, 1)
 	// nota bene - text is drawn with y as a baseline
 	dc.SetFontFace(schriftbank.RobotoRegular14)
-	y := w.lineHeight
-	for _, str := range w.lines {
-		dc.DrawString(str, 0, float64(y-8)) // move up a little to stop descenders being clipped on last line
-		y += w.lineHeight
-	}
+	dc.DrawString(w.text, 0, float64(w.height-8)) // move up a little to stop descenders being clipped
 	// uncomment this line to visualize text box
 	// dc.DrawLine(0, 0, float64(w.width), float64(w.height))
 	// dc.Stroke()
@@ -41,10 +35,7 @@ func (w *TextUrl) createImg() *ebiten.Image {
 func (w *TextUrl) calcHeights() {
 	dc := gg.NewContext(w.width, 48)
 	dc.SetFontFace(schriftbank.RobotoRegular14)
-	// MeasureString says this text, requested to be 48 high, is 14 high
-	w.lines = dc.WordWrap(w.text, float64(w.width-48)) // 24 padding left and right
-	w.lineHeight = 24
-	w.height = w.lineHeight * len(w.lines) // + w.lineHeight
+	w.height = 24
 }
 
 // NewTextUrl creates a new TextUrl widget

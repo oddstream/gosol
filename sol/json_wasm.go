@@ -1,5 +1,3 @@
-// +build browser
-
 // https://github.com/golang/go/wiki/WebAssembly
 // https://pkg.go.dev/syscall/js
 // https://github.com/dennwc/dom
