@@ -91,8 +91,11 @@ var soundMap map[string]*audio.Player
 
 var MuteSound bool
 
-func decode(name string, wavbytes []byte) {
-	d, err := wav.Decode(audioContext, bytes.NewReader(wavbytes))
+func decode(name string, wavBytes []byte) {
+	if len(wavBytes) == 0 {
+		log.Panic("empty wav file ", name)
+	}
+	d, err := wav.DecodeWithSampleRate(44100, bytes.NewReader(wavBytes))
 	if err != nil {
 		log.Panic(err)
 	}

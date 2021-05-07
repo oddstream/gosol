@@ -70,7 +70,7 @@ func (b *Baize) UpdateFromSaveable(sav SaveableBaize) {
 		if pile.Class != savedPile.Class {
 			log.Panic("saved pile ", savedPile.Class, " does not match baize pile ", pile.Class)
 		}
-		// always update pile, even if lengths match (TODO copy to Opsole)
+		// always update pile, even if lengths match
 		pile.UpdateFromSaved(cardCache, savedPile)
 	}
 

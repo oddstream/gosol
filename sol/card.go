@@ -292,7 +292,6 @@ func (c *Card) Update() error {
 		c.scaleZ += c.directionZ
 		if c.scaleZ < 0.5 || c.scaleZ > 1.5 {
 			c.directionZ = -c.directionZ
-			// c.Flip()
 		}
 		c.angle += c.spin
 		if c.angle > 360 {
@@ -382,20 +381,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	screen.DrawImage(img, op)
-
-	// TODO the following slows down rendering too much; find another way of displaying number of cards in stock
-	// if !c.Flipping() && !c.owner.Hidden() {
-	// 	if strings.HasPrefix(c.owner.Class, "Stock") && c.owner.Peek() == c {
-	// 		dc := gg.NewContext(CardWidth, CardHeight)
-	// 		dc.SetRGBA(1, 1, 1, 0.1)
-	// 		dc.SetFontFace(schriftbank.CardOrdinal)
-	// 		dc.DrawStringAnchored(strconv.Itoa(c.owner.CardCount()), float64(CardWidth)/2, float64(CardHeight)/2, 0.5, 0.333)
-	// 		// dc.DrawLine(0, float64(CardHeight)/2, float64(CardWidth), float64(CardHeight)/2)
-	// 		// dc.Stroke()
-	// 		img := ebiten.NewImageFromImage(dc.Image())
-	// 		screen.DrawImage(img, op)
-	// 	}
-	// }
 
 	// if DebugMode && c.movable > 0 {
 	// 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", c.movable), c.baizeX, c.baizeY+TheBaize.DragOffsetY)

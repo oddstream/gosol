@@ -1055,7 +1055,7 @@ func (b *Baize) BuildVariant(v string) {
 	} else {
 		log.Fatal("BuildVariant() unknown variant ", v)
 	}
-	b.calcScrunchSize()
+	b.calcScrunchSizev2()
 }
 
 // findVariant given a name or an AKA, return actual name;

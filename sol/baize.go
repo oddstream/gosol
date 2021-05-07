@@ -553,7 +553,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	case "Foundation":
 		sound.Play("Slide")
 	case "Waste":
-		sound.Play("Shove")
+		sound.Play("Slide")
 	default:
 		sound.Play("Place")
 	}
