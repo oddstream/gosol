@@ -1,36 +1,5 @@
 package sol
 
-func (p *Pile) popWithoutFlip() *Card {
-	if p.CardCount() == 0 {
-		return nil
-	}
-	c := p.Cards[p.CardCount()-1]
-	p.Cards = p.Cards[:p.CardCount()-1]
-	return c
-}
-
-func (p *Pile) popAllWithoutFlip() []*Card {
-	tmp := make([]*Card, 0, cap(p.Cards))
-	for p.CardCount() > 0 {
-		c := p.popWithoutFlip()
-		tmp = append(tmp, c)
-	}
-	return tmp
-}
-
-func (p *Pile) pushWithoutFlip(c *Card) {
-	c.TransitionTo(p.PushedFannedPosition()) // do this BEFORE appending card to pile
-	p.Cards = append(p.Cards, c)
-}
-
-func (p *Pile) pushAllWithoutFlip(tmp []*Card) {
-	for len(tmp) > 0 {
-		c := tmp[len(tmp)-1]
-		tmp = tmp[:len(tmp)-1]
-		p.pushWithoutFlip(c)
-	}
-}
-
 func (p *Pile) fannedHeight(scrunchPercent int) int {
 	var y int
 	for i := 0; i < p.CardCount()-1; i++ {
@@ -84,9 +53,7 @@ func (p *Pile) scrunch(maxSize int, fnCalcSize func(int) int) {
 	}
 	if percent != p.scrunchPercentage {
 		p.scrunchPercentage = percent
-		tmp := p.popAllWithoutFlip()
-		// println("scrunchPercentage now ", p.scrunchPercentage)
-		p.pushAllWithoutFlip(tmp)
+		p.RepushAllCards()
 	}
 }
 
@@ -128,9 +95,7 @@ func (b *Baize) calcScrunchSizev2() {
 					downwardY = p2.Y
 				}
 			}
-			if downwardY == 0 {
-				p1.scrunchSize = 6
-			} else {
+			if downwardY != 0 {
 				p1.scrunchSize = int(downwardY - p1.Y)
 			}
 		case "Right":
@@ -143,9 +108,7 @@ func (b *Baize) calcScrunchSizev2() {
 					rightwardY = p2.Y
 				}
 			}
-			if rightwardY == 0 {
-				p1.scrunchSize = 6
-			} else {
+			if rightwardY != 0 {
 				p1.scrunchSize = int(rightwardY - p1.Y)
 			}
 		}

@@ -2,12 +2,14 @@ package sol
 
 import (
 	"fmt"
+	"image/color"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -161,6 +163,7 @@ func (p *Pile) BaizePosition() (int, int) {
 // ScreenPosition returns the x,y baize coords of this pile
 func (p *Pile) ScreenPosition() (int, int) {
 	x, y := p.BaizePosition()
+	x += TheBaize.DragOffsetX
 	y += TheBaize.DragOffsetY
 	return x, y
 }
@@ -176,6 +179,8 @@ func (p *Pile) BaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 // ScreenRect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) ScreenRect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0, x1, y1 = p.BaizeRect()
+	x0 += TheBaize.DragOffsetX
+	x1 += TheBaize.DragOffsetX
 	y0 += TheBaize.DragOffsetY
 	y1 += TheBaize.DragOffsetY
 	return // using named return parameters
@@ -216,6 +221,8 @@ func (p *Pile) FannedBaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 // FannedScreenRect gives the x,y screen coords of the pile's top left and bottom right corners
 func (p *Pile) FannedScreenRect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0, x1, y1 = p.FannedBaizeRect()
+	x0 += TheBaize.DragOffsetX
+	x1 += TheBaize.DragOffsetX
 	y0 += TheBaize.DragOffsetY
 	y1 += TheBaize.DragOffsetY
 	return // using named return parameters
@@ -282,6 +289,18 @@ func (p *Pile) Push(c *Card) {
 	c.owner = p
 	c.TransitionTo(p.PushedFannedPosition()) // do this BEFORE appending card to pile
 	p.Cards = append(p.Cards, c)
+}
+
+// RepushAllCards takes all the cards off the pile and puts them back
+func (p *Pile) RepushAllCards() {
+	// because we're about to use copy(), tmp must have a length
+	var tmp = make([]*Card, len(p.Cards), cap(p.Cards)) // https://github.com/golang/go/wiki/SliceTricks#copy
+	// len(tmp) == len(p.Cards)
+	copy(tmp, p.Cards)
+	p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
+	for _, c := range tmp {
+		p.Push(c)
+	}
 }
 
 // Extract a Card from the Pile
@@ -737,27 +756,24 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		// }
 		screen.DrawImage(p.backgroundImage, op)
 	}
-	// if DebugMode {
-	// 	if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
-	// 		return
-	// 	}
-	// 	var maxWidth, maxHeight int
-	// 	switch p.Fan {
-	// 	case "", "None", "Waste", "WasteDown":
-	// 		return
-	// 	case "Down":
-	// 		maxHeight = p.scrunchSize * CardHeight
-	// 	case "Right":
-	// 		maxWidth = p.scrunchSize * CardWidth
-	// 	}
-	// 	x0, y0 := p.BaizePosition()
-	// 	if maxWidth > 0 {
-	// 		ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
-	// 	}
-	// 	if maxHeight > 0 {
-	// 		ebitenutil.DrawRect(screen, float64(x0), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
-	// 	}
-	// }
+
+	if DebugMode {
+		if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
+			return
+		}
+		var maxWidth, maxHeight int
+		x0, y0 := p.BaizePosition()
+		switch p.Fan {
+		case "", "None", "Waste", "WasteDown":
+			return
+		case "Down":
+			maxHeight = p.scrunchSize * CardHeight
+			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
+		case "Right":
+			maxWidth = p.scrunchSize * CardWidth
+			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
+		}
+	}
 }
 
 // DrawStaticCards renders the Cards in the Pile into the screen

@@ -45,10 +45,14 @@ type Baize struct {
 	ui              *ui.UI
 	stock           *Pile // shortcut to often used Stock Pile
 	commandTable    map[ebiten.Key]func()
+	DragOffsetX     int // value of current horz drag
+	DragOffsetBaseX int // value last-used horz drag
 	DragOffsetY     int // value of current vertical drag
 	DragOffsetBaseY int // value last-used vertical drag
 	WindowWidth     int // the most recent window width given to Layout
 	OldWindowWidth  int // the window width last used to scale baize and cards
+	WindowHeight    int // the most recent window height given to Layout
+	OldWindowHeight int // the window height last used to scale baize and cards
 }
 
 // NewBaize is the factory func for the single Baize object
@@ -159,8 +163,8 @@ func (b *Baize) NewVariant(v string) {
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)
 
-	b.OldWindowWidth = 0 // force a rescale
-	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
+	b.OldWindowWidth, b.OldWindowHeight = 0, 0 // force a rescale
+	b.Scale()                                  // now we know number of piles and can discover window width; scale the cards before creating them
 
 	b.CreateStock()
 	b.ShuffleStock()
@@ -188,8 +192,8 @@ func (b *Baize) LoadVariant(v string) bool {
 		log.Panic("error popping extra state from undo stack")
 	}
 
-	b.OldWindowWidth = 0 // force a rescale
-	b.Scale()            // now we know number of piles and can discover window width; scale the cards before creating them
+	b.OldWindowWidth, b.OldWindowHeight = 0, 0 // force a rescale
+	b.Scale()                                  // now we know number of piles and can discover window width; scale the cards before creating them
 
 	b.CreateStock()
 
@@ -397,11 +401,6 @@ func (b *Baize) CardTapped(c *Card) {
 	// 	return
 	// }
 
-	if c.Spinning() {
-		c.Flip()
-		return
-	}
-
 	pSrc := c.owner
 
 	// can only tap top card
@@ -566,12 +565,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 	// special case: waste may need refanning if we took a card from it
 	if src.Class == "Waste" {
-		tmp := make([]*Card, len(src.Cards), cap(src.Cards))
-		copy(tmp, src.Cards)
-		src.Cards = src.Cards[:0]
-		for _, wc := range tmp {
-			src.Push(wc)
-		}
+		src.RepushAllCards()
 	}
 	src.ScrunchCards()
 	dst.ScrunchCards()
@@ -714,6 +708,10 @@ func (b *Baize) StartDrag() bool {
 
 // DragBy move (vscroll) the Baize by dragging it
 func (b *Baize) DragBy(dx, dy int) {
+	b.DragOffsetX = b.DragOffsetBaseX + dx
+	if b.DragOffsetX > 0 {
+		b.DragOffsetX = 0 // DragOffsetX should only ever be 0 or -ve
+	}
 	b.DragOffsetY = b.DragOffsetBaseY + dy
 	if b.DragOffsetY > 0 {
 		b.DragOffsetY = 0 // DragOffsetY should only ever be 0 or -ve
@@ -723,6 +721,7 @@ func (b *Baize) DragBy(dx, dy int) {
 // StopDrag stop dragging the Baize
 func (b *Baize) StopDrag() {
 	// remember the amount of drag so the next drag starts from here
+	b.DragOffsetBaseX = b.DragOffsetX
 	b.DragOffsetBaseY = b.DragOffsetY
 }
 
@@ -734,20 +733,13 @@ func (b *Baize) StartSpinning() {
 }
 
 // StopSpinning tells all the cards to stop spinning and return to their upright position
+// debug only
 func (b *Baize) StopSpinning() {
 	for _, p := range b.Piles {
 		if p.CardCount() == 0 {
 			continue
 		}
-		// because we're about to use copy(), tmp must have a length
-		var tmp = make([]*Card, len(p.Cards), cap(p.Cards)) // https://github.com/golang/go/wiki/SliceTricks#copy
-		// len(tmp) == len(p.Cards)
-		copy(tmp, p.Cards)
-		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
-		for _, c := range tmp {
-			c.FlipUp()
-			p.Push(c)
-		}
+		p.RepushAllCards()
 	}
 }
 
@@ -981,7 +973,7 @@ func (b *Baize) ScaleCards() {
 func (b *Baize) Scale() {
 
 	// on startup, b.OldWindowWidth will be 0 so scalables will be built
-	if b.WindowWidth == b.OldWindowWidth {
+	if b.WindowWidth == b.OldWindowWidth && b.WindowHeight == b.OldWindowHeight {
 		return
 	}
 
@@ -994,24 +986,17 @@ func (b *Baize) Scale() {
 		if p.CardCount() == 0 {
 			continue
 		}
-		// because we're about to use copy(), tmp must have a length
-		var tmp = make([]*Card, len(p.Cards), cap(p.Cards)) // https://github.com/golang/go/wiki/SliceTricks#copy
-		// len(tmp) == len(p.Cards)
-		copy(tmp, p.Cards)
-		p.Cards = p.Cards[:0] // keep the underlying array, slice the slice to zero length
-		for _, c := range tmp {
-			c.RefreshFaceImage()
-			p.Push(c)
-		}
+		p.ApplyToCards((*Card).RefreshFaceImage)
+		p.RepushAllCards()
 	}
 
-	b.OldWindowWidth = b.WindowWidth
+	b.OldWindowWidth, b.OldWindowHeight = b.WindowWidth, b.WindowHeight
 }
 
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
-	b.WindowWidth = outsideWidth
+	b.WindowWidth, b.WindowHeight = outsideWidth, outsideHeight
 
 	b.Scale()
 

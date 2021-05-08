@@ -93,6 +93,7 @@ func (c *Card) BaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 // ScreenRect gives the x,y screen coords of the card's top left and bottom right corners
 func (c *Card) ScreenRect() (x0 int, y0 int, x1 int, y1 int) {
 	x0, y0 = c.BaizePosition()
+	x0 += TheBaize.DragOffsetX
 	y0 += TheBaize.DragOffsetY
 	x1 = x0 + CardWidth
 	y1 = y0 + CardHeight
@@ -342,6 +343,8 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
 		w, h := screen.Size()
+		w -= TheBaize.DragOffsetX
+		h -= TheBaize.DragOffsetY
 		switch {
 		case c.baizeX+CardWidth > w:
 			c.directionX = -rand.Intn(5)
@@ -358,7 +361,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	op.GeoM.Translate(float64(c.baizeX), float64(c.baizeY+TheBaize.DragOffsetY))
+	op.GeoM.Translate(float64(c.baizeX+TheBaize.DragOffsetX), float64(c.baizeY+TheBaize.DragOffsetY))
 
 	if !c.Flipping() {
 		switch {
