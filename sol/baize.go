@@ -621,8 +621,8 @@ func (b *Baize) AfterUserMove() {
 	case Started:
 		if b.Complete() {
 			b.State = Complete
-			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 			sound.Play("Complete")
+			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
 			b.ui.ShowFAB("star", ebiten.KeyN)
 			b.StartSpinning()

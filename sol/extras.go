@@ -106,8 +106,12 @@ func (b *Baize) ShuffleStock() {
 	// copy(tmp, cards)
 
 	// TestShuffle shows that the 7 can have a consistently lower distribution; shuffling twice corrects this
-	rand.Seed(time.Now().Unix())
-	for i := 0; i < 12; i++ {
+	seed := time.Now().UnixNano()
+	if DebugMode {
+		log.Println("seed", seed)
+	}
+	rand.Seed(seed)
+	for i := 0; i < 6; i++ {
 		rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 	}
 
