@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"runtime"
 	"syscall/js"
 	"time"
 
@@ -23,15 +22,17 @@ func loadBytesFromLocalStorage(key string, leaveNoTrace bool) ([]byte, error) {
 	keyName := keyPrefix + key
 	localStorage := js.Global().Get("window").Get("localStorage")
 	v := localStorage.Get(keyName)
+	if v.IsUndefined() {
+		return nil, fmt.Errorf("%s undefined", keyName)
+	}
 	if leaveNoTrace {
 		// https://developer.mozilla.org/en-US/docs/Web/API/Storage/removeItem
 		localStorage.Call("removeItem", keyName)
 	}
-	if v.String() != "<undefined>" {
-		bytes := []byte(v.String())
-		return bytes, nil
-	}
-	return nil, fmt.Errorf("%s undefined", keyPrefix+key)
+	// if v.String() != "<undefined>" {
+	bytes := []byte(v.String())
+	return bytes, nil
+	// }
 }
 
 func saveBytesToLocalStorage(bytes []byte, key string) {
@@ -41,10 +42,6 @@ func saveBytesToLocalStorage(bytes []byte, key string) {
 
 // Load an already existing UserData object from browser localStorage
 func (ud *UserData) Load() {
-
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
 
 	bytes, err := loadBytesFromLocalStorage("UserData", false)
 	if err != nil {
@@ -61,10 +58,6 @@ func (ud *UserData) Load() {
 // Save writes the UserData object to localStorage
 func (ud *UserData) Save() {
 
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
-
 	bytes, err := json.Marshal(ud)
 	if err != nil {
 		log.Println("UserData.Save().Marshal() error", err)
@@ -76,10 +69,6 @@ func (ud *UserData) Save() {
 
 // Load statistics for all variants from JSON to an already-created Statistics object
 func (s *Statistics) Load() {
-
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
 
 	bytes, err := loadBytesFromLocalStorage("Statistics", false)
 	if err != nil {
@@ -96,10 +85,6 @@ func (s *Statistics) Load() {
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
 
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
-
 	bytes, err := json.Marshal(s)
 	if err != nil {
 		log.Println("Statistics.Save().Marshal() error", err)
@@ -111,10 +96,6 @@ func (s *Statistics) Save() {
 
 // Save the entire undo stack to file
 func (b *Baize) Save() {
-
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
 
 	// do not bother to save virgin or completed games
 	if len(b.UndoStack) == 0 || b.State != Started {
@@ -153,10 +134,6 @@ func (b *Baize) Save() {
 
 func LoadUndoStack(v string) []SaveableBaize {
 	defer util.Duration(time.Now(), "LoadUndoStack")
-
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
 
 	bytes, err := loadBytesFromLocalStorage(v, true)
 	if err != nil {
