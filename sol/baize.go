@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -125,6 +126,9 @@ func (b *Baize) RecallCardsToStock() {
 
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
+
+	defer util.Duration(time.Now(), "Baize.NewGame")
+
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
@@ -145,6 +149,8 @@ func (b *Baize) NewGame() {
 
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant(v string) {
+
+	defer util.Duration(time.Now(), "Baize.NewVariant")
 
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
@@ -177,15 +183,18 @@ func (b *Baize) NewVariant(v string) {
 // LoadVariant tries to load a game from json resets Baize and continues an old game
 func (b *Baize) LoadVariant(v string) bool {
 
+	undoStack := LoadUndoStack(v)
+	if undoStack == nil {
+		return false
+	}
+
+	defer util.Duration(time.Now(), "Baize.LoadVariant")
+
 	b.Variant = findVariant(v) // v is now invalid
 	TheUserData.Variant = b.Variant
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)
-
-	// load the undo stack from json
-	if !b.Load(b.Variant) {
-		return false
-	}
+	b.UndoStack = undoStack
 
 	sav, ok := b.UndoPop() // removes extra pushed state
 	if !ok {

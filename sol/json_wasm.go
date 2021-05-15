@@ -12,6 +12,9 @@ import (
 	"log"
 	"runtime"
 	"syscall/js"
+	"time"
+
+	"oddstream.games/gosol/util"
 )
 
 const keyPrefix = "Gosol/"
@@ -117,7 +120,28 @@ func (b *Baize) Save() {
 }
 
 // Load the entire undo stack from file
-func (b *Baize) Load(v string) bool {
+// func (b *Baize) Load(v string) bool {
+
+// 	if runtime.GOARCH != "wasm" {
+// 		log.Fatal("GOOS=js GOARCH=wasm required")
+// 	}
+
+// 	bytes, err := loadBytesFromLocalStorage(v)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return false
+// 	}
+// 	err = json.Unmarshal(bytes, &b.UndoStack)
+// 	if err != nil {
+// 		log.Println("%s.Load().Unmarshal() error", v, err)
+// 		return false
+// 	}
+// 	return b.UndoStack != nil && len(b.UndoStack) > 0
+
+// }
+
+func LoadUndoStack(v string) []SaveableBaize {
+	defer util.Duration(time.Now(), "LoadUndoStack")
 
 	if runtime.GOARCH != "wasm" {
 		log.Fatal("GOOS=js GOARCH=wasm required")
@@ -126,13 +150,19 @@ func (b *Baize) Load(v string) bool {
 	bytes, err := loadBytesFromLocalStorage(v)
 	if err != nil {
 		log.Println(err)
-		return false
+		return nil
 	}
-	err = json.Unmarshal(bytes, &b.UndoStack)
+
+	var undoStack []SaveableBaize
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes, &undoStack)
 	if err != nil {
 		log.Println("%s.Load().Unmarshal() error", v, err)
-		return false
+		// log.Fatal(err)
 	}
-	return b.UndoStack != nil && len(b.UndoStack) > 0
 
+	if len(undoStack) > 0 {
+		return undoStack
+	}
+	return nil
 }

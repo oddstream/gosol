@@ -186,22 +186,42 @@ func (b *Baize) Save() {
 	}
 
 	saveBytesToFile(bytes, b.Variant+".json")
-
 }
 
 // Load the entire undo stack from file
-func (b *Baize) Load(v string) bool {
-	defer util.Duration(time.Now(), "Baize.Load")
+// func (b *Baize) Load(v string) bool {
+// 	defer util.Duration(time.Now(), "Baize.Load")
+
+// 	bytes, count, err := loadBytesFromFile(v+".json", true)
+// 	if err != nil || count == 0 || bytes == nil {
+// 		return false
+// 	}
+
+// 	// golang gotcha reslice buffer to number of bytes actually read
+// 	err = json.Unmarshal(bytes[:count], &b.UndoStack)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return b.UndoStack != nil && len(b.UndoStack) > 0
+// }
+
+func LoadUndoStack(v string) []SaveableBaize {
+	defer util.Duration(time.Now(), "LoadUndoStack")
 
 	bytes, count, err := loadBytesFromFile(v+".json", true)
 	if err != nil || count == 0 || bytes == nil {
-		return false
+		return nil
 	}
 
+	var undoStack []SaveableBaize
 	// golang gotcha reslice buffer to number of bytes actually read
-	err = json.Unmarshal(bytes[:count], &b.UndoStack)
+	err = json.Unmarshal(bytes[:count], &undoStack)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return b.UndoStack != nil && len(b.UndoStack) > 0
+
+	if len(undoStack) > 0 {
+		return undoStack
+	}
+	return nil
 }
