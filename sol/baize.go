@@ -164,7 +164,7 @@ func (b *Baize) NewVariant(v string) {
 	b.stroke = nil
 
 	// switch to new variant
-	b.Variant = findVariant(v) // v is now invalid
+	b.Variant = findVariant(v) // v is now invalid because AKA
 	TheUserData.Variant = b.Variant
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)
@@ -190,7 +190,7 @@ func (b *Baize) LoadVariant(v string) bool {
 
 	defer util.Duration(time.Now(), "Baize.LoadVariant")
 
-	b.Variant = findVariant(v) // v is now invalid
+	b.Variant = findVariant(v) // v is now invalid because AKA
 	TheUserData.Variant = b.Variant
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)

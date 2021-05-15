@@ -64,5 +64,8 @@ func (b *Baize) Execute(cmd interface{}) {
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}
 		TheUserData.Save() // save now especially if running on a browser
+
+	default:
+		log.Fatal("Baize.Execute unknown command type", cmd)
 	}
 }

@@ -178,8 +178,6 @@ func (b *Baize) Save() {
 		return
 	}
 
-	// push an extra state; this will be popped after a Load() and used to populate the baize
-
 	bytes, err := json.MarshalIndent(b.UndoStack, "", "\t")
 	if err != nil {
 		log.Fatal(err)

@@ -6,7 +6,7 @@ It's an adaptation of my [Lua](https://www.lua.org/)/[Solar2D](https://solar2d.c
 
 ## Variants
 
-It currently knows how to play a few games, including:
+It currently knows how to play about 40 games, including:
 
 * American Toad (and the original The Toad)
 * Australian
@@ -17,7 +17,7 @@ It currently knows how to play a few games, including:
 * Duchess
 * EasyWin (an easy to win game, for debugging)
 * Fortune's Favor
-* Forty Thieves (and Busy Aces, Fortune's Favor, Forty and Eight, Josephine, Maria, Limited, Lucas)
+* Forty Thieves (and Busy Aces, Fortune's Favor, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black)
 * Freecell, Freecell Easy
 * Klondike (and Draw One, Draw Three, Double Klondike, Gargantua, Thumb and Pouch, Thoughtful)
 * Mistress and Mrs Mop

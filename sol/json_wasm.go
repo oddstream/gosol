@@ -19,9 +19,14 @@ import (
 
 const keyPrefix = "Gosol/"
 
-func loadBytesFromLocalStorage(key string) ([]byte, error) {
+func loadBytesFromLocalStorage(key string, leaveNoTrace bool) ([]byte, error) {
+	keyName := keyPrefix + key
 	localStorage := js.Global().Get("window").Get("localStorage")
-	v := localStorage.Get(keyPrefix + key)
+	v := localStorage.Get(keyName)
+	if leaveNoTrace {
+		// https://developer.mozilla.org/en-US/docs/Web/API/Storage/removeItem
+		localStorage.Call("removeItem", keyName)
+	}
 	if v.String() != "<undefined>" {
 		bytes := []byte(v.String())
 		return bytes, nil
@@ -30,7 +35,8 @@ func loadBytesFromLocalStorage(key string) ([]byte, error) {
 }
 
 func saveBytesToLocalStorage(bytes []byte, key string) {
-	js.Global().Get("window").Get("localStorage").Set(keyPrefix+key, string(bytes))
+	keyName := keyPrefix + key
+	js.Global().Get("window").Get("localStorage").Set(keyName, string(bytes))
 }
 
 // Load an already existing UserData object from browser localStorage
@@ -40,7 +46,7 @@ func (ud *UserData) Load() {
 		log.Fatal("GOOS=js GOARCH=wasm required")
 	}
 
-	bytes, err := loadBytesFromLocalStorage("UserData")
+	bytes, err := loadBytesFromLocalStorage("UserData", false)
 	if err != nil {
 		log.Println(err)
 		return
@@ -75,7 +81,7 @@ func (s *Statistics) Load() {
 		log.Fatal("GOOS=js GOARCH=wasm required")
 	}
 
-	bytes, err := loadBytesFromLocalStorage("Statistics")
+	bytes, err := loadBytesFromLocalStorage("Statistics", false)
 	if err != nil {
 		log.Println(err)
 		return
@@ -110,6 +116,11 @@ func (b *Baize) Save() {
 		log.Fatal("GOOS=js GOARCH=wasm required")
 	}
 
+	// do not bother to save virgin or completed games
+	if len(b.UndoStack) == 0 || b.State != Started {
+		return
+	}
+
 	bytes, err := json.Marshal(b.UndoStack)
 	if err != nil {
 		log.Println("%s.Save().Marshal() error", b.Variant, err)
@@ -126,7 +137,7 @@ func (b *Baize) Save() {
 // 		log.Fatal("GOOS=js GOARCH=wasm required")
 // 	}
 
-// 	bytes, err := loadBytesFromLocalStorage(v)
+// 	bytes, err := loadBytesFromLocalStorage(v, true)
 // 	if err != nil {
 // 		log.Println(err)
 // 		return false
@@ -147,7 +158,7 @@ func LoadUndoStack(v string) []SaveableBaize {
 		log.Fatal("GOOS=js GOARCH=wasm required")
 	}
 
-	bytes, err := loadBytesFromLocalStorage(v)
+	bytes, err := loadBytesFromLocalStorage(v, true)
 	if err != nil {
 		log.Println(err)
 		return nil
