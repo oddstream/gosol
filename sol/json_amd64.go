@@ -112,7 +112,9 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 // Load an already existing UserData object from file
 func (ud *UserData) Load() {
 
-	defer util.Duration(time.Now(), "UserData.Load")
+	if DebugMode {
+		defer util.Duration(time.Now(), "UserData.Load")
+	}
 	bytes, count, err := loadBytesFromFile("userdata.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
@@ -128,8 +130,9 @@ func (ud *UserData) Load() {
 
 // Save writes the UserData object to file
 func (ud *UserData) Save() {
-	defer util.Duration(time.Now(), "UserData.Save")
-
+	if DebugMode {
+		defer util.Duration(time.Now(), "UserData.Save")
+	}
 	bytes, err := json.MarshalIndent(ud, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -141,8 +144,9 @@ func (ud *UserData) Save() {
 
 // Load statistics for all variants from JSON to an already-created Statistics object
 func (s *Statistics) Load() {
-	defer util.Duration(time.Now(), "Statistics.Load")
-
+	if DebugMode {
+		defer util.Duration(time.Now(), "Statistics.Load")
+	}
 	bytes, count, err := loadBytesFromFile("statistics.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
@@ -158,8 +162,9 @@ func (s *Statistics) Load() {
 
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
-	defer util.Duration(time.Now(), "Statistics.Save")
-
+	if DebugMode {
+		defer util.Duration(time.Now(), "Statistics.Save")
+	}
 	bytes, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -171,8 +176,9 @@ func (s *Statistics) Save() {
 
 // Save the entire undo stack to file
 func (b *Baize) Save() {
-	defer util.Duration(time.Now(), "Baize.Save")
-
+	if DebugMode {
+		defer util.Duration(time.Now(), "Baize.Save")
+	}
 	// do not bother to save virgin or completed games
 	if len(b.UndoStack) == 0 || b.State != Started {
 		return
@@ -204,8 +210,9 @@ func (b *Baize) Save() {
 // }
 
 func LoadUndoStack(v string) []SaveableBaize {
-	defer util.Duration(time.Now(), "LoadUndoStack")
-
+	if DebugMode {
+		defer util.Duration(time.Now(), "LoadUndoStack")
+	}
 	bytes, count, err := loadBytesFromFile(v+".json", true)
 	if err != nil || count == 0 || bytes == nil {
 		return nil

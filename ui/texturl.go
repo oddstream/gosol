@@ -1,10 +1,6 @@
 package ui
 
 import (
-	"log"
-	"os/exec"
-	"runtime"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
@@ -65,25 +61,6 @@ func (w *TextUrl) Deactivate() {
 	// w.input.Remove(w)
 }
 
-func openBrowser(url string) {
-	var cmd *exec.Cmd
-
-	switch runtime.GOOS {
-	case "linux":
-		cmd = exec.Command("xdg-open", url)
-	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
-	case "darwin":
-		cmd = exec.Command("open", url)
-	}
-	if cmd != nil {
-		err := cmd.Start()
-		if err != nil {
-			log.Println(err)
-		}
-	}
-}
-
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (w *TextUrl) NotifyCallback(v input.StrokeEvent) {
 	if w.disabled {
@@ -91,7 +68,7 @@ func (w *TextUrl) NotifyCallback(v input.StrokeEvent) {
 	}
 	switch v.Event {
 	case "tap":
-		openBrowser(w.url)
+		OpenBrowserWindow(w.url)
 	}
 }
 

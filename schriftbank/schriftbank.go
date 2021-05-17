@@ -40,7 +40,6 @@ var (
 
 func init() {
 
-	println("loading fonts")
 	defer util.Duration(time.Now(), "init schriftbank")
 
 	tt, err := truetype.Parse(robotoRegularFontBytes)

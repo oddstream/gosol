@@ -127,7 +127,9 @@ func (b *Baize) RecallCardsToStock() {
 // NewGame resets Baize and restarts current variant with a new seed
 func (b *Baize) NewGame() {
 
-	defer util.Duration(time.Now(), "Baize.NewGame")
+	if DebugMode {
+		defer util.Duration(time.Now(), "Baize.NewGame")
+	}
 
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
@@ -150,7 +152,9 @@ func (b *Baize) NewGame() {
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant(v string) {
 
-	defer util.Duration(time.Now(), "Baize.NewVariant")
+	if DebugMode {
+		defer util.Duration(time.Now(), "Baize.NewVariant")
+	}
 
 	if b.State == Started {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
@@ -188,7 +192,9 @@ func (b *Baize) LoadVariant(v string) bool {
 		return false
 	}
 
-	defer util.Duration(time.Now(), "Baize.LoadVariant")
+	if DebugMode {
+		defer util.Duration(time.Now(), "Baize.LoadVariant")
+	}
 
 	b.Variant = findVariant(v) // v is now invalid because AKA
 	TheUserData.Variant = b.Variant
@@ -769,7 +775,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 			if c := b.findCardAt(v.X, v.Y); c != nil {
 				b.stroke.SetDraggedObject(c)
 				if !c.owner.StartDrag(c) {
-					log.Println("cancel stroke because drag not allowed")
+					// log.Println("cancel stroke because drag not allowed")
 					v.Stroke.Cancel()
 				}
 			} else {
@@ -781,7 +787,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 						// println("starting baize drag")
 						b.stroke.SetDraggedObject(b)
 					} else {
-						log.Println("cancel stroke because not over a card")
+						// log.Println("cancel stroke because not over a card")
 						v.Stroke.Cancel()
 					}
 				}

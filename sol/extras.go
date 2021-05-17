@@ -8,13 +8,12 @@ import (
 	"time"
 
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 // CreateStock creates the stock cards
 func (b *Baize) CreateStock() {
 
-	defer util.Duration(time.Now(), "CreateStock")
+	// defer util.Duration(time.Now(), "CreateStock")
 
 	b.stock = b.findPilePrefix("Stock")
 	if b.stock == nil {
@@ -59,7 +58,7 @@ func (b *Baize) CreateStock() {
 
 func (b *Baize) ShuffleStock() {
 
-	defer util.Duration(time.Now(), "ShuffleStock")
+	// defer util.Duration(time.Now(), "ShuffleStock")
 
 	cards := b.stock.Cards
 

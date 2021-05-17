@@ -573,7 +573,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 		return false
 	}
 	if c.Transitioning() || c.Flipping() {
-		println("unwise to drag an animating or flipping card")
+		// println("unwise to drag an animating or flipping card")
 		return false
 	}
 
