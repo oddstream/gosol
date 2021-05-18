@@ -21,25 +21,24 @@ import (
 	"oddstream.games/gosol/ui"
 )
 
-func init() {
-	println("processing command line flags")
+func main() {
+
+	log.SetFlags(0)
+
+	// load userdata before processing flags, because flags can override userdata
+	sol.TheUserData.Load()
+
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.BoolVar(&sol.NoShuffle, "noshuffle", false, "do not shuffle cards")
 	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
-	flag.StringVar(&sol.TheUserData.CardStyle, "c", "default", "set the card face to retro")
+	flag.StringVar(&sol.TheUserData.CardStyle, "c", "scaled", "card style retro/fixed/scaled")
 	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
-}
-
-func main() {
-
-	log.SetFlags(0)
-
-	sol.TheUserData.Load()
-	sound.Mute(sol.TheUserData.MuteSounds)
 
 	flag.Parse()
+
+	sound.Mute(sol.TheUserData.MuteSounds)
 
 	if sol.DebugMode {
 		for i, a := range os.Args {

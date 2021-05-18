@@ -101,6 +101,14 @@ func (c *Card) SetProne(prone bool) {
 func (cid CardID) Color() color.RGBA {
 	suit := cid.Suit()
 	switch suit {
+	// case CLUB:
+	// 	return BasicColors["Purple"]
+	// case DIAMOND:
+	// 	return ExtendedColors["PaleVioletRed"]
+	// case HEART:
+	// 	return BasicColors["Red"]
+	// case SPADE:
+	// 	return BasicColors["Black"]
 	case HEART, DIAMOND:
 		return BasicColors["Red"]
 	case CLUB, SPADE:

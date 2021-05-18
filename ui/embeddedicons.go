@@ -37,6 +37,12 @@ var listIconBytes []byte
 //go:embed icons/menu.png
 var menuIconBytes []byte
 
+//go:embed icons/radio_button_checked.png
+var radio_button_checkedIconBytes []byte
+
+//go:embed icons/radio_button_unchecked.png
+var radio_button_uncheckedIconBytes []byte
+
 //go:embed icons/restore.png
 var restoreIconBytes []byte
 
@@ -64,6 +70,8 @@ func LoadIconMapFromEmbedded() {
 	decode("info", infoIconBytes)
 	decode("list", listIconBytes)
 	decode("menu", menuIconBytes)
+	decode("radio_button_checked", radio_button_checkedIconBytes)
+	decode("radio_button_unchecked", radio_button_uncheckedIconBytes)
 	decode("restore", restoreIconBytes)
 	decode("search", searchIconBytes)
 	decode("settings", settingsIconBytes)

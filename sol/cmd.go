@@ -48,12 +48,21 @@ func (b *Baize) Execute(cmd interface{}) {
 		case "Power moves":
 			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
 			b.MarkMovable() // re-run this
+		case "Scaled cards":
+			if scaled, _ := strconv.ParseBool(v.Data); scaled {
+				TheUserData.CardStyle = "scaled"
+			}
+			b.OldWindowWidth = 0 // force a rescale
+			b.Scale()
+		case "Fixed cards":
+			if fixed, _ := strconv.ParseBool(v.Data); fixed {
+				TheUserData.CardStyle = "fixed"
+			}
+			b.OldWindowWidth = 0 // force a rescale
+			b.Scale()
 		case "Retro cards":
-			retro, _ := strconv.ParseBool(v.Data)
-			if retro {
+			if retro, _ := strconv.ParseBool(v.Data); retro {
 				TheUserData.CardStyle = "retro"
-			} else {
-				TheUserData.CardStyle = "default"
 			}
 			b.OldWindowWidth = 0 // force a rescale
 			b.Scale()
