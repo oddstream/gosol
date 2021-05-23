@@ -379,7 +379,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if TheUserData.HighlightMovable && !c.Prone() && !c.Spinning() {
-		var colorValue float64 = util.MapValue(float64(c.movable), 0, 4, 0.8, 1)
+		var colorValue float64 = util.MapValue(float64(c.movable), 0, 4, 0.85, 1)
 		op.ColorM.Scale(colorValue, colorValue, colorValue, 1)
 	}
 

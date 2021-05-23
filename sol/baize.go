@@ -67,7 +67,6 @@ func NewBaize() *Baize {
 	TheBaize = &Baize{Variant: TheUserData.Variant}
 	TheBaize.ui = ui.New(TheBaize.Execute)
 	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyA:      TheBaize.StockTapped,
 		ebiten.KeyN:      TheBaize.NewGame,
 		ebiten.KeyR:      TheBaize.RestartGame,
 		ebiten.KeyU:      TheBaize.Undo,
@@ -399,13 +398,6 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 
 }
 
-// StockTapped simulates a click on the top card of the Stock pile
-func (b *Baize) StockTapped() {
-	if c := b.stock.Peek(); c != nil {
-		b.CardTapped(c)
-	}
-}
-
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
@@ -431,7 +423,7 @@ func (b *Baize) CardTapped(c *Card) {
 
 	switch pSrc.Class {
 	case "Stock":
-		// Tap on a Stock card to send it to Waste
+		// Tap on a Stock card to send one or more cards to Waste
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
@@ -778,6 +770,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 					// log.Println("cancel stroke because drag not allowed")
 					v.Stroke.Cancel()
 				}
+				// sound.Play("Place")
 			} else {
 				if p := b.findPileAt(v.X, v.Y); p != nil {
 					// we can't really drag piles, but nevertheless...

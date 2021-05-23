@@ -28,13 +28,13 @@ func (u *UI) ShowSettingsDrawer(cardStyle string, highlight, powerMoves, muteSou
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.settingsDrawer.widgets = []Widget{
 		// widget x, y will be set by LayoutWidgets()
-		NewCheckbox(u.settingsDrawer, "Highlights", highlight),
-		NewCheckbox(u.settingsDrawer, "Power moves", powerMoves),
-		NewCheckbox(u.settingsDrawer, "Mute sounds", muteSounds),
 		NewRadioButton(u.settingsDrawer, "Scaled cards", cardStyle == "scaled"),
 		NewRadioButton(u.settingsDrawer, "Fixed cards", cardStyle == "fixed"),
 		NewRadioButton(u.settingsDrawer, "Retro cards", cardStyle == "retro"),
 		NewNavItem(u.settingsDrawer, "settings", "Card back ...", ebiten.KeyF2),
+		NewCheckbox(u.settingsDrawer, "Highlights", highlight),
+		NewCheckbox(u.settingsDrawer, "Power moves", powerMoves),
+		NewCheckbox(u.settingsDrawer, "Mute sounds", muteSounds),
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()

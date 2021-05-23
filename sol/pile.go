@@ -324,19 +324,23 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 	case "", "None":
 		// do nothing
 	case "Down":
+		backDelta := CardHeight / backFanFactor * p.scrunchPercentage / 100
+		faceDelta := CardHeight / faceFanFactor * p.scrunchPercentage / 100
 		for _, c := range p.Cards {
 			if c.Prone() {
-				y = y + (CardHeight / backFanFactor * p.scrunchPercentage / 100)
+				y = y + backDelta
 			} else {
-				y = y + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
+				y = y + faceDelta
 			}
 		}
 	case "Right":
+		backDelta := CardWidth / backFanFactor * p.scrunchPercentage / 100
+		faceDelta := CardWidth / faceFanFactor * p.scrunchPercentage / 100
 		for _, c := range p.Cards {
 			if c.Prone() {
-				x = x + (CardWidth / backFanFactor * p.scrunchPercentage / 100)
+				x = x + backDelta
 			} else {
-				x = x + (CardHeight / faceFanFactor * p.scrunchPercentage / 100)
+				x = x + faceDelta
 			}
 		}
 	case "Waste":
@@ -764,14 +768,12 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		var maxWidth, maxHeight int
 		x0, y0 := p.BaizePosition()
 		switch p.Fan {
-		case "", "None", "Waste", "WasteDown":
-			return
 		case "Down":
 			maxHeight = p.scrunchSize * CardHeight
-			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x10})
+			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(CardWidth), float64(maxHeight), color.RGBA{0, 0, 0, 0x20})
 		case "Right":
 			maxWidth = p.scrunchSize * CardWidth
-			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x10})
+			ebitenutil.DrawRect(screen, float64(x0+TheBaize.DragOffsetX), float64(y0+TheBaize.DragOffsetY), float64(maxWidth), float64(CardHeight), color.RGBA{0, 0, 0, 0x20})
 		}
 	}
 }

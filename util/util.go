@@ -130,6 +130,40 @@ func OrdinalToLongString(ord int) string {
 	return cardValueEnglish[ord]
 }
 
+// StringToOrdinal converts a string to an int 1..13
+func StringToOrdinal(str string) int {
+	switch str {
+	case "A", "Ace":
+		return 1
+	case "2", "Two":
+		return 2
+	case "3", "Three":
+		return 3
+	case "4", "Four":
+		return 4
+	case "5", "Five":
+		return 5
+	case "6", "Six":
+		return 6
+	case "7", "Seven":
+		return 7
+	case "8", "Eight":
+		return 8
+	case "9", "Nine":
+		return 9
+	case "X", "Ten":
+		return 10
+	case "J", "Jack":
+		return 11
+	case "Q", "Queen":
+		return 12
+	case "K", "King":
+		return 13
+	}
+	log.Panicf("Unknown input to StringToOrdinal '%s'", str)
+	return 0
+}
+
 // Pluralize returns a string containing an attempt at a plural form of the word
 func Pluralize(word string, n int) string {
 	if n == 0 {

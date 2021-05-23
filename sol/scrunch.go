@@ -1,13 +1,15 @@
 package sol
 
 func (p *Pile) fannedHeight(scrunchPercent int) int {
+	backDelta := CardHeight / backFanFactor * scrunchPercent / 100
+	faceDelta := CardHeight / faceFanFactor * scrunchPercent / 100
 	var y int
 	for i := 0; i < p.CardCount()-1; i++ {
 		c := p.Cards[i]
 		if c.Prone() {
-			y = y + (CardHeight / backFanFactor * scrunchPercent / 100)
+			y = y + backDelta
 		} else {
-			y = y + (CardHeight / faceFanFactor * scrunchPercent / 100)
+			y = y + faceDelta
 		}
 	}
 	y = y + CardHeight
@@ -15,13 +17,15 @@ func (p *Pile) fannedHeight(scrunchPercent int) int {
 }
 
 func (p *Pile) fannedWidth(scrunchPercent int) int {
+	backDelta := CardWidth / backFanFactor * scrunchPercent / 100
+	faceDelta := CardWidth / faceFanFactor * scrunchPercent / 100
 	var x int
 	for i := 0; i < p.CardCount()-1; i++ {
 		c := p.Cards[i]
 		if c.Prone() {
-			x = x + (CardWidth / backFanFactor * scrunchPercent / 100)
+			x = x + backDelta
 		} else {
-			x = x + (CardWidth / faceFanFactor * scrunchPercent / 100)
+			x = x + faceDelta
 		}
 	}
 	x = x + CardWidth
@@ -44,7 +48,7 @@ func (p *Pile) scrunch(maxSize int, fnCalcSize func(int) int) {
 
 	// println("scrunching", p.Class, "scrunchPercentage now ", p.scrunchPercentage)
 	var percent int
-	for percent = 100; percent > 50; percent -= 5 {
+	for percent = 100; percent > 50; percent -= 1 {
 		testSize := fnCalcSize(percent)
 		// println(percent, testSize, maxSize)
 		if testSize <= maxSize {

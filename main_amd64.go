@@ -28,12 +28,11 @@ func main() {
 	// load userdata before processing flags, because flags can override userdata
 	sol.TheUserData.Load()
 
+	// pearl from the mudbank: don't have any flags that will overwrite TheUserData
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.BoolVar(&sol.NoShuffle, "noshuffle", false, "do not shuffle cards")
-	flag.StringVar(&sol.TheUserData.Variant, "v", "Klondike", "set the variant")
-	flag.StringVar(&sol.TheUserData.CardStyle, "c", "scaled", "card style retro/fixed/scaled")
 	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
 
 	flag.Parse()
