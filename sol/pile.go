@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image/color"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/fogleman/gg"
@@ -69,35 +68,43 @@ func (p *Pile) Reset() {
 
 // GetIntAttribute gets an integer Pile attribute
 func (p *Pile) GetIntAttribute(key string) (int, bool) {
-	str, exists := p.Attributes[key]
+	// str, exists := p.Attributes[key]
+	// if !exists {
+	// 	return 0, false
+	// }
+	// i, err := strconv.Atoi(str)
+	// if err != nil {
+	// 	log.Fatal(str + " is not an int")
+	// }
+	i, exists := p.Attributes[key]
 	if !exists {
 		return 0, false
 	}
-	i, err := strconv.Atoi(str)
-	if err != nil {
-		log.Fatal(str + " is not an int")
-	}
-	return i, true
+	return i.(int), true
 }
 
 // GetStringAttribute gets a string Pile attribute
 func (p *Pile) GetStringAttribute(key string) string {
 	str, exists := p.Attributes[key]
 	if exists {
-		return str
+		return str.(string)
 	}
 	return ""
 }
 
 // GetBoolAttribute gets a boolean Pile attribute
 func (p *Pile) GetBoolAttribute(key string) bool {
-	str, exists := p.Attributes[key]
+	// str, exists := p.Attributes[key]
+	// if exists {
+	// 	value, err := strconv.ParseBool(str)
+	// 	if err != nil {
+	// 		log.Panic("expecting a bool, got ", str)
+	// 	}
+	// 	return value
+	// }
+	b, exists := p.Attributes[key]
 	if exists {
-		value, err := strconv.ParseBool(str)
-		if err != nil {
-			log.Panic("expecting a bool, got ", str)
-		}
-		return value
+		return b.(bool)
 	}
 	return false
 }
