@@ -56,6 +56,8 @@ type Baize struct {
 	OldWindowHeight int // the window height last used to scale baize and cards
 }
 
+//--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
+
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// TheUserData may have been injected from command line flags
