@@ -69,7 +69,16 @@ func (w *Text) Deactivate() {
 }
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *Text) NotifyCallback(input.StrokeEvent) {
+func (w *Text) NotifyCallback(v input.StrokeEvent) {
+	if w.disabled {
+		return
+	}
+	// switch v.Event {
+	// case "tap":
+	// 	if util.InRect(v.X, v.Y, w.OffsetRect) {
+	// 		println("Text NotifyCallback", w.text)
+	// 	}
+	// }
 }
 
 // Update the state of this widget

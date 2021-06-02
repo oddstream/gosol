@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
+	"oddstream.games/gosol/util"
 )
 
 // TextUrl is a widget that displays a clickable url
@@ -63,12 +64,15 @@ func (w *TextUrl) Deactivate() {
 
 // NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
 func (w *TextUrl) NotifyCallback(v input.StrokeEvent) {
+
 	if w.disabled {
 		return
 	}
 	switch v.Event {
 	case "tap":
-		OpenBrowserWindow(w.url)
+		if util.InRect(v.X, v.Y, w.OffsetRect) {
+			OpenBrowserWindow(w.url)
+		}
 	}
 }
 
