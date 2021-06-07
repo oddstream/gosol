@@ -50,18 +50,27 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// default window size is 640, 480
+	// ebiten default window size is 640, 480
 	if sol.TheUserData.WindowWidth == 0 || sol.TheUserData.WindowHeight == 0 {
 		// not yet set/saved, so use sensible values
-		ebiten.SetWindowSize(1920/2, 1000) // does nothing when runtime.GOARCH == "wasm"
-	} else {
-		ebiten.SetWindowSize(sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight)
+		sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight = ebiten.ScreenSizeInFullscreen()
+		sol.TheUserData.WindowWidth /= 2
+		sol.TheUserData.WindowHeight /= 2
 	}
+	ebiten.SetWindowSize(sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight)
+
 	if sol.TheUserData.WindowX != 0 && sol.TheUserData.WindowY != 0 {
 		ebiten.SetWindowPosition(sol.TheUserData.WindowX, sol.TheUserData.WindowY)
 	}
-	ebiten.SetWindowResizable(true)                                                                 // does nothing when runtime.GOARCH == "wasm"
-	ebiten.SetWindowTitle(fmt.Sprintf("Oddstream Solitaire (%s/%s)", runtime.GOOS, runtime.GOARCH)) // does nothing when runtime.GOARCH == "wasm"
+	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
+	if sol.TheUserData.WindowMaximized {
+		ebiten.MaximizeWindow()
+	}
+	if sol.DebugMode {
+		ebiten.SetWindowTitle(fmt.Sprintf("Oddstream Solitaire (%s/%s)", runtime.GOOS, runtime.GOARCH))
+	} else {
+		ebiten.SetWindowTitle("Oddstream Solitaire")
+	}
 	ebiten.SetWindowIcon(sol.WindowIcons())
 	// ebiten.SetScreenClearedEveryFrame(false)
 
@@ -70,11 +79,7 @@ func main() {
 		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}
-		// if runtime.GOARCH != "wasm" {
-		// 	sol.TheUserData.WindowX, sol.TheUserData.WindowY = ebiten.WindowPosition()
-		// 	sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight = ebiten.WindowSize()
-		// }
-		sol.TheUserData.Save()
+		// calling ebiten.* functions here causes panic
 	}()
 
 	if err := ebiten.RunGame(game); err != nil {

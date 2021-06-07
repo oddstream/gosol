@@ -43,6 +43,8 @@ func (b *Baize) Execute(cmd interface{}) {
 				TheUserData.CardBackColor = v.Data
 				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 			}
+		case "Single tap":
+			TheUserData.SingleTap, _ = strconv.ParseBool(v.Data)
 		case "Highlights":
 			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
 		case "Power moves":

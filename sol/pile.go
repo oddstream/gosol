@@ -3,7 +3,6 @@ package sol
 import (
 	"fmt"
 	"image/color"
-	"log"
 	"strings"
 
 	"github.com/fogleman/gg"
@@ -410,15 +409,17 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 
 func (p *Pile) makeTail(c *Card) []*Card {
 	var tail []*Card
-	for i, pc := range p.Cards {
-		if pc == c {
-			tail = p.Cards[i:]
-			break
+	if p.CardCount() > 0 {
+		for i, pc := range p.Cards {
+			if pc == c {
+				tail = p.Cards[i:]
+				break
+			}
 		}
 	}
-	if len(tail) == 0 {
-		log.Panic("Pile.makeTail made an empty tail")
-	}
+	// if len(tail) == 0 {
+	// log.Panic("Pile.makeTail made an empty tail")
+	// }
 	return tail
 }
 
@@ -426,7 +427,9 @@ func (p *Pile) makeTail(c *Card) []*Card {
 func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	if len(Tail) == 0 { // len() for nil slices is defined as zero
-		log.Panic("empty tail passed to CanAcceptTail")
+		// log.Panic("empty tail passed to CanAcceptTail")
+		println("*** Pile.CanAcceptTail empty tail ***")
+		return false
 	}
 
 	c0 := Tail[0]

@@ -8,9 +8,11 @@ type UserData struct {
 	CardBackPattern           string
 	CardBackColor             string
 	CardStyle                 string
+	SingleTap                 bool
 	HighlightMovable          bool
 	PowerMoves                bool
 	MuteSounds                bool
 	WindowX, WindowY          int
 	WindowWidth, WindowHeight int
+	WindowMaximized           bool
 }

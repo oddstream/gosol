@@ -341,7 +341,6 @@ func (b *Baize) countPiles(cls string) (total, count int) {
 
 // PileTapped is called when a pile has been tapped
 func (b *Baize) PileTapped(pTapped *Pile) {
-
 	// this method is in Baize because it needs access to Baize.findPile()
 	switch pTapped.Class {
 	case "Stock":
@@ -410,14 +409,18 @@ func (b *Baize) CardTapped(c *Card) {
 	// 	return
 	// }
 
+	if !TheUserData.SingleTap {
+		return
+	}
+
 	pSrc := c.owner
 
 	// can only tap top card
 	// TODO might be playing Spider &c and trying to send a conformant pile to Foundation
-	if c != pSrc.Peek() {
-		c.Shake()
-		return
-	}
+	// if c != pSrc.Peek() {
+	// 	c.Shake()
+	// 	return
+	// }
 
 	targetClass := c.owner.GetStringAttribute("Target")
 
@@ -472,6 +475,7 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 		}
 	case "Tableau", "Waste", "Cell", "Reserve":
+		// try to move tapped card to a Foundation
 		for _, p := range b.Piles {
 			if p.Class == "Foundation" {
 				if p.CanAcceptTail([]*Card{c}, false) {
@@ -482,26 +486,32 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 			// TODO maybe fake a drag if p.buildFlags&8==8
 		}
-	// 	if !moved {
-	// 		// auto-move card if there is only one other place it can go
-	// 		var targets []*Pile
-	// 		for _, p := range b.Piles {
-	// 			if p == c.owner {
-	// 				continue
-	// 			}
-	// 			if p.CanAcceptTail([]*Card{c}, false) {
-	// 				targets = append(targets, p)
-	// 			}
-	// 		}
-	// 		switch len(targets) {
-	// 		case 0:
-	// 		case 1:
-	// 			b.MoveCards(c, targets[0])
-	// 			moved = true
-	// 		default:
-	// 			TheBaize.ui.Toast("Cannot auto-move card because there is more than one possible destination")
-	// 		}
-	// 	}
+		// if that didn't work, try to move card to the longest Tableau
+		if !moved {
+			var tail []*Card = c.owner.makeTail(c)
+			if len(tail) == 0 {
+				log.Panic("CardTapped empty tail")
+			}
+			var longestTab *Pile
+			for _, p := range b.Piles {
+				if p == c.owner {
+					continue
+				}
+				if p.Class != "Tableau" {
+					continue
+				}
+				// if p.CanAcceptTail([]*Card{c}, false) {
+				if p.CanAcceptTail(tail, false) {
+					if longestTab == nil || p.CardCount() > longestTab.CardCount() {
+						longestTab = p
+					}
+				}
+			}
+			if longestTab != nil {
+				b.MoveCards(c, longestTab)
+				moved = true
+			}
+		}
 	case "Foundation":
 		TheBaize.ui.Toast("You cannot move cards from a Foundation")
 	default:
@@ -1091,6 +1101,7 @@ func (b *Baize) Exit() {
 	if runtime.GOARCH != "wasm" {
 		TheUserData.WindowX, TheUserData.WindowY = ebiten.WindowPosition()
 		TheUserData.WindowWidth, TheUserData.WindowHeight = ebiten.WindowSize()
+		TheUserData.WindowMaximized = ebiten.IsWindowMaximized()
 	}
 
 	TheUserData.Save()
