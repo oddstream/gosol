@@ -413,26 +413,18 @@ func (b *Baize) CardTapped(c *Card) {
 		return
 	}
 
-	pSrc := c.owner
+	var sourcePile *Pile = c.owner
+	var tail []*Card = sourcePile.makeTail(c)
+	var targetClass string = sourcePile.GetStringAttribute("Target")
+	var anyCardsMoved bool = false
 
-	// can only tap top card
-	// TODO might be playing Spider &c and trying to send a conformant pile to Foundation
-	// if c != pSrc.Peek() {
-	// 	c.Shake()
-	// 	return
-	// }
-
-	targetClass := c.owner.GetStringAttribute("Target")
-
-	moved := false
-
-	switch pSrc.Class {
+	switch sourcePile.Class {
 	case "Stock":
 		// Tap on a Stock card to send one or more cards to Waste
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
-		cardsToMove, ok := pSrc.GetIntAttribute("CardsToMove")
+		cardsToMove, ok := sourcePile.GetIntAttribute("CardsToMove")
 		if !ok || cardsToMove == 0 {
 			cardsToMove = 1
 		}
@@ -444,8 +436,8 @@ func (b *Baize) CardTapped(c *Card) {
 					for cardsToMove > 0 && c != nil {
 						cardsToMove--
 						b.MoveCards(c, p)
-						c = pSrc.Peek()
-						moved = true
+						c = sourcePile.Peek()
+						anyCardsMoved = true
 					}
 				}
 			}
@@ -466,29 +458,43 @@ func (b *Baize) CardTapped(c *Card) {
 		for _, p := range b.Piles {
 			if p.Class == targetClass {
 				b.MoveCards(c, p)
-				moved = true
+				anyCardsMoved = true
 				c.SetProne(false)
-				c = pSrc.Peek()
+				c = sourcePile.Peek()
 			}
 			if c == nil {
 				break
 			}
 		}
-	case "Tableau", "Waste", "Cell", "Reserve":
-		// try to move tapped card to a Foundation
-		for _, p := range b.Piles {
-			if p.Class == "Foundation" {
-				if p.CanAcceptTail([]*Card{c}, false) {
-					b.MoveCards(c, p)
-					moved = true
-					break
+	case "Tableau":
+		// try to move a conformant run of 13 cards to a spider foundation
+		if sourcePile.Flags&BuildFlagSpider == BuildFlagSpider && len(tail) == 13 && isTailConformant(sourcePile.Build, sourcePile.Flags, tail) {
+			for _, p := range b.Piles {
+				if p.Class == "Foundation" {
+					if p.CanAcceptTail(tail, false) {
+						b.MoveCards(c, p)
+						anyCardsMoved = true
+						break
+					}
 				}
 			}
-			// TODO maybe fake a drag if p.buildFlags&8==8
 		}
-		// if that didn't work, try to move card to the longest Tableau
-		if !moved {
-			var tail []*Card = c.owner.makeTail(c)
+		fallthrough
+	case "Waste", "Cell", "Reserve":
+		// try to move a top or single tapped card to a Foundation
+		if !anyCardsMoved && c == sourcePile.Peek() {
+			for _, p := range b.Piles {
+				if p.Class == "Foundation" {
+					if p.CanAcceptTail([]*Card{c}, false) {
+						b.MoveCards(c, p)
+						anyCardsMoved = true
+						break
+					}
+				}
+			}
+		}
+		// else try to move card to the longest Tableau
+		if !anyCardsMoved {
 			if len(tail) == 0 {
 				log.Panic("CardTapped empty tail")
 			}
@@ -509,16 +515,16 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 			if longestTab != nil {
 				b.MoveCards(c, longestTab)
-				moved = true
+				anyCardsMoved = true
 			}
 		}
 	case "Foundation":
 		TheBaize.ui.Toast("You cannot move cards from a Foundation")
 	default:
-		println("clueless when tapping on a", pSrc.Class, "card")
+		println("clueless when tapping on a", sourcePile.Class, "card")
 	}
 
-	if moved {
+	if anyCardsMoved {
 		b.AfterUserMove()
 	} else {
 		if c != nil {

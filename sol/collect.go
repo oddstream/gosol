@@ -76,7 +76,10 @@ func (b *Baize) Collect() {
 							for i := 0; i < p.CardCount(); i++ {
 								c := p.Cards[i]
 								tail := p.makeTail(c)
-								if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) {
+								// pearl from the mudbank:
+								// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
+								// but these are not conformant for the Foundation
+								if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) && fp.CanAcceptTail(tail, false) {
 									b.MoveCards(c, fp)
 									count += 13
 									goto NextFoundationPile
