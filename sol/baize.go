@@ -104,10 +104,10 @@ func (b *Baize) RecallCardsToStock() {
 		if p == b.stock {
 			continue
 		}
-		if p.CardCount() > 0 {
+		if !p.Empty() {
 			b.MoveCards(p.Cards[0], b.stock)
 		}
-		// if p.CardCount() != 0 {
+		// if !p.Empty() {
 		// 	log.Fatal(p.Class, " still contains ", p.CardCount(), " cards")
 		// }
 	}
@@ -331,7 +331,7 @@ func (b *Baize) countPiles(cls string) (total, count int) {
 	for _, p := range b.Piles {
 		if p.Class == cls {
 			total++
-			if p.CardCount() == 0 {
+			if p.Empty() {
 				count++
 			}
 		}
@@ -468,9 +468,9 @@ func (b *Baize) CardTapped(c *Card) {
 		}
 	case "Tableau":
 		// try to move a conformant run of 13 cards to a spider foundation
-		if sourcePile.Flags&BuildFlagSpider == BuildFlagSpider && len(tail) == 13 && isTailConformant(sourcePile.Build, sourcePile.Flags, tail) {
+		if sourcePile.Spider() && len(tail) == 13 && isTailConformant(sourcePile.Build, sourcePile.Flags, tail) {
 			for _, p := range b.Piles {
-				if p.Class == "Foundation" {
+				if p.Class == "Foundation" && p.Spider() {
 					if p.CanAcceptTail(tail, false) {
 						b.MoveCards(c, p)
 						anyCardsMoved = true
@@ -614,7 +614,7 @@ func (b *Baize) AutoMoves() {
 	}
 
 	for _, p := range b.Piles {
-		if p.CardCount() == 0 {
+		if p.Empty() {
 			if aff := p.GetStringAttribute("AutoFillFrom"); aff != "" {
 				affPiles := strings.Split(aff, ",")
 				for _, srcPile := range affPiles {
@@ -761,7 +761,7 @@ func (b *Baize) StartSpinning() {
 // debug only
 func (b *Baize) StopSpinning() {
 	for _, p := range b.Piles {
-		if p.CardCount() == 0 {
+		if p.Empty() {
 			continue
 		}
 		p.RepushAllCards()
@@ -855,7 +855,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 							if !ok || cardsToMove == 0 {
 								cardsToMove = 1
 							}
-							for cardsToMove > 0 && b.stock.CardCount() > 0 {
+							for cardsToMove > 0 && !b.stock.Empty() {
 								cardsToMove--
 								b.MoveCards(b.stock.Peek(), p) // this reassigns c.owner to p
 							}
@@ -1016,7 +1016,7 @@ func (b *Baize) Scale() {
 
 	for _, p := range b.Piles {
 		p.CreateBackgroundImage()
-		if p.CardCount() == 0 {
+		if p.Empty() {
 			continue
 		}
 		p.ApplyToCards((*Card).RefreshFaceImage)

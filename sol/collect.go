@@ -69,21 +69,19 @@ func (b *Baize) Collect() {
 		count = 0
 		// iterate over foundations and pull cards to them
 		for _, fp := range foundations {
-			if fp.Flags&BuildFlagSpider == BuildFlagSpider {
-				if fp.CardCount() == 0 {
-					for _, p := range b.Piles {
-						if p.Class == "Tableau" && p.CardCount() >= 13 {
-							for i := 0; i < p.CardCount(); i++ {
-								c := p.Cards[i]
-								tail := p.makeTail(c)
-								// pearl from the mudbank:
-								// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
-								// but these are not conformant for the Foundation
-								if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) && fp.CanAcceptTail(tail, false) {
-									b.MoveCards(c, fp)
-									count += 13
-									goto NextFoundationPile
-								}
+			if fp.Spider() && fp.Empty() {
+				for _, p := range b.Piles {
+					if p.Class == "Tableau" && p.CardCount() >= 13 {
+						for i := 0; i < p.CardCount(); i++ {
+							c := p.Cards[i]
+							tail := p.makeTail(c)
+							// pearl from the mudbank:
+							// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
+							// but these are not conformant for the Foundation
+							if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) && fp.CanAcceptTail(tail, false) {
+								b.MoveCards(c, fp)
+								count += 13
+								goto NextFoundationPile
 							}
 						}
 					}
@@ -145,7 +143,7 @@ func (b *Baize) Conformant() bool {
 		return false
 	}
 	for _, p := range b.Piles {
-		if p.Class == "Tableau" && p.Flags&BuildFlagSpider == BuildFlagSpider {
+		if p.Class == "Tableau" && p.Spider() {
 			// if tableau contains <some cards><13 conformant cards> then tableau isn't conformant anyway
 			switch p.CardCount() {
 			case 0:

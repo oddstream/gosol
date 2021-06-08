@@ -108,6 +108,16 @@ func (p *Pile) GetBoolAttribute(key string) bool {
 	return false
 }
 
+// Spider returns true if this pile is Spideresque
+func (p *Pile) Spider() bool {
+	return p.Flags&BuildFlagSpider == BuildFlagSpider
+}
+
+// Empty returns true if this pile is empty
+func (p *Pile) Empty() bool {
+	return len(p.Cards) == 0
+}
+
 func (p *Pile) CreateBackgroundImage() {
 
 	invisible := p.GetBoolAttribute("Invisible")
@@ -262,7 +272,7 @@ func (p *Pile) CardCount() int {
 
 // Peek topmost Card of this Pile (a stack)
 func (p *Pile) Peek() *Card {
-	if p.CardCount() == 0 {
+	if p.Empty() {
 		return nil
 	}
 	return p.Cards[p.CardCount()-1]
@@ -270,7 +280,7 @@ func (p *Pile) Peek() *Card {
 
 // Pop a Card off the end of this Pile (a stack)
 func (p *Pile) Pop() *Card {
-	if p.CardCount() == 0 {
+	if p.Empty() {
 		return nil
 	}
 	c := p.Cards[p.CardCount()-1]
@@ -409,7 +419,7 @@ func (p *Pile) PushedFannedPosition() (int, int) {
 
 func (p *Pile) makeTail(c *Card) []*Card {
 	var tail []*Card
-	if p.CardCount() > 0 {
+	if !p.Empty() {
 		for i, pc := range p.Cards {
 			if pc == c {
 				tail = p.Cards[i:]
@@ -480,14 +490,14 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 			}
 		}
 		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
-		if p.Flags&BuildFlagSpider == BuildFlagSpider {
+		if p.Spider() {
 			if len(Tail) != 13 {
 				if canToast {
 					TheBaize.ui.Toast("You can only drag 13 cards to a Foundation")
 				}
 				return false
 			}
-			if p.CardCount() > 0 {
+			if !p.Empty() {
 				if canToast {
 					TheBaize.ui.Toast("The Foundation must be empty")
 				}
@@ -501,7 +511,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 				}
 				return false
 			}
-			if p.CardCount() == 0 {
+			if p.Empty() {
 				if p.localAccept > 0 {
 					return c0.Ordinal() == p.localAccept
 				}
@@ -537,7 +547,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 				return false
 			}
 		}
-		if p.CardCount() == 0 {
+		if p.Empty() {
 			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
 				afList := strings.Split(afAttrib, ",")
 				for _, class := range afList {
@@ -558,7 +568,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
 
 	case "Cell":
-		ok := len(Tail) == 1 && p.CardCount() == 0
+		ok := len(Tail) == 1 && p.Empty()
 		if !ok && canToast {
 			TheBaize.ui.Toast("You can only have one card in a Cell")
 		}
@@ -686,7 +696,7 @@ func (p *Pile) Complete() bool {
 	// }
 
 	if !strings.HasPrefix(p.Class, "Foundation") {
-		return p.CardCount() == 0
+		return p.Empty()
 	}
 
 	return true

@@ -126,11 +126,11 @@ func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	for _, p := range piles {
 		switch p.Class {
 		case "Cell":
-			if p.CardCount() == 0 {
+			if p.Empty() {
 				emptyCells++
 			}
 		case "Tableau":
-			if p.CardCount() > 0 || p.localAccept == 99 {
+			if !p.Empty() || p.localAccept == 99 {
 				continue
 			}
 			// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
@@ -260,7 +260,7 @@ func (b *Baize) rulesContents() []string {
 		case "Foundation":
 			fmt.Fprint(&str, "Foundation: Build cards ")
 			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-			if p.Flags&BuildFlagSpider == BuildFlagSpider {
+			if p.Spider() {
 				fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
 			}
 		case "Tableau":

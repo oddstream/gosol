@@ -45,10 +45,10 @@ func setMovable(dst *Pile, tail []*Card) {
 		m = 3
 	case dst.Class == "Cell":
 		m = 1
-	case dst.CardCount() == 0 && len(tail) == c0.owner.CardCount():
+	case dst.Empty() && len(tail) == c0.owner.CardCount():
 		// moving an entire pile to another empty pile
 		m = 0
-	case dst.CardCount() == 0 && len(tail) == 1 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
+	case dst.Empty() && len(tail) == 1 && dst.localAccept == 0 && c0.owner.Class == dst.Class:
 		// moving a single card to an empty pile of the same type
 		m = 1
 	default:
@@ -68,11 +68,11 @@ func (b *Baize) MarkMovable() {
 		switch p.Class {
 		case "Stock":
 			// only the top card is movable
-			if p.CardCount() > 0 {
+			if !p.Empty() {
 				b.movableCards++
 			}
 		case "StockSpider", "StockScorpion":
-			if p.CardCount() > 0 {
+			if !p.Empty() {
 				numTabs, _ := b.countPiles("Tableau")
 				b.movableCards += util.Min(numTabs, p.CardCount())
 			}
