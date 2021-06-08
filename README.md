@@ -71,7 +71,7 @@ A lot a features have been tried and discarded, in order to keep the game (and p
 
 ## FAQ
 
-# What makes this different from the other solitaire implementations?
+### What makes this different from the other solitaire implementations?
 
 This solitaire is all about [Flow](https://en.wikipedia.org/wiki/Flow_(psychology)). 
 Anything that distracts from your interaction with the flow of the game has been either been tried and removed or not included. 
@@ -82,7 +82,7 @@ just try clicking it again or drag it.
 Also, I'm trying to make games authentic, by taking the rules from reputable sources
 and implementing them exactly.
 
-# Why are the graphics so basic?
+### Why are the graphics so basic?
 
 Anything that distracts from your interaction with the flow of the game, 
 or the ability to scan a deck of cards,
@@ -101,11 +101,11 @@ Features seem to have been added because the developers thought they were cool;
 they never seem to have stopped to 
 consider that just because they *could* implement a feature, that they *should*.
 
-# Sometimes the cards are really huge or really tiny
+### Sometimes the cards are really huge or really tiny
 
 Either resize your browser/desktop window (if using scalable cards) or change the settings to fixed size cards.
 
-# The rules for a variation are wrong
+### The rules for a variation are wrong
 
 There's no ISO or ANSI or FIDE-like governing body for solitaire; so there's no standard set of rules.
 Other implementations vary in how they interpret each variant.
@@ -115,55 +115,55 @@ leaning heavily on Jan Wolter (RIP, and thanks for all the fish), David Parlett 
 Where possible, I've implemented the games from the book 
 "The Complete Book of Solitaire and Patience Games" by Albert Morehead and Geoffrey Mott-Smith.
 
-# But you can cheat!
+### But you can cheat!
 
 You can when playing with actual cards, too. Cheat if you like; I'm not your mother.
 
-# What about scores?
+### What about scores?
 
 Nope, the software doesn't keep an arbitary score. Too confusing. 
 Just the number of moves made, number of wins, and your winning streak (streaks are great).
 A game isn't counted at all until you move a card. 
 Thereafter, if you ask for a new deal, that counts as a loss.
 
-# What about a timer?
+### What about a timer?
 
 Nope, there isn't one of those. Too stressful.
 Solitaire is also called patience; it's hard to feel patient when you're pressured by a clock.
 
-# What's with the settings?
+### What's with the settings?
 
-### Scaled cards
+#### Scaled cards
 
 The size of the cards is changed dymaically so the cards fill the width of the screen. In some variants, this can cause the
 cards to disappear off the bottom, in which case you can (a) drag the baize, (b) switch to fixed or retro cards, or (c) change
 the size of the window (if not running on a mobile device).
 
-### Fixed cards
+#### Fixed cards
 
-### Retro cards
+#### Retro cards
 
-### Card back...
+#### Card back...
 
-### Single tap
+#### Single tap
 
 Enabling this allows a single tap on a card to move it, for example from the stock pile to the waste pile, or to the
 fullest tableaux pile, or to a foundation pile. You you want the card to go to a specific place, then you have to drag it there.
 
-### Highlights
+#### Highlights
 
 This highlights cards that *can* be moved by you. The software uses diffenent levels of highlighting, depending on it's simple assessment
 of how useful it thinks that move may be. For example, a card that can be moved to a foundation pile is highlighted the most.
 
-### Power moves
+#### Power moves
 
 Some variants (eg Freecell or Forty Thieves) only allow you to move one card at a time.
 
-### Mute sounds
+#### Mute sounds
 
 So you can, say, listen to an audio book while playing.
 
-# Is the game rigged?
+### Is the game rigged?
 
 No. The cards are shuffled randomly using a Fisher-Yates shuffle 
 driven by a Park-Miller pseudo random number generator, 
