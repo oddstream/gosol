@@ -440,6 +440,9 @@ func (b *Baize) CardTapped(c *Card) {
 						anyCardsMoved = true
 					}
 				}
+				if c == nil {
+					break
+				}
 			}
 		}
 	case "StockSpider":

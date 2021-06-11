@@ -110,7 +110,7 @@ func (b *Baize) ShuffleStock() {
 		log.Println("seed", seed)
 	}
 	rand.Seed(seed)
-	for i := 0; i < 6; i++ {
+	for range []int{1, 2, 3, 4, 5, 6} {
 		rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 	}
 

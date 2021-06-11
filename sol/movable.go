@@ -24,9 +24,9 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 }
 
 func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
+	var c0 *Card = tail[0]
 	var homes []*Pile
 	for _, p := range b.Piles {
-		c0 := tail[0]
 		if p == c0.owner {
 			continue
 		}
