@@ -19,10 +19,7 @@ var faceBytes []byte
 var backBytes []byte
 
 type RetroCardImageProvider struct {
-	faceImgs  map[CardID]*ebiten.Image
-	backImgs  map[string]*ebiten.Image
-	shadowImg *ebiten.Image
-	// movableImg *ebiten.Image
+	CardImages
 }
 
 var (
@@ -89,6 +86,15 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 	if faceImg == nil {
 		log.Panic("no face image")
 	}
+
+	if CardWidth != 71 || CardHeight != 96 {
+		scaledImg := ebiten.NewImage(CardWidth, CardHeight)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
+		scaledImg.DrawImage(faceImg, op)
+		faceImg = scaledImg
+	}
+
 	return faceImg
 }
 
@@ -101,7 +107,7 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 
 	ip.faceImgs = make(map[CardID]*ebiten.Image)
 	for ord := 1; ord < 14; ord++ {
-		for suit := 1; suit < 5; suit++ {
+		for _, suit := range []int{CLUB, DIAMOND, HEART, SPADE} {
 			ID := NewCardID(0, suit, ord)
 			ip.faceImgs[ID] = createRetroFaceImage(ID)
 		}
@@ -115,11 +121,19 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 		}
 		// use ebiten.NewImageFromImage(backImg) instead of using backImg directly
 		// otherwise image has offset from it's spritesheet when used in fogleman/gg
-		ip.backImgs[name] = ebiten.NewImageFromImage(backImg)
+		if CardWidth != 71 || CardHeight != 96 {
+			scaledImg := ebiten.NewImage(CardWidth, CardHeight)
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
+			scaledImg.DrawImage(ebiten.NewImageFromImage(backImg), op)
+			ip.backImgs[name] = scaledImg
+		} else {
+			ip.backImgs[name] = ebiten.NewImageFromImage(backImg)
+		}
 	}
 
-	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight) // cheeky bit of borrowing, sorry
-	// ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
+	ip.shadowImg = createModernShadowImage(CardWidth, CardHeight) // cheeky bit of borrowing, sorry
+	// ip.movableImg = createModernMovableImage(CardWidth, CardHeight)
 
 	return ip
 }

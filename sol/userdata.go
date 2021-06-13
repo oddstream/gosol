@@ -7,7 +7,8 @@ type UserData struct {
 	Variant                   string
 	CardBackPattern           string
 	CardBackColor             string
-	CardStyle                 string
+	RetroCards                bool
+	FixedCards                bool
 	SingleTap                 bool
 	HighlightMovable          bool
 	PowerMoves                bool

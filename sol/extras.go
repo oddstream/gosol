@@ -162,15 +162,14 @@ func findHexCard(cards []*Card, card rune) (int, bool) {
 	return 0, false
 }
 
-func CreateScalables() {
+func CreateCardImages() {
 	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 
-	switch TheUserData.CardStyle {
-	case "retro":
+	if TheUserData.RetroCards {
 		TheCIP = NewRetroCardImageProvider()
 		CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
-	default:
-		TheCIP = NewScalableCardImageProvider()
+	} else {
+		TheCIP = NewModernCardImageProvider()
 		CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
 	}
 	CardShadowImage = TheCIP.ShadowImage()

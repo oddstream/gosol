@@ -42,7 +42,7 @@ var (
 var TheGSM *GameStateManager = &GameStateManager{}
 
 // TheUserData holds serialized game progress data
-var TheUserData = &UserData{Game: "Solitaire", Variant: "Klondike", HighlightMovable: true, PowerMoves: true, SingleTap: true, CardStyle: "scaled", CardBackPattern: "FlowerBlue", CardBackColor: "CornflowerBlue"}
+var TheUserData = &UserData{Game: "Solitaire", Variant: "Klondike", HighlightMovable: true, PowerMoves: true, SingleTap: true, CardBackPattern: "FlowerBlue", CardBackColor: "CornflowerBlue"}
 
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics

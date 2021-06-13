@@ -64,7 +64,7 @@ func NewBaize() *Baize {
 	// log.Printf("%v", TheUserData)
 
 	// bug lurking here; scalables start at 71x96, which is the size needed for CardBackPicker
-	CreateScalables() // sets global TheCIP (sorry)
+	CreateCardImages() // sets global TheCIP (sorry)
 
 	TheBaize = &Baize{Variant: TheUserData.Variant}
 	TheBaize.ui = ui.New(TheBaize.Execute)
@@ -975,8 +975,42 @@ func (b *Baize) ScaleCards() {
 	*/
 
 	// Card gap is 10% of card width
-	switch TheUserData.CardStyle {
-	default:
+	/*
+		switch TheUserData.CardStyle {
+		default:
+			slotWidth := float64(b.WindowWidth) / float64(maxX+2)
+			PilePaddingX = int(slotWidth / 10)
+			CardWidth = int(slotWidth) - PilePaddingX
+			slotHeight := slotWidth * 1.5
+			PilePaddingY = int(slotHeight / 10)
+			CardHeight = int(slotHeight) - PilePaddingY
+			LeftMargin = (CardWidth / 2) + PilePaddingX
+		case "fixed":
+			CardWidth = 70
+			PilePaddingX = 7
+			CardHeight = 70 * 1.5 // 105
+			PilePaddingY = 10
+			cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
+			LeftMargin = (b.WindowWidth - cardsWidth) / 2
+		case "retro":
+			CardWidth = 71
+			PilePaddingX = 7
+			CardHeight = 96
+			PilePaddingY = 10
+			cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
+			LeftMargin = (b.WindowWidth - cardsWidth) / 2
+		}
+		log.Printf("%s card size %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
+	*/
+	if TheUserData.FixedCards {
+		// the retro cards dimensions in the front and back sprite sheets are width 71, height 96
+		CardWidth = 71
+		PilePaddingX = 7
+		CardHeight = 96
+		PilePaddingY = 10
+		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
+		LeftMargin = (b.WindowWidth - cardsWidth) / 2
+	} else {
 		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
@@ -984,23 +1018,7 @@ func (b *Baize) ScaleCards() {
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
-	case "fixed":
-		CardWidth = 70
-		PilePaddingX = 7
-		CardHeight = 70 * 1.5 // 105
-		PilePaddingY = 10
-		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
-		LeftMargin = (b.WindowWidth - cardsWidth) / 2
-	case "retro":
-		CardWidth = 71
-		PilePaddingX = 7
-		CardHeight = 96
-		PilePaddingY = 10
-		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
-		LeftMargin = (b.WindowWidth - cardsWidth) / 2
 	}
-	log.Printf("%s card size %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
-
 	TopMargin = 48 + CardHeight/3
 
 }
@@ -1015,7 +1033,7 @@ func (b *Baize) Scale() {
 
 	b.ScaleCards()
 
-	CreateScalables()
+	CreateCardImages()
 
 	for _, p := range b.Piles {
 		p.CreateBackgroundImage()

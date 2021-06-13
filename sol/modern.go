@@ -16,18 +16,15 @@ import (
 // 	println("Club", string(rune(9827)), "Diamond", string(rune(9830)), "Heart", string(rune(9829)), "Spade", string(rune(9824)))
 // }
 
-type ScalableCardImageProvider struct {
-	faceImgs  map[CardID]*ebiten.Image
-	backImgs  map[string]*ebiten.Image
-	shadowImg *ebiten.Image
-	// movableImg *ebiten.Image
+type ModernCardImageProvider struct {
+	CardImages
 }
 
 func cardCornerRadius() float64 {
 	return float64(CardWidth) / 12
 }
 
-func createScalableFaceImage(ID CardID) *ebiten.Image {
+func createModernFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetRGBA(1, 1, 1, 1)
 	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), cardCornerRadius())
@@ -87,7 +84,7 @@ func createScalableFaceImage(ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createScalableBackImage(width, height int, backColor color.Color) *ebiten.Image {
+func createModernBackImage(width, height int, backColor color.Color) *ebiten.Image {
 	dc := gg.NewContext(width, height)
 	dc.SetColor(backColor)
 	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), cardCornerRadius())
@@ -99,7 +96,7 @@ func createScalableBackImage(width, height int, backColor color.Color) *ebiten.I
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func createScalableShadowImage(width, height int) *ebiten.Image {
+func createModernShadowImage(width, height int) *ebiten.Image {
 	dc := gg.NewContext(width, height)
 	dc.SetRGBA(0, 0, 0, 0.5)
 	dc.SetLineWidth(2)
@@ -109,7 +106,7 @@ func createScalableShadowImage(width, height int) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// func createScalableMovableImage(width, height int) *ebiten.Image {
+// func createModernMovableImage(width, height int) *ebiten.Image {
 // 	dc := gg.NewContext(width, height)
 // 	dc.SetColor(ExtendedColors["Gold"])
 // 	dc.SetLineWidth(2)
@@ -118,25 +115,25 @@ func createScalableShadowImage(width, height int) *ebiten.Image {
 // 	return ebiten.NewImageFromImage(dc.Image())
 // }
 
-func NewScalableCardImageProvider() *ScalableCardImageProvider {
-	ip := &ScalableCardImageProvider{}
+func NewModernCardImageProvider() *ModernCardImageProvider {
+	ip := &ModernCardImageProvider{}
 	ip.faceImgs = make(map[CardID]*ebiten.Image)
 	for ord := 1; ord < 14; ord++ {
-		for suit := 1; suit < 5; suit++ {
+		for _, suit := range []int{CLUB, DIAMOND, HEART, SPADE} {
 			ID := NewCardID(0, suit, ord)
-			ip.faceImgs[ID] = createScalableFaceImage(ID)
+			ip.faceImgs[ID] = createModernFaceImage(ID)
 		}
 	}
 	ip.backImgs = make(map[string]*ebiten.Image)
 	for k, v := range ExtendedColors {
-		ip.backImgs[k] = createScalableBackImage(CardWidth, CardHeight, v)
+		ip.backImgs[k] = createModernBackImage(CardWidth, CardHeight, v)
 	}
-	ip.shadowImg = createScalableShadowImage(CardWidth, CardHeight)
-	// ip.movableImg = createScalableMovableImage(CardWidth, CardHeight)
+	ip.shadowImg = createModernShadowImage(CardWidth, CardHeight)
+	// ip.movableImg = createModernMovableImage(CardWidth, CardHeight)
 	return ip
 }
 
-func (ip *ScalableCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
+func (ip *ModernCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
 	ID = ID & CardID(suitMask|ordinalMask)
 	img, ok := ip.faceImgs[ID]
 	if !ok {
@@ -145,18 +142,18 @@ func (ip *ScalableCardImageProvider) FaceImage(ID CardID) *ebiten.Image {
 	return img
 }
 
-func (ip *ScalableCardImageProvider) BackImage(colorName string) *ebiten.Image {
+func (ip *ModernCardImageProvider) BackImage(colorName string) *ebiten.Image {
 	return ip.backImgs[colorName]
 }
 
-func (ip *ScalableCardImageProvider) BackImages() map[string]*ebiten.Image {
+func (ip *ModernCardImageProvider) BackImages() map[string]*ebiten.Image {
 	return ip.backImgs
 }
 
-func (ip *ScalableCardImageProvider) ShadowImage() *ebiten.Image {
+func (ip *ModernCardImageProvider) ShadowImage() *ebiten.Image {
 	return ip.shadowImg
 }
 
-// func (ip *ScalableCardImageProvider) MovableImage() *ebiten.Image {
+// func (ip *ModernCardImageProvider) MovableImage() *ebiten.Image {
 // 	return ip.movableImg
 // }

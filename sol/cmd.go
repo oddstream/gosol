@@ -35,8 +35,16 @@ func (b *Baize) Execute(cmd interface{}) {
 					b.NewVariant(newVariant)
 				}
 			}
+		case "Retro cards":
+			TheUserData.RetroCards, _ = strconv.ParseBool(v.Data)
+			b.OldWindowWidth = 0 // force a rescale
+			b.Scale()
+		case "Fixed cards":
+			TheUserData.FixedCards, _ = strconv.ParseBool(v.Data)
+			b.OldWindowWidth = 0 // force a rescale
+			b.Scale()
 		case "CardBack":
-			if TheUserData.CardStyle == "retro" {
+			if TheUserData.RetroCards {
 				TheUserData.CardBackPattern = v.Data
 				CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
 			} else {
@@ -50,24 +58,6 @@ func (b *Baize) Execute(cmd interface{}) {
 		case "Power moves":
 			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
 			b.MarkMovable() // re-run this
-		case "Scaled cards":
-			if scaled, _ := strconv.ParseBool(v.Data); scaled {
-				TheUserData.CardStyle = "scaled"
-			}
-			b.OldWindowWidth = 0 // force a rescale
-			b.Scale()
-		case "Fixed cards":
-			if fixed, _ := strconv.ParseBool(v.Data); fixed {
-				TheUserData.CardStyle = "fixed"
-			}
-			b.OldWindowWidth = 0 // force a rescale
-			b.Scale()
-		case "Retro cards":
-			if retro, _ := strconv.ParseBool(v.Data); retro {
-				TheUserData.CardStyle = "retro"
-			}
-			b.OldWindowWidth = 0 // force a rescale
-			b.Scale()
 		case "Mute sounds":
 			TheUserData.MuteSounds, _ = strconv.ParseBool(v.Data)
 			sound.Mute(TheUserData.MuteSounds)
