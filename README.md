@@ -129,24 +129,23 @@ Solitaire is also called *patience*; it's hard to feel patient when you're press
 
 ### What's with the settings?
 
-#### Scaled cards
+#### Retro cards
 
-The size of the cards is changed dymaically so the cards fill the width of the screen. In some variants, this can cause the
-cards to disappear off the bottom, in which case you can (a) drag the baize, (b) switch to fixed or retro cards, or (c) change
-the size of the window (if not running on a mobile device).
+The cards are and based on Leslie Kooy's classic solitaire designs.
+The iconic retro 'jazz cup' card's designer is probably [Gina Ekiss](https://en.wikipedia.org/wiki/Jazz_(design)).
+The cards can look a bit janky if they are not fixed in size.
 
 #### Fixed cards
 
 The size of the cards is fixed, preventing them from scaling.
 
-#### Retro cards
-
-The cards are fixed in size, and based on Leslie Kooy's classic solitaire designs.
-The iconic retro 'jazz cup' card's designer is probably [Gina Ekiss](https://en.wikipedia.org/wiki/Jazz_(design)).
+Otherwise, the size of the cards is changed dynamically so the cards fill the width of the screen. In some variants, this can cause the
+cards to disappear off the bottom, in which case you can (a) drag the baize, (b) switch to fixed or retro cards, or (c) change
+the size of the window (if not running on a mobile device).
 
 #### Card back...
 
-Changes the card beack to either a different color (when using scalable or fixed size cards) or design (when using retro cards).
+Changes the card back to either a different color (when using scalable or fixed size cards) or design (when using retro cards).
 
 #### Single tap
 
