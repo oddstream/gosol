@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/nfnt/resize"
 	"oddstream.games/gosol/util"
 )
 
@@ -88,11 +89,14 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 	}
 
 	if CardWidth != 71 || CardHeight != 96 {
-		scaledImg := ebiten.NewImage(CardWidth, CardHeight)
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
-		scaledImg.DrawImage(faceImg, op)
-		faceImg = scaledImg
+		// TODO consider using https://pkg.go.dev/github.com/nfnt/resize
+		// scaledImg := ebiten.NewImage(CardWidth, CardHeight)
+		// op := &ebiten.DrawImageOptions{}
+		// op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
+		// scaledImg.DrawImage(faceImg, op)
+		// faceImg = scaledImg
+		faceImg2 := resize.Resize(uint(CardWidth), uint(CardHeight), faceImg, resize.Bilinear)
+		faceImg = ebiten.NewImageFromImage(faceImg2)
 	}
 
 	return faceImg
@@ -122,11 +126,14 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 		// use ebiten.NewImageFromImage(backImg) instead of using backImg directly
 		// otherwise image has offset from it's spritesheet when used in fogleman/gg
 		if CardWidth != 71 || CardHeight != 96 {
-			scaledImg := ebiten.NewImage(CardWidth, CardHeight)
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
-			scaledImg.DrawImage(ebiten.NewImageFromImage(backImg), op)
-			ip.backImgs[name] = scaledImg
+			// TODO consider using https://pkg.go.dev/github.com/nfnt/resize
+			// scaledImg := ebiten.NewImage(CardWidth, CardHeight)
+			// op := &ebiten.DrawImageOptions{}
+			// op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
+			// scaledImg.DrawImage(ebiten.NewImageFromImage(backImg), op)
+			// ip.backImgs[name] = scaledImg
+			backImg2 := resize.Resize(uint(CardWidth), uint(CardHeight), backImg, resize.Bilinear)
+			ip.backImgs[name] = ebiten.NewImageFromImage(backImg2)
 		} else {
 			ip.backImgs[name] = ebiten.NewImageFromImage(backImg)
 		}
