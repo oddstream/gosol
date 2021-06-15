@@ -710,6 +710,12 @@ func (p *Pile) Conformant() bool {
 	if strings.HasPrefix(p.Class, "Stock") || p.Class == "Waste" {
 		return false
 	}
+	if p.Class == "Foundation" {
+		return true
+	}
+	if p.Class == "Tableau" && p.Spider() && len(p.Cards) != 13 {
+		return false
+	}
 	// that leaves Cell, Reserve, Tableau
 	return isTailConformant(p.Build, p.Flags, p.Cards)
 }

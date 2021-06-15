@@ -89,7 +89,6 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 	}
 
 	if CardWidth != 71 || CardHeight != 96 {
-		// TODO consider using https://pkg.go.dev/github.com/nfnt/resize
 		// scaledImg := ebiten.NewImage(CardWidth, CardHeight)
 		// op := &ebiten.DrawImageOptions{}
 		// op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)
@@ -121,12 +120,11 @@ func NewRetroCardImageProvider() *RetroCardImageProvider {
 	for name, pt := range backFrames {
 		backImg := backImageSheet.SubImage(image.Rect(pt.X, pt.Y, pt.X+71, pt.Y+96)).(*ebiten.Image)
 		if backImg == nil {
-			log.Panic("no back image")
+			log.Panic("no retro back image")
 		}
 		// use ebiten.NewImageFromImage(backImg) instead of using backImg directly
 		// otherwise image has offset from it's spritesheet when used in fogleman/gg
 		if CardWidth != 71 || CardHeight != 96 {
-			// TODO consider using https://pkg.go.dev/github.com/nfnt/resize
 			// scaledImg := ebiten.NewImage(CardWidth, CardHeight)
 			// op := &ebiten.DrawImageOptions{}
 			// op.GeoM.Scale(float64(CardWidth)/71, float64(CardHeight)/96)

@@ -143,21 +143,6 @@ func (b *Baize) Conformant() bool {
 		return false
 	}
 	for _, p := range b.Piles {
-		if p.Class == "Tableau" && p.Spider() {
-			// if tableau contains <some cards><13 conformant cards> then tableau isn't conformant anyway
-			switch p.CardCount() {
-			case 0:
-				continue // no cards is conformant
-			case 13:
-				if !p.Conformant() {
-					return false
-				}
-			default:
-				return false
-			}
-		}
-		// no need to exclude Foundation* piles as they are guaranteed to be conformant
-		// Cells will always be conformant, Reserve is unlikely to be
 		if !p.Conformant() {
 			return false
 		}

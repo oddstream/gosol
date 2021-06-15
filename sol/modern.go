@@ -21,7 +21,7 @@ type ModernCardImageProvider struct {
 }
 
 func cardCornerRadius() float64 {
-	return float64(CardWidth) / 12
+	return float64(CardWidth) / 15
 }
 
 func createModernFaceImage(ID CardID) *ebiten.Image {

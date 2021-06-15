@@ -501,7 +501,7 @@ func (b *Baize) CardTapped(c *Card) {
 			if len(tail) == 0 {
 				log.Panic("CardTapped empty tail")
 			}
-			var longestTab *Pile
+			var pLongest *Pile
 			for _, p := range b.Piles {
 				if p == c.owner {
 					continue
@@ -511,13 +511,13 @@ func (b *Baize) CardTapped(c *Card) {
 				}
 				// if p.CanAcceptTail([]*Card{c}, false) {
 				if p.CanAcceptTail(tail, false) {
-					if longestTab == nil || p.CardCount() > longestTab.CardCount() {
-						longestTab = p
+					if pLongest == nil || p.CardCount() > pLongest.CardCount() {
+						pLongest = p
 					}
 				}
 			}
-			if longestTab != nil {
-				b.MoveCards(c, longestTab)
+			if pLongest != nil {
+				b.MoveCards(c, pLongest)
 				anyCardsMoved = true
 			}
 		}
@@ -1004,10 +1004,18 @@ func (b *Baize) ScaleCards() {
 	*/
 	if TheUserData.FixedCards {
 		// the retro cards dimensions in the front and back sprite sheets are width 71, height 96
-		CardWidth = 71
-		PilePaddingX = 7
-		CardHeight = 96
-		PilePaddingY = 10
+		// but that makes Modern cards that look too wide
+		if TheUserData.RetroCards {
+			CardWidth = 71
+			PilePaddingX = 7
+			CardHeight = 96
+			PilePaddingY = 10
+		} else {
+			CardWidth = 70
+			PilePaddingX = 7
+			CardHeight = 70 * 1.5 // 105
+			PilePaddingY = 10
+		}
 		cardsWidth := int(PilePositionType(PilePaddingX+CardWidth) * (maxX + 1)) // add 1 for half width card margin
 		LeftMargin = (b.WindowWidth - cardsWidth) / 2
 	} else {
