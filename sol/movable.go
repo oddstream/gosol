@@ -76,7 +76,7 @@ func (b *Baize) MarkMovable() {
 				numTabs, _ := b.countPiles("Tableau")
 				b.movableCards += util.Min(numTabs, p.CardCount())
 			}
-		case "Waste", "Reserve":
+		case "Waste", "Reserve", "Golf":
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {
 				if tail := p.DraggableTail(c); tail != nil {

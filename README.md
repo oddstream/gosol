@@ -8,6 +8,7 @@ It's an adaptation of my [Lua](https://www.lua.org/)/[Solar2D](https://solar2d.c
 
 It currently knows how to play about 40 games, including:
 
+* Alhambra
 * American Toad (and the original The Toad)
 * Australian
 * Baker's Dozen (and Baker's Dozen Relaxed)

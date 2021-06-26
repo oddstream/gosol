@@ -88,7 +88,7 @@ func (b *Baize) Collect() {
 				}
 			} else {
 				for _, p := range b.Piles {
-					if p.Class == "Tableau" || p.Class == "Cell" || p.Class == "Waste" || p.Class == "Reserve" {
+					if p.Class == "Tableau" || p.Class == "Cell" || p.Class == "Waste" || p.Class == "Reserve" || p.Class == "Golf" {
 						count += b.collectFromPile(p, fp)
 					}
 				}

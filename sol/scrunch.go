@@ -64,7 +64,7 @@ func (p *Pile) scrunch(maxSize int, fnCalcSize func(int) int) {
 // ScrunchCards alters the fan so that cards overlap more to fit in view
 func (p *Pile) ScrunchCards() {
 
-	if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
+	if p.scrunchSize == 0 || p.CardCount() < 4 {
 		return
 	}
 	switch p.Fan {
@@ -85,7 +85,7 @@ func (p *Pile) ScrunchCards() {
 // TODO this needs to be called when window dimensions change
 func (b *Baize) calcScrunchSizev2() {
 	for _, p1 := range b.Piles {
-		if p1.Class != "Tableau" {
+		if !(p1.Class == "Tableau") {
 			continue
 		}
 		switch p1.Fan {

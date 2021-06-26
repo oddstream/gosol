@@ -319,7 +319,10 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 	switch pTapped.Class {
 	case "Stock":
 		if pTapped.localRecycles > 0 {
-			waste := b.findPile("Waste")
+			waste := b.findPile("Waste") // TODO varidaic findPile()?
+			if waste == nil {
+				waste = b.findPile("Golf")
+			}
 			if waste == nil || len(waste.Cards) == 0 {
 				return
 			}
@@ -396,7 +399,7 @@ func (b *Baize) CardTapped(c *Card) {
 
 	switch sourcePile.Class {
 	case "Stock":
-		// Tap on a Stock card to send one or more cards to Waste
+		// Tap on a Stock card to send one or more cards to Waste, Golf
 		if targetClass == "" {
 			targetClass = "Waste"
 		}
@@ -407,15 +410,17 @@ func (b *Baize) CardTapped(c *Card) {
 		for _, p := range b.Piles {
 			if targetClass == p.Class {
 				// println("found a", p.Class)
-				if p.CanAcceptCard(c) {
-					// println(p.Class, "can accept", c.ID.String())
-					for cardsToMove > 0 && c != nil {
-						cardsToMove--
-						b.MoveCards(c, p)
-						c = sourcePile.Peek()
-						anyCardsMoved = true
-					}
+				// Waste, Golf should always accept a card from Stock, should don't need to
+				// check if targetClass can accept Stock card
+				// if p.CanAcceptCard(c) {
+				// println(p.Class, "can accept", c.ID.String())
+				for cardsToMove > 0 && c != nil {
+					cardsToMove--
+					b.MoveCards(c, p)
+					c = sourcePile.Peek()
+					anyCardsMoved = true
 				}
+				// }
 				if c == nil {
 					break
 				}
@@ -459,7 +464,7 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 		}
 		fallthrough
-	case "Waste", "Cell", "Reserve":
+	case "Waste", "Cell", "Reserve", "Golf":
 		// try to move a top or single tapped card to a Foundation
 		if !anyCardsMoved && c == sourcePile.Peek() {
 			for _, p := range b.Piles {
@@ -472,7 +477,7 @@ func (b *Baize) CardTapped(c *Card) {
 				}
 			}
 		}
-		// else try to move card to the longest Tableau
+		// else try to move card to the longest Tableau or Golf
 		if !anyCardsMoved {
 			if len(tail) == 0 {
 				log.Panic("CardTapped empty tail")
@@ -482,10 +487,9 @@ func (b *Baize) CardTapped(c *Card) {
 				if p == c.owner {
 					continue
 				}
-				if p.Class != "Tableau" {
+				if !(p.Class == "Tableau" || p.Class == "Golf") {
 					continue
 				}
-				// if p.CanAcceptTail([]*Card{c}, false) {
 				if p.CanAcceptTail(tail, false) {
 					if pLongest == nil || p.CardCount() > pLongest.CardCount() {
 						pLongest = p
@@ -553,9 +557,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 	}
 
 	switch dst.Class {
-	case "Foundation":
-		sound.Play("Slide")
-	case "Waste":
+	case "Foundation", "Waste", "Golf":
 		sound.Play("Slide")
 	default:
 		sound.Play("Place")
@@ -568,7 +570,7 @@ func (b *Baize) MoveCards(c *Card, dst *Pile) {
 		}
 	}
 	// special case: waste may need refanning if we took a card from it
-	if src.Class == "Waste" {
+	if strings.HasPrefix(src.Fan, "Waste") {
 		src.RepushAllCards()
 	}
 	src.ScrunchCards()
@@ -1088,8 +1090,9 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 		p.DrawStaticCards(screen)
 	}
 	// for _, p := range b.Piles {
-	// loop backwards so we don't draw card transitioning from waste underneath waste cards fanning/transitioning
-	for i := len(b.Piles) - 1; i > 0; i-- {
+	// loop backwards so we don't draw card transitioning from waste/golf underneath waste cards fanning/transitioning
+	// i.e. we need the topmost card drawn first
+	for i := len(b.Piles) - 1; i >= 0; i-- {
 		p := b.Piles[i]
 		p.DrawTransitioningCards(screen)
 	}

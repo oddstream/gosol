@@ -19,9 +19,9 @@ type VariantInfo struct {
 
 // PileInfo contains the basic Pile members and a lookup table for it's attributes
 type PileInfo struct {
-	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"
+	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"|"Golf"
 	X, Y               PilePositionType // relative position on Baize in CardWidth/Height units (ie not screen coords)
-	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteDown"
+	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteRight"|"WasteDown"
 	Build, Drag, Flags int
 	Attributes         M
 }
@@ -50,8 +50,8 @@ var Variants = map[string]VariantInfo{
 			{"Reserve", 6, 1, "Down", 0, 15, 1, M{"Deal": "uuuu"}},
 			{"Reserve", 7, 1, "Down", 0, 15, 1, M{"Deal": "uuuu"}},
 
-			{"Stock", 0, 3, "None", 0, 15, 0, M{"Packs": 2, "Target": "Waste", "Recycles": 2}},
-			{"Waste", 1, 3, "Waste", 15, 15, 1, nil},
+			{"Stock", 0, 3, "None", 0, 15, 0, M{"Packs": 2, "Target": "Golf", "Recycles": 2}},
+			{"Golf", 1, 3, "Waste", 24, 15, 5, nil},
 		},
 	},
 	"American Toad": {

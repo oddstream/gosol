@@ -257,6 +257,9 @@ func (b *Baize) rulesContents() []string {
 			fmt.Fprintf(&str, "Clicking on the stock will transfer one card to each %s. ", targetClass)
 		case "Waste":
 			fmt.Fprint(&str, "Waste: Cards can be be moved from here to Cells, Tableaux or Foundations.")
+		case "Golf":
+			fmt.Fprint(&str, "Golf: Cards can be moved here.")
+			// TODO
 		case "Foundation":
 			fmt.Fprint(&str, "Foundation: Build cards ")
 			fmt.Fprint(&str, englishRules(p.Build, p.Flags))

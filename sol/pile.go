@@ -225,7 +225,7 @@ func (p *Pile) FannedBaizeRect() (x0 int, y0 int, x1 int, y1 int) {
 			}
 		}
 		switch p.Fan {
-		case "Right", "Waste":
+		case "Right", "Waste", "WasteRight":
 			x1 = x + CardWidth
 		case "Down", "WasteDown":
 			y1 = y + CardHeight
@@ -460,8 +460,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	switch p.Class {
 	case "Waste":
-		// allow dragging a card from Reserve to Waste (for Alhambra)
-		if len(Tail) == 1 && (c0.owner.Class == "Stock" || c0.owner.Class == "Reserve") {
+		if len(Tail) == 1 && c0.owner.Class == "Stock" {
 			// if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
 			return true
 			// }
@@ -574,12 +573,35 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 			TheBaize.ui.Toast("You can only have one card in a Cell")
 		}
 		return ok
+
 	case "Reserve":
 		if canToast {
 			TheBaize.ui.Toast("You cannot move a card to a Reserve")
 		}
 		return false
+
+	case "Golf":
+		if p.Empty() {
+			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
+				afList := strings.Split(afAttrib, ",")
+				for _, class := range afList {
+					if c0.owner.Class == class {
+						return true
+					}
+				}
+				if canToast {
+					TheBaize.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
+				}
+				return false
+			}
+			if p.localAccept > 0 {
+				return c0.Ordinal() == p.localAccept
+			}
+			return true
+		}
+		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
 	}
+
 	if canToast {
 		TheBaize.ui.Toast("You cannot move a card there")
 	}
@@ -711,7 +733,7 @@ func (p *Pile) Conformant() bool {
 	if strings.HasPrefix(p.Class, "Stock") || p.Class == "Waste" {
 		return false
 	}
-	if p.Class == "Foundation" {
+	if p.Class == "Foundation" || p.Class == "Golf" {
 		return true
 	}
 	if p.Class == "Tableau" && p.Spider() && len(p.Cards) != 13 {
@@ -789,7 +811,7 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 	}
 
 	if DebugMode {
-		if p.scrunchSize == 0 || p.CardCount() < 4 || p.Class != "Tableau" {
+		if p.scrunchSize == 0 || p.CardCount() < 4 {
 			return
 		}
 		var maxWidth, maxHeight int
