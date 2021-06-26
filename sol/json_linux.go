@@ -109,13 +109,13 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 	println("saved", path)
 }
 
-// Load an already existing UserData object from file
-func (ud *UserData) Load() {
+// Load an already existing Preferences object from file
+func (ud *Preferences) Load() {
 
 	if DebugMode {
-		defer util.Duration(time.Now(), "UserData.Load")
+		defer util.Duration(time.Now(), "Preferences.Load")
 	}
-	bytes, count, err := loadBytesFromFile("userdata.json", false)
+	bytes, count, err := loadBytesFromFile("preferences.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
 	}
@@ -123,22 +123,22 @@ func (ud *UserData) Load() {
 	// golang gotcha reslice buffer to number of bytes actually read
 	err = json.Unmarshal(bytes[:count], ud)
 	if err != nil {
-		log.Panic("UserData.Load Unmarshal", err)
+		log.Panic("Preferences.Load Unmarshal", err)
 	}
 
 }
 
-// Save writes the UserData object to file
-func (ud *UserData) Save() {
+// Save writes the Preferences object to file
+func (ud *Preferences) Save() {
 	if DebugMode {
-		defer util.Duration(time.Now(), "UserData.Save")
+		defer util.Duration(time.Now(), "Preferences.Save")
 	}
 	bytes, err := json.MarshalIndent(ud, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	saveBytesToFile(bytes, "userdata.json")
+	saveBytesToFile(bytes, "preferences.json")
 
 }
 

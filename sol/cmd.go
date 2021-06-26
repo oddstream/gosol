@@ -36,35 +36,35 @@ func (b *Baize) Execute(cmd interface{}) {
 				}
 			}
 		case "Retro cards":
-			TheUserData.RetroCards, _ = strconv.ParseBool(v.Data)
+			ThePreferences.RetroCards, _ = strconv.ParseBool(v.Data)
 			b.OldWindowWidth = 0 // force a rescale
 			b.Scale()
 		case "Fixed cards":
-			TheUserData.FixedCards, _ = strconv.ParseBool(v.Data)
+			ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
 			b.OldWindowWidth = 0 // force a rescale
 			b.Scale()
 		case "CardBack":
-			if TheUserData.RetroCards {
-				TheUserData.CardBackPattern = v.Data
-				CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
+			if ThePreferences.RetroCards {
+				ThePreferences.CardBackPattern = v.Data
+				CardBackImage = TheCIP.BackImage(ThePreferences.CardBackPattern)
 			} else {
-				TheUserData.CardBackColor = v.Data
-				CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
+				ThePreferences.CardBackColor = v.Data
+				CardBackImage = TheCIP.BackImage(ThePreferences.CardBackColor)
 			}
 		case "Single tap":
-			TheUserData.SingleTap, _ = strconv.ParseBool(v.Data)
+			ThePreferences.SingleTap, _ = strconv.ParseBool(v.Data)
 		case "Highlights":
-			TheUserData.HighlightMovable, _ = strconv.ParseBool(v.Data)
+			ThePreferences.HighlightMovable, _ = strconv.ParseBool(v.Data)
 		case "Power moves":
-			TheUserData.PowerMoves, _ = strconv.ParseBool(v.Data)
+			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
 			b.MarkMovable() // re-run this
 		case "Mute sounds":
-			TheUserData.MuteSounds, _ = strconv.ParseBool(v.Data)
-			sound.Mute(TheUserData.MuteSounds)
+			ThePreferences.MuteSounds, _ = strconv.ParseBool(v.Data)
+			sound.Mute(ThePreferences.MuteSounds)
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}
-		TheUserData.Save() // save now especially if running on a browser
+		ThePreferences.Save() // save now especially if running on a browser
 
 	default:
 		log.Fatal("Baize.Execute unknown command type", cmd)

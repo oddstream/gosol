@@ -3,11 +3,11 @@ package sol
 import (
 	"log"
 	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 
 	"oddstream.games/gosol/schriftbank"
+	"oddstream.games/gosol/util"
 )
 
 // CreateStock creates the stock cards
@@ -147,30 +147,64 @@ func TestShuffle(stock *Pile) {
 	}
 }
 
-func findHexCard(cards []*Card, card rune) (int, bool) {
-	// card should be one of 123456789ABCD
-	i64, err := strconv.ParseInt(string(card), 16, 0)
-	if err != nil {
-		log.Panic("cannot parse", card)
-	}
-	ordinal := int(i64)
-	for i, c := range cards {
-		if c.Ordinal() == ordinal {
-			return i, true
+// func findHexCard(cards []*Card, card rune) (int, bool) {
+// 	// card should be one of 123456789ABCD
+// 	i64, err := strconv.ParseInt(string(card), 16, 0)
+// 	if err != nil {
+// 		log.Panic("cannot parse", card)
+// 	}
+// 	ordinal := int(i64)
+// 	for i, c := range cards {
+// 		if c.Ordinal() == ordinal {
+// 			return i, true
+// 		}
+// 	}
+// 	return 0, false
+// }
+
+func parseCardsFromDeal(stock *Pile, deal string) []*Card {
+	var cards []*Card
+	var runes = []rune(deal)
+	for i := 0; i < len(runes); i++ {
+		// Note that since the rune type is an alias for int32, we must use %c instead of the usual %v in the Printf statement,
+		// or we will see the integer representation of the Unicode code point
+		var c *Card
+		if runes[i] == 'u' || runes[i] == 'd' {
+			c = stock.Pop()
+		} else {
+			ord := util.RuneToOrdinal(runes[i])
+			i++
+			suit := util.RuneToSuit(runes[i])
+			i++
+			cid := NewCardID(0, suit, ord)
+			for idx, cs := range stock.Cards {
+				if SameCard(cid, cs.ID) { // ignores pack
+					c = stock.Extract(idx)
+					break
+				}
+			}
 		}
+		if c == nil {
+			log.Fatal("out of cards during deal from ", deal)
+			break
+		}
+		if runes[i] == 'd' {
+			c.FlipDown()
+		}
+		cards = append(cards, c)
 	}
-	return 0, false
+	return cards
 }
 
 func CreateCardImages() {
 	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
 
-	if TheUserData.RetroCards {
+	if ThePreferences.RetroCards {
 		TheCIP = NewRetroCardImageProvider()
-		CardBackImage = TheCIP.BackImage(TheUserData.CardBackPattern)
+		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackPattern)
 	} else {
 		TheCIP = NewModernCardImageProvider()
-		CardBackImage = TheCIP.BackImage(TheUserData.CardBackColor)
+		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackColor)
 	}
 	CardShadowImage = TheCIP.ShadowImage()
 	// CardMovableImage = TheCIP.MovableImage()

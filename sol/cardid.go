@@ -133,7 +133,7 @@ func NewCardID(pack, suit, ordinal int) CardID {
 	return CardID(u)
 }
 
-// SameCard returns true if the two cards have the same ordinal and suit
+// SameCard returns true if the two cards have the same ordinal and suit; pack is ignored
 func SameCard(ID1, ID2 CardID) bool {
 	return ID1&(suitMask|ordinalMask) == ID2&(suitMask|ordinalMask)
 }

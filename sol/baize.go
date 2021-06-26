@@ -66,7 +66,7 @@ func NewBaize() *Baize {
 	// bug lurking here; scalables start at 71x96, which is the size needed for CardBackPicker
 	CreateCardImages() // sets global TheCIP (sorry)
 
-	TheBaize = &Baize{Variant: TheUserData.Variant}
+	TheBaize = &Baize{Variant: ThePreferences.Variant}
 	TheBaize.ui = ui.New(TheBaize.Execute)
 	TheBaize.commandTable = map[ebiten.Key]func(){
 		ebiten.KeyN:      TheBaize.NewGame,
@@ -170,7 +170,7 @@ func (b *Baize) NewVariant(v string) {
 
 	// switch to new variant
 	b.Variant = findVariant(v) // v is now invalid because AKA
-	TheUserData.Variant = b.Variant
+	ThePreferences.Variant = b.Variant
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)
 
@@ -198,7 +198,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	}
 
 	b.Variant = findVariant(v) // v is now invalid because AKA
-	TheUserData.Variant = b.Variant
+	ThePreferences.Variant = b.Variant
 	b.BuildVariant(b.Variant)
 	b.ui.SetTitle(b.Variant)
 	b.UndoStack = undoStack
@@ -232,35 +232,9 @@ func (b *Baize) dealCards() {
 		if deal == "" {
 			continue
 		}
-		for _, d := range deal {
-			switch d {
-			case 'u':
-				c := b.stock.Pop() // this will flip card up
-				if c == nil {
-					log.Fatal("out of cards during deal u from ", deal)
-				}
-				if c.Prone() {
-					log.Fatal("popped a face down card from stock")
-				}
-				p.Push(c)
-			case 'd':
-				c := b.stock.Pop() // this will flip card up
-				if c == nil {
-					log.Fatal("out of cards during deal d from ", deal)
-				}
-				c.FlipDown()
-				p.Push(c)
-			case '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D':
-				idx, ok := findHexCard(b.stock.Cards, d)
-				if ok {
-					c := b.stock.Extract(idx)
-					p.Push(c)
-				} else {
-					log.Fatal("cannot find", d, "during deal from ", deal)
-				}
-			default:
-				log.Panic("unknown rune in Deal", string(d))
-			}
+		cards := parseCardsFromDeal(b.stock, deal)
+		for _, c := range cards {
+			p.Push(c)
 		}
 	}
 
@@ -349,6 +323,8 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 			if waste == nil || len(waste.Cards) == 0 {
 				return
 			}
+			// Pop/Push don't play a sound, only MoveCards
+			sound.Play("Slide")
 			for len(waste.Cards) > 0 {
 				c := waste.Pop()
 				b.stock.Push(c) // this will flip card down
@@ -366,35 +342,35 @@ func (b *Baize) PileTapped(pTapped *Pile) {
 		   Then, without shuffling, the cards are dealt out again, starting with the first card picked up,
 		   and dealing the cards in the same order as they were picked up.
 		*/
-		if pTapped.localRecycles > 0 {
-			tmp := make([]*Card, 0, 52)
-
-			for _, pTab := range b.Piles {
-				if pTab.Class == "Tableau" {
-					tmp = append(tmp, pTab.Cards...)
-					pTab.Cards = pTab.Cards[:0]
-				}
-			}
-			// println(len(tmp), "cards collected")
-
-			for _, pTab := range b.Piles {
-				if pTab.Class == "Tableau" {
-					deal := pTab.GetStringAttribute("Deal")
-					for i := 0; i < len(deal); i++ {
-						var c *Card
-						if len(tmp) > 0 {
-							c, tmp = tmp[0], tmp[1:]
-						} else {
-							goto FinishedDealing
-						}
-						pTab.Push(c)
-					}
-				}
-			}
-		FinishedDealing:
-			pTapped.SetRecycles(pTapped.localRecycles - 1)
-			b.AfterUserMove()
+		if pTapped.localRecycles == 0 {
+			break
 		}
+		tmp := make([]*Card, 0, 52)
+
+		for _, pTab := range b.Piles {
+			if pTab.Class == "Tableau" {
+				tmp = append(tmp, pTab.Cards...)
+				pTab.Cards = pTab.Cards[:0]
+			}
+		}
+		sound.Play("Slide")
+		for _, pTab := range b.Piles {
+			if pTab.Class == "Tableau" {
+				deal := pTab.GetStringAttribute("Deal")
+				for i := 0; i < len(deal); i++ {
+					var c *Card
+					if len(tmp) > 0 {
+						c, tmp = tmp[0], tmp[1:]
+					} else {
+						goto FinishedDealing
+					}
+					pTab.Push(c)
+				}
+			}
+		}
+	FinishedDealing:
+		pTapped.SetRecycles(pTapped.localRecycles - 1)
+		b.AfterUserMove()
 	}
 
 }
@@ -409,7 +385,7 @@ func (b *Baize) CardTapped(c *Card) {
 	// 	return
 	// }
 
-	if !TheUserData.SingleTap {
+	if !ThePreferences.SingleTap {
 		return
 	}
 
@@ -711,22 +687,23 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 }
 
 func (b *Baize) calcPercentComplete() int {
-	var foundations, sorted, unsorted int
+	var sorted, unsorted int
 	for _, p := range b.Piles {
 		if p.Class == "Foundation" {
-			foundations++
-		}
-		for i := 0; i < len(p.Cards)-1; i++ {
-			c1 := p.Cards[i]
-			c2 := p.Cards[i+1]
-			if isCardPairConformant(p.Build, p.Flags, c1, c2) {
-				sorted++
-			} else {
-				unsorted++
+			sorted += p.CardCount()
+		} else {
+			for i := 0; i < len(p.Cards)-1; i++ {
+				c1 := p.Cards[i]
+				c2 := p.Cards[i+1]
+				if isCardPairConformant(p.Build, p.Flags, c1, c2) {
+					sorted++
+				} else {
+					unsorted++
+				}
 			}
 		}
 	}
-	return int(util.MapValue(float64(sorted)-float64(unsorted)+float64(foundations), float64(-b.totalCards), float64(b.totalCards), 0, 100))
+	return int(util.MapValue(float64(sorted)-float64(unsorted), float64(-b.totalCards), float64(b.totalCards), 0, 100))
 }
 
 // StartDrag return true if the Baize can be dragged (vscrolled)
@@ -1002,10 +979,10 @@ func (b *Baize) ScaleCards() {
 		}
 		log.Printf("%s card size %dx%d", TheUserData.CardStyle, CardWidth, CardHeight)
 	*/
-	if TheUserData.FixedCards {
+	if ThePreferences.FixedCards {
 		// the retro cards dimensions in the front and back sprite sheets are width 71, height 96
 		// but that makes Modern cards that look too wide
-		if TheUserData.RetroCards {
+		if ThePreferences.RetroCards {
 			CardWidth = 71
 			PilePaddingX = 7
 			CardHeight = 96
@@ -1110,7 +1087,10 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, p := range b.Piles {
 		p.DrawStaticCards(screen)
 	}
-	for _, p := range b.Piles {
+	// for _, p := range b.Piles {
+	// loop backwards so we don't draw card transitioning from waste underneath waste cards fanning/transitioning
+	for i := len(b.Piles) - 1; i > 0; i-- {
+		p := b.Piles[i]
 		p.DrawTransitioningCards(screen)
 	}
 	for _, p := range b.Piles {
@@ -1134,12 +1114,12 @@ func (b *Baize) Exit() {
 	}
 
 	if runtime.GOARCH != "wasm" {
-		TheUserData.WindowX, TheUserData.WindowY = ebiten.WindowPosition()
-		TheUserData.WindowWidth, TheUserData.WindowHeight = ebiten.WindowSize()
-		TheUserData.WindowMaximized = ebiten.IsWindowMaximized()
+		ThePreferences.WindowX, ThePreferences.WindowY = ebiten.WindowPosition()
+		ThePreferences.WindowWidth, ThePreferences.WindowHeight = ebiten.WindowSize()
+		ThePreferences.WindowMaximized = ebiten.IsWindowMaximized()
 	}
 
-	TheUserData.Save()
+	ThePreferences.Save()
 
 	if runtime.GOARCH != "wasm" {
 		os.Exit(0)

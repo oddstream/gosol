@@ -41,8 +41,8 @@ var (
 // TheGSM provides global access to the game state manager
 var TheGSM *GameStateManager = &GameStateManager{}
 
-// TheUserData holds serialized game progress data
-var TheUserData = &UserData{Game: "Solitaire", Variant: "Klondike", HighlightMovable: true, PowerMoves: true, SingleTap: true, CardBackPattern: "FlowerBlue", CardBackColor: "CornflowerBlue"}
+// ThePreferences holds serialized game progress data
+var ThePreferences = &Preferences{Game: "Solitaire", Variant: "Klondike", HighlightMovable: true, PowerMoves: true, SingleTap: true, CardBackPattern: "FlowerBlue", CardBackColor: "CornflowerBlue"}
 
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics

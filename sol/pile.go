@@ -460,7 +460,8 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	switch p.Class {
 	case "Waste":
-		if len(Tail) == 1 && c0.owner.Class == "Stock" {
+		// allow dragging a card from Reserve to Waste (for Alhambra)
+		if len(Tail) == 1 && (c0.owner.Class == "Stock" || c0.owner.Class == "Reserve") {
 			// if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
 			return true
 			// }
@@ -507,7 +508,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 		} else {
 			if len(Tail) != 1 {
 				if canToast {
-					TheBaize.ui.Toast("CYou can only drag one card to a Foundation")
+					TheBaize.ui.Toast("You can only drag one card to a Foundation")
 				}
 				return false
 			}
@@ -522,7 +523,7 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
 	case "Tableau":
 		if p.Flags&DragFlagSingle == DragFlagSingle {
-			if TheUserData.PowerMoves {
+			if ThePreferences.PowerMoves {
 				pm := powerMoves(TheBaize.Piles, p)
 				if len(Tail) > pm {
 					if canToast {
@@ -604,7 +605,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	p.Tail = p.makeTail(c)
 
 	if p.Flags&DragFlagSingle == DragFlagSingle {
-		if TheUserData.PowerMoves && p.Class == "Tableau" {
+		if ThePreferences.PowerMoves && p.Class == "Tableau" {
 			pm := powerMoves(TheBaize.Piles, p)
 			if len(p.Tail) > pm {
 				TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(p.Tail)))
@@ -720,7 +721,7 @@ func (p *Pile) Conformant() bool {
 	return isTailConformant(p.Build, p.Flags, p.Cards)
 }
 
-// BuryCards moves cards with the specified ordinal to the bottom of the stack
+// BuryCards moves cards with the specified ordinal to the beginning of the pile
 func (p *Pile) BuryCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(p.Cards))
 	for _, c := range p.Cards {
@@ -739,7 +740,7 @@ func (p *Pile) BuryCards(ordinal int) {
 	}
 }
 
-// DisinterCards moves cards with the specified ordinal to the top of the stack
+// DisinterCards moves cards with the specified ordinal to the end of the pile
 func (p *Pile) DisinterCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(p.Cards))
 	for _, c := range p.Cards {

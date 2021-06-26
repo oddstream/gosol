@@ -1,7 +1,7 @@
 package sol
 
-// UserData contains the settings and preferences for the user
-type UserData struct {
+// Preferences contains the settings and preferences for the user
+type Preferences struct {
 	// Capitals to emit to json
 	Game                      string
 	Variant                   string

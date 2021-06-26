@@ -124,6 +124,17 @@ func OrdinalToShortString(ord int) string {
 	return chars[ord]
 }
 
+// RuneToOrdinal convert a single rune to an ordinal (1..13)
+func RuneToOrdinal(r rune) int {
+	var runes = [14]rune{'0', 'A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'}
+	for idx, r2 := range runes {
+		if r == r2 {
+			return idx
+		}
+	}
+	return 0
+}
+
 // OrdinalToLongString converts an ordinal (1..13) to a single(ish) character (A .. K)
 func OrdinalToLongString(ord int) string {
 	var cardValueEnglish [14]string = [14]string{"", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
@@ -133,7 +144,7 @@ func OrdinalToLongString(ord int) string {
 // StringToOrdinal converts a string to an int 1..13
 func StringToOrdinal(str string) int {
 	switch str {
-	case "A", "Ace":
+	case "1", "A", "Ace":
 		return 1
 	case "2", "Two":
 		return 2
@@ -161,6 +172,22 @@ func StringToOrdinal(str string) int {
 		return 13
 	}
 	log.Panicf("Unknown input to StringToOrdinal '%s'", str)
+	return 0
+}
+
+func RuneToSuit(r rune) int {
+	switch r {
+	case '♣', 'C':
+		return 1 //CLUB
+	case '♥', 'H':
+		return 2 //HEART
+	case '♦', 'D':
+		return 3 //DIAMOND
+	case '♠', 'S':
+		return 4 //SPADE
+	default:
+		log.Panic("Unknown suit rune", r)
+	}
 	return 0
 }
 

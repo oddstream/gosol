@@ -6,7 +6,7 @@ import "oddstream.games/gosol/util"
 func (p *Pile) DraggableTail(c *Card) []*Card {
 	tail := p.makeTail(c)
 	if p.Flags&DragFlagSingle == DragFlagSingle {
-		if TheUserData.PowerMoves && p.Class == "Tableau" {
+		if ThePreferences.PowerMoves && p.Class == "Tableau" {
 			pm := powerMoves(TheBaize.Piles, p)
 			if len(tail) > pm {
 				return nil

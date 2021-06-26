@@ -26,7 +26,7 @@ func main() {
 	log.SetFlags(0)
 
 	// load userdata before processing flags, because flags can override userdata
-	sol.TheUserData.Load()
+	sol.ThePreferences.Load()
 
 	// pearl from the mudbank: don't have any flags that will overwrite TheUserData
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
@@ -37,7 +37,7 @@ func main() {
 
 	flag.Parse()
 
-	sound.Mute(sol.TheUserData.MuteSounds)
+	sound.Mute(sol.ThePreferences.MuteSounds)
 
 	if sol.DebugMode {
 		for i, a := range os.Args {
@@ -51,19 +51,19 @@ func main() {
 	}
 
 	// ebiten default window size is 640, 480
-	if sol.TheUserData.WindowWidth == 0 || sol.TheUserData.WindowHeight == 0 {
+	if sol.ThePreferences.WindowWidth == 0 || sol.ThePreferences.WindowHeight == 0 {
 		// not yet set/saved, so use sensible values
-		sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight = ebiten.ScreenSizeInFullscreen()
-		sol.TheUserData.WindowWidth /= 2
-		sol.TheUserData.WindowHeight /= 2
+		sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.ScreenSizeInFullscreen()
+		sol.ThePreferences.WindowWidth /= 2
+		sol.ThePreferences.WindowHeight /= 2
 	}
-	ebiten.SetWindowSize(sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight)
+	ebiten.SetWindowSize(sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight)
 
-	if sol.TheUserData.WindowX != 0 && sol.TheUserData.WindowY != 0 {
-		ebiten.SetWindowPosition(sol.TheUserData.WindowX, sol.TheUserData.WindowY)
+	if sol.ThePreferences.WindowX != 0 && sol.ThePreferences.WindowY != 0 {
+		ebiten.SetWindowPosition(sol.ThePreferences.WindowX, sol.ThePreferences.WindowY)
 	}
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
-	if sol.TheUserData.WindowMaximized {
+	if sol.ThePreferences.WindowMaximized {
 		ebiten.MaximizeWindow()
 	}
 	if sol.DebugMode {
