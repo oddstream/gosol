@@ -13,6 +13,12 @@ const DragFlagSingleOrPile = 2
 const BuildFlagRankWrap = 4
 const BuildFlagSpider = 8
 
+var UpInOnesArray = [14]int{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1}
+
+var DownInOnesArray = [14]int{0, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+
+var UpInTwosArray = [14]int{0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2}
+
 func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 	if cPrev.Prone() || cThis.Prone() {
 		// println("prone cards are not conformant")
@@ -49,30 +55,22 @@ func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 		case 0: // may not build or move
 			return false
 		case 1: // up, e.g. a 10 goes on a 9
-			if cPrev.Ordinal() == 13 && cThis.Ordinal() == 1 {
-				// an Ace on a King
-			} else {
-				if cThis.Ordinal() != cPrev.Ordinal()+1 {
-					return false
-				}
+			if UpInOnesArray[cPrev.Ordinal()] != cThis.Ordinal() {
+				return false
 			}
 		case 2: // down, e.g. a 9 goes on a 10
-			if cPrev.Ordinal() == 1 && cThis.Ordinal() == 13 {
-				// a King on an Ace
-			} else {
-				if cThis.Ordinal() != cPrev.Ordinal()-1 {
-					return false
-				}
+			if DownInOnesArray[cPrev.Ordinal()] != cThis.Ordinal() {
+				return false
 			}
 		case 4: // either up or down
-			if (cPrev.Ordinal() == 13 && cThis.Ordinal() == 1) || (cPrev.Ordinal() == 1 && cThis.Ordinal() == 13) {
-				// a king on an ace or an ace on a king
-			} else {
-				if util.Abs(cPrev.Ordinal()-cThis.Ordinal()) != 1 {
-					return false
-				}
+			if !(UpInOnesArray[cPrev.Ordinal()] == cThis.Ordinal() || DownInOnesArray[cPrev.Ordinal()] == cThis.Ordinal()) {
+				return false
 			}
 		case 5: // regardless of rank
+		case 6: // rank up in twos (Royal Cotillion)
+			if UpInTwosArray[cPrev.Ordinal()] != cThis.Ordinal() {
+				return false
+			}
 		}
 	} else { // rank wrap == false
 		switch localRank {
@@ -91,6 +89,10 @@ func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
 				return false
 			}
 		case 5: // regardless of rank
+		case 6: // up in twos (Royal Cotillion), useless without rankwrap
+			if cThis.Ordinal() != cPrev.Ordinal()+2 {
+				return false
+			}
 		}
 	}
 

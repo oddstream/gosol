@@ -62,6 +62,9 @@ var Variants = map[string]VariantInfo{
 		Related:     []string{"The Toad"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
 		Piles: []PileInfo{
+			{"Stock", 9, 0, "None", 0, 15, 0, M{"Packs": 2, "Target": "Waste", "Recycles": 1}},
+			{"Waste", 9, 1, "WasteDown", 15, 15, 1, nil},
+
 			{"Foundation", 0, 0, "None", 21, 0, 4, M{"AcceptFirstPush": "Stock", "Deal": "u"}},
 			{"Foundation", 1, 0, "None", 21, 0, 4, M{"AcceptFirstPush": "Stock"}},
 			{"Foundation", 2, 0, "None", 21, 0, 4, M{"AcceptFirstPush": "Stock"}},
@@ -80,8 +83,7 @@ var Variants = map[string]VariantInfo{
 			{"Tableau", 5, 1, "Down", 22, 22, 6, M{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
 			{"Tableau", 6, 1, "Down", 22, 22, 6, M{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
 			{"Tableau", 7, 1, "Down", 22, 22, 6, M{"AutoFillFrom": "Reserve,Waste", "Deal": "u"}},
-			{"Stock", 9, 0, "None", 0, 15, 0, M{"Packs": 2, "Target": "Waste", "Recycles": 1}},
-			{"Waste", 9, 1, "WasteDown", 15, 15, 1, nil},
+
 			{"Reserve", 9, 3, "Down", 0, 15, 0, M{"Deal": "dddddddddddddddddddu"}},
 		},
 	},
@@ -820,6 +822,50 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 			{"Tableau", 10, 1, "Down", 22, 22, 1, M{"Accept": 99, "Deal": "uuuu"}},
 			{"Tableau", 11, 1, "Down", 22, 22, 1, M{"Accept": 99, "Deal": "uuuu"}},
 			{"Tableau", 12, 1, "Down", 22, 22, 1, M{"Accept": 99, "Deal": "uuuu"}},
+		},
+	},
+	"Royal Cotillion": {
+		Description: "The name probably derives from the fact that since the two kings and two queens of the same suit, the king and queen of each suit dance the cotillion.",
+		AKA:         []string{"Lords and Ladies"},
+		Wikipedia:   "https://en.wikipedia.org/wiki/Royal_Cotillion",
+		Piles: []PileInfo{
+			{"Stock", 0, 3, "None", 0, 15, 0, M{"Packs": 2}},
+			{"Waste", 1, 3, "Waste", 0, 15, 0, nil},
+			// Ladies side
+			{"Reserve", 0, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
+			{"Reserve", 1, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
+			{"Reserve", 2, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
+			{"Reserve", 3, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
+			// Foundations: in suit, up rank in twos, rankwrap, complete when contains 13 cards
+			// TODO don't need "CompleteWhen": 13 because Foundation won't accept more than 13 cards anyway
+			{"Foundation", 5, 0, "None", 26, 0, 4, M{"Deal": "ACu"}},
+			{"Foundation", 6, 0, "None", 26, 0, 4, M{"Deal": "2Cu"}},
+			{"Foundation", 5, 1, "None", 26, 0, 4, M{"Deal": "ADu"}},
+			{"Foundation", 6, 1, "None", 26, 0, 4, M{"Deal": "2Du"}},
+			{"Foundation", 5, 2, "None", 26, 0, 4, M{"Deal": "AHu"}},
+			{"Foundation", 6, 2, "None", 26, 0, 4, M{"Deal": "2Hu"}},
+			{"Foundation", 5, 3, "None", 26, 0, 4, M{"Deal": "ASu"}},
+			{"Foundation", 6, 3, "None", 26, 0, 4, M{"Deal": "2Su"}},
+			// Lords side
+			{"Reserve", 8, 0, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 9, 0, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 10, 0, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 11, 0, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+
+			{"Reserve", 8, 1, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 9, 1, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 10, 1, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 11, 1, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+
+			{"Reserve", 8, 2, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 9, 2, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 10, 2, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 11, 2, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+
+			{"Reserve", 8, 3, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 9, 3, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 10, 3, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
+			{"Reserve", 11, 3, "None", 0, 15, 1, M{"AutoFillFrom": "Waste,Stock", "Deal": "u"}},
 		},
 	},
 	"Scorpion": {

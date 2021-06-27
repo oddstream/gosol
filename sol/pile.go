@@ -713,16 +713,17 @@ func (p *Pile) DragTailBy(dx, dy int) {
 func (p *Pile) Complete() bool {
 	// a game is complete when all piles except foundations are empty
 
+	// probably don't need this because Foundation won't accept more than 13 cards
 	// cw, ok := p.GetIntAttribute("CompleteWhen")
 	// if ok {
 	// 	return p.CardCount() == cw
 	// }
 
-	if !strings.HasPrefix(p.Class, "Foundation") {
+	if strings.HasPrefix(p.Class, "Foundation") {
+		return p.CardCount() == 13
+	} else {
 		return p.Empty()
 	}
-
-	return true
 }
 
 // Conformant returns true if all cards in this pile are conformant
