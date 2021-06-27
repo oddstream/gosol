@@ -32,6 +32,12 @@ var Variants = map[string]VariantInfo{
 		Description: "Alhambra is a solitaire card game which is played using two decks of playing cards. Its unusual feature is akin to that of Crazy Quilt: the cards in the reserve are built either on the foundations or on a waste pile.",
 		Wikipedia:   "https://en.wikipedia.org/wiki/Alhambra_(solitaire)",
 		Piles: []PileInfo{
+			// put Stock and Golf before other piles
+			// so cards from headed for other piles
+			// get drawn over Golf fanning cards
+			{"Stock", 3, 3, "None", 0, 15, 0, M{"Packs": 2, "Target": "Golf", "Recycles": 2}},
+			{"Golf", 4, 3, "Waste", 24, 15, 5, nil},
+
 			{"Foundation", 0, 0, "None", 21, 0, 0, M{"Deal": "ACu"}},
 			{"Foundation", 1, 0, "None", 21, 0, 0, M{"Deal": "ADu"}},
 			{"Foundation", 2, 0, "None", 21, 0, 0, M{"Deal": "AHu"}},
@@ -49,9 +55,6 @@ var Variants = map[string]VariantInfo{
 			{"Reserve", 5, 1, "Down", 0, 15, 1, M{"Deal": "uuuu"}},
 			{"Reserve", 6, 1, "Down", 0, 15, 1, M{"Deal": "uuuu"}},
 			{"Reserve", 7, 1, "Down", 0, 15, 1, M{"Deal": "uuuu"}},
-
-			{"Stock", 0, 3, "None", 0, 15, 0, M{"Packs": 2, "Target": "Golf", "Recycles": 2}},
-			{"Golf", 1, 3, "Waste", 24, 15, 5, nil},
 		},
 	},
 	"American Toad": {

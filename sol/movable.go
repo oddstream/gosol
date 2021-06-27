@@ -72,10 +72,8 @@ func (b *Baize) MarkMovable() {
 				b.movableCards++
 			}
 		case "StockSpider", "StockScorpion":
-			if !p.Empty() {
-				numTabs, _ := b.countPiles("Tableau")
-				b.movableCards += util.Min(numTabs, p.CardCount())
-			}
+			// technically, all the cards are movable
+			b.movableCards += p.CardCount()
 		case "Waste", "Reserve", "Golf":
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {

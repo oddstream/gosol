@@ -299,20 +299,6 @@ func (b *Baize) findCardAt(x, y int) *Card {
 	return nil
 }
 
-func (b *Baize) countPiles(cls string) (total, count int) {
-	total = 0
-	count = 0
-	for _, p := range b.Piles {
-		if p.Class == cls {
-			total++
-			if p.Empty() {
-				count++
-			}
-		}
-	}
-	return
-}
-
 // PileTapped is called when a pile has been tapped
 func (b *Baize) PileTapped(pTapped *Pile) {
 	// this method is in Baize because it needs access to Baize.findPile()
@@ -427,10 +413,22 @@ func (b *Baize) CardTapped(c *Card) {
 			}
 		}
 	case "StockSpider":
-		_, empty := b.countPiles("Tableau")
-		if empty > 0 {
-			if b.stock.CardCount() > empty {
-				TheBaize.ui.Toast("All tableaux spaces must be filled before dealing a new row")
+		var tabCards, tabPiles, emptyTabPiles int
+		{ // scope for p *Pile (in case of silent Go variable shadowing)
+			for _, p := range b.Piles {
+				if p.Class == "Tableau" {
+					tabPiles++
+					if p.Empty() {
+						emptyTabPiles++
+					} else {
+						tabCards += p.CardCount()
+					}
+				}
+			}
+		}
+		if tabCards >= tabPiles && emptyTabPiles > 0 {
+			if b.stock.CardCount() > emptyTabPiles {
+				TheBaize.ui.Toast("All empty tableaux must be filled before dealing a new row")
 				break
 			}
 		}
@@ -1089,11 +1087,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, p := range b.Piles {
 		p.DrawStaticCards(screen)
 	}
-	// for _, p := range b.Piles {
-	// loop backwards so we don't draw card transitioning from waste/golf underneath waste cards fanning/transitioning
-	// i.e. we need the topmost card drawn first
-	for i := len(b.Piles) - 1; i >= 0; i-- {
-		p := b.Piles[i]
+	for _, p := range b.Piles {
 		p.DrawTransitioningCards(screen)
 	}
 	for _, p := range b.Piles {
