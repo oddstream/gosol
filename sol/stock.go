@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
 
@@ -15,7 +14,11 @@ func (b *Baize) CreateStock() {
 
 	// defer util.Duration(time.Now(), "CreateStock")
 
-	b.stock = b.findPilePrefix("Stock")
+	// b.stock = b.findPilePrefix("Stock")
+	if !strings.HasPrefix(b.Piles[0].Class, "Stock") {
+		log.Fatal("First Pile needs to be the Stock")
+	}
+	b.stock = b.Piles[0]
 	if b.stock == nil {
 		log.Fatal("Cannot find stock pile to create cards with")
 	}
@@ -194,18 +197,4 @@ func parseCardsFromDeal(stock *Pile, deal string) []*Card {
 		cards = append(cards, c)
 	}
 	return cards
-}
-
-func CreateCardImages() {
-	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
-
-	if ThePreferences.RetroCards {
-		TheCIP = NewRetroCardImageProvider()
-		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackPattern)
-	} else {
-		TheCIP = NewModernCardImageProvider()
-		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackColor)
-	}
-	CardShadowImage = TheCIP.ShadowImage()
-	// CardMovableImage = TheCIP.MovableImage()
 }

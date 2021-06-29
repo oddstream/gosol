@@ -185,6 +185,11 @@ func englishRules(rules, flags int) string {
 		}
 	case 5:
 		s = s + " regardless of rank."
+	case 6:
+		s = s + " and up in twos, eg a J goes on a 9."
+		if flags&BuildFlagRankWrap == BuildFlagRankWrap {
+			s = s + " Twos are allowed on Kings."
+		}
 	}
 	return s
 }

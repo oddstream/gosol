@@ -265,14 +265,14 @@ func (b *Baize) findPile(cls string) *Pile {
 	return nil
 }
 
-func (b *Baize) findPilePrefix(cls string) *Pile {
-	for _, p := range b.Piles {
-		if strings.HasPrefix(p.Class, cls) {
-			return p
-		}
-	}
-	return nil
-}
+// func (b *Baize) findPilePrefix(cls string) *Pile {
+// 	for _, p := range b.Piles {
+// 		if strings.HasPrefix(p.Class, cls) {
+// 			return p
+// 		}
+// 	}
+// 	return nil
+// }
 
 // findPileAt finds the pile under the mouse click or touch
 func (b *Baize) findPileAt(x, y int) *Pile {

@@ -65,49 +65,6 @@ func (p *Pile) Reset() {
 	p.CreateBackgroundImage()
 }
 
-// GetIntAttribute gets an integer Pile attribute
-func (p *Pile) GetIntAttribute(key string) (int, bool) {
-	// str, exists := p.Attributes[key]
-	// if !exists {
-	// 	return 0, false
-	// }
-	// i, err := strconv.Atoi(str)
-	// if err != nil {
-	// 	log.Fatal(str + " is not an int")
-	// }
-	i, exists := p.Attributes[key]
-	if !exists {
-		return 0, false
-	}
-	return i.(int), true
-}
-
-// GetStringAttribute gets a string Pile attribute
-func (p *Pile) GetStringAttribute(key string) string {
-	str, exists := p.Attributes[key]
-	if exists {
-		return str.(string)
-	}
-	return ""
-}
-
-// GetBoolAttribute gets a boolean Pile attribute
-func (p *Pile) GetBoolAttribute(key string) bool {
-	// str, exists := p.Attributes[key]
-	// if exists {
-	// 	value, err := strconv.ParseBool(str)
-	// 	if err != nil {
-	// 		log.Panic("expecting a bool, got ", str)
-	// 	}
-	// 	return value
-	// }
-	b, exists := p.Attributes[key]
-	if exists {
-		return b.(bool)
-	}
-	return false
-}
-
 // Spider returns true if this pile is Spideresque
 func (p *Pile) Spider() bool {
 	return p.Flags&BuildFlagSpider == BuildFlagSpider
@@ -121,7 +78,7 @@ func (p *Pile) Empty() bool {
 func (p *Pile) CreateBackgroundImage() {
 
 	invisible := p.GetBoolAttribute("Invisible")
-	if invisible {
+	if invisible || p.localAccept == 99 || p.Class == "Reserve" {
 		p.backgroundImage = nil
 		return
 	}

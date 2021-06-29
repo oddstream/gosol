@@ -1,6 +1,9 @@
 package sol
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
+)
 
 type CardImages struct {
 	faceImgs  map[CardID]*ebiten.Image
@@ -15,4 +18,18 @@ type CardImageProvider interface {
 	BackImages() map[string]*ebiten.Image
 	ShadowImage() *ebiten.Image
 	// MovableImage() *ebiten.Image
+}
+
+func CreateCardImages() {
+	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
+
+	if ThePreferences.RetroCards {
+		TheCIP = NewRetroCardImageProvider()
+		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackPattern)
+	} else {
+		TheCIP = NewModernCardImageProvider()
+		CardBackImage = TheCIP.BackImage(ThePreferences.CardBackColor)
+	}
+	CardShadowImage = TheCIP.ShadowImage()
+	// CardMovableImage = TheCIP.MovableImage()
 }

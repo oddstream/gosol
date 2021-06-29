@@ -17,15 +17,6 @@ type VariantInfo struct {
 	Piles       []PileInfo
 }
 
-// PileInfo contains the basic Pile members and a lookup table for it's attributes
-type PileInfo struct {
-	Class              string           // "Stock"|"StockScorpion"|"StockSpider"|"Waste"|"Foundation"|"Tableau"|"Cell"|"Reserve"|"Golf"
-	X, Y               PilePositionType // relative position on Baize in CardWidth/Height units (ie not screen coords)
-	Fan                string           // ""|"None"|"Down"|"Right"|"Waste"|"WasteRight"|"WasteDown"
-	Build, Drag, Flags int
-	Attributes         M
-}
-
 // Variants contains configuration info for all the variants
 var Variants = map[string]VariantInfo{
 	"Alhambra": {
