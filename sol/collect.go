@@ -46,7 +46,7 @@ func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
 			break
 		}
 		if dst.CanAcceptCard(c) && b.safeCheck(c, dst) {
-			b.MoveCards(c, dst)
+			dst.MoveCards(c)
 			count++
 		} else {
 			break
@@ -79,7 +79,7 @@ func (b *Baize) Collect() {
 							// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
 							// but these are not conformant for the Foundation
 							if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) && fp.CanAcceptTail(tail, false) {
-								b.MoveCards(c, fp)
+								fp.MoveCards(c)
 								count += 13
 								goto NextFoundationPile
 							}

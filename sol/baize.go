@@ -105,7 +105,7 @@ func (b *Baize) RecallCardsToStock() {
 			continue // 0th pile is the stock
 		}
 		if !p.Empty() {
-			b.MoveCards(p.Cards[0], b.stock)
+			b.stock.MoveCards(p.Cards[0])
 		}
 		// if !p.Empty() {
 		// 	log.Fatal(p.Class, " still contains ", p.CardCount(), " cards")
@@ -401,7 +401,7 @@ func (b *Baize) CardTapped(c *Card) {
 				// println(p.Class, "can accept", c.ID.String())
 				for cardsToMove > 0 && c != nil {
 					cardsToMove--
-					b.MoveCards(c, p)
+					p.MoveCards(c)
 					c = sourcePile.Peek()
 					anyCardsMoved = true
 				}
@@ -438,7 +438,7 @@ func (b *Baize) CardTapped(c *Card) {
 		}
 		for _, p := range b.Piles {
 			if p.Class == targetClass {
-				b.MoveCards(c, p)
+				p.MoveCards(c)
 				anyCardsMoved = true
 				c.SetProne(false)
 				c = sourcePile.Peek()
@@ -453,7 +453,7 @@ func (b *Baize) CardTapped(c *Card) {
 			for _, p := range b.Piles {
 				if p.Class == "Foundation" && p.Spider() {
 					if p.CanAcceptTail(tail, false) {
-						b.MoveCards(c, p)
+						p.MoveCards(c)
 						anyCardsMoved = true
 						break
 					}
@@ -467,7 +467,7 @@ func (b *Baize) CardTapped(c *Card) {
 			for _, p := range b.Piles {
 				if p.Class == "Foundation" {
 					if p.CanAcceptTail([]*Card{c}, false) {
-						b.MoveCards(c, p)
+						p.MoveCards(c)
 						anyCardsMoved = true
 						break
 					}
@@ -494,7 +494,7 @@ func (b *Baize) CardTapped(c *Card) {
 				}
 			}
 			if pLongest != nil {
-				b.MoveCards(c, pLongest)
+				pLongest.MoveCards(c)
 				anyCardsMoved = true
 			}
 		}
@@ -511,67 +511,6 @@ func (b *Baize) CardTapped(c *Card) {
 			c.Shake()
 		}
 	}
-
-}
-
-// MoveCards from one pile to another, always from card downwards (inclusive)
-func (b *Baize) MoveCards(c *Card, dst *Pile) {
-
-	src := c.owner
-	moveFrom := len(src.Cards)
-
-	// find the index of the first card we will move
-	for i, sc := range src.Cards {
-		if sc == c {
-			moveFrom = i
-			break
-		}
-	}
-
-	if moveFrom == len(src.Cards) {
-		log.Panic("MoveCards could not find first card in source")
-	}
-
-	oldSrcLen := len(src.Cards)
-
-	tmp := make([]*Card, 0, cap(src.Cards))
-
-	// pop the tail off the source and push onto temp stack
-	for i := len(src.Cards) - 1; i >= moveFrom; i-- {
-		tmp = append(tmp, src.Pop())
-	}
-
-	// pop all cards off the temp stack and onto the destination
-	for len(tmp) > 0 {
-		dc := tmp[len(tmp)-1]
-		tmp = tmp[:len(tmp)-1]
-		dst.Push(dc)
-	}
-
-	if oldSrcLen == len(src.Cards) {
-		log.Println("nothing happened in MoveCards")
-		return
-	}
-
-	switch dst.Class {
-	case "Foundation", "Waste", "Golf":
-		sound.Play("Slide")
-	default:
-		sound.Play("Place")
-	}
-
-	// flip up an exposed source card
-	if !strings.HasPrefix(src.Class, "Stock") {
-		if tc := src.Peek(); tc != nil {
-			tc.FlipUp()
-		}
-	}
-	// special case: waste may need refanning if we took a card from it
-	if strings.HasPrefix(src.Fan, "Waste") {
-		src.RepushAllCards()
-	}
-	src.ScrunchCards()
-	dst.ScrunchCards()
 
 }
 
@@ -598,7 +537,7 @@ func (b *Baize) AutoMoves() {
 				for _, srcPile := range affPiles {
 					if src := b.findPile(srcPile); src != nil {
 						if c := src.Peek(); c != nil {
-							b.MoveCards(c, p)
+							p.MoveCards(c)
 							break
 						}
 					}
@@ -690,24 +629,6 @@ func (b *Baize) calcPercentComplete() int {
 	for _, p := range b.Piles {
 		sorted, unsorted = p.CountSortedAndUnsorted(sorted, unsorted)
 	}
-	/* retired by Polly
-	for _, p := range b.Piles {
-		if p.Class == "Foundation" {
-			sorted += p.CardCount()
-		} else {
-			for i := 0; i < len(p.Cards)-1; i++ {
-				c1 := p.Cards[i]
-				c2 := p.Cards[i+1]
-				if isCardPairConformant(p.Build, p.Flags, c1, c2) {
-					sorted++
-				} else {
-					unsorted++
-				}
-			}
-		}
-	}
-	*/
-	println(sorted, "sorted", unsorted, "unsorted")
 	return int(util.MapValue(float64(sorted)-float64(unsorted), float64(-b.totalCards), float64(b.totalCards), 0, 100))
 }
 
@@ -842,10 +763,10 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 							}
 							for cardsToMove > 0 && !b.stock.Empty() {
 								cardsToMove--
-								b.MoveCards(b.stock.Peek(), p) // this reassigns c.owner to p
+								p.MoveCards(b.stock.Peek()) // this reassigns c.owner to p
 							}
 						} else {
-							b.MoveCards(c, p)
+							p.MoveCards(c)
 						}
 						b.AfterUserMove()
 					} else {
