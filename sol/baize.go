@@ -35,6 +35,7 @@ const (
 // Baize object describes the baize
 type Baize struct {
 	Piles           []*Pile
+	stock           *Pile
 	Variant         string
 	UndoStack       []SaveableBaize
 	SavedPosition   int
@@ -44,7 +45,6 @@ type Baize struct {
 	State           BaizeStateType
 	stroke          *input.Stroke
 	ui              *ui.UI
-	stock           *Pile // shortcut to often used Stock Pile
 	commandTable    map[ebiten.Key]func()
 	DragOffsetX     int // value of current horz drag
 	DragOffsetBaseX int // value last-used horz drag
@@ -99,10 +99,10 @@ func NewBaize() *Baize {
 // RecallCardsToStock without changing variant or seed
 func (b *Baize) RecallCardsToStock() {
 
-	for _, p := range b.Piles {
+	for i, p := range b.Piles {
 		p.Reset() // stock needs resetting, too
-		if p == b.stock {
-			continue
+		if i == 0 {
+			continue // 0th pile is the stock
 		}
 		if !p.Empty() {
 			b.MoveCards(p.Cards[0], b.stock)
@@ -136,8 +136,7 @@ func (b *Baize) NewGame() {
 		TheStatistics.recordLostGame(b.Variant, b.percentComplete)
 	}
 	b.RecallCardsToStock()
-
-	b.ShuffleStock()
+	b.Shuffle()
 
 	// reset the Baize
 	b.UndoStack = nil
@@ -178,7 +177,7 @@ func (b *Baize) NewVariant(v string) {
 	b.Scale()                                  // now we know number of piles and can discover window width; scale the cards before creating them
 
 	b.CreateStock()
-	b.ShuffleStock()
+	b.Shuffle()
 
 	b.dealCards()
 	b.UndoPush()
@@ -689,6 +688,10 @@ func (b *Baize) largestIntersection(c *Card) *Pile {
 func (b *Baize) calcPercentComplete() int {
 	var sorted, unsorted int
 	for _, p := range b.Piles {
+		sorted, unsorted = p.CountSortedAndUnsorted(sorted, unsorted)
+	}
+	/* retired by Polly
+	for _, p := range b.Piles {
 		if p.Class == "Foundation" {
 			sorted += p.CardCount()
 		} else {
@@ -703,6 +706,8 @@ func (b *Baize) calcPercentComplete() int {
 			}
 		}
 	}
+	*/
+	println(sorted, "sorted", unsorted, "unsorted")
 	return int(util.MapValue(float64(sorted)-float64(unsorted), float64(-b.totalCards), float64(b.totalCards), 0, 100))
 }
 

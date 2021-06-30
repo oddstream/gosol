@@ -565,6 +565,19 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 	return false // Reserve, Stock, StockSpider, StockScorpion
 }
 
+func (p *Pile) CountSortedAndUnsorted(sorted, unsorted int) (int, int) {
+	for i := 0; i < len(p.Cards)-1; i++ {
+		c1 := p.Cards[i]
+		c2 := p.Cards[i+1]
+		if isCardPairConformant(p.Build, p.Flags, c1, c2) {
+			sorted++
+		} else {
+			unsorted++
+		}
+	}
+	return sorted, unsorted
+}
+
 // StartDrag this card and all the others after it in the stack
 func (p *Pile) StartDrag(c *Card) bool {
 

@@ -59,7 +59,7 @@ func (b *Baize) CreateStock() {
 	b.totalCards = b.stock.CardCount()
 }
 
-func (b *Baize) ShuffleStock() {
+func (b *Baize) Shuffle() {
 
 	// defer util.Duration(time.Now(), "ShuffleStock")
 
