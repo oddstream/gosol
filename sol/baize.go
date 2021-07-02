@@ -36,6 +36,7 @@ const (
 type Baize struct {
 	Piles           []*Pile
 	stock           *Pile
+	foundations     []*Pile
 	Variant         string
 	UndoStack       []SaveableBaize
 	SavedPosition   int
@@ -295,171 +296,17 @@ func (b *Baize) findCardAt(x, y int) *Card {
 	return nil
 }
 
-/* retired by Driver
-// CardTapped is called when a card has been tapped
-func (b *Baize) CardTapped(c *Card) {
-
-	// println("card",c.ID.String(),"tapped")
-
-	// if c.Transitioning() || c.Flipping() {
-	// 	log.Println("cannot tap an animating card ", c.String())
-	// 	return
-	// }
-
-	if !ThePreferences.SingleTap {
-		return
-	}
-
-	var sourcePile *Pile = c.owner
-	var tail []*Card = sourcePile.makeTail(c)
-	var targetClass string = sourcePile.GetStringAttribute("Target")
-	var anyCardsMoved bool = false
-
-	switch sourcePile.Class {
-	case "Stock":
-		// Tap on a Stock card to send one or more cards to Waste, Golf
-		if targetClass == "" {
-			targetClass = "Waste"
-		}
-		cardsToMove, ok := sourcePile.GetIntAttribute("CardsToMove")
-		if !ok || cardsToMove == 0 {
-			cardsToMove = 1
-		}
-		for _, p := range b.Piles {
-			if targetClass == p.Class {
-				// println("found a", p.Class)
-				// Waste, Golf should always accept a card from Stock, should don't need to
-				// check if targetClass can accept Stock card
-				// if p.CanAcceptCard(c) {
-				// println(p.Class, "can accept", c.ID.String())
-				for cardsToMove > 0 && c != nil {
-					cardsToMove--
-					p.MoveCards(c)
-					c = sourcePile.Peek()
-					anyCardsMoved = true
-				}
-				// }
-				if c == nil {
-					break
-				}
-			}
-		}
-	case "StockSpider":
-		var tabCards, tabPiles, emptyTabPiles int
-		{ // scope for p *Pile (in case of silent Go variable shadowing)
-			for _, p := range b.Piles {
-				if p.Class == "Tableau" {
-					tabPiles++
-					if p.Empty() {
-						emptyTabPiles++
-					} else {
-						tabCards += p.CardCount()
-					}
-				}
-			}
-		}
-		if tabCards >= tabPiles && emptyTabPiles > 0 {
-			if b.stock.CardCount() > emptyTabPiles {
-				TheBaize.ui.Toast("All empty tableaux must be filled before dealing a new row")
-				break
-			}
-		}
-		fallthrough
-	case "StockScorpion":
-		if targetClass == "" {
-			targetClass = "Tableau"
-		}
-		for _, p := range b.Piles {
-			if p.Class == targetClass {
-				p.MoveCards(c)
-				anyCardsMoved = true
-				c.SetProne(false)
-				c = sourcePile.Peek()
-			}
-			if c == nil {
-				break
-			}
-		}
-	case "Tableau":
-		// try to move a conformant run of 13 cards to a spider foundation
-		if sourcePile.Spider() && len(tail) == 13 && isTailConformant(sourcePile.Build, sourcePile.Flags, tail) {
-			for _, p := range b.Piles {
-				if p.Class == "Foundation" && p.Spider() {
-					if p.CanAcceptTail(tail, false) {
-						p.MoveCards(c)
-						anyCardsMoved = true
-						break
-					}
-				}
-			}
-		}
-		fallthrough
-	case "Waste", "Cell", "Reserve", "Golf":
-		// try to move a top or single tapped card to a Foundation
-		if !anyCardsMoved && c == sourcePile.Peek() {
-			for _, p := range b.Piles {
-				if p.Class == "Foundation" {
-					if p.CanAcceptTail([]*Card{c}, false) {
-						p.MoveCards(c)
-						anyCardsMoved = true
-						break
-					}
-				}
-			}
-		}
-		// else try to move card to the longest Tableau or Golf
-		if !anyCardsMoved {
-			if len(tail) == 0 {
-				log.Panic("CardTapped empty tail")
-			}
-			var pLongest *Pile
-			for _, p := range b.Piles {
-				if p == c.owner {
-					continue
-				}
-				if !(p.Class == "Tableau" || p.Class == "Golf") {
-					continue
-				}
-				if p.CanAcceptTail(tail, false) {
-					if pLongest == nil || p.CardCount() > pLongest.CardCount() {
-						pLongest = p
-					}
-				}
-			}
-			if pLongest != nil {
-				pLongest.MoveCards(c)
-				anyCardsMoved = true
-			}
-		}
-	case "Foundation":
-		TheBaize.ui.Toast("You cannot move cards from a Foundation")
-	default:
-		println("clueless when tapping on a", sourcePile.Class, "card")
-	}
-
-	if anyCardsMoved {
-		b.AfterUserMove()
-	} else {
-		if c != nil {
-			c.Shake()
-		}
-	}
-
-}
-*/
-
 // AutoMoves performs post user-moves
 func (b *Baize) AutoMoves() {
 
-	for _, p := range b.Piles {
-		if p.Class == "Foundation" && p.CardCount() == 1 {
+	for _, p := range b.foundations {
+		if p.CardCount() == 1 {
 			if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
 				ord := p.Peek().Ordinal()
-				for _, fp := range b.Piles {
-					if fp.Class == "Foundation" {
-						fp.SetAccept(ord)
-					}
+				for _, fp := range b.foundations {
+					fp.SetAccept(ord)
 				}
+				break
 			}
 		}
 	}

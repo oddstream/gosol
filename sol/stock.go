@@ -10,15 +10,10 @@ import (
 )
 
 // CreateStock finds the stock pile and creates the stock cards
-// sets Baize.stock and Baize.totalCards
+// sets Baize.totalCards
 func (b *Baize) CreateStock() {
 
 	// defer util.Duration(time.Now(), "CreateStock")
-
-	if !strings.HasPrefix(b.Piles[0].Class, "Stock") {
-		log.Fatal("First Pile needs to be the Stock")
-	}
-	b.stock = b.Piles[0]
 
 	packs, ok := b.stock.GetIntAttribute("Packs")
 	if !ok || packs == 0 {

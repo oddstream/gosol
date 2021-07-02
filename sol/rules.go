@@ -20,6 +20,10 @@ var DownInOnesArray = [14]int{0, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 var UpInTwosArray = [14]int{0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2}
 
 func isCardPairConformant(rules, flags int, cPrev, cThis *Card) bool {
+
+	if cPrev == nil {
+		return true
+	}
 	if cPrev.Prone() || cThis.Prone() {
 		// println("prone cards are not conformant")
 		return false
@@ -311,6 +315,8 @@ func (b *Baize) rulesContents() []string {
 			fmt.Fprint(&str, "Cell: Can store one card of any type.")
 		case "Reserve":
 			fmt.Fprint(&str, "Reserve: stores multiple cards of any type. You cannot move a card to a reserve.")
+		default:
+			fmt.Fprintf(&str, "Oops - no rule for %s", pileClass)
 		}
 		rules = append(rules, str.String())
 	}

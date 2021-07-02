@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"strings"
 )
 
 /*
@@ -15,6 +14,7 @@ import (
 ]]
 */
 
+/*
 func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 	// we already know that dst can accept the card, so don't need to check if dst is empty
 	localSuit := c.owner.Build / 10
@@ -42,73 +42,116 @@ func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 	}
 	return true
 }
+*/
 
-func (b *Baize) collectFromPile(src *Pile, dst *Pile) int {
+func collectFromPile(src *Pile, dst *Pile) int {
 	var count int
 	for { // collect as many as possible from this pile (think Limited)
 		c := src.Peek()
 		if c == nil {
 			break
 		}
-		if dst.CanAcceptCard(c) && b.safeCheck(c, dst) {
-			dst.MoveCards(c)
-			count++
-		} else {
+		ok, _ := dst.driver.CanAcceptTail([]*Card{c})
+		if !ok {
 			break
 		}
+		dst.MoveCards(c)
+		count++
 	}
 	return count
+}
+
+// TODO Collect is like Tapping on the top card of each pile (except Stock), or on a K in a Spider pile
+// have a special CardTapped func that only targets b.foundations
+
+func genericCollect(p *Pile) int {
+
+	card := p.Peek()
+	if card == nil {
+		return 0
+	}
+
+	var cardsMoved int
+	for _, fp := range TheBaize.foundations {
+		if ok, _ := fp.driver.CanAcceptTail([]*Card{card}); ok {
+			fp.MoveCards(card)
+			cardsMoved++
+		}
+	}
+	return cardsMoved
+}
+
+func (c *Cell) Collect() int {
+	return genericCollect(c.parent)
+}
+func (f *Foundation) Collect() int {
+	return 0
+}
+func (f *FoundationSpider) Collect() int {
+	return 0
+}
+func (g *Golf) Collect() int {
+	return genericCollect(g.parent)
+}
+func (r *Reserve) Collect() int {
+	return genericCollect(r.parent)
+}
+func (s *Stock) Collect() int {
+	return 0
+}
+func (s *StockCruel) Collect() int {
+	return 0
+}
+func (s *StockScorpion) Collect() int {
+	return 0
+}
+func (s *StockSpider) Collect() int {
+	return 0
+}
+func (t *Tableau) Collect() int {
+	return genericCollect(t.parent)
+}
+func (t *TableauSpider) Collect() int {
+
+	p := t.parent
+
+	for _, card := range p.Cards {
+		if card.Ordinal() == 13 {
+			tail := p.makeTail(card)
+			if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) {
+				for _, fp := range TheBaize.foundations {
+					// pearl from the mudbank:
+					// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
+					// but these are not conformant for the Foundation
+					if ok, _ := fp.driver.CanAcceptTail(tail); ok {
+						fp.MoveCards(card)
+						return 13
+					}
+				}
+			}
+		}
+	}
+	return 0
+}
+func (w *Waste) Collect() int {
+	return genericCollect(w.parent)
 }
 
 // Collect automatically moves cards to the Foundations
 func (b *Baize) Collect() {
 
-	var foundations []*Pile
-	for _, fp := range b.Piles {
-		if strings.HasPrefix(fp.Class, "Foundation") {
-			foundations = append(foundations, fp)
-		}
-	}
 	var count, totalCount int
 	for {
 		count = 0
-		// iterate over foundations and pull cards to them
-		for _, fp := range foundations {
-			if fp.Spider() && fp.Empty() {
-				for _, p := range b.Piles {
-					if p.Class == "Tableau" && p.CardCount() >= 13 {
-						for i := 0; i < p.CardCount(); i++ {
-							c := p.Cards[i]
-							tail := p.makeTail(c)
-							// pearl from the mudbank:
-							// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
-							// but these are not conformant for the Foundation
-							if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) {
-								if ok, _ := fp.driver.CanAcceptTail(tail); ok {
-									fp.MoveCards(c)
-									count += 13
-									goto NextFoundationPile
-								}
-							}
-						}
-					}
-				}
-			} else {
-				for _, p := range b.Piles {
-					if p.Class == "Tableau" || p.Class == "Cell" || p.Class == "Waste" || p.Class == "Reserve" || p.Class == "Golf" {
-						count += b.collectFromPile(p, fp)
-					}
-				}
-			}
+		for _, p := range b.Piles {
+			count += p.driver.Collect()
 		}
 		if count == 0 {
 			break
 		}
-	NextFoundationPile:
 		totalCount += count
 	}
-
-	if totalCount != 0 {
+	if totalCount > 0 {
 		b.AfterUserMove()
 	}
 }

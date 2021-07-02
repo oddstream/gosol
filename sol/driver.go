@@ -29,6 +29,7 @@ import (
 type Driver interface {
 	CanAcceptTail([]*Card) (bool, error)
 	CardTapped(*Card) (bool, error)
+	Collect() int
 	Complete() bool
 	Conformant() bool
 	Tapped() bool
@@ -58,8 +59,11 @@ var Class2NewDriver = map[string]func(*Pile) Driver{
 
 func genericCanAcceptTail(pile *Pile, tail []*Card) (bool, error) {
 
+	if len(tail) == 0 {
+		return false, nil
+	}
 	c0 := tail[0]
-	if c0.owner == pile {
+	if c0 == nil || c0.owner == pile {
 		return false, nil
 	}
 
@@ -100,8 +104,11 @@ func genericCanAcceptTail(pile *Pile, tail []*Card) (bool, error) {
 
 func simpleCanAcceptTail(pile *Pile, tail []*Card) (bool, error) {
 
+	if len(tail) == 0 {
+		return false, nil
+	}
 	c0 := tail[0]
-	if c0.owner == pile {
+	if c0 == nil || c0.owner == pile {
 		return false, nil
 	}
 	if pile.Empty() && pile.localAccept > 0 {
@@ -118,13 +125,11 @@ func genericCardTapped(card *Card) (bool, error) {
 
 	// single top card, try to move to a Foundation
 	if card == sourcePile.Peek() {
-		for _, p := range TheBaize.Piles {
-			if p.Class == "Foundation" { // no need to check FoundationSpider
-				if ok, _ := p.driver.CanAcceptTail([]*Card{card}); ok {
-					p.MoveCards(card)
-					anyCardsMoved = true
-					break
-				}
+		for _, fp := range TheBaize.foundations {
+			if ok, _ := fp.driver.CanAcceptTail([]*Card{card}); ok {
+				fp.MoveCards(card)
+				anyCardsMoved = true
+				break
 			}
 		}
 	}
@@ -135,7 +140,7 @@ func genericCardTapped(card *Card) (bool, error) {
 			if p == card.owner {
 				continue
 			}
-			if !(p.Class == "Tableau" || p.Class == "Golf") {
+			if !(strings.HasPrefix(p.Class, "Tableau") || p.Class == "Golf") {
 				continue
 			}
 			if ok, _ := p.driver.CanAcceptTail(tail); ok {

@@ -298,13 +298,13 @@ func (p *Pile) Extract(idx int) *Card {
 }
 
 // CanAcceptCard returns true if this Pile can accept the Card
-func (p *Pile) CanAcceptCard(c *Card) bool {
-	ok, err := p.driver.CanAcceptTail([]*Card{c})
-	if err != nil {
-		TheBaize.ui.Toast(err.Error())
-	}
-	return ok
-}
+// func (p *Pile) CanAcceptCard(c *Card) bool {
+// 	ok, err := p.driver.CanAcceptTail([]*Card{c})
+// 	if err != nil {
+// 		TheBaize.ui.Toast(err.Error())
+// 	}
+// 	return ok
+// }
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
 func (p *Pile) PushedFannedPosition() (int, int) {
@@ -405,183 +405,6 @@ func (p *Pile) makeTail(c *Card) []*Card {
 	}
 	return tail
 }
-
-/* retired by Driver
-// CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
-func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
-
-	if len(Tail) == 0 { // len() for nil slices is defined as zero
-		// log.Panic("empty tail passed to CanAcceptTail")
-		println("*** Pile.CanAcceptTail empty tail ***")
-		return false
-	}
-
-	c0 := Tail[0]
-
-	if c0.owner == p {
-		return false // Cannot drag cards to yourself
-	}
-
-	targetClass := c0.owner.GetStringAttribute("Target")
-	if targetClass != "" {
-		if targetClass != p.Class {
-			if canToast {
-				TheBaize.ui.Toast("Cards from " + c0.owner.Class + " can only be dragged to " + targetClass + " not to " + p.Class)
-			}
-			return false
-		}
-	}
-
-	switch p.Class {
-	case "Waste":
-		if len(Tail) == 1 && c0.owner.Class == "Stock" {
-			// if ctm := c0.owner.GetStringAttribute("CardsToMove"); ctm == "" || ctm == "1" {
-			return true
-			// }
-		}
-		// if canToast {
-		// 	TheBaize.ui.Toast("Can only drag one card from Stock to Waste")
-		// }
-		return false
-
-	case "Foundation":
-		if p.CardCount() == 13 {
-			// with rank wrap, may get >13 cards in a foundation
-			// if canToast {
-			// 	TheBaize.ui.Toast("Can only have 13 cards in a Foundation")
-			// }
-			return false
-		}
-		// Duchess rule
-		if afp := p.GetStringAttribute("AcceptFirstPush"); afp != "" {
-			if p.localAccept == 0 {
-				if c0.owner.Class != afp {
-					if canToast {
-						TheBaize.ui.Toast(fmt.Sprintf("%s can only accept first card from a %s", p.Class, afp))
-					}
-					return false
-				}
-			}
-		}
-		// Spider only accepts a tail of 13 cards, and onto an empty Foundation
-		if p.Spider() {
-			if len(Tail) != 13 {
-				if canToast {
-					TheBaize.ui.Toast("You can only drag 13 cards to a Foundation")
-				}
-				return false
-			}
-			if !p.Empty() {
-				if canToast {
-					TheBaize.ui.Toast("The Foundation must be empty")
-				}
-				return false
-			}
-			return isTailConformant(p.Build, p.Flags, Tail)
-		} else {
-			if len(Tail) != 1 {
-				if canToast {
-					TheBaize.ui.Toast("You can only drag one card to a Foundation")
-				}
-				return false
-			}
-			if p.Empty() {
-				if p.localAccept > 0 {
-					return c0.Ordinal() == p.localAccept
-				}
-				return true
-			}
-			return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-		}
-
-	case "Tableau":
-		if p.Flags&DragFlagSingle == DragFlagSingle {
-			if ThePreferences.PowerMoves {
-				pm := powerMoves(TheBaize.Piles, p)
-				if len(Tail) > pm {
-					if canToast {
-						TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(Tail)))
-					}
-					return false
-				}
-			} else {
-				if len(Tail) > 1 {
-					if canToast {
-						TheBaize.ui.Toast("You can only drag a single card")
-					}
-					return false
-				}
-			}
-		}
-		if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
-			if !(len(Tail) == 1 || len(Tail) == c0.owner.CardCount()) {
-				if canToast {
-					TheBaize.ui.Toast("You can only drag a single card or the whole pile")
-				}
-				return false
-			}
-		}
-		if p.Empty() {
-			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
-				afList := strings.Split(afAttrib, ",")
-				for _, class := range afList {
-					if c0.owner.Class == class {
-						return true
-					}
-				}
-				if canToast {
-					TheBaize.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
-				}
-				return false
-			}
-			if p.localAccept > 0 {
-				return c0.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-
-	case "Cell":
-		ok := len(Tail) == 1 && p.Empty()
-		if !ok && canToast {
-			TheBaize.ui.Toast("You can only have one card in a Cell")
-		}
-		return ok
-
-	case "Reserve":
-		if canToast {
-			TheBaize.ui.Toast("You cannot move a card to a Reserve")
-		}
-		return false
-
-	case "Golf":
-		if p.Empty() {
-			if afAttrib := p.GetStringAttribute("AcceptFrom"); afAttrib != "" {
-				afList := strings.Split(afAttrib, ",")
-				for _, class := range afList {
-					if c0.owner.Class == class {
-						return true
-					}
-				}
-				if canToast {
-					TheBaize.ui.Toast(fmt.Sprintf("%s can only accept cards from %s", p.Class, afAttrib))
-				}
-				return false
-			}
-			if p.localAccept > 0 {
-				return c0.Ordinal() == p.localAccept
-			}
-			return true
-		}
-		return isCardPairConformant(p.Build, p.Flags, p.Peek(), c0)
-	}
-
-	if canToast {
-		TheBaize.ui.Toast("You cannot move a card there")
-	}
-	return false // Reserve, Stock, StockSpider, StockScorpion
-}
-*/
 
 func (p *Pile) CountSortedAndUnsorted(sorted, unsorted int) (int, int) {
 	if strings.HasPrefix(p.Class, "Foundation") {

@@ -3,6 +3,7 @@ package sol
 import (
 	"log"
 	"sort"
+	"strings"
 )
 
 // M is an unordered list of name=value pairs
@@ -1141,14 +1142,22 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 // we already know that the variant exists
 func (b *Baize) BuildVariant(v string) {
 	b.Piles = nil
+	b.foundations = nil
 	if vi, exists := Variants[v]; exists {
 		for _, pi := range vi.Piles {
 			p := NewPile(pi)
 			b.Piles = append(b.Piles, p)
+			if strings.HasPrefix(p.Class, "Foundation") {
+				b.foundations = append(b.foundations, p)
+			}
 		}
 	} else {
 		log.Fatal("BuildVariant() unknown variant ", v)
 	}
+	if !strings.HasPrefix(b.Piles[0].Class, "Stock") {
+		log.Fatal("First Pile needs to be the Stock")
+	}
+	b.stock = b.Piles[0]
 	b.calcScrunchSizev2()
 }
 
