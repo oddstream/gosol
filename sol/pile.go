@@ -40,6 +40,7 @@ const (
 // Pile is a generic container for cards
 type Pile struct {
 	PileInfo
+	driver            Driver
 	localAccept       int           // ordinal this pile can accept when empty (0=accept anything, 99=won't accept anything)
 	localRecycles     int           // number of recycles left (stock only, could be in Baize)
 	Cards             []*Card       // array of cards, managed as a stack
@@ -52,6 +53,15 @@ type Pile struct {
 // NewPile create and fills in a Pile object
 func NewPile(pi PileInfo) *Pile {
 	p := &Pile{PileInfo: pi}
+
+	{
+		if fn, ok := Class2NewDriver[pi.Class]; !ok {
+			log.Fatal("No NewDriver factory func for Class", pi.Class)
+		} else {
+			p.driver = fn(p)
+		}
+	}
+
 	p.Reset()
 	return p
 }
@@ -289,7 +299,11 @@ func (p *Pile) Extract(idx int) *Card {
 
 // CanAcceptCard returns true if this Pile can accept the Card
 func (p *Pile) CanAcceptCard(c *Card) bool {
-	return p.CanAcceptTail([]*Card{c}, true)
+	ok, err := p.driver.CanAcceptTail([]*Card{c})
+	if err != nil {
+		TheBaize.ui.Toast(err.Error())
+	}
+	return ok
 }
 
 // PushedFannedPosition returns the x,y screen coords of a Card that will be pushed onto this Pile
@@ -386,12 +400,13 @@ func (p *Pile) makeTail(c *Card) []*Card {
 			}
 		}
 	}
-	// if len(tail) == 0 {
-	// log.Panic("Pile.makeTail made an empty tail")
-	// }
+	if len(tail) == 0 {
+		log.Panic("Pile.makeTail made an empty tail")
+	}
 	return tail
 }
 
+/* retired by Driver
 // CanAcceptTail returns true if the Pile can accept the tail of Cards from another Pile
 func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 
@@ -566,9 +581,10 @@ func (p *Pile) CanAcceptTail(Tail []*Card, canToast bool) bool {
 	}
 	return false // Reserve, Stock, StockSpider, StockScorpion
 }
+*/
 
 func (p *Pile) CountSortedAndUnsorted(sorted, unsorted int) (int, int) {
-	if p.Class == "Foundation" {
+	if strings.HasPrefix(p.Class, "Foundation") {
 		sorted += len(p.Cards)
 	} else {
 		for i := 0; i < len(p.Cards)-1; i++ {
@@ -624,7 +640,7 @@ func (dst *Pile) MoveCards(c *Card) {
 	}
 
 	switch dst.Class {
-	case "Foundation", "Waste", "Golf":
+	case "Foundation", "FoundationSpider", "Waste", "Golf":
 		sound.Play("Slide")
 	default:
 		sound.Play("Place")
@@ -744,41 +760,6 @@ func (p *Pile) DragTailBy(dx, dy int) {
 	for _, tc := range p.Tail {
 		tc.DragBy(dx, dy)
 	}
-}
-
-// Complete returns true if this Pile is complete
-func (p *Pile) Complete() bool {
-	// a game is complete when all piles except foundations are empty
-
-	// probably don't need this because Foundation won't accept more than 13 cards
-	// cw, ok := p.GetIntAttribute("CompleteWhen")
-	// if ok {
-	// 	return p.CardCount() == cw
-	// }
-
-	if strings.HasPrefix(p.Class, "Foundation") {
-		return p.CardCount() == 13
-	} else {
-		return p.Empty()
-	}
-}
-
-// Conformant returns true if all cards in this pile are conformant
-func (p *Pile) Conformant() bool {
-	if len(p.Cards) == 0 {
-		return true
-	}
-	if strings.HasPrefix(p.Class, "Stock") || p.Class == "Waste" {
-		return false
-	}
-	if p.Class == "Foundation" || p.Class == "Golf" {
-		return true
-	}
-	if p.Class == "Tableau" && p.Spider() && len(p.Cards) != 13 {
-		return false
-	}
-	// that leaves Cell, Reserve, Tableau
-	return isTailConformant(p.Build, p.Flags, p.Cards)
 }
 
 // BuryCards moves cards with the specified ordinal to the beginning of the pile

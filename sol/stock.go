@@ -9,19 +9,16 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// CreateStock creates the stock cards
+// CreateStock finds the stock pile and creates the stock cards
+// sets Baize.stock and Baize.totalCards
 func (b *Baize) CreateStock() {
 
 	// defer util.Duration(time.Now(), "CreateStock")
 
-	// b.stock = b.findPilePrefix("Stock")
 	if !strings.HasPrefix(b.Piles[0].Class, "Stock") {
 		log.Fatal("First Pile needs to be the Stock")
 	}
 	b.stock = b.Piles[0]
-	if b.stock == nil {
-		log.Fatal("Cannot find stock pile to create cards with")
-	}
 
 	packs, ok := b.stock.GetIntAttribute("Packs")
 	if !ok || packs == 0 {

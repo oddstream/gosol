@@ -1,6 +1,10 @@
 package sol
 
-import "oddstream.games/gosol/util"
+import (
+	"strings"
+
+	"oddstream.games/gosol/util"
+)
 
 // DraggableTail indicates if a tail from this card can be dragged or not without triggering any visible changes
 func (p *Pile) DraggableTail(c *Card) []*Card {
@@ -30,7 +34,7 @@ func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
 		if p == c0.owner {
 			continue
 		}
-		if p.CanAcceptTail(tail, false) {
+		if ok, _ := p.driver.CanAcceptTail(tail); ok {
 			homes = append(homes, p)
 		}
 	}
@@ -41,7 +45,7 @@ func setMovable(dst *Pile, tail []*Card) {
 	c0 := tail[0]
 	var m int
 	switch {
-	case dst.Class == "Foundation":
+	case strings.HasPrefix(dst.Class, "Foundation"):
 		m = 3
 	case dst.Class == "Cell":
 		m = 1

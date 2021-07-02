@@ -235,9 +235,6 @@ func (b *Baize) dealCards() {
 		for _, c := range cards {
 			p.Push(c)
 		}
-	}
-
-	for _, p := range b.Piles {
 		if bury, ok := p.GetIntAttribute("Bury"); ok {
 			p.BuryCards(bury)
 		}
@@ -298,71 +295,7 @@ func (b *Baize) findCardAt(x, y int) *Card {
 	return nil
 }
 
-// PileTapped is called when a pile has been tapped
-func (b *Baize) PileTapped(pTapped *Pile) {
-	// this method is in Baize because it needs access to Baize.findPile()
-	switch pTapped.Class {
-	case "Stock":
-		if pTapped.localRecycles > 0 {
-			waste := b.findPile("Waste") // TODO varidaic findPile()?
-			if waste == nil {
-				waste = b.findPile("Golf")
-			}
-			if waste == nil || len(waste.Cards) == 0 {
-				return
-			}
-			// Pop/Push don't play a sound, only MoveCards
-			sound.Play("Slide")
-			for len(waste.Cards) > 0 {
-				c := waste.Pop()
-				b.stock.Push(c) // this will flip card down
-			}
-			pTapped.SetRecycles(pTapped.localRecycles - 1)
-			b.AfterUserMove()
-		}
-	case "StockCruel":
-		/*
-		   https://politaire.com/help/cruel
-
-		   The redeal procedure begins by picking up all cards on the tableau.
-		   The cards from the tableau are collected, one column at a time, starting with the left-most column,
-		   picking up the cards in each column in top to bottom order.
-		   Then, without shuffling, the cards are dealt out again, starting with the first card picked up,
-		   and dealing the cards in the same order as they were picked up.
-		*/
-		if pTapped.localRecycles == 0 {
-			break
-		}
-		tmp := make([]*Card, 0, 52)
-
-		for _, pTab := range b.Piles {
-			if pTab.Class == "Tableau" {
-				tmp = append(tmp, pTab.Cards...)
-				pTab.Cards = pTab.Cards[:0]
-			}
-		}
-		sound.Play("Slide")
-		for _, pTab := range b.Piles {
-			if pTab.Class == "Tableau" {
-				deal := pTab.GetStringAttribute("Deal")
-				for i := 0; i < len(deal); i++ {
-					var c *Card
-					if len(tmp) > 0 {
-						c, tmp = tmp[0], tmp[1:]
-					} else {
-						goto FinishedDealing
-					}
-					pTab.Push(c)
-				}
-			}
-		}
-	FinishedDealing:
-		pTapped.SetRecycles(pTapped.localRecycles - 1)
-		b.AfterUserMove()
-	}
-
-}
-
+/* retired by Driver
 // CardTapped is called when a card has been tapped
 func (b *Baize) CardTapped(c *Card) {
 
@@ -513,6 +446,7 @@ func (b *Baize) CardTapped(c *Card) {
 	}
 
 }
+*/
 
 // AutoMoves performs post user-moves
 func (b *Baize) AutoMoves() {
@@ -753,7 +687,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 					println("*** stop dragging card - empty tail ***")
 					c.owner.CancelDrag(c)
 				} else {
-					if p.CanAcceptTail(c.owner.Tail, true) {
+					if ok, err := p.driver.CanAcceptTail(c.owner.Tail); ok {
 						c.owner.StopDrag(c) // this makes the Tail = nil
 						if c.owner == b.stock && p.Class == "Waste" {
 							// special case: dragging a card from Stock to Waste in Canfield, Klondike (Draw Three)
@@ -771,6 +705,9 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 						b.AfterUserMove()
 					} else {
 						c.owner.CancelDrag(c)
+						if err != nil {
+							TheBaize.ui.Toast(err.Error())
+						}
 					}
 				}
 			}
@@ -831,10 +768,15 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 				b.stroke.Cancel()
 			}
 			if c != nil {
-				b.CardTapped(c)
+				if ThePreferences.SingleTap {
+					_, err := c.owner.driver.CardTapped(c)
+					if err != nil {
+						TheBaize.ui.Toast(err.Error())
+					}
+				}
 			} else {
 				if p := b.findPileAt(v.X, v.Y); p != nil {
-					b.PileTapped(p)
+					p.driver.Tapped()
 				}
 			}
 		}

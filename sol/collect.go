@@ -1,5 +1,10 @@
 package sol
 
+import (
+	"fmt"
+	"strings"
+)
+
 /*
 --[[
   "Microsoft FreeCell or FreeCell Pro only plays an available card to its
@@ -60,7 +65,7 @@ func (b *Baize) Collect() {
 
 	var foundations []*Pile
 	for _, fp := range b.Piles {
-		if fp.Class == "Foundation" {
+		if strings.HasPrefix(fp.Class, "Foundation") {
 			foundations = append(foundations, fp)
 		}
 	}
@@ -78,10 +83,12 @@ func (b *Baize) Collect() {
 							// pearl from the mudbank:
 							// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
 							// but these are not conformant for the Foundation
-							if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) && fp.CanAcceptTail(tail, false) {
-								fp.MoveCards(c)
-								count += 13
-								goto NextFoundationPile
+							if len(tail) == 13 && isTailConformant(p.Build, p.Flags, tail) {
+								if ok, _ := fp.driver.CanAcceptTail(tail); ok {
+									fp.MoveCards(c)
+									count += 13
+									goto NextFoundationPile
+								}
 							}
 						}
 					}
@@ -124,26 +131,21 @@ func (b *Baize) Collect() {
 // Complete returns true if this game is complete
 func (b *Baize) Complete() bool {
 	if b.State == Complete {
-		println("testing a complete game for completeness")
+		fmt.Println("testing a complete game for completeness")
 		return true
 	}
-	complete := true
 	for _, p := range b.Piles {
-		if !p.Complete() {
-			complete = false
-			break
+		if !p.driver.Complete() {
+			return false
 		}
 	}
-	return complete
+	return true
 }
 
-// Conformant returns true if stock is empty and all piles are conformant
+// Conformant returns true if all piles are either empty or all their cards are conformant
 func (b *Baize) Conformant() bool {
-	if len(b.stock.Cards) > 0 {
-		return false
-	}
 	for _, p := range b.Piles {
-		if !p.Conformant() {
+		if !p.driver.Conformant() {
 			return false
 		}
 	}
