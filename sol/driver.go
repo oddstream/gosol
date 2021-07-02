@@ -31,7 +31,7 @@ type Driver interface {
 	CardTapped(*Card) (bool, error)
 	Complete() bool
 	Conformant() bool
-	Tapped()
+	Tapped() bool
 }
 
 // Class2NewDriver links the name of a pile subclass with a factory func
@@ -150,12 +150,6 @@ func genericCardTapped(card *Card) (bool, error) {
 		}
 	}
 
-	if anyCardsMoved {
-		TheBaize.AfterUserMove()
-	} else {
-		card.Shake()
-	}
-
 	return anyCardsMoved, nil
 }
 
@@ -186,7 +180,7 @@ func (c *Cell) Conformant() bool {
 	return true
 }
 
-func (c *Cell) Tapped() {}
+func (c *Cell) Tapped() bool { return false }
 
 //
 
@@ -212,7 +206,7 @@ func (g *Golf) Conformant() bool {
 	return len(g.parent.Cards) == 0
 }
 
-func (g *Golf) Tapped() {}
+func (g *Golf) Tapped() bool { return false }
 
 //
 
@@ -245,7 +239,7 @@ func (f *Foundation) Conformant() bool {
 	return true
 }
 
-func (f *Foundation) Tapped() {}
+func (f *Foundation) Tapped() bool { return false }
 
 //
 
@@ -301,7 +295,7 @@ func (r *Reserve) Conformant() bool {
 	return isTailConformant(r.parent.Build, r.parent.Flags, r.parent.Cards)
 }
 
-func (r *Reserve) Tapped() {}
+func (r *Reserve) Tapped() bool { return false }
 
 //
 
@@ -344,10 +338,6 @@ func (s *Stock) CardTapped(card *Card) (bool, error) {
 		fmt.Println("Could not find pile", targetPile)
 	}
 
-	if anyCardsMoved {
-		TheBaize.AfterUserMove()
-	}
-
 	return anyCardsMoved, nil
 }
 
@@ -359,24 +349,26 @@ func (s *Stock) Conformant() bool {
 	return len(s.parent.Cards) == 0
 }
 
-func (pTapped *Stock) Tapped() {
+func (pTapped *Stock) Tapped() bool {
+	var cardsMoved bool
 	if pTapped.parent.localRecycles > 0 {
 		waste := TheBaize.findPile("Waste") // TODO varidaic findPile()?
 		if waste == nil {
 			waste = TheBaize.findPile("Golf")
 		}
 		if waste == nil || len(waste.Cards) == 0 {
-			return
+			return false
 		}
 		// Pop/Push don't play a sound, only MoveCards
 		sound.Play("Slide")
 		for len(waste.Cards) > 0 {
 			c := waste.Pop()
 			pTapped.parent.Push(c) // this will flip card down
+			cardsMoved = true
 		}
 		pTapped.parent.SetRecycles(pTapped.parent.localRecycles - 1)
-		TheBaize.AfterUserMove()
 	}
+	return cardsMoved
 }
 
 //
@@ -389,7 +381,7 @@ func NewStockCruel(pile *Pile) Driver {
 	return &StockCruel{Stock: Stock{parent: pile}}
 }
 
-func (pTapped *StockCruel) Tapped() {
+func (pTapped *StockCruel) Tapped() bool {
 	/*
 	   https://politaire.com/help/cruel
 
@@ -399,8 +391,9 @@ func (pTapped *StockCruel) Tapped() {
 	   Then, without shuffling, the cards are dealt out again, starting with the first card picked up,
 	   and dealing the cards in the same order as they were picked up.
 	*/
+
 	if pTapped.parent.localRecycles == 0 {
-		return
+		return false
 	}
 	tmp := make([]*Card, 0, 52)
 
@@ -410,6 +403,7 @@ func (pTapped *StockCruel) Tapped() {
 			pTab.Cards = pTab.Cards[:0]
 		}
 	}
+	var cardsMoved bool
 	sound.Play("Slide")
 	for _, pTab := range TheBaize.Piles {
 		if pTab.Class == "Tableau" {
@@ -422,12 +416,13 @@ func (pTapped *StockCruel) Tapped() {
 					goto FinishedDealing
 				}
 				pTab.Push(c)
+				cardsMoved = true
 			}
 		}
 	}
 FinishedDealing:
 	pTapped.parent.SetRecycles(pTapped.parent.localRecycles - 1)
-	TheBaize.AfterUserMove()
+	return cardsMoved
 }
 
 //
@@ -532,7 +527,7 @@ func (t *Tableau) Conformant() bool {
 	return isTailConformant(t.parent.Build, t.parent.Flags, t.parent.Cards)
 }
 
-func (t *Tableau) Tapped() {}
+func (t *Tableau) Tapped() bool { return false }
 
 //
 
@@ -594,4 +589,4 @@ func (w *Waste) Conformant() bool {
 	return len(w.parent.Cards) == 0
 }
 
-func (w *Waste) Tapped() {}
+func (w *Waste) Tapped() bool { return false }

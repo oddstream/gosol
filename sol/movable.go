@@ -71,7 +71,7 @@ func (b *Baize) MarkMovable() {
 		}
 		switch p.Class {
 		case "Stock":
-			// only the top card is movable
+			// top card is movable, even though it's face down
 			if !p.Empty() {
 				b.movableCards++
 			}
@@ -90,7 +90,7 @@ func (b *Baize) MarkMovable() {
 					}
 				}
 			}
-		case "Tableau", "Cell":
+		case "Tableau", "TableauSpider", "Cell":
 			for _, c := range p.Cards {
 				if c.Prone() {
 					continue

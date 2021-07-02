@@ -769,14 +769,21 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 			}
 			if c != nil {
 				if ThePreferences.SingleTap {
-					_, err := c.owner.driver.CardTapped(c)
+					moved, err := c.owner.driver.CardTapped(c)
+					if moved {
+						b.AfterUserMove()
+					} else {
+						c.Shake()
+					}
 					if err != nil {
 						TheBaize.ui.Toast(err.Error())
 					}
 				}
 			} else {
 				if p := b.findPileAt(v.X, v.Y); p != nil {
-					p.driver.Tapped()
+					if p.driver.Tapped() {
+						b.AfterUserMove()
+					}
 				}
 			}
 		}
