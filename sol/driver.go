@@ -167,10 +167,10 @@ func NewCell(pile *Pile) Driver {
 func (c *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 	// TODO could check localAccept here
 	if len(tail) == 1 && c.parent.Empty() {
-		//lint:ignore ST1005 the error message is toasted
-		return false, errors.New("You can only have one card in a Cell")
+		return true, nil
 	}
-	return true, nil
+	//lint:ignore ST1005 the error message is toasted
+	return false, errors.New("You can only have one card in a Cell")
 }
 
 func (c *Cell) CardTapped(card *Card) (bool, error) {

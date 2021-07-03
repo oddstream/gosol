@@ -78,7 +78,7 @@ func (b *Baize) MarkMovable() {
 		case "StockSpider", "StockScorpion":
 			// technically, all the cards are movable
 			b.movableCards += p.CardCount()
-		case "Waste", "Reserve", "Golf":
+		case "Waste", "Reserve", "Golf", "Cell":
 			// just check top card
 			if c := p.Peek(); c != nil && !c.Prone() {
 				if tail := p.DraggableTail(c); tail != nil {
@@ -90,7 +90,7 @@ func (b *Baize) MarkMovable() {
 					}
 				}
 			}
-		case "Tableau", "TableauSpider", "Cell":
+		case "Tableau", "TableauSpider":
 			for _, c := range p.Cards {
 				if c.Prone() {
 					continue

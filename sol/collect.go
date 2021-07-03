@@ -44,24 +44,7 @@ func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 }
 */
 
-func collectFromPile(src *Pile, dst *Pile) int {
-	var count int
-	for { // collect as many as possible from this pile (think Limited)
-		c := src.Peek()
-		if c == nil {
-			break
-		}
-		ok, _ := dst.driver.CanAcceptTail([]*Card{c})
-		if !ok {
-			break
-		}
-		dst.MoveCards(c)
-		count++
-	}
-	return count
-}
-
-// TODO Collect is like Tapping on the top card of each pile (except Stock), or on a K in a Spider pile
+// Collect is like Tapping on the top card of each pile (except Stock), or on a K in a Spider pile
 // have a special CardTapped func that only targets b.foundations
 
 func genericCollect(p *Pile) int {
@@ -122,7 +105,7 @@ func (t *TableauSpider) Collect() int {
 				for _, fp := range TheBaize.foundations {
 					// pearl from the mudbank:
 					// mistress mop may have a run of 13 cards, in numerical order (which are conformant in a Tableau)
-					// but these are not conformant for the Foundation
+					// but these are not conformant for the Foundation (because the suits differ)
 					if ok, _ := fp.driver.CanAcceptTail(tail); ok {
 						fp.MoveCards(card)
 						return 13

@@ -406,6 +406,40 @@ func (p *Pile) makeTail(c *Card) []*Card {
 	return tail
 }
 
+func (p *Pile) indexOf(card *Card) (int, error) {
+	for i, c := range p.Cards {
+		if c == card {
+			return i, nil
+		}
+	}
+	return -1, fmt.Errorf("%s not found in %s", card.String(), p.Class)
+}
+
+func (p *Pile) MakeConformantTail(c *Card) []*Card {
+	var tail []*Card
+
+	if p != c.owner {
+		log.Panic("Incorrect call to Pile.MakeConformantTail")
+	}
+
+	switch len(p.Cards) {
+	case 0:
+		log.Panic("Pile.MakeConformantTail called on a empty pile(!?)")
+	case 1:
+		tail = []*Card{c}
+	default:
+		idx, err := p.indexOf(c)
+		if err != nil {
+			log.Panic(err.Error())
+		}
+		tail = p.Cards[idx:]
+		if !isTailConformant(p.Build, p.Flags, tail) {
+			tail = nil
+		}
+	}
+	return tail
+}
+
 func (p *Pile) CountSortedAndUnsorted(sorted, unsorted int) (int, int) {
 	if strings.HasPrefix(p.Class, "Foundation") {
 		sorted += len(p.Cards)
@@ -427,21 +461,13 @@ func (p *Pile) CountSortedAndUnsorted(sorted, unsorted int) (int, int) {
 func (dst *Pile) MoveCards(c *Card) {
 
 	src := c.owner
-	moveFrom := len(src.Cards)
+	oldSrcLen := len(src.Cards)
 
 	// find the index of the first card we will move
-	for i, sc := range src.Cards {
-		if sc == c {
-			moveFrom = i
-			break
-		}
+	moveFrom, err := src.indexOf(c)
+	if err != nil {
+		log.Panic(err.Error())
 	}
-
-	if moveFrom == len(src.Cards) {
-		log.Panic("MoveCards could not find first card in source")
-	}
-
-	oldSrcLen := len(src.Cards)
 
 	tmp := make([]*Card, 0, cap(src.Cards))
 

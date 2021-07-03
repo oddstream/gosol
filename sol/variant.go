@@ -124,8 +124,10 @@ var Variants = map[string]VariantInfo{
 		},
 	},
 	"Baker's Dozen (Relaxed)": {
-		Description: "The game is so called because of the 13 columns in the game, the number in a baker's dozen. Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.",
-		Wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+		Description: `The game is so called because of the 13 columns in the game, the number in a baker's dozen.
+Empty piles cannot be filled, so Kings are placed at the bottom of a pile during the initial dealing.
+This version is relaxed by allowing completed sequences of tableau cards to be moved together.`,
+		Wikipedia: "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 		Piles: []PileInfo{
 			{"Stock", 0, -2, "None", 0, 15, 0, M{}},
 			// Relaxed by allowing conformant tails to be dragged
