@@ -32,6 +32,7 @@ type Driver interface {
 	Collect() int
 	Complete() bool
 	Conformant() bool
+	Movable() int
 	Tapped() bool
 }
 

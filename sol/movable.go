@@ -69,41 +69,58 @@ func (b *Baize) MarkMovable() {
 		for _, c := range p.Cards {
 			c.movable = 0
 		}
-		switch p.Class {
-		case "Stock":
-			// top card is movable, even though it's face down
-			if !p.Empty() {
-				b.movableCards++
-			}
-		case "StockSpider", "StockScorpion":
-			// technically, all the cards are movable
-			b.movableCards += p.CardCount()
-		case "Waste", "Reserve", "Golf", "Cell":
-			// just check top card
-			if c := p.Peek(); c != nil && !c.Prone() {
-				if tail := p.DraggableTail(c); tail != nil {
-					if homes := b.NewHomesForTail(tail); len(homes) > 0 {
-						b.movableCards++
-						for _, dst := range homes {
-							setMovable(dst, tail)
-						}
-					}
-				}
-			}
-		case "Tableau", "TableauSpider":
-			for _, c := range p.Cards {
-				if c.Prone() {
-					continue
-				}
-				if tail := p.DraggableTail(c); tail != nil {
-					if homes := b.NewHomesForTail(tail); len(homes) > 0 {
-						b.movableCards++
-						for _, dst := range homes {
-							setMovable(dst, tail)
-						}
-					}
+		b.movableCards += p.driver.Movable()
+	}
+}
+
+func genericMovableTopCard(p *Pile) int {
+	var count int
+	// just check top card
+	if c := p.Peek(); c != nil && !c.Prone() {
+		if tail := p.DraggableTail(c); tail != nil {
+			if homes := TheBaize.NewHomesForTail(tail); len(homes) > 0 {
+				count++
+				for _, dst := range homes {
+					setMovable(dst, tail)
 				}
 			}
 		}
 	}
+	return count
 }
+
+func genericMovableAllCards(p *Pile) int {
+	var count int
+	for _, c := range p.Cards {
+		if c.Prone() {
+			continue
+		}
+		if tail := p.DraggableTail(c); tail != nil {
+			if homes := TheBaize.NewHomesForTail(tail); len(homes) > 0 {
+				count++
+				for _, dst := range homes {
+					setMovable(dst, tail)
+				}
+			}
+		}
+	}
+	return count
+}
+
+func (c *Cell) Movable() int             { return genericMovableTopCard(c.parent) }
+func (f *Foundation) Movable() int       { return 0 }
+func (f *FoundationSpider) Movable() int { return 0 }
+func (g *Golf) Movable() int             { return genericMovableTopCard(g.parent) }
+func (r *Reserve) Movable() int          { return genericMovableTopCard(r.parent) }
+func (s *Stock) Movable() int {
+	if s.parent.Empty() {
+		return 0
+	}
+	return 1
+}
+func (s *StockCruel) Movable() int    { return 0 }
+func (s *StockScorpion) Movable() int { return len(s.parent.Cards) }
+func (s *StockSpider) Movable() int   { return len(s.parent.Cards) }
+func (t *Tableau) Movable() int       { return genericMovableAllCards(t.parent) }
+func (t *TableauSpider) Movable() int { return genericMovableAllCards(t.parent) }
+func (w Waste) Movable() int          { return genericMovableTopCard(w.parent) }
