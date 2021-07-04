@@ -101,10 +101,6 @@ func createRetroFaceImage(ID CardID) *ebiten.Image {
 	return faceImg
 }
 
-func (b *Baize) ShowCardBackPicker() {
-	b.ui.ShowCardBackPicker(TheCIP.BackImages())
-}
-
 func NewRetroCardImageProvider() *RetroCardImageProvider {
 	ip := &RetroCardImageProvider{}
 

@@ -27,10 +27,10 @@ func (p *Pile) DraggableTail(c *Card) []*Card {
 	return tail
 }
 
-func (b *Baize) NewHomesForTail(tail []*Card) []*Pile {
+func newHomesForTail(piles []*Pile, tail []*Card) []*Pile {
 	var c0 *Card = tail[0]
 	var homes []*Pile
-	for _, p := range b.Piles {
+	for _, p := range piles {
 		if p == c0.owner {
 			continue
 		}
@@ -78,7 +78,7 @@ func genericMovableTopCard(p *Pile) int {
 	// just check top card
 	if c := p.Peek(); c != nil && !c.Prone() {
 		if tail := p.DraggableTail(c); tail != nil {
-			if homes := TheBaize.NewHomesForTail(tail); len(homes) > 0 {
+			if homes := newHomesForTail(TheBaize.Piles, tail); len(homes) > 0 {
 				count++
 				for _, dst := range homes {
 					setMovable(dst, tail)
@@ -96,7 +96,7 @@ func genericMovableAllCards(p *Pile) int {
 			continue
 		}
 		if tail := p.DraggableTail(c); tail != nil {
-			if homes := TheBaize.NewHomesForTail(tail); len(homes) > 0 {
+			if homes := newHomesForTail(TheBaize.Piles, tail); len(homes) > 0 {
 				count++
 				for _, dst := range homes {
 					setMovable(dst, tail)

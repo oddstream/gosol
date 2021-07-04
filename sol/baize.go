@@ -45,8 +45,6 @@ type Baize struct {
 	movableCards    int
 	State           BaizeStateType
 	stroke          *input.Stroke
-	ui              *ui.UI
-	commandTable    map[ebiten.Key]func()
 	DragOffsetX     int // value of current horz drag
 	DragOffsetBaseX int // value last-used horz drag
 	DragOffsetY     int // value of current vertical drag
@@ -67,34 +65,7 @@ func NewBaize() *Baize {
 	// bug lurking here; scalables start at 71x96, which is the size needed for CardBackPicker
 	CreateCardImages() // sets global TheCIP (sorry)
 
-	TheBaize = &Baize{Variant: ThePreferences.Variant}
-	TheBaize.ui = ui.New(TheBaize.Execute)
-	TheBaize.commandTable = map[ebiten.Key]func(){
-		ebiten.KeyN:      TheBaize.NewGame,
-		ebiten.KeyR:      TheBaize.RestartGame,
-		ebiten.KeyU:      TheBaize.Undo,
-		ebiten.KeyS:      TheBaize.SavePosition,
-		ebiten.KeyL:      TheBaize.LoadPosition,
-		ebiten.KeyC:      TheBaize.Collect,
-		ebiten.KeyF:      TheBaize.ShowVariantPicker,
-		ebiten.KeyF1:     TheBaize.ShowRules,
-		ebiten.KeyF2:     TheBaize.ShowCardBackPicker,
-		ebiten.KeyF3:     TheBaize.ShowSettingsDrawer,
-		ebiten.KeyF4:     TheStatistics.ShowStatistics,
-		ebiten.KeyF5:     TheBaize.StartSpinning,
-		ebiten.KeyF6:     TheBaize.StopSpinning,
-		ebiten.KeyF7:     func() { TheBaize.ui.ShowFAB("star", ebiten.KeyN) },
-		ebiten.KeyF8:     func() { TheBaize.ui.HideFAB() },
-		ebiten.KeyMenu:   TheBaize.ui.ToggleNavDrawer,
-		ebiten.KeyEscape: TheBaize.ui.HideActiveDrawer,
-		ebiten.KeyX:      TheBaize.Exit,
-	}
-
-	if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
-		TheBaize.NewVariant(TheBaize.Variant)
-	}
-
-	return TheBaize // ugly global-setting kludge
+	return &Baize{Variant: ThePreferences.Variant}
 }
 
 // RecallCardsToStock without changing variant or seed
@@ -172,7 +143,7 @@ func (b *Baize) NewVariant(v string) {
 	b.Variant = findVariant(v) // v is now invalid because AKA
 	ThePreferences.Variant = b.Variant
 	b.BuildVariant(b.Variant)
-	b.ui.SetTitle(b.Variant)
+	TheUI.SetTitle(b.Variant)
 
 	b.OldWindowWidth, b.OldWindowHeight = 0, 0 // force a rescale
 	b.Scale()                                  // now we know number of piles and can discover window width; scale the cards before creating them
@@ -200,7 +171,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	b.Variant = findVariant(v) // v is now invalid because AKA
 	ThePreferences.Variant = b.Variant
 	b.BuildVariant(b.Variant)
-	b.ui.SetTitle(b.Variant)
+	TheUI.SetTitle(b.Variant)
 	b.UndoStack = undoStack
 
 	sav, ok := b.UndoPop() // removes extra pushed state
@@ -219,7 +190,7 @@ func (b *Baize) LoadVariant(v string) bool {
 	TheStatistics.welcomeToast(b.Variant)
 
 	if b.State == Complete {
-		b.ui.ShowFAB("star", ebiten.KeyN)
+		TheUI.ShowFAB("star", ebiten.KeyN)
 	}
 
 	return true
@@ -340,19 +311,19 @@ func (b *Baize) AfterUserMove() {
 	switch b.State {
 	case Virgin:
 		b.State = Started
-		b.ui.Toast(fmt.Sprintf("%s started", b.Variant))
+		TheUI.Toast(fmt.Sprintf("%s started", b.Variant))
 	case Started:
 		if b.Complete() {
 			b.State = Complete
 			sound.Play("Complete")
 			TheStatistics.recordWonGame(b.Variant, len(b.UndoStack)-1)
 			TheStatistics.wonToast(b.Variant, len(b.UndoStack)-1)
-			b.ui.ShowFAB("star", ebiten.KeyN)
+			TheUI.ShowFAB("star", ebiten.KeyN)
 			b.StartSpinning()
 		} else if b.Conformant() {
-			b.ui.ShowFAB("done_all", ebiten.KeyC)
+			TheUI.ShowFAB("done_all", ebiten.KeyC)
 		} else {
-			b.ui.HideFAB()
+			TheUI.HideFAB()
 		}
 	case Complete:
 		log.Println("what are we doing here?")
@@ -378,7 +349,7 @@ func (b *Baize) AfterUserMove() {
 	if oldChecksum != newChecksum {
 		b.UndoPush()
 		if b.State == Started && b.movableCards == 0 && b.stock.localRecycles == 0 {
-			b.ui.Toast("No movable cards")
+			TheUI.Toast("No movable cards")
 		}
 	} else {
 		log.Println("not pushing to undo because checksums match")
@@ -461,7 +432,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 	case "start":
 		// try UI Container > Card > Pile > Baize
 		b.stroke = v.Stroke
-		if con := b.ui.FindContainerAt(v.X, v.Y); con != nil {
+		if con := TheUI.FindContainerAt(v.X, v.Y); con != nil {
 			// println("found container")
 			if con.StartDrag(b.stroke) {
 				b.stroke.SetDraggedObject(con)
@@ -553,7 +524,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 					} else {
 						c.owner.CancelDrag(c)
 						if err != nil {
-							TheBaize.ui.Toast(err.Error())
+							TheUI.Toast(err.Error())
 						}
 					}
 				}
@@ -601,9 +572,9 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 	case "tap":
 		// println("Baize.NotifyCallback() tap", v.X, v.Y)
 		// a tap outside any open ui drawer (ie on the baize) closes the drawer
-		if con := b.ui.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
+		if con := TheUI.VisibleDrawer(); con != nil && !util.InRect(v.X, v.Y, con.Rect) {
 			con.Hide()
-		} else if con := b.ui.FindContainerAt(v.X, v.Y); con == nil {
+		} else if con := TheUI.FindContainerAt(v.X, v.Y); con == nil {
 			// not a tap on a UI container, so must be on a pile or a card
 			c := b.findCardAt(v.X, v.Y)
 			// we've received a tap, so cancel any stroke that has started
@@ -623,7 +594,7 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 						c.Shake()
 					}
 					if err != nil {
-						TheBaize.ui.Toast(err.Error())
+						TheUI.Toast(err.Error())
 					}
 				}
 			} else {
@@ -761,7 +732,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 	b.Scale()
 
-	b.ui.Layout(outsideWidth, outsideHeight)
+	TheUI.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
 
@@ -783,11 +754,11 @@ func (b *Baize) Update() error {
 		p.Update()
 	}
 
-	b.ui.Update()
+	TheUI.Update()
 
 	for k := ebiten.Key(0); k <= ebiten.KeyMax; k++ {
 		if inpututil.IsKeyJustReleased(k) {
-			b.Execute(k)
+			Execute(k)
 		}
 	}
 
@@ -816,7 +787,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 		p.DrawFlippingCards(screen)
 	}
 
-	b.ui.Draw(screen)
+	TheUI.Draw(screen)
 
 	if DebugMode {
 		var ms runtime.MemStats

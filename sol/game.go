@@ -3,6 +3,7 @@ package sol
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/ui"
 )
 
 // Game represents a game state
@@ -49,6 +50,9 @@ var TheStatistics *Statistics
 
 // TheBaize points to the Baize, so that main can see it
 var TheBaize *Baize
+
+// The UI points to the singleton User Interface object
+var TheUI *ui.UI
 
 var TheCIP CardImageProvider
 

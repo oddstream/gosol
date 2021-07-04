@@ -1,5 +1,6 @@
 package sol
 
-func (b *Baize) ShowSettingsDrawer() {
-	b.ui.ShowSettingsDrawer(ThePreferences.RetroCards, ThePreferences.FixedCards, ThePreferences.SingleTap, ThePreferences.HighlightMovable, ThePreferences.PowerMoves, ThePreferences.MuteSounds)
+func ShowSettingsDrawer() {
+	// TODO this smells real bad
+	TheUI.ShowSettingsDrawer(ThePreferences.RetroCards, ThePreferences.FixedCards, ThePreferences.SingleTap, ThePreferences.HighlightMovable, ThePreferences.PowerMoves, ThePreferences.MuteSounds)
 }

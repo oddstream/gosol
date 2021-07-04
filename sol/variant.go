@@ -1193,5 +1193,5 @@ func (b *Baize) ShowVariantPicker() {
 		vnames = append(vnames, v.AKA...)
 	}
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
-	b.ui.ShowVariantPicker(vnames)
+	TheUI.ShowVariantPicker(vnames)
 }

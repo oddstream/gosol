@@ -7,15 +7,15 @@ func (b *Baize) UndoPush() {
 	b.UndoStack = append(b.UndoStack, b.Saveable())
 	b.MarkMovable()
 	b.percentComplete = b.calcPercentComplete()
-	b.ui.SetStock(b.stock.CardCount())
+	TheUI.SetStock(b.stock.CardCount())
 	if w := b.findPile("Waste"); w != nil {
-		b.ui.SetWaste(w.CardCount())
+		TheUI.SetWaste(w.CardCount())
 	} else {
 		// may have changed variant
-		b.ui.SetWaste(0)
+		TheUI.SetWaste(0)
 	}
-	b.ui.SetMoves(len(b.UndoStack) - 1)
-	b.ui.SetPercent(b.percentComplete)
+	TheUI.SetMoves(len(b.UndoStack) - 1)
+	TheUI.SetPercent(b.percentComplete)
 }
 
 // UndoPop pops a state off the undo stack
@@ -42,11 +42,11 @@ func (b *Baize) UndoPeekChecksum() (uint32, bool) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.UndoStack) < 2 {
-		b.ui.Toast("Nothing to undo")
+		TheUI.Toast("Nothing to undo")
 		return
 	}
 	if b.State == Complete {
-		b.ui.Toast("Cannot undo a completed game")
+		TheUI.Toast("Cannot undo a completed game")
 		return
 	}
 	sav, ok := b.UndoPop() // removes current state
@@ -65,21 +65,21 @@ func (b *Baize) Undo() {
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	if b.State == Complete {
-		b.ui.Toast("Cannot bookmark a completed game")
+		TheUI.Toast("Cannot bookmark a completed game")
 		return
 	}
 	b.SavedPosition = len(b.UndoStack)
-	b.ui.Toast("Position bookmarked")
+	TheUI.Toast("Position bookmarked")
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.SavedPosition == 0 || b.SavedPosition > len(b.UndoStack) {
-		b.ui.Toast("No bookmark")
+		TheUI.Toast("No bookmark")
 		return
 	}
 	if b.State == Complete {
-		b.ui.Toast("Cannot undo a completed game")
+		TheUI.Toast("Cannot undo a completed game")
 		return
 	}
 	var sav SaveableBaize

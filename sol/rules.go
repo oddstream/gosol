@@ -329,5 +329,5 @@ func (b *Baize) rulesContents() []string {
 }
 
 func (b *Baize) ShowRules() {
-	b.ui.ShowTextDrawer(b.rulesContents())
+	TheUI.ShowTextDrawer(b.rulesContents())
 }

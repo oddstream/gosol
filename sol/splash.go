@@ -12,6 +12,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"oddstream.games/gosol/ui"
 
 	"github.com/fogleman/gg"
 )
@@ -74,7 +75,12 @@ func (s *Splash) Update() error {
 	if s.skew < 90 {
 		s.skew++
 	} else {
-		TheGSM.Switch(NewBaize())
+		TheUI = ui.New(Execute)
+		TheBaize = NewBaize()
+		if NoGameLoad || !TheBaize.LoadVariant(TheBaize.Variant) {
+			TheBaize.NewVariant(TheBaize.Variant)
+		}
+		TheGSM.Switch(TheBaize)
 	}
 
 	return nil

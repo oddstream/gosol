@@ -532,14 +532,14 @@ func (p *Pile) StartDrag(c *Card) bool {
 		if ThePreferences.PowerMoves && p.Class == "Tableau" {
 			pm := powerMoves(TheBaize.Piles, p)
 			if len(p.Tail) > pm {
-				TheBaize.ui.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(p.Tail)))
+				TheUI.Toast(fmt.Sprintf("Enough free space to move %s, not %d", util.Pluralize("card", pm), len(p.Tail)))
 				p.ApplyToTail((*Card).Shake)
 				p.Tail = nil
 				return false
 			}
 		} else {
 			if len(p.Tail) > 1 {
-				TheBaize.ui.Toast(p.Class + " can only drag a single card")
+				TheUI.Toast(p.Class + " can only drag a single card")
 				p.ApplyToTail((*Card).Shake)
 				p.Tail = nil
 				return false
@@ -548,7 +548,7 @@ func (p *Pile) StartDrag(c *Card) bool {
 	}
 	if p.Flags&DragFlagSingleOrPile == DragFlagSingleOrPile {
 		if !(len(p.Tail) == 1 || len(p.Tail) == len(p.Cards)) {
-			TheBaize.ui.Toast("You can only drag a single card or the entire pile")
+			TheUI.Toast("You can only drag a single card or the entire pile")
 			p.ApplyToTail((*Card).Shake)
 			p.Tail = nil
 			return false

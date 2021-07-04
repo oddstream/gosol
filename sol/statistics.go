@@ -110,7 +110,7 @@ func (s *Statistics) welcomeToast(v string) {
 	}
 
 	for _, t := range toasts {
-		TheBaize.ui.Toast(t)
+		TheUI.Toast(t)
 	}
 }
 
@@ -130,7 +130,7 @@ func (s *Statistics) wonToast(v string, moves int) {
 	}
 
 	for _, t := range toasts {
-		TheBaize.ui.Toast(t)
+		TheUI.Toast(t)
 	}
 }
 
@@ -168,5 +168,5 @@ func (s *Statistics) ShowStatistics() {
 			toasts = append(toasts, fmt.Sprintf("Your best streak is %d, your worst is %d", stats.BestStreak, stats.WorstStreak))
 		}
 	}
-	TheBaize.ui.ShowTextDrawer(toasts)
+	TheUI.ShowTextDrawer(toasts)
 }
