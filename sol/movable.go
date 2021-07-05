@@ -35,6 +35,10 @@ func newHomesForTail(piles []*Pile, tail []*Card) []*Pile {
 			continue
 		}
 		if ok, _ := p.driver.CanAcceptTail(tail); ok {
+			// discount moving a whole pile to another pile of the same class
+			if p.Empty() && c0 == c0.owner.Cards[0] && p.Class == c0.owner.Class {
+				continue
+			}
 			homes = append(homes, p)
 		}
 	}

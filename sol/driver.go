@@ -563,6 +563,14 @@ func (t *TableauSpider) CardTapped(card *Card) (bool, error) {
 	return genericCardTapped(card)
 }
 
+func (t TableauSpider) Conformant() bool {
+	// similar to Tableau.Conformant(), except need 13 conformant cards
+	if len(t.parent.Cards) == 0 {
+		return true
+	}
+	return len(t.parent.Cards) == 13 && isTailConformant(t.parent.Build, t.parent.Flags, t.parent.Cards)
+}
+
 //
 
 type Waste struct{ parent *Pile }

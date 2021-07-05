@@ -11,7 +11,8 @@ import (
 const DragFlagSingle = 1
 const DragFlagSingleOrPile = 2
 const BuildFlagRankWrap = 4
-const BuildFlagSpider = 8
+
+// retired const BuildFlagSpider = 8
 
 var UpInOnesArray = [14]int{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1}
 
@@ -274,10 +275,11 @@ func (b *Baize) rulesContents() []string {
 		case "Foundation":
 			fmt.Fprint(&str, "Foundation: Build cards ")
 			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-			if p.Spider() {
-				fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
-			}
-		case "Tableau":
+		case "FoundationSpider":
+			fmt.Fprint(&str, "Foundation: Build cards ")
+			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
+			fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
+		case "Tableau", "TableauSpider":
 			if p.Build == p.Drag {
 				fmt.Fprint(&str, "Tableau: Build cards ")
 				fmt.Fprint(&str, englishRules(p.Build, p.Flags))

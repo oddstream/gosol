@@ -77,11 +77,6 @@ func (p *Pile) Reset() {
 	p.CreateBackgroundImage()
 }
 
-// Spider returns true if this pile is Spideresque
-func (p *Pile) Spider() bool {
-	return p.Flags&BuildFlagSpider == BuildFlagSpider
-}
-
 // Empty returns true if this pile is empty
 func (p *Pile) Empty() bool {
 	return len(p.Cards) == 0
@@ -89,8 +84,7 @@ func (p *Pile) Empty() bool {
 
 func (p *Pile) CreateBackgroundImage() {
 
-	invisible := p.GetBoolAttribute("Invisible")
-	if invisible || p.localAccept == 99 || p.Class == "Reserve" {
+	if p.localAccept == 99 || p.Class == "Reserve" {
 		p.backgroundImage = nil
 		return
 	}
