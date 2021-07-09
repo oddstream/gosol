@@ -470,6 +470,12 @@ func (dst *Pile) MoveCards(c *Card) {
 		tmp = append(tmp, src.Pop())
 	}
 
+	if len(tmp) > 1 {
+		sound.Play("Slide")
+	} else {
+		sound.Play("Place")
+	}
+
 	// pop all cards off the temp stack and onto the destination
 	for len(tmp) > 0 {
 		dc := tmp[len(tmp)-1]
@@ -480,13 +486,6 @@ func (dst *Pile) MoveCards(c *Card) {
 	if oldSrcLen == len(src.Cards) {
 		log.Println("nothing happened in MoveCards")
 		return
-	}
-
-	switch dst.Class {
-	case "Foundation", "FoundationSpider", "Waste", "Golf":
-		sound.Play("Slide")
-	default:
-		sound.Play("Place")
 	}
 
 	// flip up an exposed source card

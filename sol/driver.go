@@ -32,6 +32,7 @@ type Driver interface {
 	Collect() int
 	Complete() bool
 	Conformant() bool
+	English(*strings.Builder)
 	Movable() int
 	Tapped() bool
 }
@@ -55,8 +56,6 @@ var Class2NewDriver = map[string]func(*Pile) Driver{
 // replaced canToast parameter with ok, error return
 // Errors.new("my string") or fmt.Errorf("my string", args...)
 // this lower-level code has no business displaying toasts
-
-// TODO CardTapped should also return an error rather than toast
 
 func genericCanAcceptTail(pile *Pile, tail []*Card) (bool, error) {
 
@@ -120,7 +119,6 @@ func simpleCanAcceptTail(pile *Pile, tail []*Card) (bool, error) {
 
 func genericCardTapped(card *Card) (bool, error) {
 
-	var anyCardsMoved bool
 	var sourcePile *Pile = card.owner
 	var tail []*Card = sourcePile.makeTail(card)
 
@@ -129,35 +127,42 @@ func genericCardTapped(card *Card) (bool, error) {
 		for _, fp := range TheBaize.foundations {
 			if ok, _ := fp.driver.CanAcceptTail([]*Card{card}); ok {
 				fp.MoveCards(card)
-				anyCardsMoved = true
-				break
+				return true, nil
 			}
-		}
-	}
-	// else try to move card to the longest Tableau or Golf
-	if !anyCardsMoved {
-		var pLongest *Pile
-		for _, p := range TheBaize.Piles {
-			if p == card.owner {
-				continue
-			}
-			if !(strings.HasPrefix(p.Class, "Tableau") || p.Class == "Golf") {
-				continue
-			}
-			if ok, _ := p.driver.CanAcceptTail(tail); ok {
-				if pLongest == nil || p.CardCount() > pLongest.CardCount() {
-					pLongest = p
-				}
-			}
-		}
-		if pLongest != nil {
-			pLongest.MoveCards(card)
-			anyCardsMoved = true
 		}
 	}
 
-	return anyCardsMoved, nil
+	// else try to move card to the longest Tableau or Golf
+	var pLongest *Pile
+	for _, p := range TheBaize.Piles {
+		if p == card.owner {
+			continue
+		}
+		if !(strings.HasPrefix(p.Class, "Tableau") || p.Class == "Golf") {
+			continue
+		}
+		if ThePreferences.PowerMoves && sourcePile.Flags&DragFlagSingle == DragFlagSingle {
+			pm := powerMoves(TheBaize.Piles, p)
+			if len(tail) > pm {
+				continue
+			}
+		}
+		if ok, _ := p.driver.CanAcceptTail(tail); ok {
+			if pLongest == nil || p.CardCount() > pLongest.CardCount() {
+				pLongest = p
+			}
+		}
+	}
+
+	if pLongest == nil {
+		return false, nil
+	}
+
+	pLongest.MoveCards(card)
+	return true, nil
 }
+
+//
 
 type Cell struct{ parent *Pile }
 
@@ -166,7 +171,7 @@ func NewCell(pile *Pile) Driver {
 }
 
 func (c *Cell) CanAcceptTail(tail []*Card) (bool, error) {
-	// TODO could check localAccept here
+	// TODO could check localAccept here, but currently no Cells have Accept attribute
 	if len(tail) == 1 && c.parent.Empty() {
 		return true, nil
 	}

@@ -45,7 +45,6 @@ func (b *Baize) safeCheck(c *Card, dst *Pile) bool {
 */
 
 // Collect is like Tapping on the top card of each pile (except Stock), or on a K in a Spider pile
-// have a special CardTapped func that only targets b.foundations
 
 func genericCollect(p *Pile) int {
 
@@ -53,10 +52,11 @@ func genericCollect(p *Pile) int {
 	if card == nil {
 		return 0
 	}
+	tail := []*Card{card}
 
 	var cardsMoved int
 	for _, fp := range TheBaize.foundations {
-		if ok, _ := fp.driver.CanAcceptTail([]*Card{card}); ok {
+		if ok, _ := fp.driver.CanAcceptTail(tail); ok {
 			fp.MoveCards(card)
 			cardsMoved++
 		}
@@ -138,21 +138,6 @@ func (b *Baize) Collect() {
 		b.AfterUserMove()
 	}
 }
-
-// TableauxComplete returns true if every tableau is complete
-// func (b *Baize) TableauxComplete() bool {
-// 	for _, p := range b.Piles {
-// 		if strings.HasPrefix(p.Class, "Tableau") {
-// 			if c0 := p.Peek(); c0 != nil {
-// 				tail := p.makeTail(c0)
-// 				if !isConformant(p.buildRules, p.buildFlags, tail) {
-// 					return false
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return true
-// }
 
 // Complete returns true if this game is complete
 func (b *Baize) Complete() bool {

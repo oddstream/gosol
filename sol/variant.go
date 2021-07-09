@@ -769,11 +769,11 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 		},
 	},
 	"Red and Black": {
-		Description: "An easier version of Forty Thieves. The game is so called because all building is done in alternating colors of red and black.",
+		Description: "A very easy version of Forty Thieves. The game is so called because all building is done in alternating colors of red and black. This is the original version that allows one stock redeal, and only one tableau card to be moved at a time.",
 		Related:     []string{"Forty Thieves", "Forty and Eight", "Indian", "Josephine", "Limited", "Lucas", "Maria", "Number Ten", "Rank and File", "Sixty Thieves", "Streets"},
 		Wikipedia:   "https://en.wikipedia.org/wiki/Red_and_Black_(solitaire)",
 		Piles: []PileInfo{
-			{"Stock", 0, 0, "None", 0, 15, 0, M{"Packs": 2, "Target": "Waste", "Recycles": 0}},
+			{"Stock", 0, 0, "None", 0, 15, 0, M{"Packs": 2, "Target": "Waste", "Recycles": 1}},
 			{"Waste", 1, 0, "Waste", 15, 15, 1, nil},
 			{"Foundation", 3, 0, "None", 41, 0, 0, M{"Deal": "ACu"}},
 			{"Foundation", 4, 0, "None", 41, 0, 0, M{"Deal": "ADu"}},
@@ -831,7 +831,7 @@ Making four spaces pretty much guarantees a win. A good tactic is to find column
 			{"Reserve", 2, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
 			{"Reserve", 3, 0, "Down", 0, 15, 1, M{"Deal": "uuu"}},
 			// Foundations: in suit, up rank in twos, rankwrap, complete when contains 13 cards
-			// TODO don't need "CompleteWhen": 13 because Foundation won't accept more than 13 cards anyway
+			// (don't need "CompleteWhen": 13 because Foundation won't accept more than 13 cards anyway)
 			{"Foundation", 5, 0, "None", 26, 0, 4, M{"Deal": "ACu"}},
 			{"Foundation", 6, 0, "None", 26, 0, 4, M{"Deal": "2Cu"}},
 			{"Foundation", 5, 1, "None", 26, 0, 4, M{"Deal": "ADu"}},
@@ -1153,6 +1153,9 @@ func (b *Baize) BuildVariant(v string) {
 				b.foundations = append(b.foundations, p)
 			}
 		}
+		// for i, fp := range b.foundations {
+		// 	println(i, fp.Class, fp.X, fp.Y)
+		// }
 	} else {
 		log.Fatal("BuildVariant() unknown variant ", v)
 	}

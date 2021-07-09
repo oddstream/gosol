@@ -199,7 +199,117 @@ func englishRules(rules, flags int) string {
 	return s
 }
 
-func (b *Baize) rulesContents() []string {
+func (x *Cell) English(str *strings.Builder) {
+	fmt.Fprint(str, "Cell: Can store one card of any type.")
+}
+func (x *Foundation) English(str *strings.Builder) {
+	p := x.parent
+	fmt.Fprint(str, "Foundation: Build cards ")
+	fmt.Fprint(str, englishRules(p.Build, p.Flags))
+}
+func (x *FoundationSpider) English(str *strings.Builder) {
+	p := x.parent
+	fmt.Fprint(str, "Foundation: Build cards ")
+	fmt.Fprint(str, englishRules(p.Build, p.Flags))
+	fmt.Fprint(str, " Only a completed set of 13 cards can be moved here.")
+}
+func (x *Golf) English(str *strings.Builder) {
+	fmt.Fprint(str, "Golf: Like a Waste pile, but cards can also be moved here.")
+}
+func (x *Reserve) English(str *strings.Builder) {
+	fmt.Fprint(str, "Reserve: stores multiple cards of any type. You cannot move a card to a reserve.")
+}
+func (x *Stock) English(str *strings.Builder) {
+	p := x.parent
+	fmt.Fprintf(str, "%s: ", "Stock")
+	packs, ok := p.GetIntAttribute("Packs")
+	if !ok || packs == 0 {
+		packs = 1
+	}
+	if p.Hidden() {
+		fmt.Fprintf(str, "The game uses %s of cards in a hidden stock. ", util.Pluralize("pack", packs))
+	} else {
+		fmt.Fprintf(str, "The game uses %s of cards. ", util.Pluralize("pack", packs))
+		recycles, _ := p.GetIntAttribute("Recycles")
+		if recycles == 0 {
+			fmt.Fprint(str, "The stock cannot be recycled. ")
+		} else if recycles > 9000 {
+			fmt.Fprint(str, "The stock can be redealt any numer of times. ")
+		} else {
+			fmt.Fprintf(str, "The stock can be redealt %s. ", util.Pluralize("time", recycles))
+		}
+		targetClass := p.GetStringAttribute("Target")
+		if targetClass != "" {
+			cardsToMove, ok := p.GetIntAttribute("CardsToMove")
+			if !ok {
+				cardsToMove = 1
+			}
+			fmt.Fprintf(str, "Clicking on the stock will transfer %s to %s.", util.Pluralize("card", cardsToMove), targetClass)
+		}
+
+	}
+}
+func (x *StockCruel) English(str *strings.Builder) {
+	fmt.Fprint(str, "Clicking on the stock will collect and then redeal the tableaux stacks. ")
+}
+func (x *StockScorpion) English(str *strings.Builder) {
+	p := x.parent
+	fmt.Fprintf(str, "%s: ", "Stock")
+	targetClass := p.GetStringAttribute("Target")
+	if targetClass == "" {
+		targetClass = "Tableau"
+	}
+	fmt.Fprintf(str, "Clicking on the stock will transfer one card to each %s. ", targetClass)
+}
+func (x *StockSpider) English(str *strings.Builder) {
+	fmt.Fprintf(str, "%s: ", "Stock")
+	fmt.Fprint(str, "Clicking on the stock will transfer one card to each of the tableaux, if all spaces in the tableaux have been filled. ")
+}
+func (x *Tableau) English(str *strings.Builder) {
+	p := x.parent
+	if p.Build == p.Drag {
+		fmt.Fprint(str, "Tableau: Build cards ")
+		fmt.Fprint(str, englishRules(p.Build, p.Flags))
+	} else {
+		fmt.Fprint(str, "Tableau: Build cards ")
+		fmt.Fprint(str, englishRules(p.Build, p.Flags))
+		fmt.Fprint(str, " Move cards ")
+		fmt.Fprint(str, englishRules(p.Drag, p.Flags))
+	}
+	accept, ok := p.GetIntAttribute("Accept")
+	if !ok {
+		accept = 0
+	}
+	if accept == 0 {
+		fmt.Fprint(str, " Any card may be placed on an empty tableaux.")
+	} else if accept > 0 && accept < 14 {
+		fmt.Fprintf(str, " Only a %s may be placed on an empty tableaux.", util.OrdinalToLongString(accept))
+	} else {
+		fmt.Fprint(str, " No card may be placed on an empty tableaux.")
+	}
+	if p.Flags&DragFlagSingle == DragFlagSingle {
+		fmt.Fprint(str, " Only a single card may be moved at once, unless Power Moves is enabled, when the game automates moves of several cards, when empty tableau columns and empty cells allow.")
+	} else {
+		fmt.Fprint(str, " Completed sequences of cards may be moved together.")
+	}
+	if bury, ok := p.GetIntAttribute("Bury"); ok {
+		buryStr := util.OrdinalToLongString(bury)
+		fmt.Fprintf(str, " Any %ss are moved to the bottom of the tableaux when dealing.", buryStr)
+	}
+	if disinter, ok := p.GetIntAttribute("Disinter"); ok {
+		disinterStr := util.OrdinalToLongString(disinter)
+		fmt.Fprintf(str, " Any %ss are moved to the top of the tableaux when dealing.", disinterStr)
+	}
+}
+func (x *TableauSpider) English(str *strings.Builder) {
+	// tab := (*Tableau)x
+	// tab.English(str)
+}
+func (x *Waste) English(str *strings.Builder) {
+	fmt.Fprint(str, "Waste: Cards can be be moved from here to Cells, Tableaux or Foundations.")
+}
+
+func (b *Baize) createRulesContents() []string {
 
 	uniquePiles := []string{}
 	for _, p := range b.Piles {
@@ -223,103 +333,11 @@ func (b *Baize) rulesContents() []string {
 		rules = append(rules, "Related: "+strings.Join(vi.Related, ", "))
 	}
 
+	var str strings.Builder
 	for _, pileClass := range uniquePiles {
+		str.Reset()
 		p := b.findPile(pileClass)
-		var str strings.Builder
-		switch pileClass {
-		case "Stock":
-			fmt.Fprintf(&str, "%s: ", "Stock")
-			packs, ok := p.GetIntAttribute("Packs")
-			if !ok || packs == 0 {
-				packs = 1
-			}
-			if b.stock.Hidden() {
-				fmt.Fprintf(&str, "The game uses %s of cards in a hidden stock. ", util.Pluralize("pack", packs))
-			} else {
-				fmt.Fprintf(&str, "The game uses %s of cards. ", util.Pluralize("pack", packs))
-				recycles, _ := p.GetIntAttribute("Recycles")
-				if recycles == 0 {
-					fmt.Fprint(&str, "The stock cannot be recycled. ")
-				} else if recycles > 9000 {
-					fmt.Fprint(&str, "The stock can be redealt any numer of times. ")
-				} else {
-					fmt.Fprintf(&str, "The stock can be redealt %s. ", util.Pluralize("time", recycles))
-				}
-				targetClass := p.GetStringAttribute("Target")
-				if targetClass != "" {
-					cardsToMove, ok := p.GetIntAttribute("CardsToMove")
-					if !ok {
-						cardsToMove = 1
-					}
-					fmt.Fprintf(&str, "Clicking on the stock will transfer %s to %s.", util.Pluralize("card", cardsToMove), targetClass)
-				}
-
-			}
-		case "StockCruel":
-			fmt.Fprint(&str, "Clicking on the stock will collect and then redeal the tableaux stacks. ")
-		case "StockSpider":
-			fmt.Fprintf(&str, "%s: ", "Stock")
-			fmt.Fprint(&str, "Clicking on the stock will transfer one card to each of the tableaux, if all spaces in the tableaux have been filled. ")
-		case "StockScorpion":
-			fmt.Fprintf(&str, "%s: ", "Stock")
-			targetClass := p.GetStringAttribute("Target")
-			if targetClass == "" {
-				targetClass = "Tableau"
-			}
-			fmt.Fprintf(&str, "Clicking on the stock will transfer one card to each %s. ", targetClass)
-		case "Waste":
-			fmt.Fprint(&str, "Waste: Cards can be be moved from here to Cells, Tableaux or Foundations.")
-		case "Golf":
-			fmt.Fprint(&str, "Golf: Cards can be moved here.")
-			// TODO
-		case "Foundation":
-			fmt.Fprint(&str, "Foundation: Build cards ")
-			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-		case "FoundationSpider":
-			fmt.Fprint(&str, "Foundation: Build cards ")
-			fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-			fmt.Fprint(&str, " Only a set of 13 cards are allowed to be moved here.")
-		case "Tableau", "TableauSpider":
-			if p.Build == p.Drag {
-				fmt.Fprint(&str, "Tableau: Build cards ")
-				fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-			} else {
-				fmt.Fprint(&str, "Tableau: Build cards ")
-				fmt.Fprint(&str, englishRules(p.Build, p.Flags))
-				fmt.Fprint(&str, " Move cards ")
-				fmt.Fprint(&str, englishRules(p.Drag, p.Flags))
-			}
-			accept, ok := p.GetIntAttribute("Accept")
-			if !ok {
-				accept = 0
-			}
-			if accept == 0 {
-				fmt.Fprint(&str, " Any card may be placed on an empty tableaux.")
-			} else if accept > 0 && accept < 14 {
-				fmt.Fprintf(&str, " Only a %s may be placed on an empty tableaux.", util.OrdinalToLongString(accept))
-			} else {
-				fmt.Fprint(&str, " No card may be placed on an empty tableaux.")
-			}
-			if p.Flags&DragFlagSingle == DragFlagSingle {
-				fmt.Fprint(&str, " Only a single card may be moved at once, unless Power Moves is enabled, when the game automates moves of several cards, when empty tableau columns and empty cells allow.")
-			} else {
-				fmt.Fprint(&str, " Completed sequences of cards may be moved together.")
-			}
-			if bury, ok := p.GetIntAttribute("Bury"); ok {
-				buryStr := util.OrdinalToLongString(bury)
-				fmt.Fprintf(&str, " Any %ss are moved to the bottom of the tableaux when dealing.", buryStr)
-			}
-			if disinter, ok := p.GetIntAttribute("Disinter"); ok {
-				disinterStr := util.OrdinalToLongString(disinter)
-				fmt.Fprintf(&str, " Any %ss are moved to the top of the tableaux when dealing.", disinterStr)
-			}
-		case "Cell":
-			fmt.Fprint(&str, "Cell: Can store one card of any type.")
-		case "Reserve":
-			fmt.Fprint(&str, "Reserve: stores multiple cards of any type. You cannot move a card to a reserve.")
-		default:
-			fmt.Fprintf(&str, "Oops - no rule for %s", pileClass)
-		}
+		p.driver.English(&str) // TODO just return a string
 		rules = append(rules, str.String())
 	}
 
@@ -327,9 +345,13 @@ func (b *Baize) rulesContents() []string {
 		rules = append(rules, vi.Wikipedia)
 	}
 
+	// for _, rule := range rules {
+	// 	println(rule)
+	// }
+
 	return rules
 }
 
 func (b *Baize) ShowRules() {
-	TheUI.ShowTextDrawer(b.rulesContents())
+	TheUI.ShowTextDrawer(b.createRulesContents())
 }
