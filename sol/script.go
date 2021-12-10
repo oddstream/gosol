@@ -5,6 +5,7 @@ package sol
 import (
 	"errors"
 	"log"
+	"sort"
 
 	"oddstream.games/gomps5/util"
 )
@@ -25,32 +26,65 @@ type ScriptInterface interface {
 	Wikipedia() string
 }
 
+var Variants = map[string]ScriptInterface{
+	"Klondike":            &Klondike{draw: 1, recycles: 2},
+	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
+	"Easy":                &Easy{},
+	"Freecell":            &Freecell{},
+	"Simple Simon":        &SimpleSimon{},
+	"Spider One Suit":     &Spider{packs: 8, suits: 1},
+	"Spider Two Suits":    &Spider{packs: 4, suits: 2},
+	"Spider":              &Spider{packs: 2, suits: 4},
+}
+
 func GetVariantInterface(v string) ScriptInterface {
-	switch v {
-	case "Clondike":
-		return &Clondike{}
-	case "Easy":
-		return &Easy{}
-	case "Freecell":
-		return &Freecell{}
-	case "Simple Simon":
-		return &SimpleSimon{}
-	case "Spider One Suit":
-		return &Spider{packs: 8, suits: 1}
-	case "Spider Two Suits":
-		return &Spider{packs: 4, suits: 2}
-	default:
+	si, ok := Variants[v]
+	if !ok {
 		log.Panicf("Unknown variant %s", v)
 	}
-	return nil
+	return si
 }
 
 func VariantNames() []string {
-	//	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
-	return []string{"Clondike", "Easy", "Freecell", "Simple Simon", "Spider One Suit", "Spider Two Suits"}
+	var vnames []string = make([]string, 0, len(Variants))
+	for k := range Variants {
+		vnames = append(vnames, k)
+	}
+	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+	return vnames
 }
 
 // useful generic game library of functions
+
+type CardPair struct {
+	c1, c2 *Card
+}
+
+func (cp CardPair) EitherProne() bool {
+	return cp.c1.Prone() || cp.c2.Prone()
+}
+
+type CardPairs []CardPair
+
+func NewCardPairs(cards []*Card) []CardPair {
+	if len(cards) < 2 {
+		return []CardPair{}
+	}
+	var cpairs []CardPair
+	c1 := cards[0]
+	for i := 1; i < len(cards); i++ {
+		c2 := cards[i]
+		cpairs = append(cpairs, CardPair{c1, c2})
+		c1 = c2
+	}
+	return cpairs
+}
+
+func (cpairs CardPairs) Print() {
+	for _, pair := range cpairs {
+		println(pair.c1.String(), pair.c2.String())
+	}
+}
 
 func Script_PercentComplete() int {
 	var pairs, unsorted, percent int

@@ -58,12 +58,12 @@ func Execute(cmd interface{}) {
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
-		// case "Mirror baize":
-		// 	ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
+		case "Mirror baize":
+			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
 		// 	TheBaize.Save()
 		// 	if !TheBaize.LoadVariant(TheBaize.Variant) {
 		// 		TheBaize.NewVariant(TheBaize.Variant)
-		// 	}
+		// }
 		case "Mute sounds":
 			ThePreferences.MuteSounds, _ = strconv.ParseBool(v.Data)
 			sound.Mute(ThePreferences.MuteSounds)

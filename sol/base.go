@@ -140,6 +140,10 @@ func (base *Base) SetRune(symbol rune) {
 	TheBaize.setFlag(dirtyPileBackgrounds)
 }
 
+func (base *Base) Cards() []*Card {
+	return base.cards
+}
+
 // Get a *Card from this collection
 func (base *Base) Get(i int) *Card {
 	return base.cards[i]

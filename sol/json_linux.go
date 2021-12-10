@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"oddstream.games/gomps5/util"
 )
 
@@ -110,7 +112,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 }
 
 // Load an already existing Preferences object from file
-func (ud *Preferences) Load() {
+func (prefs *Preferences) Load() {
 
 	if DebugMode {
 		defer util.Duration(time.Now(), "Preferences.Load")
@@ -121,25 +123,24 @@ func (ud *Preferences) Load() {
 	}
 
 	// golang gotcha reslice buffer to number of bytes actually read
-	err = json.Unmarshal(bytes[:count], ud)
+	err = json.Unmarshal(bytes[:count], prefs)
 	if err != nil {
 		log.Panic("Preferences.Load Unmarshal", err)
 	}
-
 }
 
 // Save writes the Preferences object to file
-func (ud *Preferences) Save() {
+func (prefs *Preferences) Save() {
+	prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
+	prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
 	if DebugMode {
 		defer util.Duration(time.Now(), "Preferences.Save")
 	}
-	bytes, err := json.MarshalIndent(ud, "", "\t")
+	bytes, err := json.MarshalIndent(prefs, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	saveBytesToFile(bytes, "preferences.json")
-
 }
 
 // Load statistics for all variants from JSON to an already-created Statistics object

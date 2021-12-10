@@ -21,6 +21,7 @@ type Pile interface {
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
+	Cards() []*Card
 
 	// FindCard(int, int) (*Card, int)
 	Slot() image.Point

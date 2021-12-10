@@ -143,7 +143,7 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 			dc.Stroke()
 
 			dc.SetRGBA(0, 0, 0, 0.05)
-			dc.DrawRectangle(w*0.3, h*0.2, w*0.4, h*0.6)
+			dc.DrawRectangle(w*0.25, h*0.25, w*0.5, h*0.5)
 			dc.Fill()
 
 			dc.SetColor(ID.Color())

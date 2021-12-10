@@ -4,13 +4,19 @@ package sol
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"log"
 )
 
-type Clondike struct{}
+type Klondike struct {
+	draw, recycles int
+}
 
-func (*Clondike) BuildPiles() {
+func (k *Klondike) BuildPiles() {
+	if k.draw == 0 {
+		k.draw = 1
+	}
 	TheBaize.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
 
@@ -32,7 +38,7 @@ func (*Clondike) BuildPiles() {
 	}
 }
 
-func (*Clondike) StartGame() {
+func (k *Klondike) StartGame() {
 	var dealDown = 0
 	for _, pile := range TheBaize.tableaux {
 		for i := 0; i < dealDown; i++ {
@@ -47,27 +53,25 @@ func (*Clondike) StartGame() {
 	if !ok {
 		log.Fatal("cannot get Stock from interface")
 	}
-	s.recycles = 2
+	s.recycles = k.recycles
 	s.SetRune(RECYCLE_RUNE)
 }
 
-func (*Clondike) AfterMove() {
+func (*Klondike) AfterMove() {
 }
 
-func (*Clondike) TailMoveError(tail []*Card) (bool, error) {
-	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
+func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
+	var pile Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch pile.(type) {
 	case *Tableau:
-		var c2 *Card
-		for i := 1; i < len(tail); i++ {
-			c2 = tail[i]
-			ok, err := CardCompare_DownAltColor(c1, c2)
+		var cpairs CardPairs = NewCardPairs(tail)
+		cpairs.Print()
+		for _, pair := range cpairs {
+			ok, err := CardCompare_DownAltColor(pair.c1, pair.c2)
 			if !ok {
 				return false, err
 			}
-			c1 = c2
 		}
 	default:
 		println("unknown pile type in TailMoveError")
@@ -75,7 +79,7 @@ func (*Clondike) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Clondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch v := dst.(type) {
 	case *Stock:
@@ -110,48 +114,47 @@ func (*Clondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Clondike) UnsortedPairs(pile Pile) int {
+func (*Klondike) UnsortedPairs(pile Pile) int {
 	var unsorted int
-	var c1 *Card = pile.Get(0) // may be nil
-	var c2 *Card
-	for i := 1; i < pile.Len(); i++ {
-		c2 = pile.Get(i)
-		if c1.Prone() || c2.Prone() {
+	for _, pair := range NewCardPairs(pile.Cards()) {
+		if pair.EitherProne() {
 			unsorted++
 		} else {
-			ok, _ := CardCompare_DownAltColor(c1, c2)
-			if !ok {
+			ok, _ := CardCompare_DownAltColor(pair.c1, pair.c2)
+			if ok {
 				unsorted++
 			}
 		}
-		c1 = c2
 	}
 	return unsorted
 }
 
-func (*Clondike) TailTapped(tail []*Card) {
-	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
+func (k *Klondike) TailTapped(tail []*Card) {
+	var pile Pile = tail[0].Owner()
 	if _, ok := pile.(*Stock); ok && len(tail) == 1 {
-		c2 := pile.Pop()
-		if c1 != c2 {
-			println("Ooops")
+		for i := 0; i < k.draw; i++ {
+			MoveCard(TheBaize.stock, TheBaize.waste)
 		}
-		TheBaize.waste.Push(c2)
 	} else {
 		pile.TailTapped(tail)
 	}
 }
 
-func (*Clondike) PileTapped(pile Pile) {
+func (*Klondike) PileTapped(pile Pile) {
 	if s, ok := pile.(*Stock); ok {
 		if s.recycles > 0 {
 			for TheBaize.waste.Len() > 0 {
 				MoveCard(TheBaize.waste, s)
 			}
 			s.recycles--
-			if s.recycles == 0 {
+			switch {
+			case s.recycles == 0:
 				s.SetRune(NORECYCLE_RUNE)
+				TheUI.Toast("No more recycles")
+			case s.recycles == 1:
+				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
+			case s.recycles < 10:
+				TheUI.Toast(fmt.Sprintf("%d recycles remaining", s.recycles))
 			}
 		} else {
 			TheUI.Toast("No more recycles")
@@ -159,10 +162,10 @@ func (*Clondike) PileTapped(pile Pile) {
 	}
 }
 
-func (*Clondike) PercentComplete() int {
+func (*Klondike) PercentComplete() int {
 	return Script_PercentComplete()
 }
 
-func (*Clondike) Wikipedia() string {
+func (*Klondike) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Solitaire"
 }

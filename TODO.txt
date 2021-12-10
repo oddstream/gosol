@@ -1,4 +1,4 @@
- send parameters to script files
+ work at reducing the size of variant.go files (CardPair &c)
  FAB not showing
  statistics
  mirror baize
@@ -7,6 +7,7 @@
  scale slot up by 10, call it slot10 to help remember
  don't refan spinning cards
 
+x send parameters to script files
 x Scrunch()
 x Complete()
 x saved.json

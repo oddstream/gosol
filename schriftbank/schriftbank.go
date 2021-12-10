@@ -11,9 +11,7 @@ import (
 	"oddstream.games/gomps5/util"
 )
 
-/*
-//go:embed assets/RobotoSlab-Bold.ttf
-*/
+// assets/RobotoSlab-Medium.ttf
 //go:embed assets/Acme-Regular.ttf
 var acmeFontBytes []byte
 

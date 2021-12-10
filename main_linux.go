@@ -65,7 +65,6 @@ func main() {
 		// not yet set/saved, so use sensible values
 		sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.ScreenSizeInFullscreen()
 		sol.ThePreferences.WindowWidth /= 2
-		// sol.ThePreferences.WindowHeight = (sol.ThePreferences.WindowHeight * 2) / 3
 		sol.ThePreferences.WindowHeight /= 2
 	}
 	ebiten.SetWindowSize(sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight)

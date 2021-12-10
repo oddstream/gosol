@@ -90,24 +90,6 @@ func (b *Baize) CRC() uint32 {
 	return crc32.ChecksumIEEE(lens)
 }
 
-func (b *Baize) CreatePiles() {
-	if b.piles != nil {
-		b.piles = b.piles[:0]
-	}
-
-	b.stock = nil
-	b.waste = nil
-	if b.foundations != nil {
-		b.foundations = b.foundations[:0]
-	}
-	if b.tableaux != nil {
-		b.tableaux = b.tableaux[:0]
-	}
-	if b.discards != nil {
-		b.discards = b.discards[:0]
-	}
-}
-
 func (b *Baize) Reset() {
 	for _, p := range b.piles {
 		p.Reset()
@@ -154,7 +136,13 @@ func (b *Baize) NewVariant() {
 
 	b.Reset()
 
-	b.CreatePiles()
+	b.piles = nil
+	b.stock = nil
+	b.waste = nil
+	b.foundations = nil
+	b.discards = nil
+	b.tableaux = nil
+
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
 	b.FindBuddyPiles()
@@ -169,7 +157,7 @@ func (b *Baize) NewVariant() {
 	b.UndoPush()
 	sound.Play("Fan")
 
-	b.setFlag(dirtyPilePositions | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions)
+	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions)
 
 	// TheStatistics.welcomeToast()
 }
@@ -647,10 +635,12 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if outsideWidth != b.WindowWidth {
 		b.setFlag(dirtyWindowSize | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		b.WindowWidth = outsideWidth
+		ThePreferences.WindowWidth = outsideWidth
 	}
 	if outsideHeight != b.WindowHeight {
 		b.setFlag(dirtyWindowSize)
 		b.WindowHeight = outsideHeight
+		ThePreferences.WindowHeight = outsideHeight
 	}
 
 	if b.dirtyFlags != 0 {
