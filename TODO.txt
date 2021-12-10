@@ -1,0 +1,58 @@
+ send parameters to script files
+ FAB not showing
+ statistics
+ mirror baize
+ tengo
+ README.md
+ scale slot up by 10, call it slot10 to help remember
+ don't refan spinning cards
+
+x Scrunch()
+x Complete()
+x saved.json
+x percent complete
+x use of Generic in Collect() and TailTapped() smells wrong
+x TailTapped() to Foundations
+x status bar update (stock waste moves)
+x undoStack
+x NewVariant
+? PileFannedRect no correct after building up tableau
+?  only correct when card transitioning
+x Refan not working as expected after changing cards from fixed to scaled
+x Tap on stock not working as expected
+x  card movement & new position not being shown
+x move IsStock out of base
+ move anything out of base that requires pile
+ don't record Pile interface in Base
+   why not? what's the workaround?
+
+ decide how to represent Vector2 and Rectangle
+    image.Point X,Y int
+    image.Rectangle Min,Max point
+    (gomps4 uses x,y,width,height Rectangle)
+    image.Rectangle.Dx / Dy to get width, height
+
+ don't fire up the UI
+ take out load/save state
+ take out undo
+ scrunch can be a no-op for now
+
+ cards with pips are easier to scan ...
+ retire saving individual saved games
+ new scrunch
+ new % complete
+ seven pile subtypes: cell, discard, foundation, label, stock, tableau, waste
+ retire rules
+x script interface
+ variants/ directory containing one .go file for each variant
+x SingleTap off all the time
+x FreeDrag on all the time
+x retire highlight movable
+x retire Card shake
+x retire ghost card images, show target
+x add cardLibrary (including suitless cards with suit=0, one blank card and one card back (Cornflowerblue))
+x also retires modern.go, TheCIP, and CardImageProvider
+x retire retro cards, Preferences.CardType, cardimageprovider, TheCIP
+x rename module from oddstream.games/gosol to oddstream.games/gomps5
+x retire GSM
+x retire Splash
