@@ -5,7 +5,6 @@ import (
 	"hash/crc32"
 	"image"
 	"log"
-	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -741,9 +740,10 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	TheUI.Draw(screen)
 
 	if DebugMode {
-		var ms runtime.MemStats
-		runtime.ReadMemStats(&ms)
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS %v, Alloc %v, NumGC %v", ebiten.CurrentTPS(), ms.Alloc, ms.NumGC))
+		// var ms runtime.MemStats
+		// runtime.ReadMemStats(&ms)
+		// ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS %v, Alloc %v, NumGC %v", ebiten.CurrentTPS(), ms.Alloc, ms.NumGC))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("%v %v", b.bookmark, len(b.undoStack)))
 		// bounds := screen.Bounds()
 		// ebitenutil.DebugPrint(screen, bounds.String())
 	}

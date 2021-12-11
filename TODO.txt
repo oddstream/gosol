@@ -1,4 +1,5 @@
  work at reducing the size of variant.go files (CardPair &c)
+ work at adding things to Pile interface
  FAB not showing
  statistics
  mirror baize

@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"fmt"
 	"log"
 
 	"oddstream.games/gomps5/sound"
@@ -60,11 +61,11 @@ func (b *Baize) NewSavableBaize() *SavableBaize {
 	ss := &SavableBaize{}
 	for _, p := range b.piles {
 		ss.Piles = append(ss.Piles, p.Savable())
-		ss.Bookmark = b.bookmark
-		if stockobject, ok := b.stock.(*Stock); ok {
-			ss.Recycles = stockobject.recycles
-		}
 	}
+	if stockobject, ok := b.stock.(*Stock); ok {
+		ss.Recycles = stockobject.recycles
+	}
+	ss.Bookmark = b.bookmark
 	return ss
 }
 
@@ -99,10 +100,10 @@ func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
 		b.piles[i].UpdateFromSavable(ss.Piles[i])
 		b.piles[i].Scrunch()
 	}
-	b.bookmark = ss.Bookmark
 	if stockobject, ok := b.stock.(*Stock); ok {
 		stockobject.recycles = ss.Recycles
 	}
+	b.bookmark = ss.Bookmark
 	b.setFlag(dirtyCardPositions)
 }
 
@@ -134,20 +135,27 @@ func (b *Baize) RestartDeal() {
 			log.Panic("error popping from undo stack")
 		}
 	}
-	b.bookmark = 0
 	b.UpdateFromSavable(sav)
-	b.UndoPush() // replace current state
+	b.bookmark = 0 // do this AFTER UpdateFromSavable
+	b.UndoPush()   // replace current state
 }
 
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	b.bookmark = len(b.undoStack)
-	TheUI.Toast("Position bookmarked")
+	sb := b.UndoPeek()
+	sb.Bookmark = b.bookmark
+	stockobject, ok := (b.stock).(*Stock)
+	if ok {
+		sb.Recycles = stockobject.recycles
+	}
+	TheUI.Toast(fmt.Sprintf("Position %d bookmarked", b.bookmark))
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.bookmark == 0 || b.bookmark > len(b.undoStack) {
+		println("bookmark", b.bookmark, "undostack", len(b.undoStack))
 		TheUI.Toast("No bookmark")
 		return
 	}

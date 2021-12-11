@@ -51,19 +51,17 @@ func (*Easy) AfterMove() {
 }
 
 func (*Easy) TailMoveError(tail []*Card) (bool, error) {
-	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
+	var pile Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch pile.(type) {
 	case *Tableau:
-		var c2 *Card
-		for i := 1; i < len(tail); i++ {
-			c2 = tail[i]
-			ok, err := CardCompare_DownSuit(c1, c2)
+		var cpairs CardPairs = NewCardPairs(tail)
+		cpairs.Print()
+		for _, pair := range cpairs {
+			ok, err := CardCompare_DownSuit(pair.c1, pair.c2)
 			if !ok {
 				return false, err
 			}
-			c1 = c2
 		}
 	default:
 		println("unknown pile type in TailMoveError")
