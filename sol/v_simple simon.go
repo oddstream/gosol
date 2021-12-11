@@ -53,19 +53,14 @@ func (*SimpleSimon) AfterMove() {
 }
 
 func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
-	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
+	var pile Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch pile.(type) {
 	case *Tableau:
-		var c2 *Card
-		for i := 1; i < len(tail); i++ {
-			c2 = tail[i]
-			ok, err := CardCompare_DownSuit(c1, c2)
-			if !ok {
+		for _, pair := range NewCardPairs(tail) {
+			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
 			}
-			c1 = c2
 		}
 	default:
 		println("unknown pile type in TailMoveError")
@@ -79,24 +74,18 @@ func (*SimpleSimon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
 	case *Discard:
-		c1 := tail[0]
-		if c1.Ordinal() != 13 {
+		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
 		}
-		for i := 1; i < len(tail); i++ {
-			c2 := tail[i]
-			ok, err := CardCompare_DownSuit(c1, c2)
-			if !ok {
+		for _, pair := range NewCardPairs(tail) {
+			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
 			}
-			c1 = c2
 		}
 	case *Tableau:
 		if v.Empty() {
 		} else {
-			c1 := dst.Peek()
-			c2 := tail[0]
-			return CardCompare_Down(c1, c2)
+			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
 		}
 	default:
 		println("unknown pile type in TailAppendError")
@@ -106,19 +95,10 @@ func (*SimpleSimon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 
 func (*SimpleSimon) UnsortedPairs(pile Pile) int {
 	var unsorted int
-	var c1 *Card = pile.Get(0) // may be nil
-	var c2 *Card
-	for i := 1; i < pile.Len(); i++ {
-		c2 = pile.Get(i)
-		if c1.Prone() || c2.Prone() {
+	for _, pair := range NewCardPairs(pile.Cards()) {
+		if ok, _ := pair.Compare_DownSuit(); !ok {
 			unsorted++
-		} else {
-			ok, _ := CardCompare_DownSuit(c1, c2)
-			if !ok {
-				unsorted++
-			}
 		}
-		c1 = c2
 	}
 	return unsorted
 }

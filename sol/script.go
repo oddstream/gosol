@@ -31,6 +31,8 @@ var Variants = map[string]ScriptInterface{
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Easy":                &Easy{},
 	"Freecell":            &Freecell{},
+	"Forty Thieves":       &FortyThieves{tabs: 10, cardsPerTab: 4},
+	"Limited":             &FortyThieves{tabs: 12, cardsPerTab: 3},
 	"Simple Simon":        &SimpleSimon{},
 	"Spider One Suit":     &Spider{packs: 8, suits: 1},
 	"Spider Two Suits":    &Spider{packs: 4, suits: 2},
@@ -98,79 +100,79 @@ func Script_PercentComplete() int {
 	return percent
 }
 
-func CardCompare_Up(c1, c2 *Card) (bool, error) {
-	if c1.Ordinal()+1 != c2.Ordinal() {
-		return false, errors.New("Cards must be in ascending order")
+func (cp CardPair) Compare_Up() (bool, error) {
+	if cp.c1.Ordinal()+1 != cp.c2.Ordinal() {
+		return false, errors.New("Cards must be in ascending sequence")
 	}
 	return true, nil
 }
 
-func CardCompare_Down(c1, c2 *Card) (bool, error) {
-	if c1.Ordinal() != c2.Ordinal()+1 {
-		return false, errors.New("Cards must be in descending order")
+func (cp CardPair) Compare_Down() (bool, error) {
+	if cp.c1.Ordinal() != cp.c2.Ordinal()+1 {
+		return false, errors.New("Cards must be in descending sequence")
 	}
 	return true, nil
 }
 
-func CardCompare_DownAltColor(c1, c2 *Card) (bool, error) {
-	if c1.Black() == c2.Black() {
+func (cp CardPair) Compare_DownAltColor() (bool, error) {
+	if cp.c1.Black() == cp.c2.Black() {
 		return false, errors.New("Cards must be in alternating colors")
 	}
-	return CardCompare_Down(c1, c2)
+	return cp.Compare_Down()
 }
 
-func CardCompare_DownAltColorWrap(c1, c2 *Card) (bool, error) {
-	if c1.Black() == c2.Black() {
+func (cp CardPair) CardCompare_DownAltColorWrap() (bool, error) {
+	if cp.c1.Black() == cp.c2.Black() {
 		return false, errors.New("Cards must be in alternating colors")
 	}
-	if c1.Ordinal() == 1 && c2.Ordinal() == 13 {
+	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
 		return true, nil // King on Ace
 	}
-	return CardCompare_Down(c1, c2)
+	return cp.Compare_Down()
 }
 
-func CardCompare_UpAltColor(c1, c2 *Card) (bool, error) {
-	if c1.Black() == c2.Black() {
+func (cp CardPair) Compare_UpAltColor() (bool, error) {
+	if cp.c1.Black() == cp.c2.Black() {
 		return false, errors.New("Cards must be in alternating colors")
 	}
-	return CardCompare_Up(c1, c2)
+	return cp.Compare_Up()
 }
 
-func CardCompare_UpSuit(c1, c2 *Card) (bool, error) {
-	if c1.Suit() != c2.Suit() {
+func (cp CardPair) Compare_UpSuit() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
 		return false, errors.New("Cards must be the same suit")
 	}
-	return CardCompare_Up(c1, c2)
+	return cp.Compare_Up()
 }
 
-func CardCompare_DownSuit(c1, c2 *Card) (bool, error) {
-	if c1.Suit() != c2.Suit() {
+func (cp CardPair) Compare_DownSuit() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
 		return false, errors.New("Cards must be the same suit")
 	}
-	return CardCompare_Down(c1, c2)
+	return cp.Compare_Down()
 }
 
-func CardCompare_UpSuitWrap(c1, c2 *Card) (bool, error) {
-	if c1.Suit() != c2.Suit() {
+func (cp CardPair) Compare_UpSuitWrap() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
 		return false, errors.New("Cards must be the same suit")
 	}
-	if c1.Ordinal() == 13 && c2.Ordinal() == 1 {
+	if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
 		return true, nil // Ace on King
 	}
-	if c1.Ordinal() == c2.Ordinal()-1 {
+	if cp.c1.Ordinal() == cp.c2.Ordinal()-1 {
 		return true, nil
 	}
 	return false, errors.New("Cards must go up in rank (Aces on Kings allowed)")
 }
 
-func CardCompare_DownSuitWrap(c1, c2 *Card) (bool, error) {
-	if c1.Suit() != c2.Suit() {
+func (cp CardPair) CardCompare_DownSuitWrap() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
 		return false, errors.New("Cards must be the same suit")
 	}
-	if c1.Ordinal() == 1 && c2.Ordinal() == 13 {
+	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
 		return true, nil // King on Ace
 	}
-	if c1.Ordinal()-1 == c2.Ordinal() {
+	if cp.c1.Ordinal()-1 == cp.c2.Ordinal() {
 		return true, nil
 	}
 	return false, errors.New("Cards must go down in rank (Kings on Aces allowed)")

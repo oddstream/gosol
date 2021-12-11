@@ -87,7 +87,7 @@ func (t *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 		if ThePreferences.PowerMoves {
 			moves := powerMoves(TheBaize.piles, t)
 			if len(tail) > moves {
-				if len(tail) == 1 {
+				if moves == 1 {
 					return false, fmt.Errorf("Space to move 1 card, not %d", len(tail))
 				} else {
 					return false, fmt.Errorf("Space to move %d cards, not %d", moves, len(tail))

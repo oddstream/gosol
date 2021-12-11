@@ -55,19 +55,13 @@ func (*Freecell) AfterMove() {
 }
 
 func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
-	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
+	var pile Pile = tail[0].Owner()
 	switch pile.(type) {
 	case *Tableau:
-		var c2 *Card
-		for i := 1; i < len(tail); i++ {
-			c2 = tail[i]
-			ok, err := CardCompare_DownAltColor(c1, c2)
-			if !ok {
+		for _, pair := range NewCardPairs(tail) {
+			if ok, err := pair.Compare_DownAltColor(); !ok {
 				return false, err
 			}
-			c1 = c2
 		}
 	default:
 		println("unknown pile type in TailMoveError")
@@ -87,16 +81,12 @@ func (*Freecell) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 				return false, errors.New("Empty Foundations can only accept an Ace")
 			}
 		} else {
-			c1 := dst.Peek()
-			c2 := tail[0]
-			return CardCompare_UpSuit(c1, c2)
+			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
 		if v.Empty() {
 		} else {
-			c1 := dst.Peek()
-			c2 := tail[0]
-			return CardCompare_DownAltColor(c1, c2)
+			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
 		}
 	default:
 		println("unknown pile type in TailAppendError")
@@ -106,19 +96,14 @@ func (*Freecell) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 
 func (*Freecell) UnsortedPairs(pile Pile) int {
 	var unsorted int
-	var c1 *Card = pile.Get(0) // may be nil
-	var c2 *Card
-	for i := 1; i < pile.Len(); i++ {
-		c2 = pile.Get(i)
-		if c1.Prone() || c2.Prone() {
+	for _, pair := range NewCardPairs(pile.Cards()) {
+		if pair.EitherProne() {
 			unsorted++
 		} else {
-			ok, _ := CardCompare_DownAltColor(c1, c2)
-			if !ok {
+			if ok, _ := pair.Compare_DownAltColor(); !ok {
 				unsorted++
 			}
 		}
-		c1 = c2
 	}
 	return unsorted
 }

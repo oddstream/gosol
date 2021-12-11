@@ -66,10 +66,9 @@ func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 	switch pile.(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		cpairs.Print()
+		// cpairs.Print()
 		for _, pair := range cpairs {
-			ok, err := CardCompare_DownAltColor(pair.c1, pair.c2)
-			if !ok {
+			if ok, err := pair.Compare_DownAltColor(); !ok {
 				return false, err
 			}
 		}
@@ -91,9 +90,7 @@ func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 				return false, errors.New("Empty Foundations can only accept an Ace")
 			}
 		} else {
-			c1 := dst.Peek()
-			c2 := tail[0]
-			return CardCompare_UpSuit(c1, c2)
+			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
 		if v.Empty() {
@@ -102,9 +99,7 @@ func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 				return false, errors.New("Empty Tableaux can only accept a King")
 			}
 		} else {
-			c1 := dst.Peek()
-			c2 := tail[0]
-			return CardCompare_DownAltColor(c1, c2)
+			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
 		}
 	case *Waste:
 		return false, errors.New("Waste can only accept cards from the Stock")
@@ -120,8 +115,7 @@ func (*Klondike) UnsortedPairs(pile Pile) int {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
-			ok, _ := CardCompare_DownAltColor(pair.c1, pair.c2)
-			if ok {
+			if ok, _ := pair.Compare_DownAltColor(); !ok {
 				unsorted++
 			}
 		}
