@@ -17,7 +17,7 @@ func AnyCardsProne(cards []*Card) bool {
 
 func FlipUpExposedCard(p *Pile) {
 	if _, ok := (p.subtype).(*Stock); ok {
-		// this Pile's concrete value is *Stock
+		// this Pile's subtype is *Stock
 		// so don't flip an exposed card
 	} else {
 		if c := p.Peek(); c != nil {
@@ -35,6 +35,47 @@ func MoveCard(src *Pile, dst *Pile) {
 		src.Scrunch()
 		dst.Scrunch()
 	}
+}
+
+func MoveNamedCard(suit, ordinal int, dst *Pile) {
+
+	// 1. find the card in the library
+	var ID CardID = NewCardID(0, suit, ordinal)
+	var c *Card
+	for i := 0; i < len(TheBaize.cardLibrary); i++ {
+		if SameCard(ID, TheBaize.cardLibrary[i].ID) {
+			c = &TheBaize.cardLibrary[i]
+		}
+	}
+	if c == nil {
+		println("Could not find card", c.String(), "in library")
+		return
+	}
+
+	// 2.find the card in it's owning pile
+	var src *Pile = c.owner
+	var index int = -1
+	for i := 0; i < len(src.cards); i++ {
+		if c == src.cards[i] {
+			index = i
+			break
+		}
+	}
+	if index == -1 {
+		println("Could not find card", c.String(), "in pile")
+		return
+	}
+
+	// 3. extract the card from it's owning pile
+	src.cards = append(src.cards[:index], src.cards[index+1:]...)
+
+	// 4. push the card onto the dst pile
+	sound.Play("Place")
+	c.FlipUp()
+	dst.Push(c)
+	FlipUpExposedCard(src)
+	src.Scrunch()
+	dst.Scrunch()
 }
 
 func MoveCards(c *Card, dst *Pile) {

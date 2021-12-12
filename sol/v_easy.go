@@ -5,7 +5,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"log"
 )
 
 type Easy struct{}
@@ -32,6 +31,10 @@ func (*Easy) BuildPiles() {
 }
 
 func (*Easy) StartGame() {
+	MoveNamedCard(CLUB, 1, TheBaize.foundations[0])
+	MoveNamedCard(DIAMOND, 1, TheBaize.foundations[1])
+	MoveNamedCard(HEART, 1, TheBaize.foundations[2])
+	MoveNamedCard(SPADE, 1, TheBaize.foundations[3])
 	for _, pile := range TheBaize.tableaux {
 		for i := 0; i < 2; i++ {
 			MoveCard(TheBaize.stock, pile)
@@ -39,11 +42,9 @@ func (*Easy) StartGame() {
 		}
 		MoveCard(TheBaize.stock, pile)
 	}
-	s, ok := (TheBaize.stock.subtype).(*Stock)
-	if !ok {
-		log.Fatal("cannot get Stock from it's interface")
+	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+		s.recycles = 32767
 	}
-	s.recycles = 32767
 	TheBaize.stock.SetRune(RECYCLE_RUNE)
 }
 
@@ -86,7 +87,7 @@ func (*Easy) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	case *Tableau:
 		if dst.Empty() {
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
+			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
 		}
 	default:
 		println("unknown pile type in TailAppendError")
@@ -109,14 +110,10 @@ func (*Easy) UnsortedPairs(pile *Pile) int {
 }
 
 func (*Easy) TailTapped(tail []*Card) {
-	var c1 *Card = tail[0]
-	var pile *Pile = c1.Owner()
+	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		c2 := pile.Pop()
-		if c1 != c2 {
-			println("Ooops")
-		}
-		TheBaize.waste.Push(c2)
+		c := pile.Pop()
+		TheBaize.waste.Push(c)
 	} else {
 		pile.subtype.TailTapped(tail)
 	}

@@ -5,7 +5,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"log"
 )
 
 type Spider struct {
@@ -53,8 +52,6 @@ func (*Spider) StartGame() {
 	}
 	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
 		s.recycles = 0
-	} else {
-		log.Fatal("cannot get Stock from interface")
 	}
 	if DebugMode {
 		println(TheBaize.stock.Len(), "cards in stock")

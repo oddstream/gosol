@@ -184,15 +184,6 @@ func (p *Pile) Push(c *Card) {
 	p.Scrunch()
 }
 
-// func (base *Base) FindCard(ordinal, suit int) (*Card, int) {
-// for i, c := range base.cards {
-// if c.Ordinal() == ordinal && c.Suit() == suit {
-// return c, i
-// }
-// }
-// return nil, 0
-// }
-
 // Slot returns the virtual slot this pile is positioned at
 // TODO to use fractional slots, scale the slot values up by, say, 10
 func (p *Pile) Slot() image.Point {

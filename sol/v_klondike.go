@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"log"
 )
 
 type Klondike struct {
@@ -49,11 +48,9 @@ func (k *Klondike) StartGame() {
 		MoveCard(TheBaize.stock, pile)
 	}
 	// MoveCard(TheBaize.stock, TheBaize.waste)
-	s, ok := (TheBaize.stock.subtype).(*Stock)
-	if !ok {
-		log.Fatal("cannot get Stock from interface")
+	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+		s.recycles = k.recycles
 	}
-	s.recycles = k.recycles
 	TheBaize.stock.SetRune(RECYCLE_RUNE)
 }
 

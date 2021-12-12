@@ -5,7 +5,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"log"
 )
 
 type FortyThieves struct {
@@ -41,11 +40,9 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(TheBaize.stock, pile)
 		}
 	}
-	s, ok := (TheBaize.stock.subtype).(*Stock)
-	if !ok {
-		log.Fatal("cannot get Stock from it's interface")
+	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+		s.recycles = 0
 	}
-	s.recycles = 0
 }
 
 func (*FortyThieves) AfterMove() {
