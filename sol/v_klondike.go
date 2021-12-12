@@ -49,21 +49,21 @@ func (k *Klondike) StartGame() {
 		MoveCard(TheBaize.stock, pile)
 	}
 	// MoveCard(TheBaize.stock, TheBaize.waste)
-	s, ok := (TheBaize.stock).(*Stock)
+	s, ok := (TheBaize.stock.subtype).(*Stock)
 	if !ok {
 		log.Fatal("cannot get Stock from interface")
 	}
 	s.recycles = k.recycles
-	s.SetRune(RECYCLE_RUNE)
+	TheBaize.stock.SetRune(RECYCLE_RUNE)
 }
 
 func (*Klondike) AfterMove() {
 }
 
 func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
@@ -78,13 +78,15 @@ func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Klondike) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
+	case *Waste:
+		return false, errors.New("Waste can only accept cards from the Stock")
 	case *Foundation:
-		if v.Empty() {
+		if dst.Empty() {
 			c1 := tail[0]
 			if c1.Ordinal() != 1 {
 				return false, errors.New("Empty Foundations can only accept an Ace")
@@ -93,7 +95,7 @@ func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 			c1 := tail[0]
 			if c1.Ordinal() != 13 {
 				return false, errors.New("Empty Tableaux can only accept a King")
@@ -101,17 +103,15 @@ func (*Klondike) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
 		}
-	case *Waste:
-		return false, errors.New("Waste can only accept cards from the Stock")
 	default:
 		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }
 
-func (*Klondike) UnsortedPairs(pile Pile) int {
+func (*Klondike) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
@@ -124,26 +124,26 @@ func (*Klondike) UnsortedPairs(pile Pile) int {
 }
 
 func (k *Klondike) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	if _, ok := pile.(*Stock); ok && len(tail) == 1 {
+	var pile *Pile = tail[0].Owner()
+	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
 		for i := 0; i < k.draw; i++ {
 			MoveCard(TheBaize.stock, TheBaize.waste)
 		}
 	} else {
-		pile.TailTapped(tail)
+		pile.subtype.TailTapped(tail)
 	}
 }
 
-func (*Klondike) PileTapped(pile Pile) {
-	if s, ok := pile.(*Stock); ok {
+func (*Klondike) PileTapped(pile *Pile) {
+	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
 			for TheBaize.waste.Len() > 0 {
-				MoveCard(TheBaize.waste, s)
+				MoveCard(TheBaize.waste, TheBaize.stock)
 			}
 			s.recycles--
 			switch {
 			case s.recycles == 0:
-				s.SetRune(NORECYCLE_RUNE)
+				TheBaize.stock.SetRune(NORECYCLE_RUNE)
 				TheUI.Toast("No more recycles")
 			case s.recycles == 1:
 				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))

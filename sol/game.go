@@ -21,6 +21,8 @@ var (
 	NoGameSave bool = false
 	// NoShuffle stops the cards from being shuffled
 	NoShuffle bool = false
+	// NoScrunch stops cards being scrunched
+	NoScrunch bool = false
 	// NoLerp stops the cards from transitioning
 	NoCardLerp = false
 	// CardWidth of cards, start with a silly value to force a rescale/refan

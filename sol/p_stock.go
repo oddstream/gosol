@@ -46,12 +46,12 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 }
 
 type Stock struct {
-	Base
+	pile     *Pile
 	recycles int
 }
 
-func (s *Stock) FillFromLibrary() {
-	if !s.Empty() {
+func (p *Pile) FillFromLibrary() {
+	if !p.Empty() {
 		log.Panic("stock should be empty")
 	}
 	for i := 0; i < len(TheBaize.cardLibrary); i++ {
@@ -60,17 +60,17 @@ func (s *Stock) FillFromLibrary() {
 			log.Panicf("invalid card at library index %d", i)
 		}
 		// the following mimics Base.Push
-		s.Append(c)
-		c.TransitionTo(s.BaizePos())
-		c.SetOwner(s)
+		p.Append(c)
+		c.TransitionTo(p.BaizePos())
+		c.SetOwner(p)
 		c.SetProne(true)
 		// s.Push(c)
 	}
 }
 
-func (s *Stock) Shuffle() {
+func (p *Pile) Shuffle() {
 
-	if s == nil || !s.Valid() {
+	if p == nil || !p.Valid() {
 		log.Fatal("invalid stock")
 	}
 	if NoShuffle {
@@ -91,21 +91,19 @@ func (s *Stock) Shuffle() {
 	rand.Seed(seed)
 	// for range []int{1, 2, 3, 4, 5, 6} {
 	// rand.Shuffle(len(base.cards), func(i, j int) { base.cards[i], base.cards[j] = base.cards[j], base.cards[i] })
-	rand.Shuffle(s.Len(), s.Swap)
+	rand.Shuffle(p.Len(), p.Swap)
 	// }
 }
 
-func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Stock {
+func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Pile {
 
-	s := &Stock{}
-	s.Ctor(s, "Stock", slot, fanType)
-	s.recycles = 32767
-
+	p := &Pile{}
+	p.Ctor(&Stock{pile: p, recycles: 32767}, "Stock", slot, fanType)
 	CreateCardLibrary(packs, suits, cardFilter)
-	s.FillFromLibrary()
-	s.Shuffle()
+	p.FillFromLibrary()
+	p.Shuffle()
 
-	return s
+	return p
 }
 
 func (s *Stock) CanMoveTail(tail []*Card) (bool, error) {
@@ -123,8 +121,8 @@ func (s *Stock) CanAcceptTail([]*Card) (bool, error) {
 	return false, errors.New("Cannot move cards to the Stock")
 }
 
-func (s *Stock) TailTapped(tail []*Card) {
-	TheBaize.script.TailTapped(tail)
+func (*Stock) TailTapped([]*Card) {
+	// do nothing, handled by script, which had first dibs
 }
 
 func (s *Stock) Collect() {
@@ -133,23 +131,23 @@ func (s *Stock) Collect() {
 }
 
 func (s *Stock) Conformant() bool {
-	return s.Empty()
+	return s.pile.Empty()
 }
 
 func (s *Stock) Complete() bool {
-	return s.Empty()
+	return s.pile.Empty()
 }
 
 func (s *Stock) UnsortedPairs() int {
-	if s.Empty() {
+	if s.pile.Empty() {
 		return 0
 	}
-	return s.Len() - 1
+	return s.pile.Len() - 1
 }
 
-// Reset overside Base Reset to make fill the stock with shuffled cards
+// Reset override Pile Reset to make fill the stock with shuffled cards TODO
 func (s *Stock) Reset() {
-	s.cards = s.cards[:0]
-	s.FillFromLibrary()
-	s.Shuffle()
+	s.pile.GenericReset()
+	s.pile.FillFromLibrary()
+	s.pile.Shuffle()
 }

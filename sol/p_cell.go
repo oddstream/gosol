@@ -8,13 +8,13 @@ import (
 )
 
 type Cell struct {
-	Base
+	pile *Pile
 }
 
-func NewCell(slot image.Point, fanType FanType) *Cell {
-	c := &Cell{}
-	c.Ctor(c, "Cell", slot, FAN_NONE)
-	return c
+func NewCell(slot image.Point, fanType FanType) *Pile {
+	p := &Pile{}
+	p.Ctor(&Cell{pile: p}, "Cell", slot, FAN_NONE)
+	return p
 }
 
 func (*Cell) CanMoveTail(tail []*Card) (bool, error) {
@@ -28,14 +28,14 @@ func (c *Cell) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if !c.Empty() {
+	if !c.pile.Empty() {
 		return false, errors.New("A Cell can only contain one card")
 	}
 	return true, nil
 }
 
 func (c *Cell) CanAcceptTail(tail []*Card) (bool, error) {
-	if !c.Empty() {
+	if !c.pile.Empty() {
 		return false, errors.New("A Cell can only contain one card")
 	}
 	if len(tail) > 1 {
@@ -47,14 +47,26 @@ func (c *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 	return true, nil
 }
 
+func (c *Cell) TailTapped(tail []*Card) {
+	c.pile.GenericTailTapped(tail)
+}
+
+func (c *Cell) Collect() {
+	c.pile.GenericCollect()
+}
+
 func (c *Cell) Conformant() bool {
 	return true
 }
 
 func (c *Cell) Complete() bool {
-	return c.Empty()
+	return c.pile.Empty()
 }
 
 func (c *Cell) UnsortedPairs() int {
 	return 0
+}
+
+func (c *Cell) Reset() {
+	c.pile.GenericReset()
 }

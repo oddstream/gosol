@@ -32,7 +32,7 @@ type Card struct {
 	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone flag bit)
 
 	// dynamic things
-	owner Pile
+	owner *Pile
 
 	pos            image.Point
 	src            image.Point // lerp origin
@@ -64,12 +64,12 @@ func (c *Card) Valid() bool {
 	return c.magic == cardmagic
 }
 
-func (c *Card) SetOwner(p Pile) {
+func (c *Card) SetOwner(p *Pile) {
 	// p may be nil if we have just popped the card
 	c.owner = p
 }
 
-func (c *Card) Owner() Pile {
+func (c *Card) Owner() *Pile {
 	return c.owner
 }
 

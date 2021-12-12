@@ -55,8 +55,8 @@ func (*Freecell) AfterMove() {
 }
 
 func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
-	switch pile.(type) {
+	var pile *Pile = tail[0].Owner()
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownAltColor(); !ok {
@@ -69,13 +69,13 @@ func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Freecell) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
 	case *Foundation:
-		if v.Empty() {
+		if dst.Empty() {
 			c1 := tail[0]
 			if c1.Ordinal() != 1 {
 				return false, errors.New("Empty Foundations can only accept an Ace")
@@ -84,7 +84,7 @@ func (*Freecell) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
 		}
@@ -94,9 +94,9 @@ func (*Freecell) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Freecell) UnsortedPairs(pile Pile) int {
+func (*Freecell) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
@@ -109,10 +109,10 @@ func (*Freecell) UnsortedPairs(pile Pile) int {
 }
 
 func (*Freecell) TailTapped(tail []*Card) {
-	tail[0].Owner().TailTapped(tail)
+	tail[0].Owner().subtype.TailTapped(tail)
 }
 
-func (*Freecell) PileTapped(pile Pile) {
+func (*Freecell) PileTapped(*Pile) {
 }
 
 func (*Freecell) PercentComplete() int {

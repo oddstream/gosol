@@ -39,21 +39,21 @@ func (*Easy) StartGame() {
 		}
 		MoveCard(TheBaize.stock, pile)
 	}
-	s, ok := (TheBaize.stock).(*Stock)
+	s, ok := (TheBaize.stock.subtype).(*Stock)
 	if !ok {
 		log.Fatal("cannot get Stock from it's interface")
 	}
 	s.recycles = 32767
-	s.SetRune(RECYCLE_RUNE)
+	TheBaize.stock.SetRune(RECYCLE_RUNE)
 }
 
 func (*Easy) AfterMove() {
 }
 
 func (*Easy) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		cpairs.Print()
@@ -68,13 +68,15 @@ func (*Easy) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Easy) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Easy) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
+	case *Waste:
+		return false, errors.New("Waste can only accept cards from the Stock")
 	case *Foundation:
-		if v.Empty() {
+		if dst.Empty() {
 			if tail[0].Ordinal() != 1 {
 				return false, errors.New("Empty Foundations can only accept an Ace")
 			}
@@ -82,21 +84,19 @@ func (*Easy) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
 		}
-	case *Waste:
-		return false, errors.New("Waste can only accept cards from the Stock")
 	default:
 		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }
 
-func (*Easy) UnsortedPairs(pile Pile) int {
+func (*Easy) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
@@ -110,27 +110,27 @@ func (*Easy) UnsortedPairs(pile Pile) int {
 
 func (*Easy) TailTapped(tail []*Card) {
 	var c1 *Card = tail[0]
-	var pile Pile = c1.Owner()
-	if _, ok := pile.(*Stock); ok && len(tail) == 1 {
+	var pile *Pile = c1.Owner()
+	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
 		c2 := pile.Pop()
 		if c1 != c2 {
 			println("Ooops")
 		}
 		TheBaize.waste.Push(c2)
 	} else {
-		pile.TailTapped(tail)
+		pile.subtype.TailTapped(tail)
 	}
 }
 
-func (*Easy) PileTapped(pile Pile) {
-	if s, ok := pile.(*Stock); ok {
+func (*Easy) PileTapped(pile *Pile) {
+	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
 			for TheBaize.waste.Len() > 0 {
-				MoveCard(TheBaize.waste, s)
+				MoveCard(TheBaize.waste, TheBaize.stock)
 			}
 			s.recycles--
 			if s.recycles == 0 {
-				s.SetRune(NORECYCLE_RUNE)
+				TheBaize.stock.SetRune(NORECYCLE_RUNE)
 			}
 		} else {
 			TheUI.Toast("No more recycles")

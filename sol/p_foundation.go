@@ -8,13 +8,13 @@ import (
 )
 
 type Foundation struct {
-	Base
+	pile *Pile
 }
 
-func NewFoundation(slot image.Point, fanType FanType) *Foundation {
-	f := &Foundation{}
-	f.Ctor(f, "Foundation", slot, fanType)
-	return f
+func NewFoundation(slot image.Point, fanType FanType) *Pile {
+	p := &Pile{}
+	p.Ctor(&Foundation{pile: p}, "Foundation", slot, fanType)
+	return p
 }
 
 func (*Foundation) CanMoveTail(tail []*Card) (bool, error) {
@@ -25,12 +25,12 @@ func (f *Foundation) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if len(f.cards) == len(TheBaize.cardLibrary)/len(TheBaize.foundations) {
+	if f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.foundations) {
 		return false, errors.New("The Foundation is full")
 	}
 	var tail []*Card = []*Card{card}
 	// pearl from the mudbank cannot pass a *Foundation to script functions, only a *Pile
-	return TheBaize.script.TailAppendError(f.iface, tail)
+	return TheBaize.script.TailAppendError(f.pile, tail)
 }
 
 func (f *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
@@ -40,11 +40,11 @@ func (f *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card")
 	}
-	return TheBaize.script.TailAppendError(f.iface, tail)
+	return TheBaize.script.TailAppendError(f.pile, tail)
 }
 
-func (f *Foundation) TailTapped(tail []*Card) {
-	// over-ride base to do nothing
+func (*Foundation) TailTapped([]*Card) {
+	// do nothing
 }
 
 func (f *Foundation) Collect() {
@@ -56,9 +56,13 @@ func (f *Foundation) Conformant() bool {
 }
 
 func (f *Foundation) Complete() bool {
-	return len(f.cards) == len(TheBaize.cardLibrary)/len(TheBaize.foundations)
+	return f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.foundations)
 }
 
 func (f *Foundation) UnsortedPairs() int {
 	return 0
+}
+
+func (f *Foundation) Reset() {
+	f.pile.GenericReset()
 }

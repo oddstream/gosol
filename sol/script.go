@@ -16,11 +16,11 @@ type ScriptInterface interface {
 	AfterMove()
 
 	TailMoveError([]*Card) (bool, error)
-	TailAppendError(Pile, []*Card) (bool, error)
-	UnsortedPairs(Pile) int
+	TailAppendError(*Pile, []*Card) (bool, error)
+	UnsortedPairs(*Pile) int
 
 	TailTapped([]*Card)
-	PileTapped(Pile)
+	PileTapped(*Pile)
 
 	PercentComplete() int
 	Wikipedia() string
@@ -31,12 +31,18 @@ var Variants = map[string]ScriptInterface{
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Easy":                &Easy{},
 	"Freecell":            &Freecell{},
-	"Forty Thieves":       &FortyThieves{tabs: 10, cardsPerTab: 4},
-	"Limited":             &FortyThieves{tabs: 12, cardsPerTab: 3},
-	"Simple Simon":        &SimpleSimon{},
-	"Spider One Suit":     &Spider{packs: 8, suits: 1},
-	"Spider Two Suits":    &Spider{packs: 4, suits: 2},
-	"Spider":              &Spider{packs: 2, suits: 4},
+	"Forty Thieves": &FortyThieves{
+		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
+		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		cardsPerTab: 4},
+	"Limited": &FortyThieves{
+		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
+		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+		cardsPerTab: 3},
+	"Simple Simon":     &SimpleSimon{},
+	"Spider One Suit":  &Spider{packs: 8, suits: 1},
+	"Spider Two Suits": &Spider{packs: 4, suits: 2},
+	"Spider":           &Spider{packs: 2, suits: 4},
 }
 
 func GetVariantInterface(v string) ScriptInterface {
@@ -94,7 +100,7 @@ func Script_PercentComplete() int {
 		if p.Len() > 1 {
 			pairs += p.Len() - 1
 		}
-		unsorted += p.UnsortedPairs()
+		unsorted += p.subtype.UnsortedPairs()
 	}
 	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
 	return percent

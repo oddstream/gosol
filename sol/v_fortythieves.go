@@ -9,7 +9,9 @@ import (
 )
 
 type FortyThieves struct {
-	tabs, cardsPerTab int
+	founds      []int
+	tabs        []int
+	cardsPerTab int
 }
 
 func (ft *FortyThieves) BuildPiles() {
@@ -19,14 +21,14 @@ func (ft *FortyThieves) BuildPiles() {
 	TheBaize.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 	TheBaize.piles = append(TheBaize.piles, TheBaize.waste)
 
-	for x := ft.tabs - 8; x < ft.tabs; x++ {
+	for _, x := range ft.founds {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
 		TheBaize.piles = append(TheBaize.piles, f)
 		TheBaize.foundations = append(TheBaize.foundations, f)
 		f.SetLabel("A")
 	}
 
-	for x := 0; x < ft.tabs; x++ {
+	for _, x := range ft.tabs {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		TheBaize.piles = append(TheBaize.piles, t)
 		TheBaize.tableaux = append(TheBaize.tableaux, t)
@@ -39,7 +41,7 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(TheBaize.stock, pile)
 		}
 	}
-	s, ok := (TheBaize.stock).(*Stock)
+	s, ok := (TheBaize.stock.subtype).(*Stock)
 	if !ok {
 		log.Fatal("cannot get Stock from it's interface")
 	}
@@ -50,9 +52,9 @@ func (*FortyThieves) AfterMove() {
 }
 
 func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		cpairs.Print()
@@ -67,15 +69,15 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
 	case *Waste:
 		return false, errors.New("You cannot move cards to the Waste")
 	case *Foundation:
-		if v.Empty() {
+		if dst.Empty() {
 			if tail[0].Ordinal() != 1 {
 				return false, errors.New("Empty Foundations can only accept an Ace")
 			}
@@ -83,7 +85,7 @@ func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
 		}
@@ -93,9 +95,9 @@ func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*FortyThieves) UnsortedPairs(pile Pile) int {
+func (*FortyThieves) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if ok, _ := pair.Compare_DownSuit(); !ok {
 			unsorted++
 		}
@@ -104,15 +106,15 @@ func (*FortyThieves) UnsortedPairs(pile Pile) int {
 }
 
 func (*FortyThieves) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	if _, ok := pile.(*Stock); ok && len(tail) == 1 {
+	var pile *Pile = tail[0].Owner()
+	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
 		MoveCard(TheBaize.stock, TheBaize.waste)
 	} else {
-		pile.TailTapped(tail)
+		pile.subtype.TailTapped(tail)
 	}
 }
 
-func (*FortyThieves) PileTapped(pile Pile) {
+func (*FortyThieves) PileTapped(*Pile) {
 }
 
 func (*FortyThieves) PercentComplete() int {

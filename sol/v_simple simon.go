@@ -53,9 +53,9 @@ func (*SimpleSimon) AfterMove() {
 }
 
 func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownSuit(); !ok {
@@ -68,9 +68,9 @@ func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*SimpleSimon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
 	case *Discard:
@@ -83,7 +83,7 @@ func (*SimpleSimon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			}
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
 		}
@@ -93,9 +93,9 @@ func (*SimpleSimon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*SimpleSimon) UnsortedPairs(pile Pile) int {
+func (*SimpleSimon) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if ok, _ := pair.Compare_DownSuit(); !ok {
 			unsorted++
 		}
@@ -106,7 +106,7 @@ func (*SimpleSimon) UnsortedPairs(pile Pile) int {
 func (*SimpleSimon) TailTapped(tail []*Card) {
 }
 
-func (*SimpleSimon) PileTapped(pile Pile) {
+func (*SimpleSimon) PileTapped(*Pile) {
 }
 
 func (*SimpleSimon) PercentComplete() int {

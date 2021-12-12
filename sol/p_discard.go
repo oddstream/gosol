@@ -5,20 +5,16 @@ package sol
 import (
 	"errors"
 	"image"
-	"image/color"
-
-	"github.com/fogleman/gg"
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Discard struct {
-	Base
+	pile *Pile
 }
 
-func NewDiscard(slot image.Point, fanType FanType) *Discard {
-	d := &Discard{}
-	d.Ctor(d, "Discard", slot, FAN_NONE)
-	return d
+func NewDiscard(slot image.Point, fanType FanType) *Pile {
+	p := &Pile{}
+	p.Ctor(&Discard{pile: p}, "Discard", slot, FAN_NONE)
+	return p
 }
 
 func (*Discard) CanMoveTail(tail []*Card) (bool, error) {
@@ -30,7 +26,7 @@ func (*Discard) CanAcceptCard(card *Card) (bool, error) {
 }
 
 func (d *Discard) CanAcceptTail(tail []*Card) (bool, error) {
-	if !d.Empty() {
+	if !d.pile.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")
 	}
 	if AnyCardsProne(tail) {
@@ -42,38 +38,39 @@ func (d *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	return TheBaize.script.TailMoveError(tail) // check cards are conformant
 }
 
+func (*Discard) TailTapped([]*Card) {
+	// do nothing
+}
+
+func (*Discard) Collect() {
+	// do nothing
+}
+
 func (d *Discard) Conformant() bool {
-	if d.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(d) == 0
+	if d.pile.Len() > 1 {
+		return TheBaize.script.UnsortedPairs(d.pile) == 0
 	}
 	return true
 }
 
 func (d *Discard) Complete() bool {
-	if d.Empty() {
+	if d.pile.Empty() {
 		return true
 	}
-	if d.Len() == len(TheBaize.cardLibrary)/len(TheBaize.discards) {
+	if d.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.discards) {
 		return true
 	}
 	return false
 }
 
 func (d *Discard) UnsortedPairs() int {
-	if d.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(d)
+	if d.pile.Len() > 1 {
+		return TheBaize.script.UnsortedPairs(d.pile)
 	} else {
 		return 0
 	}
 }
 
-func (d *Discard) CreateBackgroundImage() {
-	dc := gg.NewContext(CardWidth, CardHeight)
-	dc.SetColor(color.NRGBA{255, 255, 255, 31})
-	dc.SetLineWidth(2)
-	// draw the RoundedRect entirely INSIDE the context
-	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	dc.Fill()
-	dc.Stroke()
-	d.img = ebiten.NewImageFromImage(dc.Image())
+func (d *Discard) Reset() {
+	d.pile.GenericReset()
 }

@@ -28,12 +28,12 @@ type Baize struct {
 	magic        uint32
 	cardLibrary  []Card // the place where Card exists, everything else is a *Card
 	script       ScriptInterface
-	piles        []Pile
-	stock        Pile
-	waste        Pile
-	foundations  []Pile
-	tableaux     []Pile
-	discards     []Pile
+	piles        []*Pile
+	stock        *Pile
+	waste        *Pile
+	foundations  []*Pile
+	tableaux     []*Pile
+	discards     []*Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int
 	undoStack    []*SavableBaize
@@ -91,7 +91,7 @@ func (b *Baize) CRC() uint32 {
 
 func (b *Baize) Reset() {
 	for _, p := range b.piles {
-		p.Reset()
+		p.subtype.Reset()
 	}
 	b.tail = nil
 	b.undoStack = nil
@@ -169,7 +169,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 }
 
 // findPileAt finds the Pile under the mouse click or touch
-func (b *Baize) FindPileAt(pt image.Point) Pile {
+func (b *Baize) FindPileAt(pt image.Point) *Pile {
 	for _, p := range b.piles {
 		if pt.In(p.FannedScreenRect()) {
 			return p
@@ -193,9 +193,9 @@ func (b *Baize) FindCardAt(pt image.Point) *Card {
 	return nil
 }
 
-func (b *Baize) LargestIntersection(c *Card) Pile {
+func (b *Baize) LargestIntersection(c *Card) *Pile {
 	var largestArea int = 0
-	var pile Pile = nil
+	var pile *Pile = nil
 	cardRect := c.BaizeRect()
 	for _, p := range b.piles {
 		// if p == c.owner {
@@ -322,7 +322,7 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		con.DragBy(v.Stroke.PositionDiff())
 	case *Card:
 		b.DragTailBy(v.Stroke.PositionDiff())
-	case Pile:
+	case *Pile:
 		// do nothing
 	case *Baize:
 		b.DragBy(v.Stroke.PositionDiff())
@@ -349,7 +349,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				println("no intersection for", c.String())
 				b.CancelTailDrag()
 			} else {
-				if ok, err := src.CanMoveTail(b.tail); !ok {
+				if ok, err := src.subtype.CanMoveTail(b.tail); !ok {
 					if err != nil {
 						TheUI.Toast(err.Error())
 					} else {
@@ -361,7 +361,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 					if src == dst {
 						println("putting the tail back")
 						b.CancelTailDrag()
-					} else if ok, err := dst.CanAcceptTail(b.tail); !ok {
+					} else if ok, err := dst.subtype.CanAcceptTail(b.tail); !ok {
 						if err != nil {
 							TheUI.Toast(err.Error())
 						} else {
@@ -403,7 +403,7 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 		con.StopDrag()
 	case *Card:
 		b.CancelTailDrag()
-	case Pile:
+	case *Pile:
 		// p := v.Stroke.DraggedObject().(*Pile)
 		// println("stop dragging pile", p.Class)
 		// do nothing
@@ -421,13 +421,18 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 	switch obj := v.Stroke.DraggedObject().(type) { // type switch
 	case *Card:
 		crc := b.CRC()
+		// offer TailTapped to the script first
+		// to implement things like Stock.TailTapped
+		// if the script doesn't want to do anything, it can call pile.subtype.TailTapped
+		// which will either ignore it (eg Foundation, Discard)
+		// or try to collect a card to Foundation (eg Tableau)
 		b.script.TailTapped(b.tail)
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
 		}
 		b.StopTailDrag()
-	case Pile:
+	case *Pile:
 		crc := b.CRC()
 		b.script.PileTapped(obj)
 		if crc != b.CRC() {
@@ -502,7 +507,7 @@ func (b *Baize) CancelTailDrag() {
 func (b *Baize) Collect() {
 	crc := b.CRC()
 	for _, p := range b.piles {
-		p.Collect()
+		p.subtype.Collect()
 	}
 	if crc != b.CRC() {
 		b.AfterUserMove()
@@ -514,7 +519,7 @@ func (b *Baize) CollectAll() {
 	for {
 		innerCRC := b.CRC()
 		for _, p := range b.piles {
-			p.Collect()
+			p.subtype.Collect()
 		}
 		if b.CRC() == innerCRC {
 			break
@@ -601,7 +606,7 @@ func (b *Baize) UpdateStatusbar() {
 
 func (b *Baize) Conformant() bool {
 	for _, p := range b.piles {
-		if !p.Conformant() {
+		if !p.subtype.Conformant() {
 			return false
 		}
 	}
@@ -610,7 +615,7 @@ func (b *Baize) Conformant() bool {
 
 func (b *Baize) Complete() bool {
 	for _, p := range b.piles {
-		if !p.Complete() {
+		if !p.subtype.Complete() {
 			return false
 		}
 	}
@@ -664,7 +669,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		}
 		if b.flagSet(dirtyPileBackgrounds) {
 			for _, p := range b.piles {
-				p.CreateBackgroundImage()
+				p.img = p.CreateBackgroundImage()
 			}
 			b.clearFlag(dirtyPileBackgrounds)
 		}
@@ -674,8 +679,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		}
 		if b.flagSet(dirtyCardPositions) {
 			for _, p := range b.piles {
-				//p.Refan()
-				p.Scrunch()
+				p.Scrunch() // always does a Refan()
 			}
 			b.clearFlag(dirtyCardPositions)
 		}

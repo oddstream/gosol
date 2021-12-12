@@ -22,25 +22,25 @@ type SavableBaize struct {
 	Recycles int
 }
 
-func (base *Base) Savable() *SavablePile {
-	sp := &SavablePile{Category: base.category, Label: base.label, Symbol: base.symbol}
-	for _, c := range base.cards {
+func (p *Pile) Savable() *SavablePile {
+	sp := &SavablePile{Category: p.category, Label: p.label, Symbol: p.symbol}
+	for _, c := range p.cards {
 		sp.Cards = append(sp.Cards, c.ID)
 	}
 	return sp
 }
 
-func (base *Base) UpdateFromSavable(sp *SavablePile) {
-	if base.category != sp.Category {
+func (p *Pile) UpdateFromSavable(sp *SavablePile) {
+	if p.category != sp.Category {
 		log.Panic("Baize pile and SavablePile are different")
 	}
-	base.Reset()
+	p.GenericReset()
 	for _, cid := range sp.Cards {
 		for i := 0; i < len(TheBaize.cardLibrary); i++ {
 			if SameCardAndPack(cid, TheBaize.cardLibrary[i].ID) {
 				c := &TheBaize.cardLibrary[i]
 				// c.SetProne(cid.Prone())
-				base.Push(c)
+				p.Push(c)
 				if cid.Prone() {
 					c.FlipDown()
 				} else {
@@ -50,11 +50,11 @@ func (base *Base) UpdateFromSavable(sp *SavablePile) {
 			}
 		}
 	}
-	if len(base.cards) != len(sp.Cards) {
+	if len(p.cards) != len(sp.Cards) {
 		log.Panic("cards rebuilt incorrectly")
 	}
-	base.label = sp.Label
-	base.symbol = sp.Symbol
+	p.label = sp.Label
+	p.symbol = sp.Symbol
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {
@@ -62,7 +62,7 @@ func (b *Baize) NewSavableBaize() *SavableBaize {
 	for _, p := range b.piles {
 		ss.Piles = append(ss.Piles, p.Savable())
 	}
-	if stockobject, ok := b.stock.(*Stock); ok {
+	if stockobject, ok := (b.stock.subtype).(*Stock); ok {
 		ss.Recycles = stockobject.recycles
 	}
 	ss.Bookmark = b.bookmark
@@ -100,7 +100,7 @@ func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
 		b.piles[i].UpdateFromSavable(ss.Piles[i])
 		b.piles[i].Scrunch()
 	}
-	if stockobject, ok := b.stock.(*Stock); ok {
+	if stockobject, ok := (b.stock.subtype).(*Stock); ok {
 		stockobject.recycles = ss.Recycles
 	}
 	b.bookmark = ss.Bookmark
@@ -145,7 +145,7 @@ func (b *Baize) SavePosition() {
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark
-	stockobject, ok := (b.stock).(*Stock)
+	stockobject, ok := (b.stock.subtype).(*Stock)
 	if ok {
 		sb.Recycles = stockobject.recycles
 	}

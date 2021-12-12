@@ -1,5 +1,13 @@
+https://www.toptal.com/go/golang-oop-tutorial
+https://en.wikipedia.org/wiki/Dependency_injection
+
+https://en.wikipedia.org/wiki/Premake
+used in
+https://github.com/veridisquot/openmv
+
  work at reducing the size of variant.go files (CardPair &c)
- work at adding things to Pile interface
+ grep .subtype).(type)
+ Generic doesn't seem quite right
  FAB not showing
  statistics
  mirror baize

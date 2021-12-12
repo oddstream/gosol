@@ -51,7 +51,7 @@ func (*Spider) StartGame() {
 	for _, pile := range TheBaize.tableaux {
 		pile.Peek().FlipUp()
 	}
-	if s, ok := (TheBaize.stock).(*Stock); ok {
+	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
 		s.recycles = 0
 	} else {
 		log.Fatal("cannot get Stock from interface")
@@ -65,9 +65,9 @@ func (*Spider) AfterMove() {
 }
 
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownSuit(); !ok {
@@ -80,9 +80,9 @@ func (*Spider) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Spider) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch v := dst.(type) {
+	switch (dst.subtype).(type) {
 	case *Stock:
 		return false, errors.New("You cannot move cards to the Stock")
 	case *Discard:
@@ -95,7 +95,7 @@ func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			}
 		}
 	case *Tableau:
-		if v.Empty() {
+		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
 		}
@@ -105,9 +105,9 @@ func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Spider) UnsortedPairs(pile Pile) int {
+func (*Spider) UnsortedPairs(pile *Pile) int {
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
@@ -121,7 +121,7 @@ func (*Spider) UnsortedPairs(pile Pile) int {
 
 func (*Spider) TailTapped(tail []*Card) {
 	pile := tail[0].Owner()
-	switch pile.(type) {
+	switch (pile.subtype).(type) {
 	case *Stock:
 		var tabCards, emptyTabs int
 		for _, tab := range TheBaize.tableaux {
@@ -141,7 +141,7 @@ func (*Spider) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Spider) PileTapped(pile Pile) {
+func (*Spider) PileTapped(*Pile) {
 }
 
 func (*Spider) PercentComplete() int {
