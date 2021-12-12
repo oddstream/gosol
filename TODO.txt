@@ -1,21 +1,19 @@
 https://www.toptal.com/go/golang-oop-tutorial
 https://en.wikipedia.org/wiki/Dependency_injection
 
-https://en.wikipedia.org/wiki/Premake
-used in
-https://github.com/veridisquot/openmv
-
  work at reducing the size of variant.go files (CardPair &c)
- grep .subtype).(type)
+ grep .subtype).(type) or ).(*Stock)
  Generic doesn't seem quite right
- FAB not showing
+
+ Canfield
  statistics
- mirror baize
  tengo
  README.md
  scale slot up by 10, call it slot10 to help remember
- don't refan spinning cards
 
+x mirror baize
+x spinning cards didn't stop spinning when pressing the FAB quickly
+x FAB not showing
 x send parameters to script files
 x Scrunch()
 x Complete()

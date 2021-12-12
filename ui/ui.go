@@ -11,7 +11,7 @@ import (
 
 var (
 	GenerateIcons   bool        = false
-	BackgroundColor color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xff}
+	BackgroundColor color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xee}
 )
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.

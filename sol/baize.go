@@ -1,13 +1,11 @@
 package sol
 
 import (
-	"fmt"
 	"hash/crc32"
 	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gomps5/input"
 	"oddstream.games/gomps5/sound"
@@ -90,6 +88,7 @@ func (b *Baize) CRC() uint32 {
 }
 
 func (b *Baize) Reset() {
+	b.StopSpinning()
 	for _, p := range b.piles {
 		p.subtype.Reset()
 	}
@@ -125,6 +124,45 @@ func (b *Baize) ShowVariantPicker() {
 	TheUI.ShowVariantPicker(VariantNames())
 }
 
+func (b *Baize) Mirror() {
+	/*
+		0 1 2 3 4 5
+		5 4 3 2 1 0
+
+		0 1 2 3 4
+		4 3 2 1 0
+	*/
+	var minX int = 32767
+	var maxX int = 0
+	for _, p := range b.piles {
+		if p.slot.X < 0 {
+			continue // ignore hidden pile
+		}
+		if p.slot.X < minX {
+			minX = p.slot.X
+		}
+		if p.slot.X > maxX {
+			maxX = p.slot.X
+		}
+	}
+	for _, p := range b.piles {
+		if p.slot.X < 0 {
+			continue // ignore hidden pile
+		}
+		p.slot.X = maxX - p.slot.X + minX
+		switch p.fanType {
+		case FAN_RIGHT:
+			p.fanType = FAN_LEFT
+		case FAN_LEFT:
+			p.fanType = FAN_RIGHT
+		case FAN_RIGHT3:
+			p.fanType = FAN_LEFT3
+		case FAN_LEFT3:
+			p.fanType = FAN_RIGHT3
+		}
+	}
+}
+
 // NewVariant resets Baize and starts a new game with a new variant and seed
 func (b *Baize) NewVariant() {
 
@@ -144,6 +182,9 @@ func (b *Baize) NewVariant() {
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
+	if ThePreferences.MirrorBaize {
+		b.Mirror()
+	}
 	b.FindBuddyPiles()
 
 	// position piles, scale cards
@@ -622,17 +663,6 @@ func (b *Baize) Complete() bool {
 	return true
 }
 
-func (b *Baize) IsWindowResized(w, h int) bool {
-	if w == b.WindowWidth && h == b.WindowHeight {
-		return false
-	}
-	println(b.WindowWidth, ":=", w, ",", b.WindowHeight, ":=", h)
-
-	b.WindowWidth = w
-	b.WindowHeight = h
-	return true
-}
-
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
@@ -743,13 +773,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	TheUI.Draw(screen)
 
-	if DebugMode {
-		// var ms runtime.MemStats
-		// runtime.ReadMemStats(&ms)
-		// ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS %v, Alloc %v, NumGC %v", ebiten.CurrentTPS(), ms.Alloc, ms.NumGC))
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("%v %v", b.bookmark, len(b.undoStack)))
-		// bounds := screen.Bounds()
-		// ebitenutil.DebugPrint(screen, bounds.String())
-	}
+	// if DebugMode {
+	// var ms runtime.MemStats
+	// runtime.ReadMemStats(&ms)
+	// ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS %v, Alloc %v, NumGC %v", ebiten.CurrentTPS(), ms.Alloc, ms.NumGC))
+	// ebitenutil.DebugPrint(screen, fmt.Sprintf("%v %v", b.bookmark, len(b.undoStack)))
+	// bounds := screen.Bounds()
+	// ebitenutil.DebugPrint(screen, bounds.String())
+	// }
 
 }

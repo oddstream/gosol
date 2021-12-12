@@ -60,10 +60,9 @@ func Execute(cmd interface{}) {
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
 		case "Mirror baize":
 			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
-		// 	TheBaize.Save()
-		// 	if !TheBaize.LoadVariant(TheBaize.Variant) {
-		// 		TheBaize.NewVariant(TheBaize.Variant)
-		// }
+			savedUndoStack := TheBaize.undoStack
+			TheBaize.NewVariant()
+			TheBaize.SetUndoStack(savedUndoStack)
 		case "Mute sounds":
 			ThePreferences.MuteSounds, _ = strconv.ParseBool(v.Data)
 			sound.Mute(ThePreferences.MuteSounds)

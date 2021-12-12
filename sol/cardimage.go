@@ -10,18 +10,24 @@ import (
 )
 
 const (
-	X1 = 0.15
-	XL = 0.375 // X Left
-	XC = 0.5   // X Center
-	XR = 0.625 // X Right
-	X9 = 0.85
-	YT = 0.133 // Y Top
-	Y1 = 0.33  // Y between top and center
-	Y2 = 0.4
-	YC = 0.5 // Y Center
-	Y3 = 0.6
-	Y4 = 0.66  // Y between center and bottom
-	YB = 0.833 // Y Bottom
+	CTLX = 0.1333
+	CTLY = 0.1333
+	CTRX = 0.8666
+	CTRY = 0.1333
+	CBLX = 0.1333
+	CBLY = 0.8666
+	CBRX = 0.8666
+	CBRY = 0.8666
+	XL   = 0.375 // X Left
+	XC   = 0.5   // X Center
+	XR   = 0.625 // X Right
+	YT   = 0.166 // Y Top
+	Y1   = 0.33  // Y between top and center
+	Y2   = 0.4
+	YC   = 0.5 // Y Center
+	Y3   = 0.6
+	Y4   = 0.66  // Y between center and bottom
+	YB   = 0.833 // Y Bottom
 )
 
 type PipInfo struct {
@@ -115,8 +121,9 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 	} else {
 		dc.SetFontFace(schriftbank.CardOrdinal)
 	}
-	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*0.15, h*0.1, 0.5, 0.5)
-	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*0.85, h*0.85, 0.5, 0.5)
+	// ordinals in top left and bottom right corners
+	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CTLX, h*CTLY, 0.5, 0.4)
+	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CBRX, h*CBRY, 0.5, 0.4)
 	dc.Stroke()
 
 	// https://unicodelookup.com/#club/1
@@ -136,8 +143,8 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 			// they also get purdy rectangles in the middle
 			dc.SetFontFace(schriftbank.CardSymbolRegular)
 			dc.SetColor(ID.Color())
-			dc.DrawStringAnchored(string(r), w*0.85, h*0.1, 0.5, 0.5)
-			dc.DrawStringAnchored(string(r), w*0.15, h*0.85, 0.5, 0.5)
+			dc.DrawStringAnchored(string(r), w*CTRX, h*CTRY, 0.5, 0.4)
+			dc.DrawStringAnchored(string(r), w*CBLX, h*CBLY, 0.5, 0.4)
 			// dc.DrawStringAnchored(string(r), w*0.16, h*0.27, 0.5, 0.5)
 			// dc.DrawStringAnchored(string(r), w*0.84, h*0.73, 0.5, 0.5)
 			dc.Stroke()

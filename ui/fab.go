@@ -96,6 +96,9 @@ func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (u *UI) ShowFAB(iconName string, key ebiten.Key) {
 	u.fabbar.widgets = nil
 	u.fabbar.widgets = append(u.fabbar.widgets, NewFAB(u.fabbar, iconName, key))
+	// set the widget position, which otherwise wouldn't be done until window resized
+	w, h := ebiten.WindowSize()
+	u.fabbar.Layout(w, h)
 }
 
 func (u *UI) HideFAB() {

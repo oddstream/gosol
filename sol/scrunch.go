@@ -78,23 +78,23 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 		switch len(p.cards) {
 		case 0, 1:
 		case 2:
-			dims.Y += (CardHeight / CARD_FACE_FAN_FACTOR_V)
+			dims.Y += int(float64(CardHeight) / CARD_FACE_FAN_FACTOR_V)
 		default:
-			dims.Y += (CardHeight / CARD_FACE_FAN_FACTOR_V) * 2
+			dims.Y += int(float64(CardHeight)/CARD_FACE_FAN_FACTOR_V) * 2
 		}
 	case FAN_LEFT3, FAN_RIGHT3:
 		switch len(p.cards) {
 		case 0, 1:
 		case 2:
-			dims.X += (CardWidth / CARD_FACE_FAN_FACTOR_H)
+			dims.X += int(float64(CardWidth) / CARD_FACE_FAN_FACTOR_H)
 		default:
-			dims.X += (CardWidth / CARD_FACE_FAN_FACTOR_H) * 2
+			dims.X += int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H) * 2
 		}
 	case FAN_DOWN:
 		for i := 0; i < len(p.cards)-1; i++ {
 			c := p.cards[i]
 			if c.Prone() {
-				dims.Y += CardHeight / CARD_BACK_FAN_FACTOR
+				dims.Y += int(float64(CardHeight) / CARD_BACK_FAN_FACTOR)
 			} else {
 				dims.Y += int(float64(CardHeight) / fanFactor)
 			}
@@ -103,7 +103,7 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 		for i := 0; i < len(p.cards)-1; i++ {
 			c := p.cards[i]
 			if c.Prone() {
-				dims.X += CardWidth / CARD_BACK_FAN_FACTOR
+				dims.X += int(float64(CardWidth) / CARD_BACK_FAN_FACTOR)
 			} else {
 				dims.X += int(float64(CardWidth) / fanFactor)
 			}
