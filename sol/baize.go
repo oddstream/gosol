@@ -107,9 +107,9 @@ func (b *Baize) Refan() {
 func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
-	// if len(b.UndoStack) > 1 {
-	// 	TheStatistics.recordLostGame(b.Variant, b.percentComplete)
-	// }
+	if len(b.undoStack) > 1 && !b.Complete() {
+		TheStatistics.RecordLostGame()
+	}
 
 	b.Reset()
 	b.script.StartGame()
@@ -117,7 +117,7 @@ func (b *Baize) NewDeal() {
 	sound.Play("Fan")
 
 	b.setFlag(dirtyPilePositions | dirtyCardPositions)
-	// TheStatistics.welcomeToast()
+	TheStatistics.WelcomeToast()
 }
 
 func (b *Baize) ShowVariantPicker() {
@@ -167,9 +167,9 @@ func (b *Baize) Mirror() {
 func (b *Baize) NewVariant() {
 
 	// a virgin game has one state on the undo stack
-	// if len(b.UndoStack) > 1 {
-	// 	TheStatistics.recordLostGame(b.Variant, b.percentComplete)
-	// }
+	if len(b.undoStack) > 1 && !b.Complete() {
+		TheStatistics.RecordLostGame()
+	}
 
 	b.Reset()
 
@@ -187,19 +187,18 @@ func (b *Baize) NewVariant() {
 	}
 	b.FindBuddyPiles()
 
-	// position piles, scale cards
+	TheUI.SetTitle(ThePreferences.Variant)
+	sound.Play("Fan")
+
 	w, h := ebiten.WindowSize()
 	b.Layout(w, h)
 
-	TheUI.SetTitle(ThePreferences.Variant)
-
 	b.script.StartGame()
 	b.UndoPush()
-	sound.Play("Fan")
 
 	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions)
 
-	// TheStatistics.welcomeToast()
+	TheStatistics.WelcomeToast()
 }
 
 func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
@@ -307,7 +306,8 @@ func (b *Baize) AfterUserMove() {
 	b.UndoPush()
 	if b.Complete() {
 		sound.Play("Complete")
-		TheUI.Toast("Complete!")
+		TheStatistics.RecordWonGame()
+		TheStatistics.WonToast()
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
@@ -735,8 +735,6 @@ func (b *Baize) Update() error {
 		p.Update()
 	}
 
-	TheUI.Update()
-
 	for k := ebiten.Key(0); k <= ebiten.KeyMax; k++ {
 		if inpututil.IsKeyJustReleased(k) {
 			Execute(k)
@@ -770,8 +768,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, p := range b.piles {
 		p.DrawDraggingCards(screen)
 	}
-
-	TheUI.Draw(screen)
 
 	// if DebugMode {
 	// var ms runtime.MemStats

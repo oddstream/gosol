@@ -113,6 +113,10 @@ func (b *Baize) Undo() {
 		TheUI.Toast("Nothing to undo")
 		return
 	}
+	if b.Complete() {
+		TheUI.Toast("Cannot undo a completed game") // otherwise the stats can be cooked
+		return
+	}
 	_, ok := b.UndoPop() // removes current state
 	if !ok {
 		log.Panic("error popping current state from undo stack")
@@ -142,6 +146,10 @@ func (b *Baize) RestartDeal() {
 
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
+	if b.Complete() {
+		TheUI.Toast("Cannot bookmark a completed game") // otherwise the stats can be cooked
+		return
+	}
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark

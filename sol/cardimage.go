@@ -123,7 +123,9 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 	}
 	// ordinals in top left and bottom right corners
 	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CTLX, h*CTLY, 0.5, 0.4)
+	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
 	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CBRX, h*CBRY, 0.5, 0.4)
+	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
 	dc.Stroke()
 
 	// https://unicodelookup.com/#club/1
@@ -144,7 +146,9 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 			dc.SetFontFace(schriftbank.CardSymbolRegular)
 			dc.SetColor(ID.Color())
 			dc.DrawStringAnchored(string(r), w*CTRX, h*CTRY, 0.5, 0.4)
+			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
 			dc.DrawStringAnchored(string(r), w*CBLX, h*CBLY, 0.5, 0.4)
+			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
 			// dc.DrawStringAnchored(string(r), w*0.16, h*0.27, 0.5, 0.5)
 			// dc.DrawStringAnchored(string(r), w*0.84, h*0.73, 0.5, 0.5)
 			dc.Stroke()

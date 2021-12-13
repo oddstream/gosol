@@ -107,9 +107,11 @@ func (u *UI) HideActiveDrawer() {
 
 // Layout implements Ebiten's Layout
 func (u *UI) Layout(outsideWidth, outsideHeight int) (int, int) {
+	println("UI Layout", outsideWidth, outsideHeight)
 	for _, con := range u.containers {
 		con.Layout(outsideWidth, outsideHeight)
 	}
+	// u.toastManager.Layout(outsideWidth, outsideHeight)
 	return outsideWidth, outsideHeight
 }
 
@@ -123,6 +125,7 @@ func (u *UI) Update() {
 
 // Draw is called once per tick and renders the UI to the screen
 func (u *UI) Draw(screen *ebiten.Image) {
+
 	for _, con := range u.containers {
 		con.Draw(screen)
 	}

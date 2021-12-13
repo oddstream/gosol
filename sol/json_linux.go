@@ -144,36 +144,36 @@ func (prefs *Preferences) Save() {
 }
 
 // Load statistics for all variants from JSON to an already-created Statistics object
-// func (s *Statistics) Load() {
-// 	if DebugMode {
-// 		defer util.Duration(time.Now(), "Statistics.Load")
-// 	}
-// 	bytes, count, err := loadBytesFromFile("statistics.json", false)
-// 	if err != nil || count == 0 || bytes == nil {
-// 		return
-// 	}
+func (s *Statistics) Load() {
+	if DebugMode {
+		defer util.Duration(time.Now(), "Statistics.Load")
+	}
+	bytes, count, err := loadBytesFromFile("statistics.json", false)
+	if err != nil || count == 0 || bytes == nil {
+		return
+	}
 
-// 	// golang gotcha reslice buffer to number of bytes actually read
-// 	err = json.Unmarshal(bytes[:count], s)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes[:count], s)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// }
+}
 
 // Save writes the Statistics object to file
-// func (s *Statistics) Save() {
-// 	if DebugMode {
-// 		defer util.Duration(time.Now(), "Statistics.Save")
-// 	}
-// 	bytes, err := json.MarshalIndent(s, "", "\t")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+func (s *Statistics) Save() {
+	if DebugMode {
+		defer util.Duration(time.Now(), "Statistics.Save")
+	}
+	bytes, err := json.MarshalIndent(s, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// 	saveBytesToFile(bytes, "statistics.json")
+	saveBytesToFile(bytes, "statistics.json")
 
-// }
+}
 
 // Save the entire undo stack to file
 func (b *Baize) Save() {

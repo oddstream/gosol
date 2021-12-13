@@ -55,7 +55,7 @@ var (
 var ThePreferences = &Preferences{Game: "Solitaire", Variant: "Klondike", BaizeColor: "BaizeGreen", PowerMoves: true, CardFaceColor: "Ivory", CardBackColor: "CornflowerBlue", FixedCards: true}
 
 // TheStatistics holds statistics for all variants
-// var TheStatistics *Statistics
+var TheStatistics *Statistics
 
 // TheBaize points to the Baize, so that main can see it
 var TheBaize *Baize
@@ -70,7 +70,7 @@ var TheUI *ui.UI
 func NewGame() (*Game, error) {
 	g := &Game{}
 	TheUI = ui.New(Execute)
-	// TheStatistics = NewStatistics()
+	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
 	TheBaize.NewVariant()
 	return g, nil
@@ -78,18 +78,20 @@ func NewGame() (*Game, error) {
 
 // Layout implements ebiten.Game's Layout.
 func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return TheBaize.Layout(outsideWidth, outsideHeight)
+	TheBaize.Layout(outsideWidth, outsideHeight)
+	// TheUI.Layout(outsideWidth, outsideHeight)
+	return outsideWidth, outsideHeight
 }
 
 // Update updates the current game state.
 func (*Game) Update() error {
-	if err := TheBaize.Update(); err != nil {
-		return err
-	}
+	TheBaize.Update()
+	TheUI.Update()
 	return nil
 }
 
 // Draw draws the current game to the given screen.
 func (*Game) Draw(screen *ebiten.Image) {
 	TheBaize.Draw(screen)
+	TheUI.Draw(screen)
 }

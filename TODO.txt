@@ -5,12 +5,18 @@ https://en.wikipedia.org/wiki/Dependency_injection
  grep .subtype).(type) or ).(*Stock)
  Generic doesn't seem quite right
 
+ Panic stop dragging unknown object
+ Welcome toast not showing
+ https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
+ Animate rune when mouse pushed
  Canfield
- statistics
+ Copy variant list from opsole/gomps2
  tengo
  README.md
  scale slot up by 10, call it slot10 to help remember
 
+x Draw things upsidedown using Rotate() https://github.com/fogleman/gg/blob/master/examples/rotated-text.go
+x statistics
 x mirror baize
 x spinning cards didn't stop spinning when pressing the FAB quickly
 x FAB not showing

@@ -60,7 +60,11 @@ func (u *UI) Toast(message string) {
 
 	t := &Toast{message: message}
 	t.img = ebiten.NewImageFromImage(dc.Image())
-	t.ticksLeft = int(ebiten.CurrentTPS()) * (6 + len(u.toastManager.toasts))
+	// pearl from the mudbank, can't use ebiten.CurrentTPS() here
+	// because during welcome toasts it will return 0.0
+	// println(ebiten.CurrentTPS())
+	// t.ticksLeft = int(ebiten.CurrentTPS()) * (6 + len(u.toastManager.toasts))
+	t.ticksLeft = 60 * (6 + len(u.toastManager.toasts))
 
 	u.toastManager.Add(t)
 }
@@ -68,7 +72,11 @@ func (u *UI) Toast(message string) {
 // Add a new toast to the list
 func (tm *ToastManager) Add(t *Toast) {
 	tm.toasts = append(tm.toasts, t) // push onto end of list
+	// println("Added toast", t.message)
 }
+
+// func (tm *ToastManager) Layout(outsideWidth, outsideHeight int) {
+// }
 
 // Update the queue of toasts
 func (tm *ToastManager) Update() {
@@ -79,6 +87,7 @@ func (tm *ToastManager) Update() {
 		t.ticksLeft--
 	}
 	for len(tm.toasts) > 0 && tm.toasts[0].ticksLeft < 0 {
+		// println("Removing toast", tm.toasts[0].message)
 		tm.toasts = tm.toasts[1:] // delete the oldest
 	}
 }
@@ -87,6 +96,7 @@ func (tm *ToastManager) Update() {
 func (tm *ToastManager) Draw(screen *ebiten.Image) {
 
 	if len(tm.toasts) == 0 {
+		// ebitenutil.DebugPrint(screen, "No toasts")
 		return
 	}
 	sx, sy := screen.Size()
@@ -101,5 +111,6 @@ func (tm *ToastManager) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(tx), float64(ty))
 		screen.DrawImage(t.img, op)
+		// ebitenutil.DebugPrint(screen, t.message)
 	}
 }

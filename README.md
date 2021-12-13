@@ -1,14 +1,12 @@
-# Gosol
+# Gilbert Oddstream's Minimal Polymorphic Solitaire 5
 
 There's a live WASM version [here](https://oddstream.games/gomps5/gosol.html).
 
-Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg).
-
-It's an adaptation of my [Lua](https://www.lua.org/)/[Solar2D](https://solar2d.com/) retained mode engine used in the Android game (which was itself an adaptation of my messy vanilla JavaScript/SVG engine used for the [online game](https://oddstream/games/Solitaire)). The intention is that this version will replace both of those, and provide Linux, Windows, Android and browser-based versions from the same code base. If I had a Mac there would be iOS and Mac versions, too.
+Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg), with game variants run by (user supplied) scripts.
 
 ## Variants
 
-It currently knows how to play:
+It will know how to play:
 
 * Aces and Kings
 * Algerian
@@ -21,7 +19,7 @@ It currently knows how to play:
 * Canfield (also Acme, Storehouse)
 * Cruel, Ripple Fan
 * Duchess
-* EasyWin (an easy to win game, for debugging)
+* Easy (an easy to win game, for debugging)
 * Fortune's Favor
 * Forty Thieves (also Busy Aces, Fortune's Favor, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black)
 * Freecell (also Eight Off, Freecell Easy)
@@ -125,6 +123,7 @@ Where possible, I've implemented the games from the book
 * S - save current position ('bookmark')
 * L - load/return to a previously saved position
 * C - collect cards to the foundations
+* A - collect all cards to the foundations
 
 ### What about scores?
 
@@ -148,33 +147,10 @@ Solitaire is also called *patience*; it's hard to feel patient when you're press
 
 #### Fixed cards
 
-The size of the cards is fixed, preventing them from scaling.
+With this checked, the size of the cards is fixed, preventing them from scaling.
 
 Otherwise, the size of the cards is changed dynamically so the cards fill the width of the screen. In some variants, this can cause the
-cards to disappear off the bottom, in which case you can (a) drag the baize, (b) switch to fixed or retro cards, or (c) change
-the size of the window (if not running on a mobile device).
-
-#### Card back
-
-Changes the card back to either a different color (when using scalable or fixed size cards) or design (when using retro cards).
-
-#### Single tap
-
-Enabling this allows a single tap on a card to move it, for example from the stock pile to the waste pile, or to the
-fullest tableaux pile, or to a foundation pile. You you want the card to go to a specific place, then you have to drag it there.
-
-You can always tap on the card on top of a Stock pile.
-
-#### Free drag
-
-By default, the game only allows you to drag cards that are allowed to be dragged by the current variant's rules.
-When this setting is checked, you can drag any cards anywhere, anytime; if the move isn't allowed, the game will send the cards
-back, and maybe give you a message saying why.
-
-#### Highlights
-
-This highlights cards that *can* be moved by you. The software uses different levels of highlighting, depending on it's simple assessment
-of how useful it thinks that move may be. For example, a card that can be moved to a foundation pile is highlighted the most.
+cards to disappear off the bottom, in which case you can drag the baize, or change the size of the window (if not running on a mobile device).
 
 #### Power moves
 
@@ -212,16 +188,27 @@ that anyone else ever has, or ever will.
 
 ## TODO
 
+* Statistics.
+* Scripted game variants.
 * Get it working on Android.
 * Get the size of the executable and WASM down.
-* Use SVG for the card graphics. The obvious SVG renderer (github.com/srwiley/oksvg, rasterx) doesn't render the wikimedia SVG files properly.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
 * Give up and rewrite the whole thing in [Defold](https://www.defold.com) or C/[raylib](https://www.raylib.com).
+
+## History
+
+First, there was a Javascript version that used SVG graphics and ran in web browsers. Game variants were configured using static lookup tables, which I thought was a good idea at the time.
+
+Second, there was a version in Lua, using the Solar2d game engine, that made it to the Google Play store.  Game variants were configured using static lookup tables, which I still thought was a good idea.
+
+Third, there was a version in Go, using the ebiten game engine, with help from gg/fogleman. The design was internally a mess, and the cards didn't scale, so this was abandoned.  Game variants were configured using static lookup tables, which was starting to become a source of clumsiness and code smells.
+
+Fourth, there is a version in C that uses the Raylib game engine and uses Lua to script the game variants. The design was good, but has problems with scaling cards.
+
+Fifth, there is this version in Go, using the ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
 
 ## Acknowledgements
 
 Original games by Jan Wolter, David Parlett, Paul Alfille, Art Cabral, Albert Morehead, Geoffrey Mott-Smith, Zach Gage and Thomas Warfield.
 
-Retro card back designs by [Leslie Kooy](https://www.lesliekooy.com/), jazz cup pattern by Gina Ekiss.
-
-Sounds by [kenney.nl](https://www.kenney.nl/assets) and Victor Vashenko
+Sounds by [kenney.nl](https://www.kenney.nl/assets) and Victor Vashenko.
