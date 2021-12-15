@@ -16,6 +16,7 @@ import (
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gomps5/picol"
 	sol "oddstream.games/gomps5/sol"
 	"oddstream.games/gomps5/sound"
 	"oddstream.games/gomps5/ui"
@@ -75,6 +76,9 @@ func main() {
 		ebiten.SetWindowPosition(sol.ThePreferences.WindowX, sol.ThePreferences.WindowY)
 	}
 	// ebiten.SetScreenClearedEveryFrame(false)
+
+	interp := picol.InitInterp()
+	interp.RegisterCoreCommands()
 
 	game, err := sol.NewGame()
 	if err != nil {

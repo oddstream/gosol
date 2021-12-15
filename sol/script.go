@@ -25,6 +25,7 @@ type ScriptInterface interface {
 }
 
 var Variants = map[string]ScriptInterface{
+	"American Toad":       &Toad{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Easy":                &Easy{},
@@ -157,7 +158,7 @@ func (cp CardPair) Compare_UpSuitWrap() (bool, error) {
 	return false, errors.New("Cards must go up in rank (Aces on Kings allowed)")
 }
 
-func (cp CardPair) CardCompare_DownSuitWrap() (bool, error) {
+func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
 	if cp.c1.Suit() != cp.c2.Suit() {
 		return false, errors.New("Cards must be the same suit")
 	}

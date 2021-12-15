@@ -524,5 +524,13 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 		// op.GeoM.Translate(4, 4)
 		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
 	}
+
+	if p.symbol != 0 {
+		if pt := image.Pt(ebiten.CursorPosition()); pt.In(p.ScreenRect()) {
+			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+				op.GeoM.Translate(2, 2)
+			}
+		}
+	}
 	screen.DrawImage(p.img, op)
 }

@@ -13,7 +13,7 @@ func (*Freecell) BuildPiles() {
 	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 0; x < 4; x++ {
-		NewCell(image.Point{x, 0}, FAN_NONE)
+		NewCell(image.Point{x, 0})
 
 	}
 	for x := 4; x < 8; x++ {

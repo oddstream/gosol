@@ -9,11 +9,11 @@ import (
 func (b *Baize) FindBuddyPiles() {
 	for _, p1 := range b.piles {
 		switch (p1.subtype).(type) {
-		case *Tableau: // TODO *Reserve
+		case *Tableau, *Reserve:
 			p1.buddyPos = image.Point{0, 0}
 			for _, p2 := range b.piles {
 				switch (p2.subtype).(type) {
-				case *Tableau:
+				case *Tableau, *Reserve:
 					switch p1.fanType {
 					case FAN_DOWN:
 						if p1.slot.X == p2.slot.X && p2.slot.Y > p1.slot.Y {
@@ -37,7 +37,7 @@ func (b *Baize) FindBuddyPiles() {
 func (b *Baize) CalcScrunchDims(w, h int) {
 	for _, p := range b.piles {
 		switch (p.subtype).(type) {
-		case *Tableau: // TODO *Reserve
+		case *Tableau, *Reserve:
 			switch p.fanType {
 			case FAN_DOWN:
 				if p.buddyPos.Y != 0 {

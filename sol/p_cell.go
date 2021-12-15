@@ -11,7 +11,7 @@ type Cell struct {
 	pile *Pile
 }
 
-func NewCell(slot image.Point, fanType FanType) *Pile {
+func NewCell(slot image.Point) *Pile {
 	p := &Pile{}
 	p.Ctor(&Cell{pile: p}, "Cell", slot, FAN_NONE)
 	return p

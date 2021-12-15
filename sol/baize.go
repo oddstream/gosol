@@ -333,7 +333,6 @@ func (b *Baize) AfterUserMove() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
-		TheUI.Toast("Conformant")
 		TheUI.ShowFAB("done_all", ebiten.KeyA)
 	} else {
 		TheUI.HideFAB()
@@ -457,7 +456,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				}
 			}
 		}
-	case Pile:
+	case *Pile:
 		// do nothing
 	case *Baize:
 		// println("stop dragging baize")
@@ -801,9 +800,9 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(ExtendedColors[ThePreferences.BaizeColor])
 
-	// if NoDrawing {
-	// 	return
-	// }
+	if NoDrawing {
+		return
+	}
 
 	for _, p := range b.piles {
 		p.Draw(screen)
@@ -836,9 +835,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	if DebugMode {
 		if ebiten.IsMouseButtonPressed(1) {
-			x, y := ebiten.CursorPosition()
-			c := b.FindCardAt(image.Point{x, y})
-			if c != nil {
+			if c := b.FindCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
 				p := c.owner
 				index := p.IndexOf(c)
 				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, cat=%s index=%d",

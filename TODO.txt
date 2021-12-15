@@ -3,9 +3,12 @@ https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
 
  work at reducing the size of variant.go files (CardPair &c)
+  get rid of TheBaize.*
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
 
+ retire Pile.category
+ https://github.com/oneoffcode/picol
  Bebas Neue for Acme
  shirley turning over a stock card doesn't count as a move?
  hearts and 10s are too close to the edge
