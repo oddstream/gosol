@@ -95,11 +95,11 @@ var Pips [13][]PipInfo = [13][]PipInfo{
 }
 
 // createFaceImage tries to draw an image for this card that looks like kenney.nl playingCards.png
-func createFaceImage(width, height int, ID CardID) *ebiten.Image {
-	w := float64(width)
-	h := float64(height)
+func createFaceImage(ID CardID) *ebiten.Image {
+	w := float64(CardWidth)
+	h := float64(CardHeight)
 
-	dc := gg.NewContext(width, height)
+	dc := gg.NewContext(CardWidth, CardHeight)
 
 	// draw the basic card face
 	dc.SetColor(ExtendedColors[ThePreferences.CardFaceColor])
@@ -111,7 +111,7 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 	// card face is probably light, so darken the border a bit
 	dc.SetRGBA(0, 0, 0, 0.1)
 	// draw the RoundedRect entirely INSIDE the context
-	dc.DrawRoundedRectangle(1, 1, float64(width-2), float64(height-2), CardCornerRadius)
+	dc.DrawRoundedRectangle(1, 1, w-2, h-2, CardCornerRadius)
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
 	// draw the card ordinals in top left and bottom right corners
@@ -186,11 +186,11 @@ func createFaceImage(width, height int, ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func CreateCardBackImage(width, height int) *ebiten.Image {
-	w := float64(width)
-	h := float64(height)
+func CreateCardBackImage() *ebiten.Image {
+	w := float64(CardWidth)
+	h := float64(CardHeight)
 
-	dc := gg.NewContext(width, height)
+	dc := gg.NewContext(CardWidth, CardHeight)
 
 	dc.SetColor(ExtendedColors[ThePreferences.CardBackColor])
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
@@ -200,7 +200,7 @@ func CreateCardBackImage(width, height int) *ebiten.Image {
 	// card back probably dark, so lighten the border a bit
 	dc.SetRGBA(1, 1, 1, 0.1)
 	// draw the RoundedRect entirely INSIDE the context
-	dc.DrawRoundedRectangle(1, 1, float64(width-2), float64(height-2), CardCornerRadius)
+	dc.DrawRoundedRectangle(1, 1, w-2, h-2, CardCornerRadius)
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
 	dc.SetFontFace(schriftbank.CardSymbolRegular)
@@ -217,12 +217,21 @@ func CreateCardBackImage(width, height int) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func CreateCardShadowImage(width, height int) *ebiten.Image {
-	dc := gg.NewContext(width, height)
+func CreateCardShadowImage() *ebiten.Image {
+	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetRGBA(0, 0, 0, 0.5)
-	dc.SetLineWidth(2)
-	dc.DrawRoundedRectangle(0, 0, float64(width), float64(height), CardCornerRadius)
+	// dc.SetLineWidth(2)
+	dc.DrawRoundedRectangle(0, 0, float64(CardWidth), float64(CardHeight), CardCornerRadius)
 	dc.Fill()
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
+}
+
+func CreateCardHighlightImage() *ebiten.Image {
+	dc := gg.NewContext(CardWidth+8, CardHeight+8)
+	dc.SetColor(ExtendedColors["Grey"])
+	dc.SetLineWidth(4)
+	dc.DrawRoundedRectangle(4, 4, float64(CardWidth), float64(CardHeight), CardCornerRadius)
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }
@@ -233,15 +242,20 @@ func CreateCardFaceImageLibrary() {
 	for _, suit := range []int{NOSUIT, CLUB, DIAMOND, HEART, SPADE} {
 		for ord := 1; ord < 14; ord++ {
 			ID := NewCardID(0, suit, ord)
-			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(CardWidth, CardHeight, ID)
+			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(ID)
 		}
 	}
 }
 
 func CreateCardImages() {
+	if CardWidth == 0 || CardHeight == 0 {
+		println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
+		return
+	}
 	// TODO turn off drawing globally while this runs
-	schriftbank.MakeCardFonts(CardWidth) // CardWidth/Height have now been set
+	schriftbank.MakeCardFonts(CardWidth)
 	CreateCardFaceImageLibrary()
-	CardBackImage = CreateCardBackImage(CardWidth, CardHeight)
-	CardShadowImage = CreateCardShadowImage(CardWidth, CardHeight)
+	CardBackImage = CreateCardBackImage()
+	CardShadowImage = CreateCardShadowImage()
+	CardHighlightImage = CreateCardHighlightImage()
 }

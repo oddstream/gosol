@@ -16,24 +16,15 @@ func (k *Klondike) BuildPiles() {
 	if k.draw == 0 {
 		k.draw = 1
 	}
-	TheBaize.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
-
-	TheBaize.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.waste)
+	NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for x := 3; x < 7; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, f)
-		TheBaize.foundations = append(TheBaize.foundations, f)
-		f.SetLabel("A")
+		NewFoundation(image.Point{x, 0}, FAN_NONE).SetLabel("A")
 	}
 
 	for x := 0; x < 7; x++ {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
-		t.SetLabel("K")
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY).SetLabel("K")
 	}
 }
 
@@ -52,9 +43,13 @@ func (k *Klondike) StartGame() {
 		s.recycles = k.recycles
 	}
 	TheBaize.stock.SetRune(RECYCLE_RUNE)
+	MoveCard(TheBaize.stock, TheBaize.waste)
 }
 
 func (*Klondike) AfterMove() {
+	if TheBaize.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
+		MoveCard(TheBaize.stock, TheBaize.waste)
+	}
 }
 
 func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
@@ -154,7 +149,7 @@ func (*Klondike) PileTapped(pile *Pile) {
 }
 
 func (*Klondike) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*Klondike) Wikipedia() string {

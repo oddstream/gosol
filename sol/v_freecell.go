@@ -10,25 +10,19 @@ import (
 type Freecell struct{}
 
 func (*Freecell) BuildPiles() {
-	TheBaize.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
+	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 0; x < 4; x++ {
-		c := NewCell(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, c)
+		NewCell(image.Point{x, 0}, FAN_NONE)
 
 	}
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, f)
-		TheBaize.foundations = append(TheBaize.foundations, f)
 		f.SetLabel("A")
 	}
 
 	for x := 0; x < 8; x++ {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 	}
 }
 
@@ -116,7 +110,7 @@ func (*Freecell) PileTapped(*Pile) {
 }
 
 func (*Freecell) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*Freecell) Wikipedia() string {

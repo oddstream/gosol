@@ -10,15 +10,20 @@ import (
 )
 
 var CommandTable = map[ebiten.Key]func(){
-	ebiten.KeyN:      func() { TheBaize.NewDeal() },
-	ebiten.KeyR:      func() { TheBaize.RestartDeal() },
-	ebiten.KeyU:      func() { TheBaize.Undo() },
-	ebiten.KeyS:      func() { TheBaize.SavePosition() },
-	ebiten.KeyL:      func() { TheBaize.LoadPosition() },
-	ebiten.KeyC:      func() { TheBaize.Collect() },
-	ebiten.KeyA:      func() { TheBaize.CollectAll() },
-	ebiten.KeyF:      func() { TheBaize.ShowVariantPicker() },
-	ebiten.KeyTab:    func() { TheBaize.Refan() },
+	ebiten.KeyN: func() { TheBaize.NewDeal() },
+	ebiten.KeyR: func() { TheBaize.RestartDeal() },
+	ebiten.KeyU: func() { TheBaize.Undo() },
+	ebiten.KeyS: func() { TheBaize.SavePosition() },
+	ebiten.KeyL: func() { TheBaize.LoadPosition() },
+	ebiten.KeyC: func() { TheBaize.Collect() },
+	ebiten.KeyA: func() { TheBaize.CollectAll() },
+	ebiten.KeyF: func() { TheBaize.ShowVariantPicker() },
+	ebiten.KeyTab: func() {
+		for _, p := range TheBaize.piles {
+			p.Refan()
+		}
+		ThePreferences.Save()
+	},
 	ebiten.KeyF1:     func() { TheBaize.Wikipedia() },
 	ebiten.KeyF3:     func() { ShowSettingsDrawer() },
 	ebiten.KeyF4:     func() { TheStatistics.ShowStatistics() },

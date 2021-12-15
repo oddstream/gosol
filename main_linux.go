@@ -30,6 +30,7 @@ func main() {
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.BoolVar(&sol.NoCardLerp, "nolerp", false, "do not animate card movements")
+	flag.BoolVar(&sol.NoCardFlip, "noflip", false, "do not animate card flips")
 	flag.BoolVar(&sol.NoShuffle, "noshuf", false, "do not shuffle cards")
 	flag.BoolVar(&sol.NoScrunch, "noscrunch", false, "do not scrunch cards")
 	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")

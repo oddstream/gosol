@@ -12,20 +12,15 @@ type Spider struct {
 }
 
 func (s *Spider) BuildPiles() {
-	TheBaize.stock = NewStock(image.Point{0, 0}, FAN_NONE, s.packs, s.suits, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
+	NewStock(image.Point{0, 0}, FAN_NONE, s.packs, s.suits, nil)
 
 	for x := 2; x < 10; x++ {
-		c := NewDiscard(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, c)
-		TheBaize.discards = append(TheBaize.discards, c)
+		NewDiscard(image.Point{x, 0}, FAN_NONE)
 
 	}
 
 	for x := 0; x < 10; x++ {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 	}
 }
 
@@ -142,7 +137,7 @@ func (*Spider) PileTapped(*Pile) {
 }
 
 func (*Spider) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*Spider) Wikipedia() string {

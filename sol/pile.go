@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -37,7 +36,7 @@ const (
 )
 
 const (
-	CARD_FACE_FAN_FACTOR_V = 3.333
+	CARD_FACE_FAN_FACTOR_V = 4
 	CARD_FACE_FAN_FACTOR_H = 4
 	CARD_BACK_FAN_FACTOR   = 8
 )
@@ -75,6 +74,7 @@ type Pile struct {
 	img              *ebiten.Image
 	scrunchDims      image.Point
 	buddyPos         image.Point
+	target           bool // experimental, might delete later, IDK
 }
 
 func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType) {
@@ -86,6 +86,7 @@ func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanTy
 	p.fanFactor = p.defaultFanFactor
 	p.cards = nil
 	p.subtype = subtype
+	TheBaize.piles = append(TheBaize.piles, p) // TODO nasty
 }
 
 func (p *Pile) Valid() bool {
@@ -173,11 +174,19 @@ func (p *Pile) Pop() *Card {
 
 // Push a Card onto the end of this Pile (a stack)
 func (p *Pile) Push(c *Card) {
-	c.StopSpinning()
-	pos := p.PosAfter(p.Peek()) // get this BEFORE appending card
+	// c.StopSpinning()
+
+	var pos image.Point
+	if len(p.cards) == 0 {
+		pos = p.pos
+	} else {
+		pos = p.PosAfter(p.Peek()) // get this BEFORE appending card
+	}
+
 	p.cards = append(p.cards, c)
-	c.TransitionTo(pos)
 	c.SetOwner(p)
+	c.TransitionTo(pos)
+
 	if _, ok := (p.subtype).(*Stock); ok {
 		c.FlipDown()
 	}
@@ -366,13 +375,13 @@ func (p *Pile) Refan() {
 	}
 }
 
-func (p *Pile) IndexOf(card *Card) (int, error) {
+func (p *Pile) IndexOf(card *Card) int {
 	for i, c := range p.cards {
 		if c == card {
-			return i, nil
+			return i
 		}
 	}
-	return -1, fmt.Errorf("%s not found in %s", card.String(), p.category)
+	return -1
 }
 
 func (p *Pile) MakeTail(c *Card) []*Card {
@@ -474,6 +483,11 @@ func (p *Pile) Update() {
 }
 
 func (p *Pile) CreateBackgroundImage() *ebiten.Image {
+	if CardWidth == 0 || CardHeight == 0 {
+		println("zero dimension in CreateCardShadowImage, unliked in wasm")
+		return nil
+		// log.Panic("zero dimension in CreateCardShadowImage, unliked in wasm")
+	}
 	if p.Hidden() {
 		return nil
 	}
@@ -504,5 +518,11 @@ func (p *Pile) Draw(screen *ebiten.Image) {
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(p.pos.X+TheBaize.dragOffset.X), float64(p.pos.Y+TheBaize.dragOffset.Y))
+	if p.target && len(p.cards) == 0 {
+		// op.GeoM.Translate(-4, -4)
+		// screen.DrawImage(CardHighlightImage, op)
+		// op.GeoM.Translate(4, 4)
+		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
+	}
 	screen.DrawImage(p.img, op)
 }

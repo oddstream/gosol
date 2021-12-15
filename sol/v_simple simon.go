@@ -10,20 +10,15 @@ import (
 type SimpleSimon struct{}
 
 func (*SimpleSimon) BuildPiles() {
-	TheBaize.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
+	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 3; x < 7; x++ {
-		c := NewDiscard(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, c)
-		TheBaize.discards = append(TheBaize.discards, c)
+		NewDiscard(image.Point{x, 0}, FAN_NONE)
 
 	}
 
 	for x := 0; x < 10; x++ {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 	}
 }
 
@@ -110,7 +105,7 @@ func (*SimpleSimon) PileTapped(*Pile) {
 }
 
 func (*SimpleSimon) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*SimpleSimon) Wikipedia() string {

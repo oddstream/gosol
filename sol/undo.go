@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"fmt"
 	"log"
 
 	"oddstream.games/gomps5/sound"
@@ -157,7 +156,7 @@ func (b *Baize) SavePosition() {
 	if ok {
 		sb.Recycles = stockobject.recycles
 	}
-	TheUI.Toast(fmt.Sprintf("Position %d bookmarked", b.bookmark))
+	TheUI.Toast("Position bookmarked")
 }
 
 // LoadPosition loads a previously saved Baize state

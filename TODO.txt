@@ -1,12 +1,23 @@
 https://www.toptal.com/go/golang-oop-tutorial
 https://en.wikipedia.org/wiki/Dependency_injection
+https://calver.org/
 
  work at reducing the size of variant.go files (CardPair &c)
  grep .subtype).(type) or ).(*Stock)
- Generic doesn't seem quite right
+ having Generic functions doesn't seem quite right
 
+ Bebas Neue for Acme
+ shirley turning over a stock card doesn't count as a move?
+ hearts and 10s are too close to the edge
+ show NewDeal FAB when loading a complete saved.txt
+ explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
+ highlight pile/card that dragged card would land on?
+ WASM not getting WindowWidth,Height at startup, try getting from other sources
+ WASM not scrunching?
+ copy WidgetBase.Draw mouse down stuff to Pile with recycle rune
+ not descrunching both piles after pop?
+ Conformant check/FAB with discards is odd
  Panic stop dragging unknown object
- Welcome toast not showing
  https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
  Animate rune when mouse pushed
  Canfield
@@ -15,6 +26,11 @@ https://en.wikipedia.org/wiki/Dependency_injection
  README.md
  scale slot up by 10, call it slot10 to help remember
 
+x cards thinking they were being dragged when they were not
+x TheBaize.tableaux &c could be setup after script.BuildPiles()
+x try https://go.dev/blog/go-fonts - did not look appropriate
+x crypto rand (doesn't have seed or shuffle)
+x Welcome toast not showing
 x Draw things upsidedown using Rotate() https://github.com/fogleman/gg/blob/master/examples/rotated-text.go
 x statistics
 x mirror baize

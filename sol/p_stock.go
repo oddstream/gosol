@@ -61,8 +61,10 @@ func (p *Pile) FillFromLibrary() {
 		}
 		// the following mimics Base.Push
 		p.Append(c)
-		c.TransitionTo(p.BaizePos())
 		c.SetOwner(p)
+		c.pos = p.BaizePos() // start at the Stock pile position
+		c.src = image.Point{0, 0}
+		c.dst = c.pos
 		c.SetProne(true)
 		// s.Push(c)
 	}
@@ -84,15 +86,14 @@ func (p *Pile) Shuffle() {
 
 		sort.Slice(p.Cards, func(i, j int) bool { return p.Cards[i].ID < p.Cards[j].ID })
 	*/
-	seed := time.Now().UnixNano()
+	seed := time.Now().UnixNano() & 0xFFFFFFFF
 	if DebugMode {
 		log.Println("shuffle with seed", seed)
 	}
 	rand.Seed(seed)
-	// for range []int{1, 2, 3, 4, 5, 6} {
-	// rand.Shuffle(len(base.cards), func(i, j int) { base.cards[i], base.cards[j] = base.cards[j], base.cards[i] })
-	rand.Shuffle(p.Len(), p.Swap)
-	// }
+	for i := 0; i < 6; i++ {
+		rand.Shuffle(p.Len(), p.Swap)
+	}
 }
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Pile {

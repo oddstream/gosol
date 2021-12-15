@@ -16,7 +16,10 @@ type BarBase struct {
 }
 
 func (bb *BarBase) createImg() *ebiten.Image {
-	// println("BarBase createImg", bb.x, bb.y, bb.width, bb.height)
+	if bb.width == 0 || bb.height == 0 {
+		return nil
+		// log.Panic("BarBase img with a zero dimension, unliked by wasm")
+	}
 	dc := gg.NewContext(bb.width, bb.height)
 	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, float64(bb.width), float64(bb.height))

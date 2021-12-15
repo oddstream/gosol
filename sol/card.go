@@ -10,13 +10,15 @@ import (
 )
 
 const (
-	cardmagic uint32 = 0x29041962
+	cardmagic       = 0x29041962
+	lerpStartNormal = 0.1
+	lerpStartClose  = 0.25
+	debugSpeed      = 0.005
+	slowSpeed       = 0.01
+	normalSpeed     = 0.02
+	fastSpeed       = 0.04
 	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
 	flipStepAmount = 0.075
-	debugSpeed     = 0.005
-	slowSpeed      = 0.01
-	normalSpeed    = 0.02
-	fastSpeed      = 0.04
 )
 
 /*
@@ -39,9 +41,7 @@ type Card struct {
 	dst            image.Point // lerp destination
 	lerpStep       float64     // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
 	lerpStepAmount float64     // the amount a transitioning card moves each tick
-	lerpFunc       func(float64, float64, float64) float64
 
-	dragging  bool        // true if this card is being dragged
 	dragStart image.Point // starting point for dragging
 
 	flipStep  float64 // if 0, we are not flipping
@@ -115,26 +115,35 @@ func (c *Card) TransitionTo(pos image.Point) {
 		return
 	}
 
+	if pos.Eq(c.dst) && c.lerpStep < 1.0 {
+		// println("repeat", c.String(), "from", c.pos.String(), "to", c.dst.String())
+		return
+	}
+
 	c.src = c.pos
 	c.dst = pos
 	// the further the card has to travel, the smaller the lerp step amount
-	dist := util.DistanceFloat64(float64(c.src.X), float64(c.src.Y), float64(c.dst.X), float64(c.dst.Y))
-	if dist < float64(CardWidth) {
-		c.lerpStepAmount = fastSpeed
-		c.lerpFunc = util.Lerp
-	} else {
+	// eg when dropping a card onto a pile
+	// or moving a card from stock to waste
+	dist := util.Distance(c.src, c.dst)
+	if int(dist) < CardWidth {
+		c.lerpStep = lerpStartClose
 		c.lerpStepAmount = normalSpeed
-		c.lerpFunc = util.Smoothstep
+		// println("fast", dist, c.String())
+	} else {
+		c.lerpStep = lerpStartNormal
+		c.lerpStepAmount = normalSpeed
 	}
-	c.lerpStep = 0.0 // trigger a lerp
 }
 
 // StartDrag informs card that it is being dragged
 func (c *Card) StartDrag() {
-	if !c.Transitioning() {
-		c.dragStart = c.pos
+	if c.Transitioning() {
+		println("Dragging a transitioning card", c.String())
 	}
-	c.dragging = true
+	// if !c.Transitioning() {
+	c.dragStart = c.pos
+	// }
 	// println("start drag", c.ID.String(), "start", c.dragStartX, c.dragStartY)
 }
 
@@ -152,7 +161,6 @@ func (c *Card) DragBy(dx, dy int) {
 // StopDrag informs card that it is no longer being dragged
 func (c *Card) StopDrag() {
 	// println("stop drag", c.ID.String())
-	c.dragging = false
 }
 
 // CancelDrag informs card that it is no longer being dragged
@@ -160,7 +168,6 @@ func (c *Card) CancelDrag() {
 	// println("cancel drag", c.ID.String(), "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
 	c.TransitionTo(c.dragStart)
 	// TODO should go back to Pile.PushedFannedPosition in case of a mis-drag
-	c.dragging = false
 }
 
 // WasDragged returns true of this card has been dragged
@@ -171,18 +178,22 @@ func (c *Card) WasDragged() bool {
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
 	if c.Prone() {
-		c.SetProne(false)            // card is immediately face up, else fan isn't correct
-		c.flipStep = -flipStepAmount // start by making card narrower
-		c.flipWidth = 1.0
+		c.SetProne(false) // card is immediately face up, else fan isn't correct
+		if !NoCardFlip {
+			c.flipStep = -flipStepAmount // start by making card narrower
+			c.flipWidth = 1.0
+		}
 	}
 }
 
 // FlipDown flips the card face down
 func (c *Card) FlipDown() {
 	if !c.Prone() {
-		c.SetProne(true)             // card is immediately face down, else fan isn't correct
-		c.flipStep = -flipStepAmount // start by making card narrower
-		c.flipWidth = 1.0
+		c.SetProne(true) // card is immediately face down, else fan isn't correct
+		if !NoCardFlip {
+			c.flipStep = -flipStepAmount // start by making card narrower
+			c.flipWidth = 1.0
+		}
 	}
 }
 
@@ -226,16 +237,29 @@ func (c *Card) Spinning() bool {
 
 // Transitioning returns true if this card is lerping
 func (c *Card) Transitioning() bool {
-	return c.lerpStep < 1.0
+	// return c.lerpStep < 1.0
+	return c.lerpStep < 1.0 && c.pos != c.dst
 }
 
 // Dragging returns true if this card is being dragged
 func (c *Card) Dragging() bool {
-	return c.dragging
+	// if TheBaize.tail == nil {
+	// 	return false
+	// }
+	for _, card := range TheBaize.tail {
+		if card == c {
+			return true
+		}
+	}
+	return false
+	// return c.dragging
 }
 
 // Flipping returns true if this card is flipping
 func (c *Card) Flipping() bool {
+	if NoCardFlip {
+		return false
+	}
 	return c.flipStep != 0.0
 }
 
@@ -246,11 +270,13 @@ func (c *Card) Flipping() bool {
 
 // Update the card state (transitions)
 func (c *Card) Update() error {
-	if c.lerpStep < 1.0 {
-		c.pos.X = int(c.lerpFunc(float64(c.src.X), float64(c.dst.X), c.lerpStep))
-		c.pos.Y = int(c.lerpFunc(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
+	if c.pos != c.dst && c.lerpStep < 1.0 {
+		c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
+		c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
 		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
-			c.SetBaizePos(c.dst)
+			// c.SetBaizePos(c.dst)
+			c.pos = c.dst
+			c.src = image.Point{0, 0}
 		}
 	}
 	if c.Flipping() {
@@ -338,27 +364,38 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.pos.X+TheBaize.dragOffset.X), float64(c.pos.Y+TheBaize.dragOffset.Y))
 
-	if !c.Flipping() {
-		switch {
-		case c.Transitioning():
-			offset := float64(CardWidth) / 20.0
-			op.GeoM.Translate(offset, offset)
-			screen.DrawImage(CardShadowImage, op)
-			op.GeoM.Translate(-offset, -offset)
-		case c.Dragging():
-			offset := float64(CardWidth) / 20.0
-			op.GeoM.Translate(offset, offset)
-			screen.DrawImage(CardShadowImage, op)
-			// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
-			op.GeoM.Translate(-offset/2, -offset/2)
-			// this looks intuitively better than "lifting" the card with
-			// op.GeoM.Translate(-offset*2, -offset*2)
-			// even though "lifting" it (moving it up/left towards the light source) would be more "correct"
+	if CardShadowImage != nil {
+		if !c.Flipping() {
+			switch {
+			case c.Transitioning():
+				offset := float64(CardWidth) / 20.0
+				op.GeoM.Translate(offset, offset)
+				screen.DrawImage(CardShadowImage, op)
+				offset = -offset
+				op.GeoM.Translate(offset, offset)
+			case c.Dragging():
+				offset := float64(CardWidth) / 20.0
+				op.GeoM.Translate(offset, offset)
+				screen.DrawImage(CardShadowImage, op)
+				// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
+				offset = -offset * 0.5
+				op.GeoM.Translate(offset, offset)
+				// this looks intuitively better than "lifting" the card with
+				// op.GeoM.Translate(-offset*2, -offset*2)
+				// even though "lifting" it (moving it up/left towards the light source) would be more "correct"
+			}
 		}
 	}
 
 	if img == nil {
 		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
+	}
+
+	if c.owner.target && c == c.owner.Peek() {
+		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+		// 	op.GeoM.Translate(-4, -4)
+		// 	screen.DrawImage(CardHighlightImage, op)
+		// 	op.GeoM.Translate(4, 4)
 	}
 
 	screen.DrawImage(img, op)

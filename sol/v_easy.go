@@ -10,23 +10,15 @@ import (
 type Easy struct{}
 
 func (*Easy) BuildPiles() {
-	TheBaize.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
-
-	TheBaize.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.waste)
+	NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for x := 9; x < 13; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, f)
-		TheBaize.foundations = append(TheBaize.foundations, f)
-		f.SetLabel("A")
+		NewFoundation(image.Point{x, 0}, FAN_NONE).SetLabel("A")
 	}
 
 	for x := 0; x < 13; x++ {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 	}
 }
 
@@ -46,9 +38,13 @@ func (*Easy) StartGame() {
 		s.recycles = 32767
 	}
 	TheBaize.stock.SetRune(RECYCLE_RUNE)
+	MoveCard(TheBaize.stock, TheBaize.waste)
 }
 
 func (*Easy) AfterMove() {
+	if TheBaize.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
+		MoveCard(TheBaize.stock, TheBaize.waste)
+	}
 }
 
 func (*Easy) TailMoveError(tail []*Card) (bool, error) {
@@ -57,7 +53,6 @@ func (*Easy) TailMoveError(tail []*Card) (bool, error) {
 	switch (pile.subtype).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
@@ -136,7 +131,7 @@ func (*Easy) PileTapped(pile *Pile) {
 }
 
 func (*Easy) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*Easy) Wikipedia() string {

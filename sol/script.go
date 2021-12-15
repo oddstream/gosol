@@ -6,8 +6,6 @@ import (
 	"errors"
 	"log"
 	"sort"
-
-	"oddstream.games/gomps5/util"
 )
 
 type ScriptInterface interface {
@@ -92,18 +90,6 @@ func (cpairs CardPairs) Print() {
 	for _, pair := range cpairs {
 		println(pair.c1.String(), pair.c2.String())
 	}
-}
-
-func Script_PercentComplete() int {
-	var pairs, unsorted, percent int
-	for _, p := range TheBaize.piles {
-		if p.Len() > 1 {
-			pairs += p.Len() - 1
-		}
-		unsorted += p.subtype.UnsortedPairs()
-	}
-	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
-	return percent
 }
 
 func (cp CardPair) Compare_Up() (bool, error) {

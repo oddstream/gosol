@@ -31,10 +31,6 @@ func main() {
 		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}
-		// if runtime.GOARCH != "wasm" {
-		// 	sol.TheUserData.WindowX, sol.TheUserData.WindowY = ebiten.WindowPosition()
-		// 	sol.TheUserData.WindowWidth, sol.TheUserData.WindowHeight = ebiten.WindowSize()
-		// }
 		sol.ThePreferences.Save()
 	}()
 

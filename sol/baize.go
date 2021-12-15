@@ -1,15 +1,18 @@
 package sol
 
 import (
+	"fmt"
 	"hash/crc32"
 	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gomps5/input"
 	"oddstream.games/gomps5/sound"
 	"oddstream.games/gomps5/ui"
+	"oddstream.games/gomps5/util"
 )
 
 const (
@@ -174,6 +177,7 @@ func (b *Baize) NewVariant() {
 	b.Reset()
 
 	b.piles = nil
+
 	b.stock = nil
 	b.waste = nil
 	b.foundations = nil
@@ -182,6 +186,7 @@ func (b *Baize) NewVariant() {
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
+	b.BuildAuxPiles()
 	if ThePreferences.MirrorBaize {
 		b.Mirror()
 	}
@@ -233,14 +238,31 @@ func (b *Baize) FindCardAt(pt image.Point) *Card {
 	return nil
 }
 
+func (b *Baize) BuildAuxPiles() {
+	for _, p := range b.piles {
+		switch (p.subtype).(type) {
+		case *Stock:
+			b.stock = p
+		case *Waste:
+			b.waste = p
+		case *Discard:
+			b.discards = append(b.discards, p)
+		case *Foundation:
+			b.foundations = append(b.foundations, p)
+		case *Tableau:
+			b.tableaux = append(b.tableaux, p)
+		}
+	}
+}
+
 func (b *Baize) LargestIntersection(c *Card) *Pile {
 	var largestArea int = 0
 	var pile *Pile = nil
 	cardRect := c.BaizeRect()
 	for _, p := range b.piles {
-		// if p == c.owner {
-		// 	continue
-		// }
+		if p == c.owner {
+			continue
+		}
 		pileRect := p.FannedBaizeRect()
 		intersectRect := pileRect.Intersect(cardRect)
 		area := intersectRect.Dx() * intersectRect.Dy()
@@ -357,12 +379,20 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
 		log.Panic("*** move stroke with nil dragged object ***")
 	}
+	for _, p := range b.piles {
+		p.target = false
+	}
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Container:
 		con := v.Stroke.DraggedObject().(ui.Container)
 		con.DragBy(v.Stroke.PositionDiff())
 	case *Card:
 		b.DragTailBy(v.Stroke.PositionDiff())
+		if c, ok := v.Stroke.DraggedObject().(*Card); ok {
+			if p := b.LargestIntersection(c); p != nil {
+				p.target = true
+			}
+		}
 	case *Pile:
 		// do nothing
 	case *Baize:
@@ -375,6 +405,9 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 func (b *Baize) InputStop(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
 		log.Panic("*** stop stroke with nil dragged object ***")
+	}
+	for _, p := range b.piles {
+		p.target = false
 	}
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Container:
@@ -634,6 +667,18 @@ func (b *Baize) ScaleCards() bool {
 	return CardWidth != OldWidth || CardHeight != OldHeight
 }
 
+func (b *Baize) PercentComplete() int {
+	var pairs, unsorted, percent int
+	for _, p := range b.piles {
+		if p.Len() > 1 {
+			pairs += p.Len() - 1
+		}
+		unsorted += p.subtype.UnsortedPairs()
+	}
+	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
+	return percent
+}
+
 func (b *Baize) UpdateStatusbar() {
 	if !b.stock.Hidden() {
 		TheUI.SetStock(b.stock.Len())
@@ -665,6 +710,11 @@ func (b *Baize) Complete() bool {
 
 // Layout implements ebiten.Game's Layout.
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
+
+	if outsideWidth == 0 || outsideHeight == 0 {
+		println("Baize.Layout called with zero dimension")
+		return outsideWidth, outsideHeight
+	}
 
 	if outsideWidth != b.WindowWidth {
 		b.setFlag(dirtyWindowSize | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
@@ -741,6 +791,8 @@ func (b *Baize) Update() error {
 		}
 	}
 
+	TheUI.Update()
+
 	return nil
 }
 
@@ -749,12 +801,15 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(ExtendedColors[ThePreferences.BaizeColor])
 
-	if NoDrawing {
-		return
-	}
+	// if NoDrawing {
+	// 	return
+	// }
 
 	for _, p := range b.piles {
 		p.Draw(screen)
+		// for _, c := range p.cards {
+		// 	c.Draw(screen)
+		// }
 	}
 	for _, p := range b.piles {
 		p.DrawStaticCards(screen)
@@ -769,6 +824,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 		p.DrawDraggingCards(screen)
 	}
 
+	TheUI.Draw(screen)
 	// if DebugMode {
 	// var ms runtime.MemStats
 	// runtime.ReadMemStats(&ms)
@@ -777,5 +833,25 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	// bounds := screen.Bounds()
 	// ebitenutil.DebugPrint(screen, bounds.String())
 	// }
+
+	if DebugMode {
+		if ebiten.IsMouseButtonPressed(1) {
+			x, y := ebiten.CursorPosition()
+			c := b.FindCardAt(image.Point{x, y})
+			if c != nil {
+				p := c.owner
+				index := p.IndexOf(c)
+				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, cat=%s index=%d",
+					c.String(),
+					c.Dragging(),
+					c.pos.String(),
+					c.src.String(),
+					c.dst.String(),
+					c.lerpStep,
+					p.category,
+					index))
+			}
+		}
+	}
 
 }

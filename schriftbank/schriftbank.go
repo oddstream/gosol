@@ -11,7 +11,7 @@ import (
 	"oddstream.games/gomps5/util"
 )
 
-// assets/RobotoSlab-Medium.ttf
+// assets/RobotoSlab-Bold.ttf
 //go:embed assets/Acme-Regular.ttf
 var acmeFontBytes []byte
 
@@ -86,6 +86,7 @@ func init() {
 // MakeCardFonts creates the fonts used for Card, once size of card is known (or has changed)
 func MakeCardFonts(cardWidth int) {
 	defer util.Duration(time.Now(), "MakeCardFonts")
+
 	tt, err := truetype.Parse(acmeFontBytes)
 	if err != nil {
 		log.Fatal(err)

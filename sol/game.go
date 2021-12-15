@@ -23,8 +23,10 @@ var (
 	NoShuffle bool = false
 	// NoScrunch stops cards being scrunched
 	NoScrunch bool = false
-	// NoLerp stops the cards from transitioning
+	// NoCardLerp stops the cards from transitioning
 	NoCardLerp = false
+	// NoCardFlip stops the cards from animating their flip
+	NoCardFlip = false
 	// CardWidth of cards, start with a silly value to force a rescale/refan
 	CardWidth int = 9
 	// CardHeight of cards, start with a silly value to force a rescale/refan
@@ -49,6 +51,8 @@ var (
 	CardBackImage *ebiten.Image
 	// CardShadowImage applies to all cards so is kept globally as an optimization
 	CardShadowImage *ebiten.Image
+	// CardHighlightImage applies to all cards so is kept globally as an optimization
+	CardHighlightImage *ebiten.Image
 )
 
 // ThePreferences holds serialized game progress data
@@ -86,12 +90,10 @@ func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight 
 // Update updates the current game state.
 func (*Game) Update() error {
 	TheBaize.Update()
-	TheUI.Update()
 	return nil
 }
 
 // Draw draws the current game to the given screen.
 func (*Game) Draw(screen *ebiten.Image) {
 	TheBaize.Draw(screen)
-	TheUI.Draw(screen)
 }

@@ -115,8 +115,7 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 func (p *Pile) Scrunch() {
 
 	if NoScrunch {
-		p.Refan()
-		return
+		goto TheEnd
 	}
 
 	if len(p.cards) > 2 && (p.scrunchDims.X > CardWidth || p.scrunchDims.Y > CardWidth) {
@@ -141,6 +140,7 @@ func (p *Pile) Scrunch() {
 		p.fanFactor = fanFactor
 	}
 
+TheEnd:
 	p.Refan()
 }
 

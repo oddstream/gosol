@@ -14,23 +14,16 @@ type FortyThieves struct {
 }
 
 func (ft *FortyThieves) BuildPiles() {
-	TheBaize.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.stock)
-
-	TheBaize.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
-	TheBaize.piles = append(TheBaize.piles, TheBaize.waste)
+	NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
+	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for _, x := range ft.founds {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
-		TheBaize.piles = append(TheBaize.piles, f)
-		TheBaize.foundations = append(TheBaize.foundations, f)
 		f.SetLabel("A")
 	}
 
 	for _, x := range ft.tabs {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
-		TheBaize.piles = append(TheBaize.piles, t)
-		TheBaize.tableaux = append(TheBaize.tableaux, t)
+		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 	}
 }
 
@@ -43,9 +36,13 @@ func (ft *FortyThieves) StartGame() {
 	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
 		s.recycles = 0
 	}
+	MoveCard(TheBaize.stock, TheBaize.waste)
 }
 
 func (*FortyThieves) AfterMove() {
+	if TheBaize.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
+		MoveCard(TheBaize.stock, TheBaize.waste)
+	}
 }
 
 func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
@@ -54,7 +51,6 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	switch (pile.subtype).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
@@ -115,7 +111,7 @@ func (*FortyThieves) PileTapped(*Pile) {
 }
 
 func (*FortyThieves) PercentComplete() int {
-	return Script_PercentComplete()
+	return TheBaize.PercentComplete()
 }
 
 func (*FortyThieves) Wikipedia() string {

@@ -88,9 +88,9 @@ func MoveCards(c *Card, dst *Pile) {
 	oldSrcLen := src.Len()
 
 	// find the index of the first card we will move
-	moveFrom, err := src.IndexOf(c)
-	if err != nil {
-		log.Panic(err.Error())
+	moveFrom := src.IndexOf(c)
+	if moveFrom == -1 {
+		log.Panic("")
 	}
 
 	tmp := make([]*Card, 0, oldSrcLen)

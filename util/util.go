@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"image"
 	"log"
 	"math"
 	"time"
@@ -99,21 +100,28 @@ func Pow(x, y int) int {
 	return int(math.Pow(float64(x), float64(y)))
 }
 
-// DistanceFloat64 finds the length of the hypotenuse between two points.
-// Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
-func DistanceFloat64(x1, y1, x2, y2 float64) float64 {
-	first := math.Pow(x2-x1, 2)
-	second := math.Pow(y2-y1, 2)
+// Distance finds the length of the hypotenuse between two points.
+func Distance(p1, p2 image.Point) float64 {
+	first := math.Pow(float64(p2.X-p1.X), 2)
+	second := math.Pow(float64(p2.Y-p1.Y), 2)
 	return math.Sqrt(first + second)
 }
 
+// DistanceFloat64 finds the length of the hypotenuse between two points.
+// Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
+// func DistanceFloat64(x1, y1, x2, y2 float64) float64 {
+// 	first := math.Pow(x2-x1, 2)
+// 	second := math.Pow(y2-y1, 2)
+// 	return math.Sqrt(first + second)
+// }
+
 // DistanceInt finds the length of the hypotenuse between two points.
 // Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2
-func DistanceInt(x1, y1, x2, y2 int) int {
-	first := math.Pow(float64(x2)-float64(x1), 2)
-	second := math.Pow(float64(y2)-float64(y1), 2)
-	return int(math.Sqrt(first + second))
-}
+// func DistanceInt(x1, y1, x2, y2 int) int {
+// 	first := math.Pow(float64(x2)-float64(x1), 2)
+// 	second := math.Pow(float64(y2)-float64(y1), 2)
+// 	return int(math.Sqrt(first + second))
+// }
 
 // OverlapArea returns the intersection of two rectangles
 func OverlapArea(x1, y1, x2, y2, X1, Y1, X2, Y2 int) int {
