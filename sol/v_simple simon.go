@@ -8,11 +8,12 @@ import (
 )
 
 type SimpleSimon struct {
+	stock              *Pile
 	discards, tableaux []*Pile
 }
 
 func (ss *SimpleSimon) BuildPiles() {
-	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
+	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 3; x < 7; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
@@ -30,20 +31,20 @@ func (ss *SimpleSimon) StartGame() {
 	for i := 0; i < 3; i++ {
 		pile := ss.tableaux[i]
 		for j := 0; j < 8; j++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(ss.stock, pile)
 		}
 	}
 	var deal int = 7
 	for i := 3; i < 10; i++ {
 		pile := ss.tableaux[i]
 		for j := 0; j < deal; j++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(ss.stock, pile)
 		}
 		deal--
 	}
 
-	if TheBaize.stock.Len() > 0 {
-		println("*** still", TheBaize.stock.Len(), "cards in Stock")
+	if ss.stock.Len() > 0 {
+		println("*** still", ss.stock.Len(), "cards in Stock")
 	}
 }
 
@@ -105,10 +106,6 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 }
 
 func (*SimpleSimon) PileTapped(*Pile) {
-}
-
-func (*SimpleSimon) PercentComplete() int {
-	return TheBaize.PercentComplete()
 }
 
 func (*SimpleSimon) Wikipedia() string {

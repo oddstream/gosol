@@ -18,10 +18,9 @@ func NewStatusbar() *Statusbar {
 
 	sb.widgets = []Widget{
 		// button's x will be set by LayoutWidgets()
-		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""),
-		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""),
-		NewLabel(sb, 0, "", schriftbank.RobotoRegular14, ""),
-		NewLabel(sb, 1, "", schriftbank.RobotoRegular14, ""),
+		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 0 stock
+		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 1 waste
+		NewLabel(sb, 1, "", schriftbank.RobotoRegular14, ""),  // 2 percent
 	}
 	return sb
 }
@@ -58,26 +57,14 @@ func (u *UI) SetWaste(cards int) {
 	u.statusbar.LayoutWidgets()
 }
 
-// SetMoves of the statusbar
-func (u *UI) SetMoves(moves int) {
-	var l *Label = u.statusbar.widgets[2].(*Label)
-	switch moves {
-	case 0:
-		l.UpdateText("NO MOVES MADE")
-	// case 1:
-	// 	l.UpdateText("1 MOVE")
-	// default:
-	// 	l.UpdateText(fmt.Sprintf("%d MOVES", moves))
-	default:
-		l.UpdateText(fmt.Sprintf("MOVES: %d", moves))
-	}
-	u.statusbar.LayoutWidgets()
-}
-
 // SetPercent of the statusbar
 func (u *UI) SetPercent(percent int) {
-	var l *Label = u.statusbar.widgets[3].(*Label)
-	l.UpdateText(fmt.Sprintf("COMPLETE: %d%%", percent))
+	var l *Label = u.statusbar.widgets[2].(*Label)
+	if percent == 100 {
+		l.UpdateText("COMPLETE")
+	} else {
+		l.UpdateText(fmt.Sprintf("COMPLETE: %d%%", percent))
+	}
 	u.statusbar.LayoutWidgets()
 }
 

@@ -3,14 +3,14 @@ https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
 
  work at reducing the size of variant.go files (CardPair &c)
-  get rid of TheBaize.*
+ get rid of TheBaize.* (used 134, now 78 times 16 Dec 2021)
+  Pile.owner
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
 
- retire Pile.category
+ fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
  Bebas Neue for Acme
- shirley turning over a stock card doesn't count as a move?
  hearts and 10s are too close to the edge
  show NewDeal FAB when loading a complete saved.txt
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
@@ -19,16 +19,19 @@ https://calver.org/
  WASM not scrunching?
  copy WidgetBase.Draw mouse down stuff to Pile with recycle rune
  not descrunching both piles after pop?
- Conformant check/FAB with discards is odd
  Panic stop dragging unknown object
  https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
- Animate rune when mouse pushed
  Canfield
  Copy variant list from opsole/gomps2
- tengo
  README.md
  scale slot up by 10, call it slot10 to help remember
 
+x Duchess, with it's odd rules
+x retire PercentComplete from script interface; we won't be doing poker games
+x retire move counting and reporting, wouldn't do it in Real Life, and it's not accurate
+x cardLibrary could be a global
+x Animate rune when mouse pushed
+x Conformant check/FAB with discards is odd
 x cards thinking they were being dragged when they were not
 x TheBaize.tableaux &c could be setup after script.BuildPiles()
 x try https://go.dev/blog/go-fonts - did not look appropriate

@@ -37,7 +37,7 @@ func (w *Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Waste")
 	}
-	return true, nil
+	return TheBaize.script.TailAppendError(w.pile, tail)
 }
 
 func (w *Waste) TailTapped(tail []*Card) {

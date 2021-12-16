@@ -42,9 +42,9 @@ func MoveNamedCard(suit, ordinal int, dst *Pile) {
 	// 1. find the card in the library
 	var ID CardID = NewCardID(0, suit, ordinal)
 	var c *Card
-	for i := 0; i < len(TheBaize.cardLibrary); i++ {
-		if SameCard(ID, TheBaize.cardLibrary[i].ID) {
-			c = &TheBaize.cardLibrary[i]
+	for i := 0; i < len(CardLibrary); i++ {
+		if SameCard(ID, CardLibrary[i].ID) {
+			c = &CardLibrary[i]
 		}
 	}
 	if c == nil {

@@ -8,15 +8,15 @@ import (
 )
 
 type Freecell struct {
+	stock                 *Pile
 	foundations, tableaux []*Pile
 }
 
 func (fc *Freecell) BuildPiles() {
-	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
+	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 0; x < 4; x++ {
 		NewCell(image.Point{x, 0})
-
 	}
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
@@ -34,18 +34,18 @@ func (fc *Freecell) StartGame() {
 	for i := 0; i < 4; i++ {
 		pile := fc.tableaux[i]
 		for j := 0; j < 7; j++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(fc.stock, pile)
 		}
 	}
 	for i := 4; i < 8; i++ {
 		pile := fc.tableaux[i]
 		for j := 0; j < 6; j++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(fc.stock, pile)
 		}
 	}
 
-	if TheBaize.stock.Len() > 0 {
-		println("*** still", TheBaize.stock.Len(), "cards in Stock")
+	if fc.stock.Len() > 0 {
+		println("*** still", fc.stock.Len(), "cards in Stock")
 	}
 }
 
@@ -111,10 +111,6 @@ func (*Freecell) TailTapped(tail []*Card) {
 }
 
 func (*Freecell) PileTapped(*Pile) {
-}
-
-func (*Freecell) PercentComplete() int {
-	return TheBaize.PercentComplete()
 }
 
 func (*Freecell) Wikipedia() string {

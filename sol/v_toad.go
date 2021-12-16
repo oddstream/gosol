@@ -138,10 +138,6 @@ func (t *Toad) PileTapped(pile *Pile) {
 	}
 }
 
-func (*Toad) PercentComplete() int {
-	return TheBaize.PercentComplete()
-}
-
 func (*Toad) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/American_Toad_(solitaire)"
 }

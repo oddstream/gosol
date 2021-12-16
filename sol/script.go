@@ -20,7 +20,6 @@ type ScriptInterface interface {
 	TailTapped([]*Card)
 	PileTapped(*Pile)
 
-	PercentComplete() int
 	Wikipedia() string
 
 	Discards() []*Pile
@@ -30,6 +29,7 @@ type ScriptInterface interface {
 
 var Variants = map[string]ScriptInterface{
 	"American Toad":       &Toad{},
+	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Easy":                &Easy{},
@@ -118,7 +118,7 @@ func (cp CardPair) Compare_DownAltColor() (bool, error) {
 	return cp.Compare_Down()
 }
 
-func (cp CardPair) CardCompare_DownAltColorWrap() (bool, error) {
+func (cp CardPair) Compare_DownAltColorWrap() (bool, error) {
 	if cp.c1.Black() == cp.c2.Black() {
 		return false, errors.New("Cards must be in alternating colors")
 	}

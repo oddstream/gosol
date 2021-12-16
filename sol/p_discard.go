@@ -32,7 +32,7 @@ func (d *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot move a face down card")
 	}
-	if len(tail) != len(TheBaize.cardLibrary)/len(TheBaize.script.Discards()) {
+	if len(tail) != len(CardLibrary)/len(TheBaize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
 	return TheBaize.script.TailMoveError(tail) // check cards are conformant
@@ -46,18 +46,19 @@ func (*Discard) Collect() {
 	// do nothing
 }
 
-func (d *Discard) Conformant() bool {
-	if d.pile.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(d.pile) == 0
-	}
-	return true
+func (*Discard) Conformant() bool {
+	// no Baize that contains any discard piles should be Conformant,
+	// because there is no use showing the collect all FAB
+	// because that would do nothing
+	// because cards are not collected to discard piles
+	return false
 }
 
 func (d *Discard) Complete() bool {
 	if d.pile.Empty() {
 		return true
 	}
-	if d.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.script.Discards()) {
+	if d.pile.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
 		return true
 	}
 	return false

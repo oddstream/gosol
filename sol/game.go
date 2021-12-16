@@ -67,6 +67,9 @@ var TheBaize *Baize
 // The UI points to the singleton User Interface object
 var TheUI *ui.UI
 
+// CardLibrary is the slice where Card objects actually exist, everything else is a *Card
+var CardLibrary []Card
+
 // TheError is a global copy of the last error reported, for optional toasting
 // var TheError string
 

@@ -35,9 +35,9 @@ func (p *Pile) UpdateFromSavable(sp *SavablePile) {
 	}
 	p.GenericReset()
 	for _, cid := range sp.Cards {
-		for i := 0; i < len(TheBaize.cardLibrary); i++ {
-			if SameCardAndPack(cid, TheBaize.cardLibrary[i].ID) {
-				c := &TheBaize.cardLibrary[i]
+		for i := 0; i < len(CardLibrary); i++ {
+			if SameCardAndPack(cid, CardLibrary[i].ID) {
+				c := &CardLibrary[i]
 				// c.SetProne(cid.Prone())
 				p.Push(c)
 				if cid.Prone() {

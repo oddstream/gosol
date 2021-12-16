@@ -15,7 +15,7 @@ type Statistics struct {
 // VariantStatistics holds the statistics for one variant
 type VariantStatistics struct {
 	// PascalCase for JSON
-	Won, Lost, BestWinningMoves, WorstWinningMoves, CurrStreak, BestStreak, WorstStreak, BestPercent int
+	Won, Lost, CurrStreak, BestStreak, WorstStreak, BestPercent int
 }
 
 // NewStatistics creates a new Statistics object
@@ -28,7 +28,7 @@ func NewStatistics() *Statistics {
 func (s *Statistics) findVariant() *VariantStatistics {
 	stats, ok := s.StatsMap[ThePreferences.Variant]
 	if !ok {
-		stats = &VariantStatistics{BestWinningMoves: 9999} // everything else is 0
+		stats = &VariantStatistics{} // everything 0
 		s.StatsMap[ThePreferences.Variant] = stats
 		println("statistics has encountered a new variant", ThePreferences.Variant)
 	}
@@ -38,16 +38,9 @@ func (s *Statistics) findVariant() *VariantStatistics {
 func (s *Statistics) RecordWonGame() {
 
 	stats := s.findVariant()
-	numberOfMoves := len(TheBaize.undoStack) - 1
 
 	stats.Won = stats.Won + 1
 	stats.BestPercent = 100
-	if numberOfMoves < stats.BestWinningMoves {
-		stats.BestWinningMoves = numberOfMoves
-	}
-	if numberOfMoves > stats.WorstWinningMoves {
-		stats.WorstWinningMoves = numberOfMoves
-	}
 	if stats.CurrStreak < 0 {
 		stats.CurrStreak = 1
 	} else {
@@ -63,7 +56,7 @@ func (s *Statistics) RecordWonGame() {
 
 func (s *Statistics) RecordLostGame() {
 
-	percent := TheBaize.script.PercentComplete()
+	percent := TheBaize.PercentComplete()
 	stats := s.findVariant()
 
 	stats.Lost = stats.Lost + 1
@@ -143,7 +136,7 @@ func (s *Statistics) ShowStatistics() {
 	if !ok || stats.Won+stats.Lost == 0 {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", ThePreferences.Variant))
 	} else {
-		toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.undoStack)-1), TheBaize.script.PercentComplete()))
+		toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.undoStack)-1), TheBaize.PercentComplete()))
 
 		if stats.BestPercent == 0 {
 			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s", util.Pluralize("attempt", stats.Lost)))
@@ -155,12 +148,6 @@ func (s *Statistics) ShowStatistics() {
 					util.Pluralize("game", stats.Won),
 					util.Pluralize("game", stats.Lost),
 					((stats.Won*100)/(stats.Won+stats.Lost))))
-			if stats.BestWinningMoves != stats.WorstWinningMoves {
-				toasts = append(toasts, fmt.Sprintf("Your best number of winning moves is %d, average %d, your worst is %d",
-					stats.BestWinningMoves,
-					(stats.BestWinningMoves+stats.WorstWinningMoves)/2,
-					stats.WorstWinningMoves))
-			}
 			if stats.CurrStreak > 0 {
 				toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 			}

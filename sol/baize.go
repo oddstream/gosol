@@ -30,7 +30,6 @@ const (
 // Baize object describes the baize
 type Baize struct {
 	magic        uint32
-	cardLibrary  []Card // the place where Card exists, everything else is a *Card
 	script       ScriptInterface
 	piles        []*Pile
 	stock        *Pile
@@ -406,7 +405,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 			// tap handled elsewhere
 			// tap is time-limited
 			if dst := b.LargestIntersection(c); dst == nil {
-				println("no intersection for", c.String())
+				// println("no intersection for", c.String())
 				b.CancelTailDrag()
 			} else {
 				if ok, err := src.subtype.CanMoveTail(b.tail); !ok {
@@ -671,9 +670,10 @@ func (b *Baize) UpdateStatusbar() {
 	}
 	if b.script.Waste() != nil {
 		TheUI.SetWaste(b.script.Waste().Len())
+	} else {
+		TheUI.SetWaste(0) // previous variant may have had a waste, and this one does not
 	}
-	TheUI.SetMoves(len(b.undoStack) - 1)
-	TheUI.SetPercent(b.script.PercentComplete())
+	TheUI.SetPercent(b.PercentComplete())
 }
 
 func (b *Baize) Conformant() bool {

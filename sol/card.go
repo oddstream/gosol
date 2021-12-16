@@ -10,15 +10,17 @@ import (
 )
 
 const (
-	cardmagic       = 0x29041962
+	cardmagic = 0x29041962
+
 	lerpStartNormal = 0.1
 	lerpStartClose  = 0.25
-	debugSpeed      = 0.005
-	slowSpeed       = 0.01
-	normalSpeed     = 0.02
-	fastSpeed       = 0.04
-	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
-	flipStepAmount = 0.075
+
+	debugSpeed  = 0.005
+	slowSpeed   = 0.01
+	normalSpeed = 0.02
+	fastSpeed   = 0.04
+
+	flipStepAmount = 0.075 // flipStepAmount is the amount we shrink/grow the flipping card width every tick
 )
 
 /*

@@ -62,12 +62,39 @@ A lot a features have been tried and discarded, in order to keep the game (and p
 
 So taken out were:
 
+* Reporting if there were no more available moves (that's for you to puzzle over, just like in real life)
+* Reporting the number of moves made (which is arbitary - does turning a card from stock to waste count as one move, or moving a group of cards with  power moves turned on count as one move or several?)
 * Movable card highlighting (the more useful a move looks, the more the card gets highlighted)
-* Turn-offable one tap interface
+* Turn-offable single-tap interface (ie trying to find a home for a tapped card, all this does is either try to move a stack card to the waste, or try to move the card to a foundation)
+* Choice of card sets or card backs
+
+Solitaire is a puzzle game of sorting cards into and between piles into a certain order, and moving those cards to the foundation piles to complete the game.
 
 ## Configurability is the root of all evil
 
 Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
+
+## Terminology and conventions
+
+* A PILE of cards
+
+* A CONFORMANT series of cards in a pile is called a SEQUENCE
+
+* A set of cards is called a PACK (not 'deck')
+
+* Suits are listed in alphabetic order: Club, Diamond, Heart, Spade
+
+* Cards changing between face down and face up is called FLIPPING.
+
+* The user never moves or flips a face down card, only the dealer can
+
+* Cards cannot be played from the foundation
+
+* Cell, Foundation and Waste piles only hold face up cards
+
+* Stock only has face down cards
+
+* Tableau and Reserve piles may have face up or down cards
 
 ## FAQ
 
@@ -188,7 +215,6 @@ that anyone else ever has, or ever will.
 
 ## TODO
 
-* Statistics.
 * Scripted game variants.
 * Get it working on Android.
 * Get the size of the executable and WASM down.

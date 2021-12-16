@@ -9,11 +9,11 @@ import (
 
 type Easy struct {
 	foundations, tableaux []*Pile
-	waste                 *Pile
+	stock, waste          *Pile
 }
 
 func (ez *Easy) BuildPiles() {
-	NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	ez.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for x := 9; x < 13; x++ {
@@ -35,21 +35,21 @@ func (ez *Easy) StartGame() {
 	MoveNamedCard(SPADE, 1, ez.foundations[3])
 	for _, pile := range ez.tableaux {
 		for i := 0; i < 2; i++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(ez.stock, pile)
 			pile.Peek().FlipDown()
 		}
-		MoveCard(TheBaize.stock, pile)
+		MoveCard(ez.stock, pile)
 	}
-	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+	if s, ok := (ez.stock.subtype).(*Stock); ok {
 		s.recycles = 32767
 	}
-	TheBaize.stock.SetRune(RECYCLE_RUNE)
-	MoveCard(TheBaize.stock, ez.waste)
+	ez.stock.SetRune(RECYCLE_RUNE)
+	MoveCard(ez.stock, ez.waste)
 }
 
 func (ez *Easy) AfterMove() {
-	if ez.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
-		MoveCard(TheBaize.stock, ez.waste)
+	if ez.waste.Len() == 0 && ez.stock.Len() != 0 {
+		MoveCard(ez.stock, ez.waste)
 	}
 }
 
@@ -124,20 +124,16 @@ func (ez *Easy) PileTapped(pile *Pile) {
 	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
 			for ez.waste.Len() > 0 {
-				MoveCard(ez.waste, TheBaize.stock)
+				MoveCard(ez.waste, ez.stock)
 			}
 			s.recycles--
 			if s.recycles == 0 {
-				TheBaize.stock.SetRune(NORECYCLE_RUNE)
+				ez.stock.SetRune(NORECYCLE_RUNE)
 			}
 		} else {
 			TheUI.Toast("No more recycles")
 		}
 	}
-}
-
-func (*Easy) PercentComplete() int {
-	return TheBaize.PercentComplete()
 }
 
 func (*Easy) Wikipedia() string {

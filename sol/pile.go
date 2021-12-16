@@ -36,7 +36,7 @@ const (
 )
 
 const (
-	CARD_FACE_FAN_FACTOR_V = 4
+	CARD_FACE_FAN_FACTOR_V = 3.7
 	CARD_FACE_FAN_FACTOR_H = 4
 	CARD_BACK_FAN_FACTOR   = 8
 )
@@ -59,7 +59,7 @@ const (
 // Base is a generic container for cards
 type Pile struct {
 	magic            uint32
-	category         string
+	category         string // just for debugging and checking, never really used
 	slot             image.Point
 	pos              image.Point
 	pos1             image.Point // waste pos #1

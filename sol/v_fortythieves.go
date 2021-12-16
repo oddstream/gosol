@@ -9,15 +9,15 @@ import (
 
 type FortyThieves struct {
 	foundations, tableaux []*Pile
-	waste                 *Pile
+	stock, waste          *Pile
 	founds                []int
 	tabs                  []int
 	cardsPerTab           int
 }
 
 func (ft *FortyThieves) BuildPiles() {
-	NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
-	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
+	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for _, x := range ft.founds {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
@@ -34,18 +34,18 @@ func (ft *FortyThieves) BuildPiles() {
 func (ft *FortyThieves) StartGame() {
 	for _, pile := range ft.tableaux {
 		for i := 0; i < ft.cardsPerTab; i++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(ft.stock, pile)
 		}
 	}
-	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+	if s, ok := (ft.stock.subtype).(*Stock); ok {
 		s.recycles = 0
 	}
-	MoveCard(TheBaize.stock, ft.waste)
+	MoveCard(ft.stock, ft.waste)
 }
 
 func (ft *FortyThieves) AfterMove() {
-	if ft.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
-		MoveCard(TheBaize.stock, ft.waste)
+	if ft.waste.Len() == 0 && ft.stock.Len() != 0 {
+		MoveCard(ft.stock, ft.waste)
 	}
 }
 
@@ -105,17 +105,13 @@ func (*FortyThieves) UnsortedPairs(pile *Pile) int {
 func (ft *FortyThieves) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		MoveCard(TheBaize.stock, ft.waste)
+		MoveCard(ft.stock, ft.waste)
 	} else {
 		pile.subtype.TailTapped(tail)
 	}
 }
 
 func (*FortyThieves) PileTapped(*Pile) {
-}
-
-func (*FortyThieves) PercentComplete() int {
-	return TheBaize.PercentComplete()
 }
 
 func (*FortyThieves) Wikipedia() string {

@@ -24,7 +24,7 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 		}
 	}
 	var cardsRequired int = packs * suits * numberOfCardsInSuit
-	TheBaize.cardLibrary = make([]Card, 0, cardsRequired)
+	CardLibrary = make([]Card, 0, cardsRequired)
 
 	for pack := 0; pack < packs; pack++ {
 		for ord := 1; ord < 14; ord++ {
@@ -37,12 +37,12 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 						(folks expect Spider One Suit to use spades)
 					*/
 					var c Card = NewCard(pack, SPADE-suit, ord)
-					TheBaize.cardLibrary = append(TheBaize.cardLibrary, c)
+					CardLibrary = append(CardLibrary, c)
 				}
 			}
 		}
 	}
-	log.Printf("%d packs, %d suits, %d cards created\n", packs, suits, len(TheBaize.cardLibrary))
+	log.Printf("%d packs, %d suits, %d cards created\n", packs, suits, len(CardLibrary))
 }
 
 type Stock struct {
@@ -54,8 +54,8 @@ func (p *Pile) FillFromLibrary() {
 	if !p.Empty() {
 		log.Panic("stock should be empty")
 	}
-	for i := 0; i < len(TheBaize.cardLibrary); i++ {
-		var c *Card = &TheBaize.cardLibrary[i]
+	for i := 0; i < len(CardLibrary); i++ {
+		var c *Card = &CardLibrary[i]
 		if c == nil || !c.Valid() {
 			log.Panicf("invalid card at library index %d", i)
 		}
@@ -79,13 +79,6 @@ func (p *Pile) Shuffle() {
 		log.Println("not shuffling cards")
 		return
 	}
-	/*
-		used to restart the same game by reusing the random seed
-		but no longer do that (now we unwind the undo stack)
-		so we no longer need to sort cards into order before shuffle
-
-		sort.Slice(p.Cards, func(i, j int) bool { return p.Cards[i].ID < p.Cards[j].ID })
-	*/
 	seed := time.Now().UnixNano() & 0xFFFFFFFF
 	if DebugMode {
 		log.Println("shuffle with seed", seed)
@@ -146,7 +139,7 @@ func (s *Stock) UnsortedPairs() int {
 	return s.pile.Len() - 1
 }
 
-// Reset override Pile Reset to make fill the stock with shuffled cards TODO
+// Reset override Pile Reset to make fill the stock with shuffled cards
 func (s *Stock) Reset() {
 	s.pile.GenericReset()
 	s.pile.FillFromLibrary()

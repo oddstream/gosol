@@ -10,7 +10,7 @@ import (
 
 type Klondike struct {
 	foundations, tableaux []*Pile
-	waste                 *Pile
+	stock, waste          *Pile
 	draw, recycles        int
 }
 
@@ -18,8 +18,8 @@ func (kl *Klondike) BuildPiles() {
 	if kl.draw == 0 {
 		kl.draw = 1
 	}
-	NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
-	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	kl.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for x := 3; x < 7; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
@@ -38,23 +38,22 @@ func (kl *Klondike) StartGame() {
 	var dealDown = 0
 	for _, pile := range kl.tableaux {
 		for i := 0; i < dealDown; i++ {
-			MoveCard(TheBaize.stock, pile)
+			MoveCard(kl.stock, pile)
 			pile.Peek().FlipDown()
 		}
 		dealDown++
-		MoveCard(TheBaize.stock, pile)
+		MoveCard(kl.stock, pile)
 	}
-	// MoveCard(TheBaize.stock, kl.waste)
-	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
+	if s, ok := (kl.stock.subtype).(*Stock); ok {
 		s.recycles = kl.recycles
 	}
-	TheBaize.stock.SetRune(RECYCLE_RUNE)
-	MoveCard(TheBaize.stock, kl.waste)
+	kl.stock.SetRune(RECYCLE_RUNE)
+	MoveCard(kl.stock, kl.waste)
 }
 
 func (kl *Klondike) AfterMove() {
-	if kl.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
-		MoveCard(TheBaize.stock, kl.waste)
+	if kl.waste.Len() == 0 && kl.stock.Len() != 0 {
+		MoveCard(kl.stock, kl.waste)
 	}
 }
 
@@ -125,7 +124,7 @@ func (kl *Klondike) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
 		for i := 0; i < kl.draw; i++ {
-			MoveCard(TheBaize.stock, kl.waste)
+			MoveCard(kl.stock, kl.waste)
 		}
 	} else {
 		pile.subtype.TailTapped(tail)
@@ -136,12 +135,12 @@ func (kl *Klondike) PileTapped(pile *Pile) {
 	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
 			for kl.waste.Len() > 0 {
-				MoveCard(kl.waste, TheBaize.stock)
+				MoveCard(kl.waste, kl.stock)
 			}
 			s.recycles--
 			switch {
 			case s.recycles == 0:
-				TheBaize.stock.SetRune(NORECYCLE_RUNE)
+				kl.stock.SetRune(NORECYCLE_RUNE)
 				TheUI.Toast("No more recycles")
 			case s.recycles == 1:
 				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
@@ -152,10 +151,6 @@ func (kl *Klondike) PileTapped(pile *Pile) {
 			TheUI.Toast("No more recycles")
 		}
 	}
-}
-
-func (*Klondike) PercentComplete() int {
-	return TheBaize.PercentComplete()
 }
 
 func (*Klondike) Wikipedia() string {
