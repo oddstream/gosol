@@ -16,12 +16,15 @@ import (
 )
 
 const (
-	baizemagic           uint32 = 0x19910920
-	dirtyWindowSize      uint32 = 0b000001
-	dirtyPilePositions   uint32 = 0b000010
-	dirtyCardSizes       uint32 = 0b000100
-	dirtyPileBackgrounds uint32 = 0b001000
-	dirtyCardPositions   uint32 = 0b010000
+	baizemagic uint32 = 0x19910920
+)
+
+const (
+	dirtyWindowSize = 1 << iota
+	dirtyPilePositions
+	dirtyCardSizes
+	dirtyPileBackgrounds
+	dirtyCardPositions
 )
 
 // Baize object describes the baize
@@ -31,10 +34,6 @@ type Baize struct {
 	script       ScriptInterface
 	piles        []*Pile
 	stock        *Pile
-	waste        *Pile
-	foundations  []*Pile
-	tableaux     []*Pile
-	discards     []*Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int
 	undoStack    []*SavableBaize
@@ -179,10 +178,6 @@ func (b *Baize) NewVariant() {
 	b.piles = nil
 
 	b.stock = nil
-	b.waste = nil
-	b.foundations = nil
-	b.discards = nil
-	b.tableaux = nil
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
@@ -243,14 +238,6 @@ func (b *Baize) BuildAuxPiles() {
 		switch (p.subtype).(type) {
 		case *Stock:
 			b.stock = p
-		case *Waste:
-			b.waste = p
-		case *Discard:
-			b.discards = append(b.discards, p)
-		case *Foundation:
-			b.foundations = append(b.foundations, p)
-		case *Tableau:
-			b.tableaux = append(b.tableaux, p)
 		}
 	}
 }
@@ -682,8 +669,8 @@ func (b *Baize) UpdateStatusbar() {
 	if !b.stock.Hidden() {
 		TheUI.SetStock(b.stock.Len())
 	}
-	if b.waste != nil {
-		TheUI.SetWaste(b.waste.Len())
+	if b.script.Waste() != nil {
+		TheUI.SetWaste(b.script.Waste().Len())
 	}
 	TheUI.SetMoves(len(b.undoStack) - 1)
 	TheUI.SetPercent(b.script.PercentComplete())

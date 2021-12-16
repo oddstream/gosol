@@ -7,9 +7,11 @@ import (
 	"image"
 )
 
-type Freecell struct{}
+type Freecell struct {
+	foundations, tableaux []*Pile
+}
 
-func (*Freecell) BuildPiles() {
+func (fc *Freecell) BuildPiles() {
 	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 0; x < 4; x++ {
@@ -18,23 +20,25 @@ func (*Freecell) BuildPiles() {
 	}
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		fc.foundations = append(fc.foundations, f)
 		f.SetLabel("A")
 	}
 
 	for x := 0; x < 8; x++ {
-		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
+		fc.tableaux = append(fc.tableaux, t)
 	}
 }
 
-func (*Freecell) StartGame() {
+func (fc *Freecell) StartGame() {
 	for i := 0; i < 4; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := fc.tableaux[i]
 		for j := 0; j < 7; j++ {
 			MoveCard(TheBaize.stock, pile)
 		}
 	}
 	for i := 4; i < 8; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := fc.tableaux[i]
 		for j := 0; j < 6; j++ {
 			MoveCard(TheBaize.stock, pile)
 		}
@@ -115,4 +119,16 @@ func (*Freecell) PercentComplete() int {
 
 func (*Freecell) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/FreeCell"
+}
+
+func (*Freecell) Discards() []*Pile {
+	return nil
+}
+
+func (fc *Freecell) Foundations() []*Pile {
+	return fc.foundations
+}
+
+func (*Freecell) Waste() *Pile {
+	return nil
 }

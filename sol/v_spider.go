@@ -8,41 +8,43 @@ import (
 )
 
 type Spider struct {
-	packs, suits int
+	discards, tableaux []*Pile
+	packs, suits       int
 }
 
-func (s *Spider) BuildPiles() {
-	NewStock(image.Point{0, 0}, FAN_NONE, s.packs, s.suits, nil)
+func (sp *Spider) BuildPiles() {
+	NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 
 	for x := 2; x < 10; x++ {
-		NewDiscard(image.Point{x, 0}, FAN_NONE)
-
+		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
+		sp.discards = append(sp.discards, d)
 	}
 
 	for x := 0; x < 10; x++ {
-		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
+		sp.tableaux = append(sp.tableaux, t)
 	}
 }
 
-func (*Spider) StartGame() {
+func (ss *Spider) StartGame() {
 	// The Tableau consists of 10 stacks with 6 cards in the first 4 stacks, with the 6th card face up,
 	// and 5 cards in the remaining 6 stacks, with the 5th card face up.
 
 	for i := 0; i < 4; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := ss.tableaux[i]
 		for j := 0; j < 6; j++ {
 			MoveCard(TheBaize.stock, pile)
 			pile.Peek().FlipDown()
 		}
 	}
 	for i := 4; i < 10; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := ss.tableaux[i]
 		for j := 0; j < 5; j++ {
 			MoveCard(TheBaize.stock, pile)
 			pile.Peek().FlipDown()
 		}
 	}
-	for _, pile := range TheBaize.tableaux {
+	for _, pile := range ss.tableaux {
 		pile.Peek().FlipUp()
 	}
 	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
@@ -111,22 +113,22 @@ func (*Spider) UnsortedPairs(pile *Pile) int {
 	return unsorted
 }
 
-func (*Spider) TailTapped(tail []*Card) {
+func (ss *Spider) TailTapped(tail []*Card) {
 	pile := tail[0].Owner()
 	switch (pile.subtype).(type) {
 	case *Stock:
 		var tabCards, emptyTabs int
-		for _, tab := range TheBaize.tableaux {
+		for _, tab := range ss.tableaux {
 			if tab.Len() == 0 {
 				emptyTabs++
 			} else {
 				tabCards += tab.Len()
 			}
 		}
-		if emptyTabs > 0 && tabCards >= len(TheBaize.tableaux) {
+		if emptyTabs > 0 && tabCards >= len(ss.tableaux) {
 			TheUI.Toast("All empty tableaux must be filled before dealing a new row")
 		} else {
-			for _, tab := range TheBaize.tableaux {
+			for _, tab := range ss.tableaux {
 				MoveCard(TheBaize.stock, tab)
 			}
 		}
@@ -142,4 +144,26 @@ func (*Spider) PercentComplete() int {
 
 func (*Spider) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Spider_(solitaire)"
+}
+
+func (sp *Spider) Discards() []*Pile {
+	return sp.discards
+}
+
+func (*Spider) Foundations() []*Pile {
+	return nil
+}
+
+func (*Spider) Waste() *Pile {
+	return nil
+}
+
+func (sp *Spider) AuxPile(subtype SubtypeAPI) []*Pile {
+	switch subtype.(type) {
+	case *Discard:
+		return sp.discards
+	case *Tableau:
+		return sp.tableaux
+	}
+	return nil
 }

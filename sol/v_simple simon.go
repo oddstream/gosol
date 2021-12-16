@@ -7,32 +7,35 @@ import (
 	"image"
 )
 
-type SimpleSimon struct{}
+type SimpleSimon struct {
+	discards, tableaux []*Pile
+}
 
-func (*SimpleSimon) BuildPiles() {
+func (ss *SimpleSimon) BuildPiles() {
 	NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	for x := 3; x < 7; x++ {
-		NewDiscard(image.Point{x, 0}, FAN_NONE)
-
+		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
+		ss.discards = append(ss.discards, d)
 	}
 
 	for x := 0; x < 10; x++ {
-		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
+		ss.tableaux = append(ss.tableaux, t)
 	}
 }
 
-func (*SimpleSimon) StartGame() {
+func (ss *SimpleSimon) StartGame() {
 	// 3 piles of 8 cards each
 	for i := 0; i < 3; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := ss.tableaux[i]
 		for j := 0; j < 8; j++ {
 			MoveCard(TheBaize.stock, pile)
 		}
 	}
 	var deal int = 7
 	for i := 3; i < 10; i++ {
-		pile := TheBaize.tableaux[i]
+		pile := ss.tableaux[i]
 		for j := 0; j < deal; j++ {
 			MoveCard(TheBaize.stock, pile)
 		}
@@ -110,4 +113,16 @@ func (*SimpleSimon) PercentComplete() int {
 
 func (*SimpleSimon) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)"
+}
+
+func (ss *SimpleSimon) Discards() []*Pile {
+	return ss.discards
+}
+
+func (*SimpleSimon) Foundations() []*Pile {
+	return nil
+}
+
+func (*SimpleSimon) Waste() *Pile {
+	return nil
 }

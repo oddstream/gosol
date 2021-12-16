@@ -414,7 +414,7 @@ func (p *Pile) GenericTailTapped(tail []*Card) {
 		return
 	}
 	c := tail[0]
-	for _, fp := range TheBaize.foundations {
+	for _, fp := range TheBaize.script.Foundations() {
 		if ok, _ := fp.subtype.CanAcceptCard(c); ok {
 			MoveCard(p, fp)
 			break
@@ -423,7 +423,7 @@ func (p *Pile) GenericTailTapped(tail []*Card) {
 }
 
 func (p *Pile) GenericCollect() {
-	for _, fp := range TheBaize.foundations {
+	for _, fp := range TheBaize.script.Foundations() {
 		for {
 			// loop to get as many cards as possible from this pile
 			if p.Empty() {
@@ -489,6 +489,11 @@ func (p *Pile) CreateBackgroundImage() *ebiten.Image {
 		// log.Panic("zero dimension in CreateCardShadowImage, unliked in wasm")
 	}
 	if p.Hidden() {
+		// off-screen? don't bother
+		return nil
+	}
+	if _, ok := (p.subtype).(*Reserve); ok {
+		// don't draw anything for reserve piles
 		return nil
 	}
 	dc := gg.NewContext(CardWidth, CardHeight)
@@ -501,9 +506,11 @@ func (p *Pile) CreateBackgroundImage() *ebiten.Image {
 		dc.Fill()
 	default:
 		if p.symbol != 0 {
+			// usually the recycle symbol
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
 			dc.DrawStringAnchored(string(p.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 		} else if p.label != "" {
+			// usually the "place card in an empty pile" constraint
 			dc.SetFontFace(schriftbank.CardOrdinalLarge)
 			dc.DrawStringAnchored(p.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 		}

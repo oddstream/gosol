@@ -25,6 +25,7 @@ func (t *Toad) BuildPiles() {
 	}
 
 	for x := 0; x < 8; x++ {
+		// When moving tableau piles, you must either move the whole pile or only the top card.
 		t.tableaux = append(t.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE_OR_ALL))
 	}
 }
@@ -45,6 +46,7 @@ func (t *Toad) StartGame() {
 	for _, pile := range t.tableaux {
 		MoveCard(t.stock, pile)
 	}
+	// One card is dealt onto the first foundation. This rank will be used as a base for the other foundations.
 	MoveCard(t.stock, t.foundations[0])
 	c := t.foundations[0].Peek()
 	for _, pile := range t.foundations {
@@ -52,14 +54,20 @@ func (t *Toad) StartGame() {
 	}
 }
 
-func (*Toad) AfterMove() {
+func (t *Toad) AfterMove() {
+	// Empty spaces are filled automatically from the reserve.
+	for _, p := range t.tableaux {
+		if p.Empty() {
+			MoveCard(t.reserve, p)
+		}
+	}
 }
 
 func (*Toad) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
 	case *Stock:
@@ -76,6 +84,11 @@ func (*Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		}
 	case *Tableau:
 		if dst.Empty() {
+			// Once the reserve is empty, spaces in the tableau can be filled with a card from the Deck [Stock/Waste], but NOT from another tableau pile.
+			// pointless rule, since tableuax move rule is MOVE_ONE_OR_ALL
+			if tail[0].owner != t.waste {
+				return false, errors.New("Empty tableaux must be filled with cards from the waste")
+			}
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuitWrap()
 		}
@@ -131,4 +144,16 @@ func (*Toad) PercentComplete() int {
 
 func (*Toad) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/American_Toad_(solitaire)"
+}
+
+func (*Toad) Discards() []*Pile {
+	return nil
+}
+
+func (t *Toad) Foundations() []*Pile {
+	return t.foundations
+}
+
+func (t *Toad) Waste() *Pile {
+	return t.waste
 }

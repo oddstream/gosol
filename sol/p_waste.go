@@ -37,9 +37,6 @@ func (w *Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Waste")
 	}
-	if tail[0].Owner() != TheBaize.stock {
-		return false, errors.New("Can only move cards to Waste from Stock")
-	}
 	return true, nil
 }
 

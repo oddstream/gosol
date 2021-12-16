@@ -8,9 +8,11 @@ import (
 )
 
 type FortyThieves struct {
-	founds      []int
-	tabs        []int
-	cardsPerTab int
+	foundations, tableaux []*Pile
+	waste                 *Pile
+	founds                []int
+	tabs                  []int
+	cardsPerTab           int
 }
 
 func (ft *FortyThieves) BuildPiles() {
@@ -19,16 +21,18 @@ func (ft *FortyThieves) BuildPiles() {
 
 	for _, x := range ft.founds {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		ft.foundations = append(ft.foundations, f)
 		f.SetLabel("A")
 	}
 
 	for _, x := range ft.tabs {
-		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
+		ft.tableaux = append(ft.tableaux, t)
 	}
 }
 
 func (ft *FortyThieves) StartGame() {
-	for _, pile := range TheBaize.tableaux {
+	for _, pile := range ft.tableaux {
 		for i := 0; i < ft.cardsPerTab; i++ {
 			MoveCard(TheBaize.stock, pile)
 		}
@@ -36,12 +40,12 @@ func (ft *FortyThieves) StartGame() {
 	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
 		s.recycles = 0
 	}
-	MoveCard(TheBaize.stock, TheBaize.waste)
+	MoveCard(TheBaize.stock, ft.waste)
 }
 
-func (*FortyThieves) AfterMove() {
-	if TheBaize.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
-		MoveCard(TheBaize.stock, TheBaize.waste)
+func (ft *FortyThieves) AfterMove() {
+	if ft.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
+		MoveCard(TheBaize.stock, ft.waste)
 	}
 }
 
@@ -98,10 +102,10 @@ func (*FortyThieves) UnsortedPairs(pile *Pile) int {
 	return unsorted
 }
 
-func (*FortyThieves) TailTapped(tail []*Card) {
+func (ft *FortyThieves) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		MoveCard(TheBaize.stock, TheBaize.waste)
+		MoveCard(TheBaize.stock, ft.waste)
 	} else {
 		pile.subtype.TailTapped(tail)
 	}
@@ -116,4 +120,16 @@ func (*FortyThieves) PercentComplete() int {
 
 func (*FortyThieves) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)"
+}
+
+func (ft *FortyThieves) Discards() []*Pile {
+	return nil
+}
+
+func (ft *FortyThieves) Foundations() []*Pile {
+	return ft.foundations
+}
+
+func (ft *FortyThieves) Waste() *Pile {
+	return ft.waste
 }

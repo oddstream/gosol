@@ -25,7 +25,7 @@ func (f *Foundation) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.foundations) {
+	if f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.script.Foundations()) {
 		return false, errors.New("The Foundation is full")
 	}
 	var tail []*Card = []*Card{card}
@@ -56,7 +56,7 @@ func (f *Foundation) Conformant() bool {
 }
 
 func (f *Foundation) Complete() bool {
-	return f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.foundations)
+	return f.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.script.Foundations())
 }
 
 func (f *Foundation) UnsortedPairs() int {

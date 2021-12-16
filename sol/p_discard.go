@@ -32,7 +32,7 @@ func (d *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot move a face down card")
 	}
-	if len(tail) != len(TheBaize.cardLibrary)/len(TheBaize.discards) {
+	if len(tail) != len(TheBaize.cardLibrary)/len(TheBaize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
 	return TheBaize.script.TailMoveError(tail) // check cards are conformant
@@ -57,7 +57,7 @@ func (d *Discard) Complete() bool {
 	if d.pile.Empty() {
 		return true
 	}
-	if d.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.discards) {
+	if d.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.script.Discards()) {
 		return true
 	}
 	return false

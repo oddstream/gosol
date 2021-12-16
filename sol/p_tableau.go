@@ -130,8 +130,8 @@ func (t *Tableau) Complete() bool {
 	if t.pile.Empty() {
 		return true
 	}
-	if len(TheBaize.discards) > 0 {
-		if t.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.discards) {
+	if len(TheBaize.script.Discards()) > 0 {
+		if t.pile.Len() == len(TheBaize.cardLibrary)/len(TheBaize.script.Discards()) {
 			if TheBaize.script.UnsortedPairs(t.pile) == 0 {
 				return true
 			}

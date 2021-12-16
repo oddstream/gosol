@@ -9,28 +9,34 @@ import (
 )
 
 type Klondike struct {
-	draw, recycles int
+	foundations, tableaux []*Pile
+	waste                 *Pile
+	draw, recycles        int
 }
 
-func (k *Klondike) BuildPiles() {
-	if k.draw == 0 {
-		k.draw = 1
+func (kl *Klondike) BuildPiles() {
+	if kl.draw == 0 {
+		kl.draw = 1
 	}
 	NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	for x := 3; x < 7; x++ {
-		NewFoundation(image.Point{x, 0}, FAN_NONE).SetLabel("A")
+		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		kl.foundations = append(kl.foundations, f)
+		f.SetLabel("A")
 	}
 
 	for x := 0; x < 7; x++ {
-		NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY).SetLabel("K")
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
+		t.SetLabel("K")
+		kl.tableaux = append(kl.tableaux, t)
 	}
 }
 
-func (k *Klondike) StartGame() {
+func (kl *Klondike) StartGame() {
 	var dealDown = 0
-	for _, pile := range TheBaize.tableaux {
+	for _, pile := range kl.tableaux {
 		for i := 0; i < dealDown; i++ {
 			MoveCard(TheBaize.stock, pile)
 			pile.Peek().FlipDown()
@@ -38,17 +44,17 @@ func (k *Klondike) StartGame() {
 		dealDown++
 		MoveCard(TheBaize.stock, pile)
 	}
-	// MoveCard(TheBaize.stock, TheBaize.waste)
+	// MoveCard(TheBaize.stock, kl.waste)
 	if s, ok := (TheBaize.stock.subtype).(*Stock); ok {
-		s.recycles = k.recycles
+		s.recycles = kl.recycles
 	}
 	TheBaize.stock.SetRune(RECYCLE_RUNE)
-	MoveCard(TheBaize.stock, TheBaize.waste)
+	MoveCard(TheBaize.stock, kl.waste)
 }
 
-func (*Klondike) AfterMove() {
-	if TheBaize.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
-		MoveCard(TheBaize.stock, TheBaize.waste)
+func (kl *Klondike) AfterMove() {
+	if kl.waste.Len() == 0 && TheBaize.stock.Len() != 0 {
+		MoveCard(TheBaize.stock, kl.waste)
 	}
 }
 
@@ -115,22 +121,22 @@ func (*Klondike) UnsortedPairs(pile *Pile) int {
 	return unsorted
 }
 
-func (k *Klondike) TailTapped(tail []*Card) {
+func (kl *Klondike) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		for i := 0; i < k.draw; i++ {
-			MoveCard(TheBaize.stock, TheBaize.waste)
+		for i := 0; i < kl.draw; i++ {
+			MoveCard(TheBaize.stock, kl.waste)
 		}
 	} else {
 		pile.subtype.TailTapped(tail)
 	}
 }
 
-func (*Klondike) PileTapped(pile *Pile) {
+func (kl *Klondike) PileTapped(pile *Pile) {
 	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
-			for TheBaize.waste.Len() > 0 {
-				MoveCard(TheBaize.waste, TheBaize.stock)
+			for kl.waste.Len() > 0 {
+				MoveCard(kl.waste, TheBaize.stock)
 			}
 			s.recycles--
 			switch {
@@ -154,4 +160,16 @@ func (*Klondike) PercentComplete() int {
 
 func (*Klondike) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Solitaire"
+}
+
+func (*Klondike) Discards() []*Pile {
+	return nil
+}
+
+func (kl *Klondike) Foundations() []*Pile {
+	return kl.foundations
+}
+
+func (kl *Klondike) Waste() *Pile {
+	return kl.waste
 }

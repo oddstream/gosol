@@ -22,6 +22,10 @@ type ScriptInterface interface {
 
 	PercentComplete() int
 	Wikipedia() string
+
+	Discards() []*Pile
+	Foundations() []*Pile
+	Waste() *Pile
 }
 
 var Variants = map[string]ScriptInterface{
