@@ -89,7 +89,7 @@ var audioContext *audio.Context
 
 var soundMap map[string]*audio.Player
 
-var MuteSound bool
+var Volume float64
 
 func decode(name string, wavBytes []byte) {
 	if len(wavBytes) == 0 {
@@ -149,12 +149,12 @@ var soundRandomizer = map[string]int{
 	"Complete":       0,
 }
 
-func Mute(mute bool) {
-	MuteSound = mute
+func SetVolume(vol float64) {
+	Volume = vol
 }
 
 func Play(name string) {
-	if MuteSound {
+	if Volume == 0.0 {
 		return
 	}
 	n := soundRandomizer[name]
@@ -175,6 +175,7 @@ func Play(name string) {
 	}
 	if !audioPlayer.IsPlaying() {
 		audioPlayer.Rewind()
+		audioPlayer.SetVolume(Volume)
 		audioPlayer.Play()
 	}
 }

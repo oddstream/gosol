@@ -149,6 +149,10 @@ func (t *Toad) Foundations() []*Pile {
 	return t.foundations
 }
 
+func (t *Toad) Stock() *Pile {
+	return t.stock
+}
+
 func (t *Toad) Waste() *Pile {
 	return t.waste
 }

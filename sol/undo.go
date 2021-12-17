@@ -61,7 +61,7 @@ func (b *Baize) NewSavableBaize() *SavableBaize {
 	for _, p := range b.piles {
 		ss.Piles = append(ss.Piles, p.Savable())
 	}
-	if stockobject, ok := (b.stock.subtype).(*Stock); ok {
+	if stockobject, ok := (b.script.Stock().subtype).(*Stock); ok {
 		ss.Recycles = stockobject.recycles
 	}
 	ss.Bookmark = b.bookmark
@@ -99,7 +99,7 @@ func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
 		b.piles[i].UpdateFromSavable(ss.Piles[i])
 		b.piles[i].Scrunch()
 	}
-	if stockobject, ok := (b.stock.subtype).(*Stock); ok {
+	if stockobject, ok := (b.script.Stock().subtype).(*Stock); ok {
 		stockobject.recycles = ss.Recycles
 	}
 	b.bookmark = ss.Bookmark
@@ -152,7 +152,7 @@ func (b *Baize) SavePosition() {
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark
-	stockobject, ok := (b.stock.subtype).(*Stock)
+	stockobject, ok := (b.script.Stock().subtype).(*Stock)
 	if ok {
 		sb.Recycles = stockobject.recycles
 	}

@@ -10,7 +10,8 @@ type Preferences struct {
 	CardBackColor             string
 	FixedCards                bool
 	PowerMoves                bool
-	MuteSounds                bool
+	Mute                      bool
+	Volume                    float64
 	MirrorBaize               bool
 	WindowX, WindowY          int
 	WindowWidth, WindowHeight int

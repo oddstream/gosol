@@ -124,6 +124,10 @@ func (fc *Freecell) Foundations() []*Pile {
 	return fc.foundations
 }
 
+func (fc *Freecell) Stock() *Pile {
+	return fc.stock
+}
+
 func (*Freecell) Waste() *Pile {
 	return nil
 }

@@ -56,7 +56,17 @@ var (
 )
 
 // ThePreferences holds serialized game progress data
-var ThePreferences = &Preferences{Game: "Solitaire", Variant: "Klondike", BaizeColor: "BaizeGreen", PowerMoves: true, CardFaceColor: "Ivory", CardBackColor: "CornflowerBlue", FixedCards: true}
+var ThePreferences = &Preferences{
+	Game:          "Solitaire",
+	Variant:       "Klondike",
+	BaizeColor:    "BaizeGreen",
+	PowerMoves:    true,
+	CardFaceColor: "Ivory",
+	CardBackColor: "CornflowerBlue",
+	FixedCards:    true,
+	Mute:          false,
+	Volume:        0.5,
+}
 
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics

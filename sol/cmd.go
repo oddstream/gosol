@@ -69,8 +69,12 @@ func Execute(cmd interface{}) {
 			TheBaize.NewVariant()
 			TheBaize.SetUndoStack(savedUndoStack)
 		case "Mute sounds":
-			ThePreferences.MuteSounds, _ = strconv.ParseBool(v.Data)
-			sound.Mute(ThePreferences.MuteSounds)
+			ThePreferences.Mute, _ = strconv.ParseBool(v.Data)
+			if ThePreferences.Mute {
+				sound.SetVolume(0.0)
+			} else {
+				sound.SetVolume(ThePreferences.Volume)
+			}
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

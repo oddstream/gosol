@@ -150,16 +150,10 @@ func (*Spider) Foundations() []*Pile {
 	return nil
 }
 
-func (*Spider) Waste() *Pile {
-	return nil
+func (sp *Spider) Stock() *Pile {
+	return sp.stock
 }
 
-func (sp *Spider) AuxPile(subtype SubtypeAPI) []*Pile {
-	switch subtype.(type) {
-	case *Discard:
-		return sp.discards
-	case *Tableau:
-		return sp.tableaux
-	}
+func (*Spider) Waste() *Pile {
 	return nil
 }

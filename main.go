@@ -1,3 +1,6 @@
+//go:build linux || windows
+
+// https://go.googlesource.com/proposal/+/master/design/draft-gobuild.md
 // $ go mod init oddstream.games/gomps5
 // $ go mod tidy
 
@@ -46,7 +49,11 @@ func main() {
 
 	sol.ThePreferences.Load()
 
-	sound.Mute(sol.ThePreferences.MuteSounds)
+	if sol.ThePreferences.Mute {
+		sound.SetVolume(0.0)
+	} else {
+		sound.SetVolume(sol.ThePreferences.Volume)
+	}
 
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
 	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {

@@ -50,7 +50,7 @@ func (du *Duchess) StartGame() {
 		MoveCard(du.stock, pile)
 	}
 	du.stock.SetRune(RECYCLE_RUNE)
-	TheUI.Toast("Choose a Reserve card and move it to a Foundation")
+	TheUI.Toast("Move a Reserve card to a Foundation")
 }
 
 func (du *Duchess) AfterMove() {
@@ -180,6 +180,10 @@ func (*Duchess) Discards() []*Pile {
 
 func (du *Duchess) Foundations() []*Pile {
 	return du.foundations
+}
+
+func (du *Duchess) Stock() *Pile {
+	return du.stock
 }
 
 func (du *Duchess) Waste() *Pile {

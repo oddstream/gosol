@@ -147,6 +147,10 @@ func (ez *Easy) Foundations() []*Pile {
 	return ez.foundations
 }
 
+func (ez *Easy) Stock() *Pile {
+	return ez.stock
+}
+
 func (ez *Easy) Waste() *Pile {
 	return ez.waste
 }

@@ -119,6 +119,10 @@ func (*SimpleSimon) Foundations() []*Pile {
 	return nil
 }
 
+func (ss *SimpleSimon) Stock() *Pile {
+	return ss.stock
+}
+
 func (*SimpleSimon) Waste() *Pile {
 	return nil
 }

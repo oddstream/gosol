@@ -136,7 +136,7 @@ func (s *Statistics) ShowStatistics() {
 	if !ok || stats.Won+stats.Lost == 0 {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", ThePreferences.Variant))
 	} else {
-		toasts = append(toasts, fmt.Sprintf("You have made %s in this game, which is %d%% complete", util.Pluralize("move", len(TheBaize.undoStack)-1), TheBaize.PercentComplete()))
+		toasts = append(toasts, fmt.Sprintf("You have completed %d%% of this game of %s", TheBaize.PercentComplete(), ThePreferences.Variant))
 
 		if stats.BestPercent == 0 {
 			toasts = append(toasts, fmt.Sprintf("You have yet to score anything in %s", util.Pluralize("attempt", stats.Lost)))

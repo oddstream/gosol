@@ -1,3 +1,5 @@
+//go:build linux || windows
+
 package sol
 
 import (
@@ -158,7 +160,6 @@ func (s *Statistics) Load() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 // Save writes the Statistics object to file
@@ -172,7 +173,6 @@ func (s *Statistics) Save() {
 	}
 
 	saveBytesToFile(bytes, "statistics.json")
-
 }
 
 // Save the entire undo stack to file

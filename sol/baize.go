@@ -32,7 +32,6 @@ type Baize struct {
 	magic        uint32
 	script       ScriptInterface
 	piles        []*Pile
-	stock        *Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int
 	undoStack    []*SavableBaize
@@ -176,11 +175,9 @@ func (b *Baize) NewVariant() {
 
 	b.piles = nil
 
-	b.stock = nil
-
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
-	b.BuildAuxPiles()
+
 	if ThePreferences.MirrorBaize {
 		b.Mirror()
 	}
@@ -230,15 +227,6 @@ func (b *Baize) FindCardAt(pt image.Point) *Card {
 		}
 	}
 	return nil
-}
-
-func (b *Baize) BuildAuxPiles() {
-	for _, p := range b.piles {
-		switch (p.subtype).(type) {
-		case *Stock:
-			b.stock = p
-		}
-	}
 }
 
 func (b *Baize) LargestIntersection(c *Card) *Pile {
@@ -665,8 +653,8 @@ func (b *Baize) PercentComplete() int {
 }
 
 func (b *Baize) UpdateStatusbar() {
-	if !b.stock.Hidden() {
-		TheUI.SetStock(b.stock.Len())
+	if !b.script.Stock().Hidden() {
+		TheUI.SetStock(b.script.Stock().Len())
 	}
 	if b.script.Waste() != nil {
 		TheUI.SetWaste(b.script.Waste().Len())

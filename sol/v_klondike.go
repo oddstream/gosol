@@ -164,6 +164,10 @@ func (kl *Klondike) Foundations() []*Pile {
 	return kl.foundations
 }
 
+func (kl *Klondike) Stock() *Pile {
+	return kl.stock
+}
+
 func (kl *Klondike) Waste() *Pile {
 	return kl.waste
 }

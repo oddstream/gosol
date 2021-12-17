@@ -29,6 +29,7 @@ type ScriptInterface interface {
 
 	Discards() []*Pile
 	Foundations() []*Pile
+	Stock() *Pile
 	Waste() *Pile
 }
 

@@ -125,6 +125,10 @@ func (ft *FortyThieves) Foundations() []*Pile {
 	return ft.foundations
 }
 
+func (ft *FortyThieves) Stock() *Pile {
+	return ft.stock
+}
+
 func (ft *FortyThieves) Waste() *Pile {
 	return ft.waste
 }
