@@ -11,14 +11,13 @@ import (
 )
 
 type Toad struct {
-	stock, waste, reserve *Pile
-	foundations, tableaux []*Pile
+	ScriptPiles
 }
 
 func (t *Toad) BuildPiles() {
 	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
-	t.reserve = NewReserve(image.Point{3, 0}, FAN_RIGHT)
+	t.reserves = append(t.reserves, NewReserve(image.Point{3, 0}, FAN_RIGHT))
 
 	for x := 0; x < 8; x++ {
 		t.foundations = append(t.foundations, NewFoundation(image.Point{x, 1}, FAN_NONE))
@@ -38,10 +37,10 @@ func (t *Toad) StartGame() {
 	t.stock.SetRune(RECYCLE_RUNE)
 
 	for n := 0; n < 20; n++ {
-		MoveCard(t.stock, t.reserve)
-		t.reserve.Peek().FlipDown()
+		MoveCard(t.stock, t.reserves[0])
+		t.reserves[0].Peek().FlipDown()
 	}
-	t.reserve.Peek().FlipUp()
+	t.reserves[0].Peek().FlipUp()
 
 	for _, pile := range t.tableaux {
 		MoveCard(t.stock, pile)
@@ -58,7 +57,7 @@ func (t *Toad) AfterMove() {
 	// Empty spaces are filled automatically from the reserve.
 	for _, p := range t.tableaux {
 		if p.Empty() {
-			MoveCard(t.reserve, p)
+			MoveCard(t.reserves[0], p)
 		}
 	}
 }

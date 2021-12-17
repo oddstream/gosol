@@ -9,9 +9,8 @@ import (
 )
 
 type Klondike struct {
-	foundations, tableaux []*Pile
-	stock, waste          *Pile
-	draw, recycles        int
+	ScriptPiles
+	draw, recycles int
 }
 
 func (kl *Klondike) BuildPiles() {

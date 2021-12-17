@@ -8,8 +8,7 @@ import (
 )
 
 type SimpleSimon struct {
-	stock              *Pile
-	discards, tableaux []*Pile
+	ScriptPiles
 }
 
 func (ss *SimpleSimon) BuildPiles() {

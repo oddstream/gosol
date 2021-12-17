@@ -12,8 +12,7 @@ import (
 )
 
 type Duchess struct {
-	foundations, tableaux, reserves []*Pile
-	stock, waste                    *Pile
+	ScriptPiles
 }
 
 func (du *Duchess) BuildPiles() {

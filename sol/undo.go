@@ -52,8 +52,8 @@ func (p *Pile) UpdateFromSavable(sp *SavablePile) {
 	if len(p.cards) != len(sp.Cards) {
 		log.Panic("cards rebuilt incorrectly")
 	}
-	p.label = sp.Label
-	p.symbol = sp.Symbol
+	p.SetLabel(sp.Label)
+	p.SetRune(sp.Symbol)
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {

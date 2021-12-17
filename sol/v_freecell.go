@@ -8,8 +8,7 @@ import (
 )
 
 type Freecell struct {
-	stock                 *Pile
-	foundations, tableaux []*Pile
+	ScriptPiles
 }
 
 func (fc *Freecell) BuildPiles() {

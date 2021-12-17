@@ -8,6 +8,11 @@ import (
 	"sort"
 )
 
+type ScriptPiles struct {
+	stock, waste                              *Pile
+	discards, foundations, reserves, tableaux []*Pile
+}
+
 type ScriptInterface interface {
 	BuildPiles()
 	StartGame()

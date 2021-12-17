@@ -8,8 +8,7 @@ import (
 )
 
 type Easy struct {
-	foundations, tableaux []*Pile
-	stock, waste          *Pile
+	ScriptPiles
 }
 
 func (ez *Easy) BuildPiles() {

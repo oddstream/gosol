@@ -8,9 +8,8 @@ import (
 )
 
 type Spider struct {
-	stock              *Pile
-	discards, tableaux []*Pile
-	packs, suits       int
+	ScriptPiles
+	packs, suits int
 }
 
 func (sp *Spider) BuildPiles() {

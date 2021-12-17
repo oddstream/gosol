@@ -116,7 +116,7 @@ func (s *Statistics) WonToast() {
 	if !ok || stats.Won+stats.Lost == 0 {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", ThePreferences.Variant))
 	} else {
-		toasts = append(toasts, fmt.Sprintf("%s complete in %d moves", ThePreferences.Variant, len(TheBaize.undoStack)-1))
+		toasts = append(toasts, fmt.Sprintf("%s complete", ThePreferences.Variant))
 		toasts = append(toasts,
 			fmt.Sprintf("You have won %s, and lost %s (%d%%)",
 				util.Pluralize("game", stats.Won),

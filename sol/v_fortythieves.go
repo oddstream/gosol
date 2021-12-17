@@ -8,11 +8,10 @@ import (
 )
 
 type FortyThieves struct {
-	foundations, tableaux []*Pile
-	stock, waste          *Pile
-	founds                []int
-	tabs                  []int
-	cardsPerTab           int
+	ScriptPiles
+	founds      []int
+	tabs        []int
+	cardsPerTab int
 }
 
 func (ft *FortyThieves) BuildPiles() {

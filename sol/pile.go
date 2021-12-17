@@ -128,8 +128,10 @@ func (p *Pile) Label() string {
 }
 
 func (p *Pile) SetLabel(label string) {
-	p.label = label
-	TheBaize.setFlag(dirtyPileBackgrounds)
+	if p.label != label {
+		p.label = label
+		TheBaize.setFlag(dirtyPileBackgrounds)
+	}
 }
 
 func (p *Pile) Rune() rune {
@@ -137,8 +139,10 @@ func (p *Pile) Rune() rune {
 }
 
 func (p *Pile) SetRune(symbol rune) {
-	p.symbol = symbol
-	TheBaize.setFlag(dirtyPileBackgrounds)
+	if p.symbol != symbol {
+		p.symbol = symbol
+		TheBaize.setFlag(dirtyPileBackgrounds)
+	}
 }
 
 // Get a *Card from this collection
