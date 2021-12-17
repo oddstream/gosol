@@ -3,21 +3,21 @@ https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
 
  work at reducing the size of variant.go files (CardPair &c)
- get rid of TheBaize.* (used 134, now 78 times 16 Dec 2021)
+ get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
   Pile.owner
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
 
+ *_windows.go
+ portrait | landscape
  fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
  Bebas Neue for Acme
  hearts and 10s are too close to the edge
  show NewDeal FAB when loading a complete saved.txt
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
- highlight pile/card that dragged card would land on?
  WASM not getting WindowWidth,Height at startup, try getting from other sources
  WASM not scrunching?
- copy WidgetBase.Draw mouse down stuff to Pile with recycle rune
  not descrunching both piles after pop?
  Panic stop dragging unknown object
  https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
@@ -26,7 +26,10 @@ https://calver.org/
  README.md
  scale slot up by 10, call it slot10 to help remember
 
+x BUG undo Duchess didn't reset Pile label
+x highlight pile/card that dragged card would land on?
 x Duchess, with it's odd rules
+x copy WidgetBase.Draw mouse down stuff to Pile with recycle rune
 x retire PercentComplete from script interface; we won't be doing poker games
 x retire move counting and reporting, wouldn't do it in Real Life, and it's not accurate
 x cardLibrary could be a global
