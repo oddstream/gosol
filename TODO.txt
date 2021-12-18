@@ -8,9 +8,10 @@ https://calver.org/
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
 
- BUG not saving pile label to saved.txt
+ clean up statistics reporting
+ streaks and percentages in README.md
+ dragging an animated card is not ok
  are both symbol and label needed? encode a glyph into label
-x tap on statusbar COMPLETE to retoast welcome
  portrait | landscape
  fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
@@ -28,7 +29,9 @@ x tap on statusbar COMPLETE to retoast welcome
  README.md
  scale slot up by 10, call it slot10 to help remember
 
-x average % complete
+x tap on statusbar COMPLETE to retoast welcome
+x BUG not saving pile label to saved.txt
+x x average % complete
 x *_windows.go
 x BUG undo Duchess didn't reset Pile label
 x highlight pile/card that dragged card would land on?
