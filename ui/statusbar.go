@@ -20,7 +20,8 @@ func NewStatusbar() *Statusbar {
 		// button's x will be set by LayoutWidgets()
 		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 0 stock
 		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 1 waste
-		NewLabel(sb, 1, "", schriftbank.RobotoRegular14, ""),  // 2 percent
+		NewLabel(sb, 0, "", schriftbank.RobotoRegular14, ""),  // 2 middle (debug)
+		NewLabel(sb, 1, "", schriftbank.RobotoRegular14, ""),  // 3 percent
 	}
 	return sb
 }
@@ -58,8 +59,15 @@ func (u *UI) SetWaste(cards int) {
 }
 
 // SetPercent of the statusbar
-func (u *UI) SetPercent(percent int) {
+func (u *UI) SetMiddle(str string) {
 	var l *Label = u.statusbar.widgets[2].(*Label)
+	l.UpdateText(str)
+	u.statusbar.LayoutWidgets()
+}
+
+// SetPercent of the statusbar
+func (u *UI) SetPercent(percent int) {
+	var l *Label = u.statusbar.widgets[3].(*Label)
 	if percent == 100 {
 		l.UpdateText("COMPLETE")
 	} else {

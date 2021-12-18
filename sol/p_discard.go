@@ -71,7 +71,3 @@ func (d *Discard) UnsortedPairs() int {
 		return 0
 	}
 }
-
-func (d *Discard) Reset() {
-	d.pile.GenericReset()
-}

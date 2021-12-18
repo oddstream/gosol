@@ -18,16 +18,19 @@ type Duchess struct {
 func (du *Duchess) BuildPiles() {
 	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
 
+	du.reserves = nil
 	for i := 0; i < 4; i++ {
 		du.reserves = append(du.reserves, NewReserve(image.Point{i * 2, 0}, FAN_RIGHT))
 	}
 
 	du.waste = NewWaste(image.Point{1, 2}, FAN_DOWN3)
 
+	du.foundations = nil
 	for x := 3; x < 7; x++ {
 		du.foundations = append(du.foundations, NewFoundation(image.Point{x, 1}, FAN_NONE))
 	}
 
+	du.tableaux = nil
 	for x := 3; x < 7; x++ {
 		du.tableaux = append(du.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
 	}

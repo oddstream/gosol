@@ -18,12 +18,14 @@ func (ft *FortyThieves) BuildPiles() {
 	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
+	ft.foundations = nil
 	for _, x := range ft.founds {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
 		ft.foundations = append(ft.foundations, f)
 		f.SetLabel("A")
 	}
 
+	ft.tableaux = nil
 	for _, x := range ft.tabs {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		ft.tableaux = append(ft.tableaux, t)

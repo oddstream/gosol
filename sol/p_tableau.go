@@ -147,7 +147,3 @@ func (t *Tableau) UnsortedPairs() int {
 		return 0
 	}
 }
-
-func (t *Tableau) Reset() {
-	t.pile.GenericReset()
-}

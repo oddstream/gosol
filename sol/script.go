@@ -9,8 +9,8 @@ import (
 )
 
 type ScriptPiles struct {
-	stock, waste                              *Pile
-	discards, foundations, reserves, tableaux []*Pile
+	stock, waste                                     *Pile
+	cells, discards, foundations, reserves, tableaux []*Pile
 }
 
 type ScriptInterface interface {
@@ -35,6 +35,7 @@ type ScriptInterface interface {
 
 var Variants = map[string]ScriptInterface{
 	"American Toad":       &Toad{},
+	"Australian":          &Australian{},
 	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},

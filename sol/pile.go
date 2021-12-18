@@ -78,15 +78,18 @@ type Pile struct {
 }
 
 func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType) {
+	// static
 	p.magic = BASE_MAGIC
 	p.category = category
 	p.slot = slot
 	p.fanType = fanType
+	p.subtype = subtype
+	// dynamic
 	p.defaultFanFactor = FanFactors[fanType]
 	p.fanFactor = p.defaultFanFactor
 	p.cards = nil
-	p.subtype = subtype
-	TheBaize.piles = append(TheBaize.piles, p) // TODO nasty
+	// downright ugly design kludge
+	TheBaize.piles = append(TheBaize.piles, p)
 }
 
 func (p *Pile) Valid() bool {
@@ -440,12 +443,6 @@ func (p *Pile) GenericCollect() {
 			MoveCard(p, fp)
 		}
 	}
-}
-
-func (p *Pile) GenericReset() {
-	p.cards = p.cards[:0]
-	p.label = ""
-	p.symbol = 0
 }
 
 func (p *Pile) DrawStaticCards(screen *ebiten.Image) {

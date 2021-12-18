@@ -64,7 +64,7 @@ func (u *UI) Toast(message string) {
 	// because during welcome toasts it will return 0.0
 	// println(ebiten.CurrentTPS())
 	// t.ticksLeft = int(ebiten.CurrentTPS()) * (6 + len(u.toastManager.toasts))
-	t.ticksLeft = 60 * (6 + len(u.toastManager.toasts))
+	t.ticksLeft = 60 * (8 + len(u.toastManager.toasts))
 
 	u.toastManager.Add(t)
 }

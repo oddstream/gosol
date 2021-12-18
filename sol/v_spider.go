@@ -5,6 +5,7 @@ package sol
 import (
 	"errors"
 	"image"
+	"log"
 )
 
 type Spider struct {
@@ -15,11 +16,13 @@ type Spider struct {
 func (sp *Spider) BuildPiles() {
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 
+	sp.discards = nil
 	for x := 2; x < 10; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
 		sp.discards = append(sp.discards, d)
 	}
 
+	sp.tableaux = nil
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		sp.tableaux = append(sp.tableaux, t)
@@ -45,7 +48,11 @@ func (sp *Spider) StartGame() {
 		}
 	}
 	for _, pile := range sp.tableaux {
-		pile.Peek().FlipUp()
+		c := pile.Peek()
+		if c == nil {
+			log.Panic("empty tableau")
+		}
+		c.FlipUp()
 	}
 	if s, ok := (sp.stock.subtype).(*Stock); ok {
 		s.recycles = 0

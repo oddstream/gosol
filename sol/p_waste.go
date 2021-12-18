@@ -63,7 +63,3 @@ func (w *Waste) UnsortedPairs() int {
 	}
 	return w.pile.Len() - 1
 }
-
-func (w *Waste) Reset() {
-	w.pile.GenericReset()
-}

@@ -19,10 +19,12 @@ func (t *Toad) BuildPiles() {
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 	t.reserves = append(t.reserves, NewReserve(image.Point{3, 0}, FAN_RIGHT))
 
+	t.foundations = nil
 	for x := 0; x < 8; x++ {
 		t.foundations = append(t.foundations, NewFoundation(image.Point{x, 1}, FAN_NONE))
 	}
 
+	t.tableaux = nil
 	for x := 0; x < 8; x++ {
 		// When moving tableau piles, you must either move the whole pile or only the top card.
 		t.tableaux = append(t.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE_OR_ALL))

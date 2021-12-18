@@ -138,10 +138,3 @@ func (s *Stock) UnsortedPairs() int {
 	}
 	return s.pile.Len() - 1
 }
-
-// Reset override Pile Reset to make fill the stock with shuffled cards
-func (s *Stock) Reset() {
-	s.pile.GenericReset()
-	s.pile.FillFromLibrary()
-	s.pile.Shuffle()
-}

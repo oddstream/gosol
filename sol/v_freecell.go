@@ -14,15 +14,19 @@ type Freecell struct {
 func (fc *Freecell) BuildPiles() {
 	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
+	fc.cells = nil
 	for x := 0; x < 4; x++ {
-		NewCell(image.Point{x, 0})
+		fc.cells = append(fc.cells, NewCell(image.Point{x, 0}))
 	}
+
+	fc.foundations = nil
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
 		fc.foundations = append(fc.foundations, f)
 		f.SetLabel("A")
 	}
 
+	fc.tableaux = nil
 	for x := 0; x < 8; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		fc.tableaux = append(fc.tableaux, t)

@@ -55,7 +55,3 @@ func (r *Reserve) UnsortedPairs() int {
 		return 0
 	}
 }
-
-func (r *Reserve) Reset() {
-	r.pile.GenericReset()
-}

@@ -87,31 +87,33 @@ func (b *Baize) CRC() uint32 {
 	return crc32.ChecksumIEEE(lens)
 }
 
-func (b *Baize) Reset() {
-	b.StopSpinning()
-	for _, p := range b.piles {
-		p.subtype.Reset()
-	}
-	b.tail = nil
-	b.undoStack = nil
-	b.bookmark = 0
-	b.dragStart = image.Point{0, 0}
-	b.dragOffset = image.Point{0, 0}
-}
-
 func (b *Baize) Refan() {
 	b.setFlag(dirtyCardPositions)
 }
 
-// NewGame resets Baize and restarts current variant with a new seed
+// NewGame restarts current variant (ie no pile building) with a new seed
 func (b *Baize) NewDeal() {
+
+	b.StopSpinning()
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
 		TheStatistics.RecordLostGame()
 	}
 
-	b.Reset()
+	b.tail = nil
+	b.undoStack = nil
+	b.bookmark = 0
+
+	for _, p := range b.piles {
+		p.cards = p.cards[:0]
+		p.fanFactor = p.defaultFanFactor
+	}
+
+	stockPile := b.script.Stock()
+	stockPile.FillFromLibrary()
+	stockPile.Shuffle()
+
 	b.script.StartGame()
 	b.UndoPush()
 	sound.Play("Fan")
@@ -171,9 +173,10 @@ func (b *Baize) NewVariant() {
 		TheStatistics.RecordLostGame()
 	}
 
-	b.Reset()
-
+	b.tail = nil
 	b.piles = nil
+	b.undoStack = nil
+	b.bookmark = 0
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
 	b.script.BuildPiles()
@@ -303,7 +306,6 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		sound.Play("Complete")
 		TheStatistics.RecordWonGame()
-		TheStatistics.WonToast()
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
@@ -660,6 +662,9 @@ func (b *Baize) UpdateStatusbar() {
 		TheUI.SetWaste(b.script.Waste().Len())
 	} else {
 		TheUI.SetWaste(0) // previous variant may have had a waste, and this one does not
+	}
+	if DebugMode {
+		TheUI.SetMiddle(fmt.Sprintf("len(undoStack) = %d", len(b.undoStack)))
 	}
 	TheUI.SetPercent(b.PercentComplete())
 }

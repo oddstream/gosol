@@ -14,11 +14,13 @@ type SimpleSimon struct {
 func (ss *SimpleSimon) BuildPiles() {
 	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
+	ss.discards = nil
 	for x := 3; x < 7; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
 		ss.discards = append(ss.discards, d)
 	}
 
+	ss.tableaux = nil
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		ss.tableaux = append(ss.tableaux, t)

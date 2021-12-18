@@ -66,7 +66,3 @@ func (c *Cell) Complete() bool {
 func (c *Cell) UnsortedPairs() int {
 	return 0
 }
-
-func (c *Cell) Reset() {
-	c.pile.GenericReset()
-}

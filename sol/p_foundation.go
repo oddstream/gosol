@@ -62,7 +62,3 @@ func (f *Foundation) Complete() bool {
 func (f *Foundation) UnsortedPairs() int {
 	return 0
 }
-
-func (f *Foundation) Reset() {
-	f.pile.GenericReset()
-}

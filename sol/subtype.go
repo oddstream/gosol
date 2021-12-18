@@ -9,5 +9,4 @@ type SubtypeAPI interface {
 	Conformant() bool
 	Complete() bool
 	UnsortedPairs() int
-	Reset()
 }

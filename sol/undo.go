@@ -33,7 +33,7 @@ func (p *Pile) UpdateFromSavable(sp *SavablePile) {
 	if p.category != sp.Category {
 		log.Panic("Baize pile and SavablePile are different")
 	}
-	p.GenericReset()
+	p.cards = p.cards[:0]
 	for _, cid := range sp.Cards {
 		for i := 0; i < len(CardLibrary); i++ {
 			if SameCardAndPack(cid, CardLibrary[i].ID) {

@@ -21,7 +21,6 @@ func NewNavDrawer() *NavDrawer {
 		NewNavItem(n, "bookmark_add", "Bookmark", ebiten.KeyS),
 		NewNavItem(n, "bookmark", "Goto bookmark", ebiten.KeyL),
 		NewNavItem(n, "list", "Wikipedia...", ebiten.KeyF1),
-		NewNavItem(n, "info", "Statistics...", ebiten.KeyF4),
 		NewNavItem(n, "settings", "Settings...", ebiten.KeyF3),
 	}
 	// if runtime.GOARCH != "wasm" {

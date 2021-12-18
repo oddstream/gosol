@@ -20,12 +20,14 @@ func (kl *Klondike) BuildPiles() {
 	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	kl.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
+	kl.foundations = nil
 	for x := 3; x < 7; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
 		kl.foundations = append(kl.foundations, f)
 		f.SetLabel("A")
 	}
 
+	kl.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")
