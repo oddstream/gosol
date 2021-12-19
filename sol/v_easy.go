@@ -3,12 +3,11 @@ package sol
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 
 import (
-	"errors"
 	"image"
 )
 
 type Easy struct {
-	ScriptPiles
+	ScriptBase
 }
 
 func (ez *Easy) BuildPiles() {
@@ -26,14 +25,19 @@ func (ez *Easy) BuildPiles() {
 	for x := 0; x < 13; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		ez.tableaux = append(ez.tableaux, t)
+		if !ez.relaxed {
+			t.SetLabel("K")
+		}
 	}
 }
 
 func (ez *Easy) StartGame() {
-	MoveNamedCard(CLUB, 1, ez.foundations[0])
-	MoveNamedCard(DIAMOND, 1, ez.foundations[1])
-	MoveNamedCard(HEART, 1, ez.foundations[2])
-	MoveNamedCard(SPADE, 1, ez.foundations[3])
+	if ez.easy {
+		MoveNamedCard(CLUB, 1, ez.foundations[0])
+		MoveNamedCard(DIAMOND, 1, ez.foundations[1])
+		MoveNamedCard(HEART, 1, ez.foundations[2])
+		MoveNamedCard(SPADE, 1, ez.foundations[3])
+	}
 	for _, pile := range ez.tableaux {
 		for i := 0; i < 2; i++ {
 			MoveCard(ez.stock, pile)
@@ -74,25 +78,18 @@ func (*Easy) TailMoveError(tail []*Card) (bool, error) {
 func (*Easy) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
-	case *Waste:
-		return false, errors.New("Waste can only accept cards from the Stock")
 	case *Foundation:
 		if dst.Empty() {
-			if tail[0].Ordinal() != 1 {
-				return false, errors.New("Empty Foundations can only accept an Ace")
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
 		if dst.Empty() {
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
 		}
-	default:
-		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }

@@ -4,13 +4,17 @@ package sol
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sort"
+
+	"oddstream.games/gomps5/util"
 )
 
-type ScriptPiles struct {
+type ScriptBase struct {
 	stock, waste                                     *Pile
 	cells, discards, foundations, reserves, tableaux []*Pile
+	relaxed, easy                                    bool
 }
 
 type ScriptInterface interface {
@@ -39,7 +43,7 @@ var Variants = map[string]ScriptInterface{
 	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
-	"Easy":                &Easy{},
+	"Easy":                &Easy{ScriptBase: ScriptBase{relaxed: true, easy: true}},
 	"Freecell":            &Freecell{},
 	"Forty Thieves": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
@@ -180,4 +184,14 @@ func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
 		return true, nil
 	}
 	return false, errors.New("Cards must go down in rank (Kings on Aces allowed)")
+}
+
+func Compare_Empty(p *Pile, c *Card) (bool, error) {
+	if p.label != "" {
+		ord := util.OrdinalToShortString(c.Ordinal())
+		if ord != p.label {
+			return false, fmt.Errorf("Can only accept an %s, not a %s", p.label, ord)
+		}
+	}
+	return true, nil
 }

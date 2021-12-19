@@ -165,13 +165,8 @@ func (b *Baize) Mirror() {
 	}
 }
 
-// NewVariant resets Baize and starts a new game with a new variant and seed
-func (b *Baize) NewVariant() {
-
-	// a virgin game has one state on the undo stack
-	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame()
-	}
+// StartFreshGame resets Baize and starts a new game with a new seed
+func (b *Baize) StartFreshGame() {
 
 	b.tail = nil
 	b.piles = nil
@@ -198,6 +193,15 @@ func (b *Baize) NewVariant() {
 	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions)
 
 	TheStatistics.WelcomeToast()
+}
+
+func (b *Baize) ChangeVariant(newVariant string) {
+	// a virgin game has one state on the undo stack
+	if len(b.undoStack) > 1 && !b.Complete() {
+		TheStatistics.RecordLostGame()
+	}
+	ThePreferences.Variant = newVariant
+	b.StartFreshGame()
 }
 
 func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {

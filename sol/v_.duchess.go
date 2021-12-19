@@ -12,7 +12,7 @@ import (
 )
 
 type Duchess struct {
-	ScriptPiles
+	ScriptBase
 }
 
 func (du *Duchess) BuildPiles() {
@@ -80,13 +80,6 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
-	case *Waste:
-		c := tail[0]
-		if _, ok := (c.owner.subtype).(*Stock); !ok {
-			return false, errors.New("Waste can only accept cards from the Stock")
-		}
 	case *Foundation:
 		if dst.Empty() {
 			c := tail[0]
@@ -122,8 +115,6 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColorWrap()
 		}
-	default:
-		log.Panic("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }

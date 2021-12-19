@@ -8,7 +8,9 @@ https://calver.org/
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
 
+ pretty up Compare_Empty error message, use long ordinal names
  clean up statistics reporting
+ clean up rune to suit &c nonsense in util
  streaks and percentages in README.md
  dragging an animated card is not ok
  are both symbol and label needed? encode a glyph into label
@@ -29,6 +31,7 @@ https://calver.org/
  README.md
  scale slot up by 10, call it slot10 to help remember
 
+x Stock and Waste rules filtered out without having to call script.TailAppendError()
 x tap on statusbar COMPLETE to retoast welcome
 x BUG not saving pile label to saved.txt
 x x average % complete

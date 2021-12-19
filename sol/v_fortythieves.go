@@ -3,12 +3,11 @@ package sol
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 
 import (
-	"errors"
 	"image"
 )
 
 type FortyThieves struct {
-	ScriptPiles
+	ScriptBase
 	founds      []int
 	tabs        []int
 	cardsPerTab int
@@ -70,25 +69,18 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
-	case *Waste:
-		return false, errors.New("You cannot move cards to the Waste")
 	case *Foundation:
 		if dst.Empty() {
-			if tail[0].Ordinal() != 1 {
-				return false, errors.New("Empty Foundations can only accept an Ace")
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
 		if dst.Empty() {
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
 		}
-	default:
-		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }

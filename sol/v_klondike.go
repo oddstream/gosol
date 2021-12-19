@@ -3,13 +3,12 @@ package sol
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 
 import (
-	"errors"
 	"fmt"
 	"image"
 )
 
 type Klondike struct {
-	ScriptPiles
+	ScriptBase
 	draw, recycles int
 }
 
@@ -79,30 +78,18 @@ func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 func (*Klondike) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
-	case *Waste:
-		return false, errors.New("Waste can only accept cards from the Stock")
 	case *Foundation:
 		if dst.Empty() {
-			c1 := tail[0]
-			if c1.Ordinal() != 1 {
-				return false, errors.New("Empty Foundations can only accept an Ace")
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
 	case *Tableau:
 		if dst.Empty() {
-			c1 := tail[0]
-			if c1.Ordinal() != 13 {
-				return false, errors.New("Empty Tableaux can only accept a King")
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
 		}
-	default:
-		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }

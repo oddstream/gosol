@@ -28,16 +28,17 @@ func (*Waste) CanMoveTail(tail []*Card) (bool, error) {
 }
 
 func (w *Waste) CanAcceptCard(card *Card) (bool, error) {
-	var tail []*Card = []*Card{card}
-	// pearl from the mudbank cannot pass a *Waste to script functions, only a *Pile
-	return TheBaize.script.TailAppendError(w.pile, tail)
+	if _, ok := (card.owner.subtype).(*Stock); !ok {
+		return false, errors.New("Waste can only accept cards from the Stock")
+	}
+	return true, nil
 }
 
 func (w *Waste) CanAcceptTail(tail []*Card) (bool, error) {
-	if len(tail) > 1 {
-		return false, errors.New("Cannot move more than one card to a Waste")
+	if _, ok := (tail[0].owner.subtype).(*Stock); !ok {
+		return false, errors.New("Waste can only accept cards from the Stock")
 	}
-	return TheBaize.script.TailAppendError(w.pile, tail)
+	return true, nil
 }
 
 func (w *Waste) TailTapped(tail []*Card) {

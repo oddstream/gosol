@@ -89,7 +89,7 @@ func NewGame() (*Game, error) {
 	TheUI = ui.New(Execute)
 	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
-	TheBaize.NewVariant()
+	TheBaize.StartFreshGame()
 	return g, nil
 }
 

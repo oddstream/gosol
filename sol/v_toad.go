@@ -4,14 +4,13 @@ package sol
 
 import (
 	"errors"
-	"fmt"
 	"image"
 
 	"oddstream.games/gomps5/util"
 )
 
 type Toad struct {
-	ScriptPiles
+	ScriptBase
 }
 
 func (t *Toad) BuildPiles() {
@@ -71,15 +70,9 @@ func (*Toad) TailMoveError(tail []*Card) (bool, error) {
 func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
-	case *Waste:
-		return false, errors.New("Waste can only accept cards from the Stock")
 	case *Foundation:
 		if dst.Empty() {
-			if util.OrdinalToShortString(tail[0].Ordinal()) != dst.label {
-				return false, fmt.Errorf("Empty Foundations can only accept an %s", dst.label)
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
@@ -93,8 +86,6 @@ func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuitWrap()
 		}
-	default:
-		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }

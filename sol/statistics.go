@@ -47,14 +47,19 @@ func (stats *VariantStatistics) bestPercent() int {
 	return best
 }
 
-func (stats *VariantStatistics) endOfGameToasts() {
+func (stats *VariantStatistics) generalToasts() []string {
 	toasts := []string{}
 	toasts = append(toasts,
-		fmt.Sprintf("You have won %s, and lost %s (%d%%)",
-			util.Pluralize("game", stats.Won),
-			util.Pluralize("game", stats.Lost),
-			((stats.Won*100)/(stats.Won+stats.Lost))))
-	toasts = append(toasts, fmt.Sprintf("Your average score is %d%%", stats.averagePercent()))
+		fmt.Sprintf("You have played %s %s (won %d, lost %d)", ThePreferences.Variant, util.Pluralize("time", stats.Won+stats.Lost), stats.Won, stats.Lost))
+	// fmt.Sprintf("You have won %s, and lost %s (%d%%)",
+	// 	util.Pluralize("game", stats.Won),
+	// 	util.Pluralize("game", stats.Lost),
+	// 	((stats.Won*100)/(stats.Won+stats.Lost))))
+
+	avpc := stats.averagePercent()
+	if avpc > 0 && avpc < 100 {
+		toasts = append(toasts, fmt.Sprintf("Your average score is %d%%", avpc))
+	}
 
 	if stats.CurrStreak > 0 {
 		toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
@@ -63,9 +68,7 @@ func (stats *VariantStatistics) endOfGameToasts() {
 		toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 	}
 
-	for _, t := range toasts {
-		TheUI.Toast(t)
-	}
+	return toasts
 }
 
 // NewStatistics creates a new Statistics object
@@ -102,7 +105,10 @@ func (s *Statistics) RecordWonGame() {
 		stats.BestStreak = stats.CurrStreak
 	}
 
-	stats.endOfGameToasts()
+	toasts := stats.generalToasts()
+	for _, t := range toasts {
+		TheUI.Toast(t)
+	}
 
 	s.Save()
 }
@@ -150,20 +156,7 @@ func (s *Statistics) WelcomeToast() {
 				toasts = append(toasts, fmt.Sprintf("Your best score is %d%%, your average score is %d%%", bpc, avpc))
 			}
 		} else {
-			toasts = append(toasts,
-				fmt.Sprintf("You have won %s, and lost %s (%d%%)",
-					util.Pluralize("game", stats.Won),
-					util.Pluralize("game", stats.Lost),
-					((stats.Won*100)/(stats.Won+stats.Lost))))
-
-			toasts = append(toasts, fmt.Sprintf("Your average score is %d%%", avpc))
-
-			if stats.CurrStreak > 0 {
-				toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
-			}
-			if stats.CurrStreak < 0 {
-				toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
-			}
+			toasts = stats.generalToasts()
 		}
 	}
 

@@ -142,10 +142,13 @@ func (c *Card) TransitionTo(pos image.Point) {
 func (c *Card) StartDrag() {
 	if c.Transitioning() {
 		println("Dragging a transitioning card", c.String())
+		// set the drag origin to the be transition destination,
+		// so that cancelling this drag will return the card
+		// to where it thought it was going
+		c.dragStart = c.dst
+	} else {
+		c.dragStart = c.pos
 	}
-	// if !c.Transitioning() {
-	c.dragStart = c.pos
-	// }
 	// println("start drag", c.ID.String(), "start", c.dragStartX, c.dragStartY)
 }
 

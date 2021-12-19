@@ -55,8 +55,7 @@ func Execute(cmd interface{}) {
 				log.Panic("ChangeRequest empty variant", v.Data)
 			}
 			if newVariant != ThePreferences.Variant {
-				ThePreferences.Variant = newVariant
-				TheBaize.NewVariant()
+				TheBaize.ChangeVariant(newVariant)
 			}
 		case "Fixed cards":
 			ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
@@ -66,7 +65,7 @@ func Execute(cmd interface{}) {
 		case "Mirror baize":
 			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
 			savedUndoStack := TheBaize.undoStack
-			TheBaize.NewVariant()
+			TheBaize.StartFreshGame()
 			TheBaize.SetUndoStack(savedUndoStack)
 		case "Mute sounds":
 			ThePreferences.Mute, _ = strconv.ParseBool(v.Data)

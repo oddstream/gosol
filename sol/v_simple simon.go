@@ -8,7 +8,7 @@ import (
 )
 
 type SimpleSimon struct {
-	ScriptPiles
+	ScriptBase
 }
 
 func (ss *SimpleSimon) BuildPiles() {
@@ -71,8 +71,6 @@ func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
-	case *Stock:
-		return false, errors.New("You cannot move cards to the Stock")
 	case *Discard:
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
@@ -87,8 +85,6 @@ func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
 		}
-	default:
-		println("unknown pile type in TailAppendError")
 	}
 	return true, nil
 }
