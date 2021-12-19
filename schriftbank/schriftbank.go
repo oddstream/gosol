@@ -29,8 +29,6 @@ var (
 	RobotoRegular14 font.Face
 	// RobotoMedium24 used by UI
 	RobotoMedium24 font.Face
-	// Symbol24 used by UI
-	Symbol24 font.Face
 	// CardSymbolSmall is used to draw the suit symbol under the card ordinal
 	CardSymbolSmall font.Face
 	// CardSymbolRegular is used to draw the suit symbols as pips in the middle of the card
@@ -66,17 +64,6 @@ func init() {
 	}
 
 	RobotoMedium24 = truetype.NewFace(tt, &truetype.Options{
-		Size:    24,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-
-	tt, err = truetype.Parse(symbolFontBytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	Symbol24 = truetype.NewFace(tt, &truetype.Options{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,

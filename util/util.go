@@ -262,7 +262,7 @@ func Contains(a []string, x string) bool {
 func Duration(invocation time.Time, name string) {
 	elapsed := time.Since(invocation)
 	if elapsed.Milliseconds() > 0 {
-		log.Printf("%s took %s", name, elapsed)
+		log.Printf("%s %s", elapsed, name)
 	}
 }
 

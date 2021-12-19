@@ -5,6 +5,7 @@ import (
 	"hash/crc32"
 	"image"
 	"log"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -587,6 +588,8 @@ func (b *Baize) CollectAll() {
 // returns true if changes were made
 func (b *Baize) ScaleCards() bool {
 
+	defer util.Duration(time.Now(), "ScaleCards")
+
 	print("ScaleCards ... ")
 
 	// const (
@@ -667,9 +670,9 @@ func (b *Baize) UpdateStatusbar() {
 	} else {
 		TheUI.SetWaste(0) // previous variant may have had a waste, and this one does not
 	}
-	if DebugMode {
-		TheUI.SetMiddle(fmt.Sprintf("len(undoStack) = %d", len(b.undoStack)))
-	}
+	// if DebugMode {
+	// 	TheUI.SetMiddle(fmt.Sprintf("len(undoStack) = %d", len(b.undoStack)))
+	// }
 	TheUI.SetPercent(b.PercentComplete())
 }
 

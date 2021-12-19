@@ -48,12 +48,16 @@ func (kl *Klondike) StartGame() {
 		s.recycles = kl.recycles
 	}
 	kl.stock.SetRune(RECYCLE_RUNE)
-	MoveCard(kl.stock, kl.waste)
+	for i := 0; i < kl.draw; i++ {
+		MoveCard(kl.stock, kl.waste)
+	}
 }
 
 func (kl *Klondike) AfterMove() {
 	if kl.waste.Len() == 0 && kl.stock.Len() != 0 {
-		MoveCard(kl.stock, kl.waste)
+		for i := 0; i < kl.draw; i++ {
+			MoveCard(kl.stock, kl.waste)
+		}
 	}
 }
 
