@@ -213,7 +213,7 @@ that anyone else ever has, or ever will.
 
 * A game is RELAXED when some constraint (usually, which card you can place in an empty tableau) has been removed.
 
-* A game is EASY when the deal has been 'fixed', usually by moving Kings or Aces.
+* A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
 
 ## TODO
 
