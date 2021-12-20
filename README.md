@@ -1,8 +1,8 @@
-# Gilbert Oddstream's Minimal Polymorphic Solitaire 5
+# Minimal Polymorphic Solitaire in Go
 
 Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg), with game variants run by (user supplied) scripts.
 
-![American Toad](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/American%20Toad.png)
+![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Simple%20Simon.png)
 
 ## Variants
 
@@ -47,7 +47,7 @@ Some will never make it here because they are just poor games:
 
 ## Other features
 
-* Unlimited undo, without penalty. Also, you can restart a deal without penalty.
+* Unlimited undo, without penalty. Also, you can restart a deal without penalty
 * Bookmarking positions (really good for games like Freecell or Simple Simon)
 * Scalable or fixed-size cards
 * Statistics (including percent complete and streaks - streaks are great)
@@ -74,28 +74,6 @@ Solitaire is a puzzle game of sorting cards into and between piles into a certai
 
 Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
 
-## Terminology and conventions
-
-* A PILE of cards
-
-* A CONFORMANT series of cards in a pile is called a SEQUENCE
-
-* A set of cards is called a PACK (not 'deck')
-
-* Suits are listed in alphabetic order: Club, Diamond, Heart, Spade
-
-* Cards changing between face down and face up is called FLIPPING.
-
-* The user never moves or flips a face down card, only the dealer can
-
-* Cards cannot be played from the foundation
-
-* Cell, Foundation and Waste piles only hold face up cards
-
-* Stock only has face down cards
-
-* Tableau and Reserve piles may have face up or down cards
-
 ## FAQ
 
 ### What makes this different from the other solitaire implementations?
@@ -117,10 +95,8 @@ has either been tried and removed, or not included.
 This includes:
 fancy card designs (front and back),
 changing the screen/baize background,
-animating card flips,
 keeping an arbitrary score,
-distracting graphics on the screen,
-and forcing you to drag the cards to move them.
+distracting graphics on the screen.
 
 The user interface tries to stick to the Material Design guidelines, and so is minimal and tactile.
 I looked at a lot of the other solitaire websites out there, and think how distracting some of them are.
@@ -155,11 +131,13 @@ Where possible, I've implemented the games from the book
 ### What about scores?
 
 Nope, the software doesn't keep an arbitary score. Too confusing.
-Just the number of moves made, number of wins, and your winning streak (streaks are great).
+Just the number of wins, the average 'completeness percentage' and your winning streak (streaks are great).
 A game isn't counted until you move a card.
-Thereafter, if you ask for a new deal, that counts as a loss.
+Thereafter, if you ask for a new deal or switch to a different variant, that counts as a loss.
 
 You can cheat the score system by restarting a deal and then asking for a new deal.
+
+'Completeness percentage' is calculated from the number of unsorted pairs of cards in all the piles.
 
 ### But you can cheat
 
@@ -213,13 +191,37 @@ that anyone else ever has, or ever will.
 * For games with reshuffles (like Cruel and Perseverance) you need to anticipate the effects of the reshuffle.
 * Use undo and bookmark. Undo isn't cheating; it's improvising, adapting and overcoming.
 
+## Terminology and conventions
+
+* A PILE of cards
+
+* A CONFORMANT series of cards in a pile is called a SEQUENCE
+
+* A set of cards is called a PACK (not 'deck')
+
+* Suits are listed in alphabetic order: Club, Diamond, Heart, Spade
+
+* Cards changing between face down and face up is called FLIPPING.
+
+* The user never moves or flips a face down card, only the dealer can
+
+* Cards cannot be played from the foundation
+
+* Cell, Foundation and Waste piles only hold face up cards
+
+* Stock only has face down cards
+
+* A game is RELAXED when some constraint (usually, which card you can place in an empty tableau) has been removed.
+
+* A game is EASY when the deal has been 'fixed', usually by moving Kings or Aces.
+
 ## TODO
 
 * Scripted game variants.
 * Get it working on Android.
 * Get the size of the executable and WASM down.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
-* Give up and rewrite the whole thing in [Defold](https://www.defold.com) or C/[raylib](https://www.raylib.com).
+* Give up and rewrite the whole thing in [Defold](https://www.defold.com).
 
 ## History
 
@@ -227,11 +229,11 @@ First, there was a Javascript version that used SVG graphics and ran in web brow
 
 Second, there was a version in Lua, using the Solar2d game engine, that made it to the Google Play store.  Game variants were configured using static lookup tables, which I still thought was a good idea.
 
-Third, there was a version in Go, using the ebiten game engine, with help from gg/fogleman. The design was internally a mess, and the cards didn't scale, so this was abandoned.  Game variants were configured using static lookup tables, which was starting to become a source of clumsiness and code smells.
+Third, there was a version in Go, using the Ebiten game engine, with help from gg/fogleman. The design was internally a mess, and the cards didn't scale, so this was abandoned. Game variants were configured using static lookup tables, which was starting to become a source of clumsiness and code smells.
 
 Fourth, there is a version in C that uses the Raylib game engine and uses Lua to script the game variants. The design was good, but has problems with scaling cards.
 
-Fifth, there is this version in Go, using the ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
+Fifth, there is this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
 
 ## Acknowledgements
 
