@@ -29,7 +29,9 @@ func (kl *Klondike) BuildPiles() {
 	kl.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		t.SetLabel("K")
+		if !kl.relaxed {
+			t.SetLabel("K")
+		}
 		kl.tableaux = append(kl.tableaux, t)
 	}
 }

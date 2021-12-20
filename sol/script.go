@@ -57,6 +57,7 @@ var Variants = map[string]ScriptInterface{
 	"Spider One Suit":  &Spider{packs: 8, suits: 1},
 	"Spider Two Suits": &Spider{packs: 4, suits: 2},
 	"Spider":           &Spider{packs: 2, suits: 4},
+	"Yukon":            &Yukon{},
 }
 
 func GetVariantInterface(v string) ScriptInterface {
