@@ -40,8 +40,7 @@ func (ez *Easy) StartGame() {
 	}
 	for _, pile := range ez.tableaux {
 		for i := 0; i < 2; i++ {
-			MoveCard(ez.stock, pile)
-			pile.Peek().FlipDown()
+			MoveCard(ez.stock, pile).FlipDown()
 		}
 		MoveCard(ez.stock, pile)
 	}

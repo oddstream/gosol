@@ -27,14 +27,16 @@ func FlipUpExposedCard(p *Pile) {
 }
 
 // MoveCard is an optimized, single card version of MoveCards
-func MoveCard(src *Pile, dst *Pile) {
+func MoveCard(src *Pile, dst *Pile) *Card {
 	if c := src.Pop(); c != nil {
 		sound.Play("Place")
 		dst.Push(c)
 		FlipUpExposedCard(src)
 		src.Scrunch()
 		dst.Scrunch()
+		return c
 	}
+	return nil
 }
 
 func MoveNamedCard(suit, ordinal int, dst *Pile) {

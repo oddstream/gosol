@@ -16,7 +16,6 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyS: func() { TheBaize.SavePosition() },
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect() },
-	ebiten.KeyA: func() { TheBaize.CollectAll() },
 	ebiten.KeyF: func() { TheBaize.ShowVariantPicker() },
 	ebiten.KeyTab: func() {
 		for _, p := range TheBaize.piles {

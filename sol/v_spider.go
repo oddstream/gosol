@@ -36,15 +36,13 @@ func (sp *Spider) StartGame() {
 	for i := 0; i < 4; i++ {
 		pile := sp.tableaux[i]
 		for j := 0; j < 6; j++ {
-			MoveCard(sp.stock, pile)
-			pile.Peek().FlipDown()
+			MoveCard(sp.stock, pile).FlipDown()
 		}
 	}
 	for i := 4; i < 10; i++ {
 		pile := sp.tableaux[i]
 		for j := 0; j < 5; j++ {
-			MoveCard(sp.stock, pile)
-			pile.Peek().FlipDown()
+			MoveCard(sp.stock, pile).FlipDown()
 		}
 	}
 	for _, pile := range sp.tableaux {

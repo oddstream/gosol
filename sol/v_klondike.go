@@ -40,8 +40,7 @@ func (kl *Klondike) StartGame() {
 	var dealDown = 0
 	for _, pile := range kl.tableaux {
 		for i := 0; i < dealDown; i++ {
-			MoveCard(kl.stock, pile)
-			pile.Peek().FlipDown()
+			MoveCard(kl.stock, pile).FlipDown()
 		}
 		dealDown++
 		MoveCard(kl.stock, pile)

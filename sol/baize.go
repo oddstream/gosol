@@ -314,7 +314,7 @@ func (b *Baize) AfterUserMove() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
-		TheUI.ShowFAB("done_all", ebiten.KeyA)
+		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else {
 		TheUI.HideFAB()
 	}
@@ -559,16 +559,6 @@ func (b *Baize) CancelTailDrag() {
 }
 
 func (b *Baize) Collect() {
-	crc := b.CRC()
-	for _, p := range b.piles {
-		p.subtype.Collect()
-	}
-	if crc != b.CRC() {
-		b.AfterUserMove()
-	}
-}
-
-func (b *Baize) CollectAll() {
 	outerCRC := b.CRC()
 	for {
 		innerCRC := b.CRC()

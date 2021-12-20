@@ -30,7 +30,7 @@ func (t *Tableau) CanMoveTail(tail []*Card) (bool, error) {
 		// well, that was easy
 	case MOVE_ONE:
 		if len(tail) > 1 {
-			return false, errors.New("You can only move one card")
+			return false, errors.New("Can only move one card")
 		}
 	case MOVE_ONE_PLUS:
 		// don't know destination, so we allow this as MOVE_ANY

@@ -40,6 +40,7 @@ type ScriptInterface interface {
 var Variants = map[string]ScriptInterface{
 	"American Toad":       &Toad{},
 	"Australian":          &Australian{},
+	"Baker's Dozen":       &BakersDozen{},
 	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
@@ -188,10 +189,14 @@ func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
 }
 
 func Compare_Empty(p *Pile, c *Card) (bool, error) {
+
 	if p.label != "" {
+		if p.label == "x" {
+			return false, errors.New("Cannot move cards there")
+		}
 		ord := util.OrdinalToShortString(c.Ordinal())
 		if ord != p.label {
-			return false, fmt.Errorf("Can only accept an %s, not a %s", p.label, ord)
+			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.label), util.ShortOrdinalToLongOrdinal(ord))
 		}
 	}
 	return true, nil

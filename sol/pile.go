@@ -445,6 +445,25 @@ func (p *Pile) GenericCollect() {
 	}
 }
 
+// BuryCards moves cards with the specified ordinal to the beginning of the pile
+func (p *Pile) BuryCards(ordinal int) {
+	tmp := make([]*Card, 0, cap(p.cards))
+	for _, c := range p.cards {
+		if c.Ordinal() == ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	for _, c := range p.cards {
+		if c.Ordinal() != ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	p.cards = p.cards[:0] // keep the underlying array, slice the slice to zero length
+	for i := 0; i < len(tmp); i++ {
+		p.Push(tmp[i])
+	}
+}
+
 func (p *Pile) DrawStaticCards(screen *ebiten.Image) {
 	for _, c := range p.cards {
 		if !(c.Transitioning() || c.Flipping() || c.Dragging()) {

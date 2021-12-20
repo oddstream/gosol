@@ -185,38 +185,20 @@ func OrdinalToLongString(ord int) string {
 	return cardValueEnglish[ord]
 }
 
-// StringToOrdinal converts a string to an int 1..13
-func StringToOrdinal(str string) int {
+// StringToOrdinal converts a short ordinal string to it's longer equivalent
+func ShortOrdinalToLongOrdinal(str string) string {
 	switch str {
-	case "1", "A", "Ace":
-		return 1
-	case "2", "Two":
-		return 2
-	case "3", "Three":
-		return 3
-	case "4", "Four":
-		return 4
-	case "5", "Five":
-		return 5
-	case "6", "Six":
-		return 6
-	case "7", "Seven":
-		return 7
-	case "8", "Eight":
-		return 8
-	case "9", "Nine":
-		return 9
-	case "X", "Ten":
-		return 10
-	case "J", "Jack":
-		return 11
-	case "Q", "Queen":
-		return 12
-	case "K", "King":
-		return 13
+	case "1", "A":
+		return "Ace"
+	case "J":
+		return "Jack"
+	case "Q":
+		return "Queen"
+	case "K":
+		return "King"
+	default:
+		return str
 	}
-	log.Panicf("Unknown input to StringToOrdinal '%s'", str)
-	return 0
 }
 
 func RuneToSuit(r rune) int {
