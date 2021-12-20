@@ -7,7 +7,7 @@ func ShowSettingsDrawer() {
 		"FixedCards":  ThePreferences.FixedCards,
 		"PowerMoves":  ThePreferences.PowerMoves,
 		"MirrorBaize": ThePreferences.MirrorBaize,
-		"MuteSounds":  ThePreferences.Mute,
+		"Mute":        ThePreferences.Mute,
 	}
 	TheUI.ShowSettingsDrawer(booleanSettings)
 }

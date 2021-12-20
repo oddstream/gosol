@@ -2,6 +2,9 @@ https://www.toptal.com/go/golang-oop-tutorial
 https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
 
+GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"
+python3 -m http.server
+
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
   Pile.owner

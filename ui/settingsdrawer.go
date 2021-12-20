@@ -27,7 +27,7 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 		NewCheckbox(u.settingsDrawer, "Fixed cards", booleanSettings["FixedCards"]),
 		NewCheckbox(u.settingsDrawer, "Power moves", booleanSettings["PowerMoves"]),
 		NewCheckbox(u.settingsDrawer, "Mirror baize", booleanSettings["MirrorBaize"]),
-		NewCheckbox(u.settingsDrawer, "Mute sounds", booleanSettings["MuteSounds"]),
+		NewCheckbox(u.settingsDrawer, "Mute sounds", booleanSettings["Mute"]),
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()

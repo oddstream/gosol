@@ -4,6 +4,8 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 ![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Simple%20Simon.png)
 
+It's tested on Linux, Windows and in a web browser (when compiled to WASM with  `GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"`).
+
 ## Variants
 
 It will know how to play:

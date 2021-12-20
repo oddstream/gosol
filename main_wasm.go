@@ -19,7 +19,12 @@ import (
 func main() {
 
 	sol.ThePreferences.Load()
-	sound.Mute(sol.ThePreferences.MuteSounds)
+
+	if sol.ThePreferences.Mute {
+		sound.SetVolume(0.0)
+	} else {
+		sound.SetVolume(sol.ThePreferences.Volume)
+	}
 
 	game, err := sol.NewGame()
 	if err != nil {
