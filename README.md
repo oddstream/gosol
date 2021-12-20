@@ -1,8 +1,8 @@
 # Gilbert Oddstream's Minimal Polymorphic Solitaire 5
 
-There's a live WASM version [here](https://oddstream.games/gomps5/gosol.html).
-
 Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg), with game variants run by (user supplied) scripts.
+
+![American Toad](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/American%20Toad.png)
 
 ## Variants
 
