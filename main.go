@@ -62,7 +62,7 @@ func main() {
 
 	ebiten.SetWindowIcon(sol.WindowIcons())
 	{
-		var title string = "Solitaire"
+		var title string = sol.ThePreferences.Title
 		if sol.DebugMode {
 			title = fmt.Sprintf("%s (%s/%s)", title, runtime.GOOS, runtime.GOARCH)
 		}

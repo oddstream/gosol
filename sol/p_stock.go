@@ -133,6 +133,7 @@ func (s *Stock) Complete() bool {
 }
 
 func (s *Stock) UnsortedPairs() int {
+	// Stock is always considered unsorted
 	if s.pile.Empty() {
 		return 0
 	}

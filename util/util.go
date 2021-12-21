@@ -238,7 +238,7 @@ func Contains(a []string, x string) bool {
 }
 
 // Duration of a func call
-// Arguments to a defer statement is immediately evaluated and stored.
+// Arguments to a defer statement are immediately evaluated and stored.
 // The deferred function receives the pre-evaluated values when its invoked.
 // usage: defer util.Duration(time.Now(), "IntFactorial")
 func Duration(invocation time.Time, name string) {

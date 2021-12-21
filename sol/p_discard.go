@@ -65,9 +65,6 @@ func (d *Discard) Complete() bool {
 }
 
 func (d *Discard) UnsortedPairs() int {
-	if d.pile.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(d.pile)
-	} else {
-		return 0
-	}
+	// you can only put a sorted sequence into a Discard, so this will always be zero
+	return 0
 }

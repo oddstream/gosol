@@ -115,7 +115,6 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 
 // Load an already existing Preferences object from file
 func (prefs *Preferences) Load() {
-
 	if DebugMode {
 		defer util.Duration(time.Now(), "Preferences.Load")
 	}
@@ -133,11 +132,12 @@ func (prefs *Preferences) Load() {
 
 // Save writes the Preferences object to file
 func (prefs *Preferences) Save() {
-	prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
-	prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
 	if DebugMode {
 		defer util.Duration(time.Now(), "Preferences.Save")
 	}
+	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
+	prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
+	prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
 	bytes, err := json.MarshalIndent(prefs, "", "\t")
 	if err != nil {
 		log.Fatal(err)

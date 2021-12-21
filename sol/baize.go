@@ -5,7 +5,6 @@ import (
 	"hash/crc32"
 	"image"
 	"log"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -24,6 +23,7 @@ const (
 	dirtyWindowSize = 1 << iota
 	dirtyPilePositions
 	dirtyCardSizes
+	dirtyCardImages
 	dirtyPileBackgrounds
 	dirtyCardPositions
 )
@@ -578,10 +578,6 @@ func (b *Baize) Collect() {
 // returns true if changes were made
 func (b *Baize) ScaleCards() bool {
 
-	defer util.Duration(time.Now(), "ScaleCards")
-
-	print("ScaleCards ... ")
-
 	// const (
 	// 	DefaultRatio = 1.444
 	// 	BridgeRatio  = 1.561
@@ -632,9 +628,9 @@ func (b *Baize) ScaleCards() bool {
 	TopMargin = 48 + CardHeight/3
 
 	if CardWidth != OldWidth || CardHeight != OldHeight {
-		println("did something")
+		println("ScaleCards did something")
 	} else {
-		println("did nothing")
+		println("ScaleCards did nothing")
 	}
 	return CardWidth != OldWidth || CardHeight != OldHeight
 }
@@ -704,7 +700,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	}
 
 	if b.dirtyFlags != 0 {
-		NoDrawing = true
+		// NoDrawing = true
 		if b.flagSet(dirtyCardSizes) {
 			if b.ScaleCards() {
 				CreateCardImages()
@@ -712,6 +708,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			}
 			b.CalcScrunchDims(outsideWidth, outsideHeight)
 			b.clearFlag(dirtyCardSizes)
+		}
+		if b.flagSet(dirtyCardImages) {
+			CreateCardImages()
+			b.clearFlag(dirtyCardImages)
 		}
 		if b.flagSet(dirtyPilePositions) {
 			for _, p := range b.piles {
@@ -739,7 +739,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			}
 			b.clearFlag(dirtyCardPositions)
 		}
-		NoDrawing = false
+		// NoDrawing = false
 	}
 
 	return outsideWidth, outsideHeight
@@ -777,9 +777,9 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(ExtendedColors[ThePreferences.BaizeColor])
 
-	if NoDrawing {
-		return
-	}
+	// if NoDrawing {
+	// 	return
+	// }
 
 	for _, p := range b.piles {
 		p.Draw(screen)

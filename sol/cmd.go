@@ -17,6 +17,7 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect() },
 	ebiten.KeyF: func() { TheBaize.ShowVariantPicker() },
+	ebiten.KeyX: func() { ExitRequested = true },
 	ebiten.KeyTab: func() {
 		for _, p := range TheBaize.piles {
 			p.Refan()
@@ -61,6 +62,9 @@ func Execute(cmd interface{}) {
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
+		case "Extra colors":
+			ThePreferences.ExtraColors, _ = strconv.ParseBool(v.Data)
+			TheBaize.setFlag(dirtyCardImages)
 		case "Mirror baize":
 			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
 			savedUndoStack := TheBaize.undoStack

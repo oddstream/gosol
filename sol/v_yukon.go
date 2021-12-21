@@ -8,6 +8,7 @@ import (
 
 type Yukon struct {
 	ScriptBase
+	twocells bool
 }
 
 func (yuk *Yukon) BuildPiles() {
@@ -18,6 +19,14 @@ func (yuk *Yukon) BuildPiles() {
 		f := NewFoundation(image.Point{8, y}, FAN_NONE)
 		yuk.foundations = append(yuk.foundations, f)
 		f.SetLabel("A")
+	}
+
+	yuk.cells = nil
+	if yuk.twocells {
+		for y := 4; y < 6; y++ {
+			c := NewCell(image.Point{8, y})
+			yuk.cells = append(yuk.cells, c)
+		}
 	}
 
 	yuk.tableaux = nil

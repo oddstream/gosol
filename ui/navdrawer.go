@@ -22,6 +22,7 @@ func NewNavDrawer() *NavDrawer {
 		NewNavItem(n, "bookmark", "Goto bookmark", ebiten.KeyL),
 		NewNavItem(n, "list", "Wikipedia...", ebiten.KeyF1),
 		NewNavItem(n, "settings", "Settings...", ebiten.KeyF3),
+		NewNavItem(n, "close", "Save and exit", ebiten.KeyX),
 	}
 	// if runtime.GOARCH != "wasm" {
 	// 	n.widgets = append(n.widgets, NewNavItem(n, "close", "Save and exit", ebiten.KeyX))

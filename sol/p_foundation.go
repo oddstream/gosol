@@ -60,5 +60,6 @@ func (f *Foundation) Complete() bool {
 }
 
 func (f *Foundation) UnsortedPairs() int {
+	// you can only put a sorted sequence into a Foundation, so this will always be zero
 	return 0
 }

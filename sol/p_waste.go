@@ -59,6 +59,7 @@ func (w *Waste) Complete() bool {
 }
 
 func (w *Waste) UnsortedPairs() int {
+	// Waste (like Stock, Reserve) is always considered unsorted
 	if w.pile.Empty() {
 		return 0
 	}

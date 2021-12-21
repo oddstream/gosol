@@ -49,9 +49,9 @@ func (r *Reserve) Complete() bool {
 }
 
 func (r *Reserve) UnsortedPairs() int {
-	if r.pile.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(r.pile)
-	} else {
+	// Reserve (like Stock) is always considered unsorted
+	if r.pile.Empty() {
 		return 0
 	}
+	return r.pile.Len() - 1
 }

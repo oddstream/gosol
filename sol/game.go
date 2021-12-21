@@ -2,6 +2,8 @@
 package sol
 
 import (
+	"errors"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gomps5/ui"
 )
@@ -14,7 +16,7 @@ var (
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoDrawing is set when resizing cards to stop the screen flickering
-	NoDrawing bool = false
+	// NoDrawing bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
 	NoGameLoad bool = false
 	// NoGameSave is a boolean set by command line flag -nosave
@@ -53,16 +55,26 @@ var (
 	CardShadowImage *ebiten.Image
 	// CardHighlightImage applies to all cards so is kept globally as an optimization
 	CardHighlightImage *ebiten.Image
+	// ExitRequested is set when user has had enough
+	ExitRequested bool = false
 )
 
 // ThePreferences holds serialized game progress data
+// Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
 var ThePreferences = &Preferences{
-	Game:          "Solitaire",
+	Title:         "Solitaire",
 	Variant:       "Klondike",
 	BaizeColor:    "BaizeGreen",
 	PowerMoves:    true,
 	CardFaceColor: "Ivory",
 	CardBackColor: "CornflowerBlue",
+	ExtraColors:   false,
+	RedColor:      "Crimson",
+	BlackColor:    "Black",
+	ClubColor:     "Black",
+	DiamondColor:  "Crimson",
+	HeartColor:    "Crimson",
+	SpadeColor:    "Black",
 	FixedCards:    true,
 	Mute:          false,
 	Volume:        0.5,
@@ -96,13 +108,19 @@ func NewGame() (*Game, error) {
 // Layout implements ebiten.Game's Layout.
 func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	TheBaize.Layout(outsideWidth, outsideHeight)
-	// TheUI.Layout(outsideWidth, outsideHeight)
 	return outsideWidth, outsideHeight
 }
 
 // Update updates the current game state.
 func (*Game) Update() error {
 	TheBaize.Update()
+	if ExitRequested {
+		if !NoGameSave {
+			TheBaize.Save()
+		}
+		ThePreferences.Save()
+		return errors.New("exit requested")
+	}
 	return nil
 }
 

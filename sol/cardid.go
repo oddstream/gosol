@@ -3,7 +3,6 @@ package sol
 import (
 	"fmt"
 	"image/color"
-	"log"
 )
 
 // enum types for card suits
@@ -125,23 +124,28 @@ func (c *Card) SetProne(prone bool) {
 // Color returns Red or Black
 func (cid CardID) Color() color.RGBA {
 	suit := cid.Suit()
-	switch suit {
-	// case CLUB:
-	// 	return BasicColors["Purple"]
-	// case DIAMOND:
-	// 	return ExtendedColors["PaleVioletRed"]
-	// case HEART:
-	// 	return BasicColors["Red"]
-	// case SPADE:
-	// 	return BasicColors["Black"]
-	case NOSUIT:
-		return BasicColors["Silver"]
-	case HEART, DIAMOND:
-		return ExtendedColors["Crimson"]
-	case CLUB, SPADE:
-		return BasicColors["Black"]
-	default:
-		log.Fatal("unknown suit in id", suit)
+	if ThePreferences.ExtraColors {
+		switch suit {
+		case NOSUIT:
+			return BasicColors["Silver"]
+		case CLUB:
+			return ExtendedColors[ThePreferences.ClubColor]
+		case DIAMOND:
+			return ExtendedColors[ThePreferences.DiamondColor]
+		case HEART:
+			return ExtendedColors[ThePreferences.HeartColor]
+		case SPADE:
+			return ExtendedColors[ThePreferences.SpadeColor]
+		}
+	} else {
+		switch suit {
+		case NOSUIT:
+			return BasicColors["Silver"]
+		case CLUB, SPADE:
+			return ExtendedColors[ThePreferences.BlackColor]
+		case DIAMOND, HEART:
+			return ExtendedColors[ThePreferences.RedColor]
+		}
 	}
 	return BasicColors["Purple"]
 }
