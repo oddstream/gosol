@@ -2,11 +2,9 @@
 
 Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg), with game variants run by (user supplied) scripts.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Simple%20Simon.png)
+![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
 It's tested on Linux, Windows and in a web browser (when compiled to WASM with  `GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"`).
-
-![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Australian.png)
 
 ## Variants
 
@@ -49,13 +47,14 @@ Some will never make it here because they are just poor games:
 * Accordian
 * Pyramid (or any card matching variant)
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Australian.png)
+![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Australian.png)
 
 ## Other features
 
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty
 * Bookmarking positions (really good for games like Freecell or Simple Simon)
 * Scalable or fixed-size cards
+* Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider)
 * Statistics (including percent complete and streaks - streaks are great)
 * Cards spin and flutter when you complete a game, so you feel rewarded and happy
 * Slightly randomized sounds
@@ -80,7 +79,7 @@ Solitaire is a puzzle game of sorting cards into and between piles into a certai
 
 Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/American%20Toad.png)
+![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/American%20Toad.png)
 
 ## FAQ
 
@@ -223,7 +222,7 @@ that anyone else ever has, or ever will.
 
 * A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Klondike.png)
+![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Klondike.png)
 
 ## TODO
 
