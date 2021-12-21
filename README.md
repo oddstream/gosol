@@ -6,6 +6,8 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 It's tested on Linux, Windows and in a web browser (when compiled to WASM with  `GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"`).
 
+![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Australian.png)
+
 ## Variants
 
 It will know how to play:
@@ -47,6 +49,8 @@ Some will never make it here because they are just poor games:
 * Accordian
 * Pyramid (or any card matching variant)
 
+![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Australian.png)
+
 ## Other features
 
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty
@@ -75,6 +79,8 @@ Solitaire is a puzzle game of sorting cards into and between piles into a certai
 ## Configurability is the root of all evil
 
 Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
+
+![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/American%20Toad.png)
 
 ## FAQ
 
@@ -216,6 +222,8 @@ that anyone else ever has, or ever will.
 * A game is RELAXED when some constraint (usually, which card you can place in an empty tableau) has been removed.
 
 * A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
+
+![Screenshot](https://github.com/oddstream/gomps5/blob/4baeedf793ba8c0f2f0d8d6a890541b5203c2f79/screenshots/Klondike.png)
 
 ## TODO
 

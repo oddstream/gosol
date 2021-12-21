@@ -45,7 +45,7 @@ python3 -m http.server
   Whitehead
   Will O' the Wisp
   Russian
-  Yukon Cells
+
  Save and Exit? (for WASM) (or cunning method of ensuring saved.json is up-to-date)
  clean up statistics reporting
  clean up rune to suit &c nonsense in util
