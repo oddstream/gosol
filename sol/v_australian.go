@@ -10,6 +10,10 @@ type Australian struct {
 	ScriptBase
 }
 
+func (*Australian) PreferredWindow() string {
+	return "square"
+}
+
 func (aus *Australian) BuildPiles() {
 	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)

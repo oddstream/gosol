@@ -13,6 +13,10 @@ type Spider struct {
 	packs, suits int
 }
 
+func (*Spider) PreferredWindow() string {
+	return "landscape"
+}
+
 func (sp *Spider) BuildPiles() {
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 

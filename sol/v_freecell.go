@@ -10,6 +10,10 @@ type Freecell struct {
 	ScriptBase
 }
 
+func (*Freecell) PreferredWindow() string {
+	return "square"
+}
+
 func (fc *Freecell) BuildPiles() {
 	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 

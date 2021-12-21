@@ -37,7 +37,6 @@ python3 -m http.server
   Mrs Mop
   Osmosis/Peek
   Perseverance
-  Scorpion, Wasp
   Single Rail
   Sir Tommy
   Little Spider
@@ -51,7 +50,7 @@ python3 -m http.server
  clean up rune to suit &c nonsense in util
  streaks and percentages in README.md
  are both symbol and label needed? encode a glyph into label
- portrait | landscape
+ portrait | landscape, adjust screen size?
  fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
  hearts and 10s are too close to the edge

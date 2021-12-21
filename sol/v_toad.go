@@ -13,6 +13,10 @@ type Toad struct {
 	ScriptBase
 }
 
+func (*Toad) PreferredWindow() string {
+	return "square"
+}
+
 func (t *Toad) BuildPiles() {
 	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)

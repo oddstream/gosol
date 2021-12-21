@@ -175,6 +175,16 @@ func (b *Baize) StartFreshGame() {
 	b.bookmark = 0
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
+	if ThePreferences.PreferredWindow {
+		switch b.script.PreferredWindow() {
+		case "square":
+			ebiten.SetWindowSize(ScreenWidth/2, ScreenWidth/2)
+		case "portrait":
+			ebiten.SetWindowSize(ScreenWidth/2, (ScreenWidth/2)*16/9)
+		case "landscape":
+			ebiten.SetWindowSize(ScreenWidth*2/3, ScreenHeight*2/3)
+		}
+	}
 	b.script.BuildPiles()
 
 	if ThePreferences.MirrorBaize {

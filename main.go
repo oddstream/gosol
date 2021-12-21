@@ -54,6 +54,8 @@ func main() {
 		sound.SetVolume(sol.ThePreferences.Volume)
 	}
 
+	sol.ScreenWidth, sol.ScreenHeight = ebiten.ScreenSizeInFullscreen()
+
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
 	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
 		// GNOME (maybe) annoyingly keeps maximizing the window
@@ -69,14 +71,16 @@ func main() {
 		ebiten.SetWindowTitle(title)
 	}
 
-	// ebiten default window size is 640, 480
-	if sol.ThePreferences.WindowWidth == 0 || sol.ThePreferences.WindowHeight == 0 {
-		// not yet set/saved, so use sensible values
-		sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.ScreenSizeInFullscreen()
-		sol.ThePreferences.WindowWidth /= 2
-		sol.ThePreferences.WindowHeight /= 2
+	if !sol.ThePreferences.PreferredWindow {
+		// ebiten default window size is 640, 480
+		if sol.ThePreferences.WindowWidth == 0 || sol.ThePreferences.WindowHeight == 0 {
+			// not yet set/saved, so use sensible values
+			sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.ScreenSizeInFullscreen()
+			sol.ThePreferences.WindowWidth /= 2
+			sol.ThePreferences.WindowHeight /= 2
+		}
+		ebiten.SetWindowSize(sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight)
 	}
-	ebiten.SetWindowSize(sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight)
 
 	if sol.ThePreferences.WindowX != 0 && sol.ThePreferences.WindowY != 0 {
 		ebiten.SetWindowPosition(sol.ThePreferences.WindowX, sol.ThePreferences.WindowY)

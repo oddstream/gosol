@@ -29,6 +29,8 @@ var (
 	NoCardLerp = false
 	// NoCardFlip stops the cards from animating their flip
 	NoCardFlip = false
+	// ScreenWidth,ScreenHeight  of screen at startup
+	ScreenWidth, ScreenHeight int
 	// CardWidth of cards, start with a silly value to force a rescale/refan
 	CardWidth int = 9
 	// CardHeight of cards, start with a silly value to force a rescale/refan

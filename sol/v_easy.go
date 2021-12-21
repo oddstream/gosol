@@ -10,7 +10,12 @@ type Easy struct {
 	ScriptBase
 }
 
+func (*Easy) PreferredWindow() string {
+	return "landscape"
+}
+
 func (ez *Easy) BuildPiles() {
+
 	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	ez.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 

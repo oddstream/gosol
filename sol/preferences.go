@@ -20,6 +20,7 @@ type Preferences struct {
 	Mute                      bool
 	Volume                    float64
 	MirrorBaize               bool
+	PreferredWindow           bool
 	WindowX, WindowY          int
 	WindowWidth, WindowHeight int
 }

@@ -22,6 +22,8 @@ type ScriptBase struct {
 // type CardPairCompareFunc func(CardPair) (bool, error)
 
 type ScriptInterface interface {
+	PreferredWindow() string
+
 	BuildPiles()
 	StartGame()
 	AfterMove()
@@ -58,6 +60,8 @@ var Variants = map[string]ScriptInterface{
 		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
 		cardsPerTab: 3},
+	"Scorpion":         &Scorpion{},
+	"Wasp":             &Scorpion{ScriptBase: ScriptBase{relaxed: true}},
 	"Simple Simon":     &SimpleSimon{},
 	"Spider One Suit":  &Spider{packs: 8, suits: 1},
 	"Spider Two Suits": &Spider{packs: 4, suits: 2},

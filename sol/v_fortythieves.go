@@ -13,6 +13,10 @@ type FortyThieves struct {
 	cardsPerTab int
 }
 
+func (*FortyThieves) PreferredWindow() string {
+	return "landscape"
+}
+
 func (ft *FortyThieves) BuildPiles() {
 	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)

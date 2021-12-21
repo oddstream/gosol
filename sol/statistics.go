@@ -115,12 +115,12 @@ func (s *Statistics) RecordWonGame() {
 
 func (s *Statistics) RecordLostGame() {
 
-	TheUI.Toast(fmt.Sprintf("Recording lost game of %s", ThePreferences.Variant))
-
 	percent := TheBaize.PercentComplete()
 	if percent == 100 {
 		println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
+
+	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", ThePreferences.Variant, percent))
 
 	stats := s.findVariant()
 

@@ -11,6 +11,10 @@ type SimpleSimon struct {
 	ScriptBase
 }
 
+func (*SimpleSimon) PreferredWindow() string {
+	return "landscape"
+}
+
 func (ss *SimpleSimon) BuildPiles() {
 	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 

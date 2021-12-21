@@ -12,6 +12,10 @@ type Klondike struct {
 	draw, recycles int
 }
 
+func (*Klondike) PreferredWindow() string {
+	return "square"
+}
+
 func (kl *Klondike) BuildPiles() {
 	if kl.draw == 0 {
 		kl.draw = 1

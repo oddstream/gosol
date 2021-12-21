@@ -170,6 +170,10 @@ Some variants (eg Freecell or Forty Thieves) only allow you to move one card at 
 you to move them, one at a time, via an empty pile or cell. Enabling power moves automates this, allowing multi-card moves between piles.
 The number of cards you can move is calculated from the number of empty piles and cells (if any).
 
+#### Extra colors
+
+Draws the cards in four colors, rather than the usual black and red. Can be useful when scanning cards in variants that sort cards into suit order (like Australian or Spider), but is annoying for variants that sort cards into alternate colors (like Klondike, Freecell or Yukon).
+
 #### Mirror baize
 
 Mirrors the card piles on the baize from right to left, because not everyone is right handed, or likes the stock to be on the left of
@@ -192,9 +196,9 @@ that anyone else ever has, or ever will.
 ### Any hints and tips?
 
 * For games that start with face down cards (like Klondike or Yukon) the priority is to get the face down cards turned over.
-* For games that start with a block of cards in the tableaux and only allow single cards to be moved (like Forty Thieves), the priority is usually to open up some space (create empty tableaux piles) to allow you to juggle cards around.
+* For games that start with a block of cards in the tableau and only allow single cards to be moved (like Forty Thieves), the priority is usually to open up some space (create empty tableaux piles) to allow you to juggle cards around.
 * For Forty Thieves-style games, the *other* priority is to minimize the number of cards in the waste pile.
-* For puzzle-type games (like Freecell, Simple Simon and Mistress Mop), take your time and think ahead.
+* For puzzle-type games (like Baker's Dozen, Freecell, Simple Simon), take your time and think ahead.
 * For games with reshuffles (like Cruel and Perseverance) you need to anticipate the effects of the reshuffle.
 * Use undo and bookmark. Undo isn't cheating; it's improvising, adapting and overcoming.
 

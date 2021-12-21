@@ -15,6 +15,10 @@ type Duchess struct {
 	ScriptBase
 }
 
+func (*Duchess) PreferredWindow() string {
+	return "square"
+}
+
 func (du *Duchess) BuildPiles() {
 	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
 
