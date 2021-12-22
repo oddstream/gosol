@@ -3,20 +3,15 @@ package sol
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 
 import (
-	"fmt"
 	"image"
 )
 
 type Whitehead struct {
 	ScriptBase
-	draw, recycles int
 }
 
 func (wh *Whitehead) BuildPiles() VariantInfo {
 
-	if wh.draw == 0 {
-		wh.draw = 1
-	}
 	wh.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	wh.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
@@ -48,19 +43,15 @@ func (wh *Whitehead) StartGame() {
 		deal++
 	}
 	if s, ok := (wh.stock.subtype).(*Stock); ok {
-		s.recycles = wh.recycles
+		s.recycles = 0
 	}
-	wh.stock.SetRune(RECYCLE_RUNE)
-	for i := 0; i < wh.draw; i++ {
-		MoveCard(wh.stock, wh.waste)
-	}
+	wh.stock.SetRune(NORECYCLE_RUNE)
+	MoveCard(wh.stock, wh.waste)
 }
 
 func (wh *Whitehead) AfterMove() {
 	if wh.waste.Len() == 0 && wh.stock.Len() != 0 {
-		for i := 0; i < wh.draw; i++ {
-			MoveCard(wh.stock, wh.waste)
-		}
+		MoveCard(wh.stock, wh.waste)
 	}
 }
 
@@ -116,34 +107,15 @@ func (*Whitehead) UnsortedPairs(pile *Pile) int {
 func (wh *Whitehead) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		for i := 0; i < wh.draw; i++ {
-			MoveCard(wh.stock, wh.waste)
-		}
+		MoveCard(wh.stock, wh.waste)
 	} else {
 		pile.subtype.TailTapped(tail)
 	}
 }
 
 func (wh *Whitehead) PileTapped(pile *Pile) {
-	if s, ok := (pile.subtype).(*Stock); ok {
-		if s.recycles > 0 {
-			for wh.waste.Len() > 0 {
-				MoveCard(wh.waste, wh.stock)
-			}
-			s.recycles--
-			switch {
-			case s.recycles == 0:
-				wh.stock.SetRune(NORECYCLE_RUNE)
-				TheUI.Toast("No more recycles")
-			case s.recycles == 1:
-				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
-			case s.recycles < 10:
-				TheUI.Toast(fmt.Sprintf("%d recycles remaining", s.recycles))
-			}
-		} else {
-			TheUI.Toast("No more recycles")
-		}
-	}
+	// https://politaire.com/help/whitehead
+	// Only one pass through the Stock is permitted
 }
 
 func (*Whitehead) Discards() []*Pile {

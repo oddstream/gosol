@@ -180,9 +180,14 @@ func (b *Baize) StartFreshGame() {
 	b.bookmark = 0
 
 	var ok bool
-	b.script, ok = Variants[ThePreferences.Variant]
-	if !ok {
-		log.Panicf("no interface for variant '%s'", ThePreferences.Variant)
+	if b.script, ok = Variants[ThePreferences.Variant]; !ok {
+		log.Println("no interface for variant", ThePreferences.Variant)
+		ThePreferences.Variant = "Klondike"
+		ThePreferences.Save()
+		if b.script, ok = Variants[ThePreferences.Variant]; !ok {
+			log.Panic("no interface for Klondike")
+		}
+		NoGameLoad = true
 	}
 	b.vinfo = b.script.BuildPiles()
 	if ThePreferences.PreferredWindow {

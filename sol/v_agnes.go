@@ -10,7 +10,6 @@ import (
 
 type Agnes struct {
 	ScriptBase
-	sorel bool
 }
 
 func (ag *Agnes) BuildPiles() VariantInfo {
@@ -25,20 +24,14 @@ func (ag *Agnes) BuildPiles() VariantInfo {
 	}
 
 	ag.reserves = nil
-	if !ag.sorel {
-		for x := 0; x < 7; x++ {
-			r := NewReserve(image.Point{x, 1}, FAN_NONE)
-			ag.reserves = append(ag.reserves, r)
-		}
+	for x := 0; x < 7; x++ {
+		r := NewReserve(image.Point{x, 1}, FAN_NONE)
+		ag.reserves = append(ag.reserves, r)
 	}
 
-	var taby int = 2
-	if ag.sorel {
-		taby = 1
-	}
 	ag.tableaux = nil
 	for x := 0; x < 7; x++ {
-		t := NewTableau(image.Point{x, taby}, FAN_DOWN, MOVE_ANY)
+		t := NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY)
 		ag.tableaux = append(ag.tableaux, t)
 	}
 
@@ -76,10 +69,10 @@ func (ag *Agnes) StartGame() {
 	}
 }
 
-func (ag *Agnes) AfterMove() {
+func (*Agnes) AfterMove() {
 }
 
-func (*Agnes) TailMoveError(tail []*Card) (bool, error) {
+func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch (pile.subtype).(type) {
 	case *Tableau:
@@ -94,7 +87,7 @@ func (*Agnes) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
 	case *Foundation:
@@ -113,7 +106,7 @@ func (*Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Agnes) UnsortedPairs(pile *Pile) int {
+func (ag *Agnes) UnsortedPairs(pile *Pile) int {
 	var unsorted int
 	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
@@ -130,7 +123,7 @@ func (*Agnes) UnsortedPairs(pile *Pile) int {
 func (ag *Agnes) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		for _, pile := range ag.reserves {
+		for _, pile := range ag.tableaux {
 			MoveCard(ag.stock, pile)
 		}
 	} else {

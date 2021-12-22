@@ -67,22 +67,23 @@ var Variants = map[string]ScriptInterface{
 	"Spider One Suit":   &Spider{packs: 8, suits: 1},
 	"Spider Two Suits":  &Spider{packs: 4, suits: 2},
 	"Spider Four Suits": &Spider{packs: 2, suits: 4},
-	"Whitehead":         &Whitehead{recycles: 32767},
+	"Whitehead":         &Whitehead{},
 	"Yukon":             &Yukon{},
 	"Yukon Cells":       &Yukon{extraCells: 2},
 }
 
 var VariantGroups = map[string][]string{
 	// "All" added dynamically by func init()
-	"Agnes...":         {"Agnes Bernauer", "Agnes Sorel"},
-	"Klondike...":      {"Klondike", "Klondike Draw Three", "Whitehead"},
-	"Forty Thieves...": {"Forty Thieves", "Josephine", "Limited"},
-	"Spider...":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
-	"Scorpion...":      {"Scorpion", "Wasp"},
-	"Canfield...":      {"Canfield", "Acme", "Storehouse"},
-	"Freecell...":      {"Freecell", "Eight Off"},
-	"Yukon...":         {"Yukon", "Yukon Cells", "Alaska"},
-	"Puzzlers...":      {"Simple Simon", "Baker's Dozen", "Freecell"},
+	// don't have Agnes here (as a group) because it would come before All
+	// and Agnes Sorel might be retired because it's just too hard
+	"> Klondike":      {"Klondike", "Klondike Draw Three", "Whitehead"},
+	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited"},
+	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
+	"> Scorpion":      {"Scorpion", "Wasp"},
+	"> Canfield":      {"Canfield", "Acme", "Storehouse"},
+	"> Freecell":      {"Freecell", "Eight Off"},
+	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
+	"> Puzzlers":      {"Simple Simon", "Baker's Dozen", "Freecell"},
 }
 
 func init() {
@@ -91,7 +92,7 @@ func init() {
 		vnames = append(vnames, k)
 	}
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
-	VariantGroups["All..."] = vnames
+	VariantGroups["> All"] = vnames
 }
 
 func VariantGroupNames() []string {
@@ -107,9 +108,6 @@ func VariantNames(group string) []string {
 
 	var vnames []string = make([]string, 0, len(VariantGroups[group]))
 	vnames = append(vnames, VariantGroups[group]...)
-	// for _, k := range VariantGroups[group] {
-	// 	vnames = append(vnames, k)
-	// }
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
 	return vnames
 }
@@ -172,6 +170,19 @@ func (cp CardPair) Compare_DownAltColor() (bool, error) {
 		return false, errors.New("Cards must be in alternating colors")
 	}
 	return cp.Compare_Down()
+}
+
+func (cp CardPair) Compare_DownColorWrap() (bool, error) {
+	if cp.c1.Black() != cp.c2.Black() {
+		return false, errors.New("Cards must be the same color")
+	}
+	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
+		return true, nil // King on Ace
+	}
+	if cp.c1.Ordinal() != cp.c2.Ordinal()+1 {
+		return false, errors.New("Cards must be in descending sequence (Kings on Aces allowed)")
+	}
+	return true, nil
 }
 
 func (cp CardPair) Compare_DownAltColorWrap() (bool, error) {
