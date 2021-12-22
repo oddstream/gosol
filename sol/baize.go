@@ -124,8 +124,12 @@ func (b *Baize) NewDeal() {
 	TheStatistics.WelcomeToast()
 }
 
-func (b *Baize) ShowVariantPicker() {
-	TheUI.ShowVariantPicker(VariantNames())
+func (b *Baize) ShowVariantGroupPicker() {
+	TheUI.ShowVariantGroupPicker(VariantGroupNames())
+}
+
+func (b *Baize) ShowVariantPicker(group string) {
+	TheUI.ShowVariantPicker(VariantNames(group))
 }
 
 func (b *Baize) Mirror() {

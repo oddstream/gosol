@@ -18,6 +18,23 @@ func NewVariantPicker() *Picker {
 // ShowVariantPicker makes the variant picker visible
 func (u *UI) ShowVariantPicker(content []string) {
 	con := u.VisibleDrawer()
+	// if con == u.variantPicker {
+	// 	return
+	// }
+	if con != nil {
+		con.Hide()
+	}
+	u.variantPicker.widgets = nil
+	for _, c := range content {
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "Variant"))
+	}
+	u.variantPicker.LayoutWidgets()
+	u.variantPicker.Show()
+}
+
+// ShowVariantPicker makes the variant picker visible
+func (u *UI) ShowVariantGroupPicker(content []string) {
+	con := u.VisibleDrawer()
 	if con == u.variantPicker {
 		return
 	}
@@ -26,7 +43,7 @@ func (u *UI) ShowVariantPicker(content []string) {
 	}
 	u.variantPicker.widgets = u.variantPicker.widgets[:0]
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "Variant"))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "VariantGroup"))
 	}
 	u.variantPicker.LayoutWidgets()
 	u.variantPicker.Show()

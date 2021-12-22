@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -16,7 +17,7 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyS: func() { TheBaize.SavePosition() },
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect() },
-	ebiten.KeyF: func() { TheBaize.ShowVariantPicker() },
+	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	ebiten.KeyTab: func() {
 		if DebugMode {
@@ -51,13 +52,15 @@ func Execute(cmd interface{}) {
 		TheUI.HideFAB()
 		switch v.ChangeRequested {
 		case "Variant":
-			newVariant := v.Data
-			if newVariant == "" {
-				log.Panic("ChangeRequest empty variant", v.Data)
+			if _, ok := Variants[v.Data]; !ok {
+				TheUI.Toast(fmt.Sprintf("Don't know how to play '%s'", v.Data))
+			} else {
+				if v.Data != ThePreferences.Variant {
+					TheBaize.ChangeVariant(v.Data)
+				}
 			}
-			if newVariant != ThePreferences.Variant {
-				TheBaize.ChangeVariant(newVariant)
-			}
+		case "VariantGroup":
+			TheBaize.ShowVariantPicker(v.Data)
 		case "Fixed cards":
 			ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)

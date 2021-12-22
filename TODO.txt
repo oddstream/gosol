@@ -15,7 +15,7 @@ python3 -m http.server
  Complete ExtendedColors
 
 [TODO]
- recalc dims after increasing window height
+ BUG recalc dims after increasing window height
  host WASM version @ oddstream.github.io instead of gosol
  Copy variant list from opsole/gomps2
   Agnes (both)
@@ -62,6 +62,7 @@ python3 -m http.server
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x variant picker groups
 x card image ExtraColors
 x https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
 x dragging an animated card is not ok

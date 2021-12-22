@@ -55,8 +55,7 @@ func (t *Toad) StartGame() {
 		MoveCard(t.stock, pile)
 	}
 	// One card is dealt onto the first foundation. This rank will be used as a base for the other foundations.
-	MoveCard(t.stock, t.foundations[0])
-	c := t.foundations[0].Peek()
+	c := MoveCard(t.stock, t.foundations[0])
 	for _, pile := range t.foundations {
 		pile.SetLabel(util.OrdinalToShortString(c.Ordinal()))
 	}

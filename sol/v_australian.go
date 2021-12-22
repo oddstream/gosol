@@ -45,9 +45,13 @@ func (aus *Australian) StartGame() {
 			MoveCard(aus.stock, pile)
 		}
 	}
+	MoveCard(aus.stock, aus.waste)
 }
 
-func (*Australian) AfterMove() {
+func (aus *Australian) AfterMove() {
+	if aus.waste.Len() == 0 && aus.stock.Len() != 0 {
+		MoveCard(aus.stock, aus.waste)
+	}
 }
 
 func (*Australian) TailMoveError(tail []*Card) (bool, error) {
