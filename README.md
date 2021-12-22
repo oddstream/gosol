@@ -69,7 +69,7 @@ So taken out were:
 
 * Reporting if there were no more available moves (that's for you to puzzle over, just like in real life)
 * Reporting the number of moves made (which is arbitary - does turning a card from stock to waste count as one move, or moving a group of cards with  power moves turned on count as one move or several?)
-* Movable card highlighting (the more useful a move looks, the more the card gets highlighted)
+* Movable card highlighting (I used to think this was a good thing, but now I realise that it sucks the essence out of solitaire)
 * Turn-offable single-tap interface (ie trying to find a home for a tapped card, all this does is either try to move a stack card to the waste, or try to move the card to a foundation)
 * Choice of card sets or card backs
 

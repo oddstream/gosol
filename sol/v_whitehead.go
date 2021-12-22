@@ -7,68 +7,64 @@ import (
 	"image"
 )
 
-type Klondike struct {
+type Whitehead struct {
 	ScriptBase
 	draw, recycles int
 }
 
-func (kl *Klondike) BuildPiles() VariantInfo {
+func (wh *Whitehead) BuildPiles() VariantInfo {
 
-	if kl.draw == 0 {
-		kl.draw = 1
+	if wh.draw == 0 {
+		wh.draw = 1
 	}
-	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
-	kl.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+	wh.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	wh.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
-	kl.foundations = nil
+	wh.foundations = nil
 	for x := 3; x < 7; x++ {
 		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
-		kl.foundations = append(kl.foundations, f)
+		wh.foundations = append(wh.foundations, f)
 		f.SetLabel("A")
 	}
 
-	kl.tableaux = nil
+	wh.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		if !kl.relaxed {
-			t.SetLabel("K")
-		}
-		kl.tableaux = append(kl.tableaux, t)
+		wh.tableaux = append(wh.tableaux, t)
 	}
 
 	return VariantInfo{
 		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 	}
 }
 
-func (kl *Klondike) StartGame() {
-	var dealDown = 0
-	for _, pile := range kl.tableaux {
-		for i := 0; i < dealDown; i++ {
-			MoveCard(kl.stock, pile).FlipDown()
+func (wh *Whitehead) StartGame() {
+	var deal = 1
+	for _, pile := range wh.tableaux {
+		for i := 0; i < deal; i++ {
+			MoveCard(wh.stock, pile)
 		}
-		dealDown++
-		MoveCard(kl.stock, pile)
+		deal++
 	}
-	if s, ok := (kl.stock.subtype).(*Stock); ok {
-		s.recycles = kl.recycles
+	if s, ok := (wh.stock.subtype).(*Stock); ok {
+		s.recycles = wh.recycles
 	}
-	kl.stock.SetRune(RECYCLE_RUNE)
-	for i := 0; i < kl.draw; i++ {
-		MoveCard(kl.stock, kl.waste)
+	wh.stock.SetRune(RECYCLE_RUNE)
+	for i := 0; i < wh.draw; i++ {
+		MoveCard(wh.stock, wh.waste)
 	}
 }
 
-func (kl *Klondike) AfterMove() {
-	if kl.waste.Len() == 0 && kl.stock.Len() != 0 {
-		for i := 0; i < kl.draw; i++ {
-			MoveCard(kl.stock, kl.waste)
+func (wh *Whitehead) AfterMove() {
+	if wh.waste.Len() == 0 && wh.stock.Len() != 0 {
+		for i := 0; i < wh.draw; i++ {
+			MoveCard(wh.stock, wh.waste)
 		}
 	}
 }
 
-func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
+func (*Whitehead) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (pile.subtype).(type) {
@@ -76,17 +72,15 @@ func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
-			if ok, err := pair.Compare_DownAltColor(); !ok {
+			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
 			}
 		}
-	default:
-		println("unknown pile type in TailMoveError")
 	}
 	return true, nil
 }
 
-func (*Klondike) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (*Whitehead) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
 	case *Foundation:
@@ -99,19 +93,19 @@ func (*Klondike) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
+			return CardPair{dst.Peek(), tail[0]}.Compare_DownColor()
 		}
 	}
 	return true, nil
 }
 
-func (*Klondike) UnsortedPairs(pile *Pile) int {
+func (*Whitehead) UnsortedPairs(pile *Pile) int {
 	var unsorted int
 	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
-			if ok, _ := pair.Compare_DownAltColor(); !ok {
+			if ok, _ := pair.Compare_DownColor(); !ok {
 				unsorted++
 			}
 		}
@@ -119,27 +113,27 @@ func (*Klondike) UnsortedPairs(pile *Pile) int {
 	return unsorted
 }
 
-func (kl *Klondike) TailTapped(tail []*Card) {
+func (wh *Whitehead) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		for i := 0; i < kl.draw; i++ {
-			MoveCard(kl.stock, kl.waste)
+		for i := 0; i < wh.draw; i++ {
+			MoveCard(wh.stock, wh.waste)
 		}
 	} else {
 		pile.subtype.TailTapped(tail)
 	}
 }
 
-func (kl *Klondike) PileTapped(pile *Pile) {
+func (wh *Whitehead) PileTapped(pile *Pile) {
 	if s, ok := (pile.subtype).(*Stock); ok {
 		if s.recycles > 0 {
-			for kl.waste.Len() > 0 {
-				MoveCard(kl.waste, kl.stock)
+			for wh.waste.Len() > 0 {
+				MoveCard(wh.waste, wh.stock)
 			}
 			s.recycles--
 			switch {
 			case s.recycles == 0:
-				kl.stock.SetRune(NORECYCLE_RUNE)
+				wh.stock.SetRune(NORECYCLE_RUNE)
 				TheUI.Toast("No more recycles")
 			case s.recycles == 1:
 				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
@@ -152,18 +146,18 @@ func (kl *Klondike) PileTapped(pile *Pile) {
 	}
 }
 
-func (*Klondike) Discards() []*Pile {
+func (*Whitehead) Discards() []*Pile {
 	return nil
 }
 
-func (kl *Klondike) Foundations() []*Pile {
-	return kl.foundations
+func (wh *Whitehead) Foundations() []*Pile {
+	return wh.foundations
 }
 
-func (kl *Klondike) Stock() *Pile {
-	return kl.stock
+func (wh *Whitehead) Stock() *Pile {
+	return wh.stock
 }
 
-func (kl *Klondike) Waste() *Pile {
-	return kl.waste
+func (wh *Whitehead) Waste() *Pile {
+	return wh.waste
 }

@@ -15,7 +15,7 @@ type Duchess struct {
 	ScriptBase
 }
 
-func (du *Duchess) BuildPiles() (int, string) {
+func (du *Duchess) BuildPiles() VariantInfo {
 
 	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
 
@@ -36,7 +36,10 @@ func (du *Duchess) BuildPiles() (int, string) {
 		du.tableaux = append(du.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
 	}
 
-	return 8, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
+	}
 }
 
 func (du *Duchess) StartGame() {
@@ -165,10 +168,6 @@ func (du *Duchess) PileTapped(pile *Pile) {
 			TheUI.Toast("No more recycles")
 		}
 	}
-}
-
-func (*Duchess) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Duchess_(solitaire)"
 }
 
 func (*Duchess) Discards() []*Pile {

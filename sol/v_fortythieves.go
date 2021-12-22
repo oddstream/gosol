@@ -13,7 +13,7 @@ type FortyThieves struct {
 	cardsPerTab int
 }
 
-func (ft *FortyThieves) BuildPiles() (int, string) {
+func (ft *FortyThieves) BuildPiles() VariantInfo {
 
 	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -31,7 +31,10 @@ func (ft *FortyThieves) BuildPiles() (int, string) {
 		ft.tableaux = append(ft.tableaux, t)
 	}
 
-	return ft.tabs[len(ft.tabs)-1], "landscape"
+	return VariantInfo{
+		windowShape: "landscape",
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+	}
 }
 
 func (ft *FortyThieves) StartGame() {
@@ -108,10 +111,6 @@ func (ft *FortyThieves) TailTapped(tail []*Card) {
 }
 
 func (*FortyThieves) PileTapped(*Pile) {
-}
-
-func (*FortyThieves) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)"
 }
 
 func (ft *FortyThieves) Discards() []*Pile {

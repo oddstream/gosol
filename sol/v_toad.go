@@ -13,7 +13,7 @@ type Toad struct {
 	ScriptBase
 }
 
-func (t *Toad) BuildPiles() (int, string) {
+func (t *Toad) BuildPiles() VariantInfo {
 
 	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -32,7 +32,10 @@ func (t *Toad) BuildPiles() (int, string) {
 		t.tableaux = append(t.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE_OR_ALL))
 	}
 
-	return 8, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
+	}
 }
 
 func (t *Toad) StartGame() {
@@ -133,10 +136,6 @@ func (t *Toad) PileTapped(pile *Pile) {
 			TheUI.Toast("No more recycles")
 		}
 	}
-}
-
-func (*Toad) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/American_Toad_(solitaire)"
 }
 
 func (*Toad) Discards() []*Pile {

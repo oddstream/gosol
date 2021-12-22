@@ -11,7 +11,7 @@ type SimpleSimon struct {
 	ScriptBase
 }
 
-func (ss *SimpleSimon) BuildPiles() (int, string) {
+func (ss *SimpleSimon) BuildPiles() VariantInfo {
 
 	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -27,7 +27,10 @@ func (ss *SimpleSimon) BuildPiles() (int, string) {
 		ss.tableaux = append(ss.tableaux, t)
 	}
 
-	return 10, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
+	}
 }
 
 func (ss *SimpleSimon) StartGame() {
@@ -106,10 +109,6 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 }
 
 func (*SimpleSimon) PileTapped(*Pile) {
-}
-
-func (*SimpleSimon) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)"
 }
 
 func (ss *SimpleSimon) Discards() []*Pile {

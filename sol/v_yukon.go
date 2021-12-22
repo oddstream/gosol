@@ -8,10 +8,10 @@ import (
 
 type Yukon struct {
 	ScriptBase
-	twocells bool
+	extraCells int
 }
 
-func (yuk *Yukon) BuildPiles() (int, string) {
+func (yuk *Yukon) BuildPiles() VariantInfo {
 
 	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -23,11 +23,11 @@ func (yuk *Yukon) BuildPiles() (int, string) {
 	}
 
 	yuk.cells = nil
-	if yuk.twocells {
-		for y := 4; y < 6; y++ {
-			c := NewCell(image.Point{8, y})
-			yuk.cells = append(yuk.cells, c)
-		}
+	y := 4
+	for i := 0; i < yuk.extraCells; i++ {
+		c := NewCell(image.Point{8, y})
+		yuk.cells = append(yuk.cells, c)
+		y += 1
 	}
 
 	yuk.tableaux = nil
@@ -39,7 +39,10 @@ func (yuk *Yukon) BuildPiles() (int, string) {
 		}
 	}
 
-	return 9, "portrait"
+	return VariantInfo{
+		windowShape: "portrait",
+		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
+	}
 }
 
 func (yuk *Yukon) StartGame() {
@@ -112,10 +115,6 @@ func (*Yukon) TailTapped(tail []*Card) {
 }
 
 func (*Yukon) PileTapped(pile *Pile) {
-}
-
-func (*Yukon) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Yukon_(solitaire)"
 }
 
 func (*Yukon) Discards() []*Pile {

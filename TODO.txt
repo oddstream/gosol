@@ -18,7 +18,7 @@ python3 -m http.server
  recalc dims after increasing window height
  host WASM version @ oddstream.github.io instead of gosol
  Copy variant list from opsole/gomps2
-  Agnes
+  Agnes (both)
   Assembly
   Beleaguered Castle
   Blockade

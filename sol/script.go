@@ -5,7 +5,6 @@ package sol
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sort"
 
 	"oddstream.games/gomps5/util"
@@ -17,12 +16,17 @@ type ScriptBase struct {
 	relaxed, easy                                    bool
 }
 
+type VariantInfo struct {
+	windowShape string
+	wikipedia   string
+}
+
 // You can't use functions as keys in maps : the key type must be comparable
 // so you can't do: var ExtendedColorMap = map[CardPairCompareFunc]bool{}
 // type CardPairCompareFunc func(CardPair) (bool, error)
 
 type ScriptInterface interface {
-	BuildPiles() (int, string)
+	BuildPiles() VariantInfo
 	StartGame()
 	AfterMove()
 
@@ -32,8 +36,6 @@ type ScriptInterface interface {
 
 	TailTapped([]*Card)
 	PileTapped(*Pile)
-
-	Wikipedia() string
 
 	Discards() []*Pile
 	Foundations() []*Pile
@@ -64,16 +66,9 @@ var Variants = map[string]ScriptInterface{
 	"Spider One Suit":  &Spider{packs: 8, suits: 1},
 	"Spider Two Suits": &Spider{packs: 4, suits: 2},
 	"Spider":           &Spider{packs: 2, suits: 4},
+	"Whitehead":        &Whitehead{recycles: 32767},
 	"Yukon":            &Yukon{},
-	"Yukon Cells":      &Yukon{twocells: true},
-}
-
-func GetVariantInterface(v string) ScriptInterface {
-	si, ok := Variants[v]
-	if !ok {
-		log.Panicf("Unknown variant %s", v)
-	}
-	return si
+	"Yukon Cells":      &Yukon{extraCells: 2},
 }
 
 func VariantNames() []string {
@@ -129,6 +124,13 @@ func (cp CardPair) Compare_Down() (bool, error) {
 		return false, errors.New("Cards must be in descending sequence")
 	}
 	return true, nil
+}
+
+func (cp CardPair) Compare_DownColor() (bool, error) {
+	if cp.c1.Black() != cp.c2.Black() {
+		return false, errors.New("Cards must be the same color")
+	}
+	return cp.Compare_Down()
 }
 
 func (cp CardPair) Compare_DownAltColor() (bool, error) {

@@ -13,7 +13,7 @@ type Spider struct {
 	packs, suits int
 }
 
-func (sp *Spider) BuildPiles() (int, string) {
+func (sp *Spider) BuildPiles() VariantInfo {
 
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 
@@ -29,7 +29,10 @@ func (sp *Spider) BuildPiles() (int, string) {
 		sp.tableaux = append(sp.tableaux, t)
 	}
 
-	return 10, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+	}
 }
 
 func (sp *Spider) StartGame() {
@@ -140,10 +143,6 @@ func (sp *Spider) TailTapped(tail []*Card) {
 }
 
 func (*Spider) PileTapped(*Pile) {
-}
-
-func (*Spider) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Spider_(solitaire)"
 }
 
 func (sp *Spider) Discards() []*Pile {

@@ -10,7 +10,7 @@ type Easy struct {
 	ScriptBase
 }
 
-func (ez *Easy) BuildPiles() (int, string) {
+func (ez *Easy) BuildPiles() VariantInfo {
 
 	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	ez.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -31,7 +31,10 @@ func (ez *Easy) BuildPiles() (int, string) {
 		}
 	}
 
-	return 13, "landscape"
+	return VariantInfo{
+		windowShape: "landscape",
+		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+	}
 }
 
 func (ez *Easy) StartGame() {
@@ -134,10 +137,6 @@ func (ez *Easy) PileTapped(pile *Pile) {
 			TheUI.Toast("No more recycles")
 		}
 	}
-}
-
-func (*Easy) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Solitaire"
 }
 
 func (*Easy) Discards() []*Pile {

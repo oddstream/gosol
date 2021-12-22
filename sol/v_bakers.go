@@ -11,7 +11,7 @@ type BakersDozen struct {
 	ScriptBase
 }
 
-func (bd *BakersDozen) BuildPiles() (int, string) {
+func (bd *BakersDozen) BuildPiles() VariantInfo {
 
 	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -38,7 +38,10 @@ func (bd *BakersDozen) BuildPiles() (int, string) {
 		f.SetLabel("A")
 	}
 
-	return 8, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+	}
 }
 
 func (bd *BakersDozen) StartGame() {
@@ -104,10 +107,6 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 }
 
 func (*BakersDozen) PileTapped(pile *Pile) {
-}
-
-func (*BakersDozen) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)"
 }
 
 func (*BakersDozen) Discards() []*Pile {

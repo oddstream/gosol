@@ -10,7 +10,7 @@ type Freecell struct {
 	ScriptBase
 }
 
-func (fc *Freecell) BuildPiles() (int, string) {
+func (fc *Freecell) BuildPiles() VariantInfo {
 
 	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -32,7 +32,10 @@ func (fc *Freecell) BuildPiles() (int, string) {
 		fc.tableaux = append(fc.tableaux, t)
 	}
 
-	return 8, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
+	}
 }
 
 func (fc *Freecell) StartGame() {
@@ -121,10 +124,6 @@ func (*Freecell) TailTapped(tail []*Card) {
 }
 
 func (*Freecell) PileTapped(*Pile) {
-}
-
-func (*Freecell) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/FreeCell"
 }
 
 func (*Freecell) Discards() []*Pile {

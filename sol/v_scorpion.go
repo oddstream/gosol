@@ -11,7 +11,7 @@ type Scorpion struct {
 	ScriptBase
 }
 
-func (sp *Scorpion) BuildPiles() (int, string) {
+func (sp *Scorpion) BuildPiles() VariantInfo {
 
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 
@@ -30,7 +30,10 @@ func (sp *Scorpion) BuildPiles() (int, string) {
 		sp.tableaux = append(sp.tableaux, t)
 	}
 
-	return 8, "portrait"
+	return VariantInfo{
+		windowShape: "portrait",
+		wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
+	}
 }
 
 func (sp *Scorpion) StartGame() {
@@ -113,10 +116,6 @@ func (sp *Scorpion) TailTapped(tail []*Card) {
 }
 
 func (*Scorpion) PileTapped(*Pile) {
-}
-
-func (*Scorpion) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Scorpion_(solitaire)"
 }
 
 func (sp *Scorpion) Discards() []*Pile {

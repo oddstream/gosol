@@ -32,6 +32,7 @@ const (
 type Baize struct {
 	magic        uint32
 	script       ScriptInterface
+	vinfo        VariantInfo
 	piles        []*Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int
@@ -174,11 +175,15 @@ func (b *Baize) StartFreshGame() {
 	b.undoStack = nil
 	b.bookmark = 0
 
-	b.script = GetVariantInterface(ThePreferences.Variant)
-	pilesAcross, prefWindowShape := b.script.BuildPiles()
+	var ok bool
+	b.script, ok = Variants[ThePreferences.Variant]
+	if !ok {
+		log.Panicf("no interface for variant '%s'", ThePreferences.Variant)
+	}
+	b.vinfo = b.script.BuildPiles()
 	if ThePreferences.PreferredWindow {
-		w := (pilesAcross + 2) * ThePreferences.FixedCardWidth
-		switch prefWindowShape {
+		w := (b.MaxSlotX() + 4) * ThePreferences.FixedCardWidth
+		switch b.vinfo.windowShape {
 		case "square":
 			ebiten.SetWindowSize(w, w)
 		case "portrait":
@@ -585,6 +590,16 @@ func (b *Baize) Collect() {
 	}
 }
 
+func (b *Baize) MaxSlotX() int {
+	var maxX int
+	for _, p := range b.piles {
+		if p.Slot().X > maxX {
+			maxX = p.Slot().X
+		}
+	}
+	return maxX
+}
+
 // ScaleCards calculates new width/height of cards and margins
 // returns true if changes were made
 func (b *Baize) ScaleCards() bool {
@@ -599,12 +614,7 @@ func (b *Baize) ScaleCards() bool {
 	var OldWidth = CardWidth
 	var OldHeight = CardHeight
 
-	var maxX int
-	for _, p := range b.piles {
-		if p.Slot().X > maxX {
-			maxX = p.Slot().X
-		}
-	}
+	var maxX int = b.MaxSlotX()
 
 	// "add" two extra piles and a LeftMargin to make a half-card-width border
 

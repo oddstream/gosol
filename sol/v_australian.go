@@ -10,7 +10,7 @@ type Australian struct {
 	ScriptBase
 }
 
-func (aus *Australian) BuildPiles() (int, string) {
+func (aus *Australian) BuildPiles() VariantInfo {
 	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
@@ -30,7 +30,10 @@ func (aus *Australian) BuildPiles() (int, string) {
 		}
 	}
 
-	return 8, "square"
+	return VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
+	}
 }
 
 func (aus *Australian) StartGame() {
@@ -94,10 +97,6 @@ func (aus *Australian) TailTapped(tail []*Card) {
 }
 
 func (*Australian) PileTapped(pile *Pile) {
-}
-
-func (*Australian) Wikipedia() string {
-	return "https://en.wikipedia.org/wiki/Australian_Patience"
 }
 
 func (*Australian) Discards() []*Pile {
