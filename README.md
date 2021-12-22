@@ -10,6 +10,7 @@ It's tested on Linux, Windows and in a web browser (when compiled to WASM with  
 
 It will know how to play:
 
+* Agnes
 * Aces and Kings
 * Algerian
 * Alhambra
@@ -24,23 +25,21 @@ It will know how to play:
 * Easy (an easy to win game, for debugging)
 * Fortune's Favor
 * Forty Thieves (also Busy Aces, Fortune's Favor, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black)
-* Freecell (also Eight Off, Freecell Easy)
+* Freecell (also Eight Off)
 * Klondike (also Draw One, Draw Three, Batsford, Double Klondike, Gargantua, Thumb and Pouch, Thoughtful)
 * La Belle Lucie (and Trefoil, The Fan)
 * Mistress and Mrs Mop
 * Scorpion, Wasp
 * Simple Simon
 * Spider (also Beetle, Spiderette, Spider One Suit, Spider Two Suits, Will o' the Wisp)
+* Whitehead
 * Yukon
 
 Some variants have been tried and discarded as being a bit silly:
 
-* Agnes Sorel
 * Giant
 * King Albert
 * Raglan
-
-(I don't see the point of games that you almost certainly can't win; I like ones that have a 33-66% chance of winnning.)
 
 Some will never make it here because they are just poor games:
 
