@@ -11,11 +11,8 @@ type Yukon struct {
 	twocells bool
 }
 
-func (*Yukon) PreferredWindow() string {
-	return "portrait"
-}
+func (yuk *Yukon) BuildPiles() (int, string) {
 
-func (yuk *Yukon) BuildPiles() {
 	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
 	yuk.foundations = nil
@@ -41,6 +38,8 @@ func (yuk *Yukon) BuildPiles() {
 			t.SetLabel("K")
 		}
 	}
+
+	return 9, "portrait"
 }
 
 func (yuk *Yukon) StartGame() {

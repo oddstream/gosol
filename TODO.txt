@@ -15,6 +15,7 @@ python3 -m http.server
  Complete ExtendedColors
 
 [TODO]
+ recalc dims after increasing window height
  host WASM version @ oddstream.github.io instead of gosol
  Copy variant list from opsole/gomps2
   Agnes

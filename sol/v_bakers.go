@@ -11,11 +11,8 @@ type BakersDozen struct {
 	ScriptBase
 }
 
-func (*BakersDozen) PreferredWindow() string {
-	return "square"
-}
+func (bd *BakersDozen) BuildPiles() (int, string) {
 
-func (bd *BakersDozen) BuildPiles() {
 	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
 	bd.tableaux = nil
@@ -41,6 +38,7 @@ func (bd *BakersDozen) BuildPiles() {
 		f.SetLabel("A")
 	}
 
+	return 8, "square"
 }
 
 func (bd *BakersDozen) StartGame() {

@@ -10,11 +10,8 @@ type Freecell struct {
 	ScriptBase
 }
 
-func (*Freecell) PreferredWindow() string {
-	return "square"
-}
+func (fc *Freecell) BuildPiles() (int, string) {
 
-func (fc *Freecell) BuildPiles() {
 	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	fc.cells = nil
@@ -34,6 +31,8 @@ func (fc *Freecell) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		fc.tableaux = append(fc.tableaux, t)
 	}
+
+	return 8, "square"
 }
 
 func (fc *Freecell) StartGame() {

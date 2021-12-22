@@ -13,11 +13,8 @@ type Spider struct {
 	packs, suits int
 }
 
-func (*Spider) PreferredWindow() string {
-	return "landscape"
-}
+func (sp *Spider) BuildPiles() (int, string) {
 
-func (sp *Spider) BuildPiles() {
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 
 	sp.discards = nil
@@ -31,6 +28,8 @@ func (sp *Spider) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		sp.tableaux = append(sp.tableaux, t)
 	}
+
+	return 10, "square"
 }
 
 func (sp *Spider) StartGame() {

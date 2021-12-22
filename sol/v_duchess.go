@@ -15,11 +15,8 @@ type Duchess struct {
 	ScriptBase
 }
 
-func (*Duchess) PreferredWindow() string {
-	return "square"
-}
+func (du *Duchess) BuildPiles() (int, string) {
 
-func (du *Duchess) BuildPiles() {
 	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
 
 	du.reserves = nil
@@ -38,6 +35,8 @@ func (du *Duchess) BuildPiles() {
 	for x := 3; x < 7; x++ {
 		du.tableaux = append(du.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
 	}
+
+	return 8, "square"
 }
 
 func (du *Duchess) StartGame() {

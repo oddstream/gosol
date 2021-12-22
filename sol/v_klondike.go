@@ -12,11 +12,8 @@ type Klondike struct {
 	draw, recycles int
 }
 
-func (*Klondike) PreferredWindow() string {
-	return "square"
-}
+func (kl *Klondike) BuildPiles() (int, string) {
 
-func (kl *Klondike) BuildPiles() {
 	if kl.draw == 0 {
 		kl.draw = 1
 	}
@@ -38,6 +35,8 @@ func (kl *Klondike) BuildPiles() {
 		}
 		kl.tableaux = append(kl.tableaux, t)
 	}
+
+	return 8, "square"
 }
 
 func (kl *Klondike) StartGame() {

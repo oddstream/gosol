@@ -107,7 +107,6 @@ func (u *UI) HideActiveDrawer() {
 
 // Layout implements Ebiten's Layout
 func (u *UI) Layout(outsideWidth, outsideHeight int) (int, int) {
-	println("UI Layout", outsideWidth, outsideHeight)
 	for _, con := range u.containers {
 		con.Layout(outsideWidth, outsideHeight)
 	}

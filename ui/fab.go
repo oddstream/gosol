@@ -88,6 +88,7 @@ func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 		fb.x = outsideWidth - fb.width - (fb.width / 2)
 		fb.y = outsideHeight - fb.height - (fb.height / 2) - 24 // statusbar is 24 high
 	}
+	println("Window", outsideWidth, outsideHeight, "FAB", fb.x, fb.y)
 	return outsideWidth, outsideHeight
 }
 

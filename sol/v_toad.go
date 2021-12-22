@@ -13,13 +13,12 @@ type Toad struct {
 	ScriptBase
 }
 
-func (*Toad) PreferredWindow() string {
-	return "square"
-}
+func (t *Toad) BuildPiles() (int, string) {
 
-func (t *Toad) BuildPiles() {
 	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+
+	t.reserves = nil
 	t.reserves = append(t.reserves, NewReserve(image.Point{3, 0}, FAN_RIGHT))
 
 	t.foundations = nil
@@ -32,6 +31,8 @@ func (t *Toad) BuildPiles() {
 		// When moving tableau piles, you must either move the whole pile or only the top card.
 		t.tableaux = append(t.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE_OR_ALL))
 	}
+
+	return 8, "square"
 }
 
 func (t *Toad) StartGame() {

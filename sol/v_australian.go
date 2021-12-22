@@ -10,11 +10,7 @@ type Australian struct {
 	ScriptBase
 }
 
-func (*Australian) PreferredWindow() string {
-	return "square"
-}
-
-func (aus *Australian) BuildPiles() {
+func (aus *Australian) BuildPiles() (int, string) {
 	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
@@ -33,6 +29,8 @@ func (aus *Australian) BuildPiles() {
 			t.SetLabel("K")
 		}
 	}
+
+	return 8, "square"
 }
 
 func (aus *Australian) StartGame() {

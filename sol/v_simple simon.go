@@ -11,11 +11,8 @@ type SimpleSimon struct {
 	ScriptBase
 }
 
-func (*SimpleSimon) PreferredWindow() string {
-	return "landscape"
-}
+func (ss *SimpleSimon) BuildPiles() (int, string) {
 
-func (ss *SimpleSimon) BuildPiles() {
 	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
 	ss.discards = nil
@@ -29,6 +26,8 @@ func (ss *SimpleSimon) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		ss.tableaux = append(ss.tableaux, t)
 	}
+
+	return 10, "square"
 }
 
 func (ss *SimpleSimon) StartGame() {

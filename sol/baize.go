@@ -175,17 +175,18 @@ func (b *Baize) StartFreshGame() {
 	b.bookmark = 0
 
 	b.script = GetVariantInterface(ThePreferences.Variant)
+	pilesAcross, prefWindowShape := b.script.BuildPiles()
 	if ThePreferences.PreferredWindow {
-		switch b.script.PreferredWindow() {
+		w := (pilesAcross + 2) * ThePreferences.FixedCardWidth
+		switch prefWindowShape {
 		case "square":
-			ebiten.SetWindowSize(ScreenWidth/2, ScreenWidth/2)
+			ebiten.SetWindowSize(w, w)
 		case "portrait":
-			ebiten.SetWindowSize(ScreenWidth/2, (ScreenWidth/2)*16/9)
+			ebiten.SetWindowSize(w, w*16/9)
 		case "landscape":
-			ebiten.SetWindowSize(ScreenWidth*2/3, ScreenHeight*2/3)
+			ebiten.SetWindowSize(w, w*9/16)
 		}
 	}
-	b.script.BuildPiles()
 
 	if ThePreferences.MirrorBaize {
 		b.Mirror()
@@ -619,17 +620,17 @@ func (b *Baize) ScaleCards() bool {
 	// Card padding is 10% of card height/width
 
 	if ThePreferences.FixedCards {
-		CardWidth = 90
-		PilePaddingX = 9
-		CardHeight = 122
-		PilePaddingY = 13
+		CardWidth = ThePreferences.FixedCardWidth
+		PilePaddingX = CardWidth / 10
+		CardHeight = ThePreferences.FixedCardHeight
+		PilePaddingY = CardHeight / 10
 		cardsWidth := PilePaddingX + CardWidth*(maxX+2)
 		LeftMargin = (b.WindowWidth - cardsWidth) / 2
 	} else {
 		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
 		PilePaddingX = int(slotWidth / 10)
 		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * 1.357
+		slotHeight := slotWidth * ThePreferences.CardRatio
 		PilePaddingY = int(slotHeight / 10)
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
@@ -696,6 +697,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if outsideWidth == 0 || outsideHeight == 0 {
 		println("Baize.Layout called with zero dimension")
 		return outsideWidth, outsideHeight
+	}
+
+	if DebugMode && (outsideWidth != b.WindowWidth || outsideHeight != b.WindowHeight) {
+		println("Window resize to", outsideWidth, outsideHeight)
 	}
 
 	if outsideWidth != b.WindowWidth {

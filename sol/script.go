@@ -22,9 +22,7 @@ type ScriptBase struct {
 // type CardPairCompareFunc func(CardPair) (bool, error)
 
 type ScriptInterface interface {
-	PreferredWindow() string
-
-	BuildPiles()
+	BuildPiles() (int, string)
 	StartGame()
 	AfterMove()
 

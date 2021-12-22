@@ -11,11 +11,7 @@ type Scorpion struct {
 	ScriptBase
 }
 
-func (*Scorpion) PreferredWindow() string {
-	return "portrait"
-}
-
-func (sp *Scorpion) BuildPiles() {
+func (sp *Scorpion) BuildPiles() (int, string) {
 
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 
@@ -33,6 +29,8 @@ func (sp *Scorpion) BuildPiles() {
 		}
 		sp.tableaux = append(sp.tableaux, t)
 	}
+
+	return 8, "portrait"
 }
 
 func (sp *Scorpion) StartGame() {

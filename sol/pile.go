@@ -292,9 +292,10 @@ func (p *Pile) PosAfter(c *Card) image.Point {
 	} else {
 		pos = c.pos
 	}
-	if pos.X == 0 && pos.Y == 0 {
-		println("zero pos in PosAfter", p.category)
-	}
+	// TODO
+	// if pos.X == 0 && pos.Y == 0 {
+	// 	println("zero pos in PosAfter", p.category)
+	// }
 	switch p.fanType {
 	case FAN_NONE:
 		// nothing to do

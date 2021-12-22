@@ -13,11 +13,8 @@ type FortyThieves struct {
 	cardsPerTab int
 }
 
-func (*FortyThieves) PreferredWindow() string {
-	return "landscape"
-}
+func (ft *FortyThieves) BuildPiles() (int, string) {
 
-func (ft *FortyThieves) BuildPiles() {
 	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
@@ -33,6 +30,8 @@ func (ft *FortyThieves) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		ft.tableaux = append(ft.tableaux, t)
 	}
+
+	return ft.tabs[len(ft.tabs)-1], "landscape"
 }
 
 func (ft *FortyThieves) StartGame() {
