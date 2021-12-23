@@ -5,6 +5,7 @@ import (
 	"hash/crc32"
 	"image"
 	"log"
+	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -191,15 +192,17 @@ func (b *Baize) StartFreshGame() {
 		NoGameLoad = true
 	}
 	b.vinfo = b.script.BuildPiles()
-	if ThePreferences.PreferredWindow {
-		w := (b.MaxSlotX() + 4) * ThePreferences.FixedCardWidth
-		switch b.vinfo.windowShape {
-		case "square":
-			ebiten.SetWindowSize(w, w)
-		case "portrait":
-			ebiten.SetWindowSize(w, w*16/9)
-		case "landscape":
-			ebiten.SetWindowSize(w, w*9/16)
+	if !(runtime.GOARCH == "wasm" || runtime.GOOS == "android") {
+		if ThePreferences.PreferredWindow {
+			w := (b.MaxSlotX() + 4) * ThePreferences.FixedCardWidth
+			switch b.vinfo.windowShape {
+			case "square":
+				ebiten.SetWindowSize(w, w)
+			case "portrait":
+				ebiten.SetWindowSize(w, w*16/9)
+			case "landscape":
+				ebiten.SetWindowSize(w, w*9/16)
+			}
 		}
 	}
 
@@ -724,12 +727,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if outsideWidth != b.WindowWidth {
 		b.setFlag(dirtyWindowSize | dirtyScrunch | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		b.WindowWidth = outsideWidth
-		ThePreferences.WindowWidth = outsideWidth
 	}
 	if outsideHeight != b.WindowHeight {
 		b.setFlag(dirtyWindowSize | dirtyScrunch)
 		b.WindowHeight = outsideHeight
-		ThePreferences.WindowHeight = outsideHeight
 	}
 
 	if b.dirtyFlags != 0 {

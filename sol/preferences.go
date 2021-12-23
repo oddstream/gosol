@@ -14,15 +14,13 @@ type Preferences struct {
 	DiamondColor                    string
 	HeartColor                      string
 	SpadeColor                      string
-	ExtraColors                     bool
+	FourColors                      bool
 	FixedCards                      bool
 	PowerMoves                      bool
 	Mute                            bool
 	Volume                          float64
 	MirrorBaize                     bool
 	PreferredWindow                 bool
-	WindowX, WindowY                int
-	WindowWidth, WindowHeight       int
 	CardRatio                       float64
 	FixedCardWidth, FixedCardHeight int
 }

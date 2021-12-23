@@ -54,8 +54,6 @@ func main() {
 		sound.SetVolume(sol.ThePreferences.Volume)
 	}
 
-	sol.ScreenWidth, sol.ScreenHeight = ebiten.ScreenSizeInFullscreen()
-
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
 	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
 		// GNOME (maybe) annoyingly keeps maximizing the window
@@ -71,21 +69,7 @@ func main() {
 		ebiten.SetWindowTitle(title)
 	}
 
-	if !sol.ThePreferences.PreferredWindow {
-		// ebiten default window size is 640, 480
-		if sol.ThePreferences.WindowWidth == 0 || sol.ThePreferences.WindowHeight == 0 {
-			// not yet set/saved, so use sensible values
-			sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.ScreenSizeInFullscreen()
-			sol.ThePreferences.WindowWidth /= 2
-			sol.ThePreferences.WindowHeight /= 2
-		}
-		ebiten.SetWindowSize(sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight)
-	}
-
-	if sol.ThePreferences.WindowX != 0 && sol.ThePreferences.WindowY != 0 {
-		ebiten.SetWindowPosition(sol.ThePreferences.WindowX, sol.ThePreferences.WindowY)
-	}
-	// ebiten.SetScreenClearedEveryFrame(false)
+	ebiten.SetScreenClearedEveryFrame(true)
 
 	// interp := picol.InitInterp()
 	// interp.RegisterCoreCommands()
@@ -101,22 +85,16 @@ func main() {
 		}
 	}
 
-	sol.InGameLoop = true
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
-	sol.InGameLoop = false
 
 	// we come here if the user closed the window with the x button
-	println("main exit")
+	// println("main exit")
 
 	if !sol.NoGameSave {
 		sol.TheBaize.Save()
 	}
 
-	// can't call ebiten functions here, so we can't do this:
-	// sol.ThePreferences.WindowX, sol.ThePreferences.WindowY = ebiten.WindowPosition()
-	// sol.ThePreferences.WindowWidth, sol.ThePreferences.WindowHeight = ebiten.WindowSize()
-	// sol.ThePreferences.Save()
-
+	sol.ThePreferences.Save()
 }

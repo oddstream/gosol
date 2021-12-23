@@ -123,7 +123,7 @@ func (ag *Agnes) UnsortedPairs(pile *Pile) int {
 func (ag *Agnes) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
-		for _, pile := range ag.tableaux {
+		for _, pile := range ag.reserves {
 			MoveCard(ag.stock, pile)
 		}
 	} else {

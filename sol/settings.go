@@ -6,7 +6,7 @@ func ShowSettingsDrawer() {
 	var booleanSettings = map[string]bool{
 		"FixedCards":  ThePreferences.FixedCards,
 		"PowerMoves":  ThePreferences.PowerMoves,
-		"ExtraColors": ThePreferences.ExtraColors,
+		"FourColors":  ThePreferences.FourColors,
 		"MirrorBaize": ThePreferences.MirrorBaize,
 		"Mute":        ThePreferences.Mute,
 	}

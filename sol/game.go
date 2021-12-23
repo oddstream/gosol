@@ -29,8 +29,6 @@ var (
 	NoCardLerp = false
 	// NoCardFlip stops the cards from animating their flip
 	NoCardFlip = false
-	// ScreenWidth,ScreenHeight  of screen at startup
-	ScreenWidth, ScreenHeight int
 	// CardWidth of cards, start with a silly value to force a rescale/refan
 	CardWidth int = 9
 	// CardHeight of cards, start with a silly value to force a rescale/refan
@@ -59,8 +57,6 @@ var (
 	CardHighlightImage *ebiten.Image
 	// ExitRequested is set when user has had enough
 	ExitRequested bool = false
-	// InGameLoop is true when ebiten is running
-	InGameLoop = false
 )
 
 // ThePreferences holds serialized game progress data
@@ -72,7 +68,7 @@ var ThePreferences = &Preferences{
 	PowerMoves:      true,
 	CardFaceColor:   "Ivory",
 	CardBackColor:   "CornflowerBlue",
-	ExtraColors:     false,
+	FourColors:      false,
 	RedColor:        "Crimson",
 	BlackColor:      "Black",
 	ClubColor:       "Indigo",

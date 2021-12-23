@@ -12,6 +12,12 @@
         "program": "${workspaceFolder}",
         "args": ["-debug"],
         // "args": ["-debug", "-generateicons"],
+        // can't do this
+        // The flags specified in buildFlags and env.GOFLAGS are passed to the Go compiler when building your program for debugging.
+        // Delve adds --gcflags='all=-N -l' to the list of build flags to disable optimizations.
+        // User specified buildFlags conflict with this setting, so the extension removes them (Issue #117).
+        // https://go.googlesource.com/vscode-go/+/refs/tags/v0.22.1-rc.1/docs/debugging.md
+        // "buildFlags": "-gcflags='-m'",
     }
     ]
 }

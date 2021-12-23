@@ -124,7 +124,7 @@ func (c *Card) SetProne(prone bool) {
 // Color returns Red or Black
 func (cid CardID) Color() color.RGBA {
 	suit := cid.Suit()
-	if ThePreferences.ExtraColors {
+	if ThePreferences.FourColors {
 		switch suit {
 		case NOSUIT:
 			return BasicColors["Silver"]

@@ -1,4 +1,4 @@
-//go:build linux || windows
+//go:build linux || windows || android
 
 package sol
 
@@ -9,8 +9,6 @@ import (
 	"path"
 	"runtime"
 	"time"
-
-	"github.com/hajimehoshi/ebiten/v2"
 
 	"oddstream.games/gomps5/util"
 )
@@ -136,10 +134,6 @@ func (prefs *Preferences) Save() {
 		defer util.Duration(time.Now(), "Preferences.Save")
 	}
 	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
-	if InGameLoop {
-		prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
-		prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
-	}
 	bytes, err := json.MarshalIndent(prefs, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -194,23 +188,6 @@ func (b *Baize) Save() {
 
 	saveBytesToFile(bytes, "saved.json")
 }
-
-// Load the entire undo stack from file
-// func (b *Baize) Load(v string) bool {
-// 	defer util.Duration(time.Now(), "Baize.Load")
-
-// 	bytes, count, err := loadBytesFromFile(v+".json", true)
-// 	if err != nil || count == 0 || bytes == nil {
-// 		return false
-// 	}
-
-// 	// golang gotcha reslice buffer to number of bytes actually read
-// 	err = json.Unmarshal(bytes[:count], &b.UndoStack)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return b.UndoStack != nil && len(b.UndoStack) > 0
-// }
 
 func LoadUndoStack() []*SavableBaize {
 	if DebugMode {

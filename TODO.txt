@@ -2,9 +2,6 @@ https://www.toptal.com/go/golang-oop-tutorial
 https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
 
-GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"
-python3 -m http.server
-
 [ONGOING]
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
@@ -58,6 +55,8 @@ python3 -m http.server
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x suppress window resize on GOOS=android GOARCH==WASM
+x remove window size and position code and preferences
 x BUG recalc dims after increasing window height dirtyScrunch
 x variant picker groups
 x card image ExtraColors
@@ -144,3 +143,4 @@ x retire retro cards, Preferences.CardType, cardimageprovider, TheCIP
 x rename module from oddstream.games/gosol to oddstream.games/gomps5
 x retire GSM
 x retire Splash
+
