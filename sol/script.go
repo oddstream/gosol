@@ -51,6 +51,7 @@ var Variants = map[string]ScriptInterface{
 	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
+	"Thoughtful":          &Klondike{draw: 1, recycles: 32767, thoughtful: true},
 	"Easy":                &Easy{ScriptBase: ScriptBase{relaxed: true, easy: true}},
 	"Freecell":            &Freecell{},
 	"Forty Thieves": &FortyThieves{
@@ -61,6 +62,7 @@ var Variants = map[string]ScriptInterface{
 		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
 		cardsPerTab: 3},
+	"Penguin":           &Penguin{},
 	"Scorpion":          &Scorpion{},
 	"Wasp":              &Scorpion{ScriptBase: ScriptBase{relaxed: true}},
 	"Simple Simon":      &SimpleSimon{},
@@ -76,14 +78,14 @@ var VariantGroups = map[string][]string{
 	// "All" added dynamically by func init()
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel might be retired because it's just too hard
-	"> Klondike":      {"Klondike", "Klondike Draw Three", "Whitehead"},
+	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
 	"> Scorpion":      {"Scorpion", "Wasp"},
 	"> Canfield":      {"Canfield", "Acme", "Storehouse"},
 	"> Freecell":      {"Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
-	"> Puzzlers":      {"Simple Simon", "Baker's Dozen", "Freecell"},
+	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 }
 
 func init() {

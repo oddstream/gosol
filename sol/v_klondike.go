@@ -10,6 +10,7 @@ import (
 type Klondike struct {
 	ScriptBase
 	draw, recycles int
+	thoughtful     bool
 }
 
 func (kl *Klondike) BuildPiles() VariantInfo {
@@ -46,7 +47,10 @@ func (kl *Klondike) StartGame() {
 	var dealDown = 0
 	for _, pile := range kl.tableaux {
 		for i := 0; i < dealDown; i++ {
-			MoveCard(kl.stock, pile).FlipDown()
+			card := MoveCard(kl.stock, pile)
+			if !kl.thoughtful {
+				card.FlipDown()
+			}
 		}
 		dealDown++
 		MoveCard(kl.stock, pile)

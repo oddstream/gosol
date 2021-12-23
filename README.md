@@ -10,7 +10,7 @@ It's tested on Linux, Windows and in a web browser (when compiled to WASM with  
 
 It will know how to play:
 
-* Agnes
+* Agnes Ben
 * Aces and Kings
 * Algerian
 * Alhambra
@@ -29,14 +29,16 @@ It will know how to play:
 * Klondike (also Draw One, Draw Three, Batsford, Double Klondike, Gargantua, Thumb and Pouch, Thoughtful)
 * La Belle Lucie (and Trefoil, The Fan)
 * Mistress and Mrs Mop
+* Penguin
 * Scorpion, Wasp
 * Simple Simon
 * Spider (also Beetle, Spiderette, Spider One Suit, Spider Two Suits, Will o' the Wisp)
 * Whitehead
 * Yukon
 
-Some variants have been tried and discarded as being a bit silly:
+Some variants have been tried and discarded as being a bit silly, or just too hard:
 
+* Agnes Sorel
 * Giant
 * King Albert
 * Raglan
@@ -50,11 +52,12 @@ Some will never make it here because they are just poor games:
 
 ## Other features
 
+* Permissive card moves. If you want to move a card from here to there, go ahead and do it. If that move is not allowed by the current rules, the game will put the cards back *and explain why that move is not allowed*
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty
 * Bookmarking positions (really good for games like Freecell or Simple Simon)
 * Scalable or fixed-size cards
 * Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider)
-* Statistics (including percent complete and streaks - streaks are great)
+* Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are)
 * Cards spin and flutter when you complete a game, so you feel rewarded and happy
 * Slightly randomized sounds
 * Automatic saving of game in progress

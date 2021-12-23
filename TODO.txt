@@ -11,14 +11,12 @@ python3 -m http.server
   Pile.owner
  grep .subtype).(type) or ).(*Stock)
  having Generic functions doesn't seem quite right
- Add more Preferences
+ Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
 
 [TODO]
- BUG recalc dims after increasing window height
  host WASM version @ oddstream.github.io instead of gosol
  Copy variant list from opsole/gomps2
-  Agnes (both)
   Assembly
   Beleaguered Castle
   Blockade
@@ -41,8 +39,6 @@ python3 -m http.server
   Single Rail
   Sir Tommy
   Little Spider
-  Thoughtful
-  Whitehead
   Will O' the Wisp
   Russian
 
@@ -62,6 +58,7 @@ python3 -m http.server
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x BUG recalc dims after increasing window height dirtyScrunch
 x variant picker groups
 x card image ExtraColors
 x https://pkg.go.dev/golang.org/x/image/font/gofont/goregular

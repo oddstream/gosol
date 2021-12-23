@@ -136,8 +136,10 @@ func (prefs *Preferences) Save() {
 		defer util.Duration(time.Now(), "Preferences.Save")
 	}
 	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
-	prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
-	prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
+	if InGameLoop {
+		prefs.WindowWidth, prefs.WindowHeight = ebiten.WindowSize()
+		prefs.WindowX, prefs.WindowY = ebiten.WindowPosition()
+	}
 	bytes, err := json.MarshalIndent(prefs, "", "\t")
 	if err != nil {
 		log.Fatal(err)

@@ -101,9 +101,11 @@ func main() {
 		}
 	}
 
+	sol.InGameLoop = true
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
+	sol.InGameLoop = false
 
 	// we come here if the user closed the window with the x button
 	println("main exit")

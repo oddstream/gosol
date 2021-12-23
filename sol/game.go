@@ -59,6 +59,8 @@ var (
 	CardHighlightImage *ebiten.Image
 	// ExitRequested is set when user has had enough
 	ExitRequested bool = false
+	// InGameLoop is true when ebiten is running
+	InGameLoop = false
 )
 
 // ThePreferences holds serialized game progress data

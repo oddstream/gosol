@@ -26,6 +26,7 @@ const (
 	dirtyCardImages
 	dirtyPileBackgrounds
 	dirtyCardPositions
+	dirtyScrunch
 )
 
 // Baize object describes the baize
@@ -120,7 +121,7 @@ func (b *Baize) NewDeal() {
 	b.UndoPush()
 	sound.Play("Fan")
 
-	b.setFlag(dirtyPilePositions | dirtyCardPositions)
+	b.setFlag(dirtyPilePositions | dirtyCardPositions | dirtyScrunch)
 	TheStatistics.WelcomeToast()
 }
 
@@ -216,7 +217,7 @@ func (b *Baize) StartFreshGame() {
 	b.script.StartGame()
 	b.UndoPush()
 
-	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions)
+	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions | dirtyScrunch)
 
 	TheStatistics.WelcomeToast()
 }
@@ -302,9 +303,7 @@ func (b *Baize) DragBy(dx, dy int) {
 
 // StopDrag stop dragging the Baize
 func (b *Baize) StopDrag() {
-	w, h := ebiten.WindowSize()
-	b.CalcScrunchDims(w, h)
-	b.Scrunch()
+	b.setFlag(dirtyScrunch)
 }
 
 // StartSpinning tells all the cards to start spinning
@@ -723,12 +722,12 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	}
 
 	if outsideWidth != b.WindowWidth {
-		b.setFlag(dirtyWindowSize | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
+		b.setFlag(dirtyWindowSize | dirtyScrunch | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		b.WindowWidth = outsideWidth
 		ThePreferences.WindowWidth = outsideWidth
 	}
 	if outsideHeight != b.WindowHeight {
-		b.setFlag(dirtyWindowSize)
+		b.setFlag(dirtyWindowSize | dirtyScrunch)
 		b.WindowHeight = outsideHeight
 		ThePreferences.WindowHeight = outsideHeight
 	}
@@ -740,7 +739,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 				CreateCardImages()
 				b.setFlag(dirtyPilePositions | dirtyPileBackgrounds)
 			}
-			b.CalcScrunchDims(outsideWidth, outsideHeight)
 			b.clearFlag(dirtyCardSizes)
 		}
 		if b.flagSet(dirtyCardImages) {
@@ -754,7 +752,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 					Y: TopMargin + (p.Slot().Y * (CardHeight + PilePaddingY)),
 				})
 			}
-			b.CalcScrunchDims(outsideWidth, outsideHeight)
 			b.clearFlag(dirtyPilePositions)
 		}
 		if b.flagSet(dirtyPileBackgrounds) {
@@ -762,6 +759,11 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 				p.img = p.CreateBackgroundImage()
 			}
 			b.clearFlag(dirtyPileBackgrounds)
+		}
+		if b.flagSet(dirtyScrunch) {
+			b.CalcScrunchDims(outsideWidth, outsideHeight)
+			b.Scrunch()
+			b.clearFlag(dirtyScrunch)
 		}
 		if b.flagSet(dirtyWindowSize) {
 			TheUI.Layout(outsideWidth, outsideHeight)
