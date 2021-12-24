@@ -211,7 +211,11 @@ func (b *Baize) StartFreshGame() {
 	}
 	b.FindBuddyPiles()
 
-	TheUI.SetTitle(ThePreferences.Variant)
+	if ThePreferences.Relaxed {
+		TheUI.SetTitle(ThePreferences.Variant + " Relaxed")
+	} else {
+		TheUI.SetTitle(ThePreferences.Variant)
+	}
 	sound.Play("Fan")
 
 	w, h := ebiten.WindowSize()

@@ -19,16 +19,12 @@ func (bd *BakersDozen) BuildPiles() VariantInfo {
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 0}, FAN_DOWN, MOVE_ONE)
 		bd.tableaux = append(bd.tableaux, t)
-		if !bd.relaxed {
-			t.SetLabel("X")
-		}
+		t.SetLabel("X")
 	}
 	for x := 0; x < 6; x++ {
 		t := NewTableau(image.Point{x, 3}, FAN_DOWN, MOVE_ONE)
 		bd.tableaux = append(bd.tableaux, t)
-		if !bd.relaxed {
-			t.SetLabel("X")
-		}
+		t.SetLabel("X")
 	}
 
 	bd.foundations = nil

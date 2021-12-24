@@ -16,7 +16,7 @@ func AnyCardsProne(cards []*Card) bool {
 }
 
 func FlipUpExposedCard(p *Pile) {
-	if _, ok := (p.subtype).(*Stock); ok {
+	if p.IsStock() {
 		// this Pile's subtype is *Stock
 		// so don't flip an exposed card
 	} else {

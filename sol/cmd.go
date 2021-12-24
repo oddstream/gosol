@@ -68,6 +68,10 @@ func Execute(cmd interface{}) {
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions | dirtyScrunch)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
+		case "Relax games":
+			ThePreferences.Relaxed, _ = strconv.ParseBool(v.Data)
+			TheBaize.RestartDeal()
+			TheBaize.StartFreshGame()
 		case "Four colors":
 			ThePreferences.FourColors, _ = strconv.ParseBool(v.Data)
 			TheBaize.setFlag(dirtyCardImages)

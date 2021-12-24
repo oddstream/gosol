@@ -122,6 +122,10 @@ func (c *Card) TransitionTo(pos image.Point) {
 		return
 	}
 
+	if c.Spinning() {
+		return
+	}
+
 	c.src = c.pos
 	c.dst = pos
 	// the further the card has to travel, the smaller the lerp step amount
@@ -231,7 +235,8 @@ func (c *Card) StartSpinning() {
 
 // StopSpinning tells the card to stop spinning and return to it's upright state
 func (c *Card) StopSpinning() {
-	c.directionX, c.directionY, c.angle, c.spin = 0, 0, 0, 0
+	c.directionX, c.directionY = 0, 0
+	c.angle, c.spin = 0, 0
 	c.scaleZ = 1.0
 }
 

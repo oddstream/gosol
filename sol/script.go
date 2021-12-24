@@ -13,7 +13,7 @@ import (
 type ScriptBase struct {
 	stock, waste                                     *Pile
 	cells, discards, foundations, reserves, tableaux []*Pile
-	relaxed, easy                                    bool
+	easy                                             bool
 }
 
 type VariantInfo struct {
@@ -52,7 +52,7 @@ var Variants = map[string]ScriptInterface{
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Thoughtful":          &Klondike{draw: 1, recycles: 32767, thoughtful: true},
-	"Easy":                &Easy{ScriptBase: ScriptBase{relaxed: true, easy: true}},
+	"Easy":                &Easy{ScriptBase: ScriptBase{easy: true}},
 	"Freecell":            &Freecell{},
 	"Forty Thieves": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
@@ -64,7 +64,6 @@ var Variants = map[string]ScriptInterface{
 		cardsPerTab: 3},
 	"Penguin":           &Penguin{},
 	"Scorpion":          &Scorpion{},
-	"Wasp":              &Scorpion{ScriptBase: ScriptBase{relaxed: true}},
 	"Simple Simon":      &SimpleSimon{},
 	"Spider One Suit":   &Spider{packs: 8, suits: 1},
 	"Spider Two Suits":  &Spider{packs: 4, suits: 2},

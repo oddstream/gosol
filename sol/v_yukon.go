@@ -34,9 +34,7 @@ func (yuk *Yukon) BuildPiles() VariantInfo {
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 0}, FAN_DOWN, MOVE_ANY)
 		yuk.tableaux = append(yuk.tableaux, t)
-		if !yuk.relaxed {
-			t.SetLabel("K")
-		}
+		t.SetLabel("K")
 	}
 
 	return VariantInfo{

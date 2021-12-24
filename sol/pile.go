@@ -126,14 +126,27 @@ func (p *Pile) Swap(i, j int) {
 	p.cards[i], p.cards[j] = p.cards[j], p.cards[i]
 }
 
+func (p *Pile) IsStock() bool {
+	_, ok := (p.subtype).(*Stock)
+	return ok
+}
+
+func (p *Pile) IsTableau() bool {
+	_, ok := (p.subtype).(*Tableau)
+	return ok
+}
+
 func (p *Pile) Label() string {
 	return p.label
 }
 
 func (p *Pile) SetLabel(label string) {
 	if p.label != label {
-		p.label = label
-		TheBaize.setFlag(dirtyPileBackgrounds)
+		if p.IsTableau() && ThePreferences.Relaxed {
+		} else {
+			p.label = label
+			TheBaize.setFlag(dirtyPileBackgrounds)
+		}
 	}
 }
 
@@ -194,7 +207,7 @@ func (p *Pile) Push(c *Card) {
 	c.SetOwner(p)
 	c.TransitionTo(pos)
 
-	if _, ok := (p.subtype).(*Stock); ok {
+	if p.IsStock() {
 		c.FlipDown()
 	}
 	p.Scrunch()

@@ -26,9 +26,7 @@ func (ez *Easy) BuildPiles() VariantInfo {
 	for x := 0; x < 13; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		ez.tableaux = append(ez.tableaux, t)
-		if !ez.relaxed {
-			t.SetLabel("K")
-		}
+		t.SetLabel("K")
 	}
 
 	return VariantInfo{

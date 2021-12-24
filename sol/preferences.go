@@ -17,6 +17,7 @@ type Preferences struct {
 	FourColors                      bool
 	FixedCards                      bool
 	PowerMoves                      bool
+	Relaxed                         bool
 	Mute                            bool
 	Volume                          float64
 	MirrorBaize                     bool

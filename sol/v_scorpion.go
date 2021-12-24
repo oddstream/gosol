@@ -24,9 +24,7 @@ func (sp *Scorpion) BuildPiles() VariantInfo {
 	sp.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		if !sp.relaxed {
-			t.SetLabel("K")
-		}
+		t.SetLabel("K")
 		sp.tableaux = append(sp.tableaux, t)
 	}
 

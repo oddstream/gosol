@@ -10,13 +10,13 @@ It's tested on Linux, Windows and in a web browser (when compiled to WASM with  
 
 It will know how to play:
 
-* Agnes Ben
+* Agnes Bernauer
 * Aces and Kings
 * Algerian
 * Alhambra
 * American Toad (also The Toad)
 * Australian
-* Baker's Dozen (also Baker's Dozen Relaxed)
+* Baker's Dozen
 * Bisley
 * Bristol (also Dover)
 * Canfield (also Acme, Storehouse)
@@ -30,7 +30,7 @@ It will know how to play:
 * La Belle Lucie (and Trefoil, The Fan)
 * Mistress and Mrs Mop
 * Penguin
-* Scorpion, Wasp
+* Scorpion
 * Simple Simon
 * Spider (also Beetle, Spiderette, Spider One Suit, Spider Two Suits, Will o' the Wisp)
 * Whitehead
@@ -54,9 +54,11 @@ Some will never make it here because they are just poor games:
 
 * Permissive card moves. If you want to move a card from here to there, go ahead and do it. If that move is not allowed by the current rules, the game will put the cards back *and explain why that move is not allowed*
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty
-* Bookmarking positions (really good for games like Freecell or Simple Simon)
+* Bookmarking positions (really good for puzzle-style games like Freecell or Simple Simon)
 * Scalable or fixed-size cards
 * Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider)
+* The rules for a game can be relaxed to make them easier (for example, relaxed Scorpion is known as Wasp, Yukon and Baker's Dozen are often played as the relaxed version. Relaxing the rules means removing the constraint that an empty tableau must be filled by a certain card, usually a King.
+* Every game has a link to it's Wikipedia page
 * Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are)
 * Cards spin and flutter when you complete a game, so you feel rewarded and happy
 * Slightly randomized sounds
@@ -136,6 +138,8 @@ Where possible, I've implemented the games from the book
 * L - load/return to a previously saved position
 * C - collect cards to the foundations
 * A - collect all cards to the foundations
+* 2 - switch to two colors of cards (black and red)
+* 4 - switch to four colors of cards (black, red, dark orange and indigo)
 
 ### What about scores?
 
@@ -171,6 +175,14 @@ cards to disappear off the bottom, in which case you can drag the baize, or chan
 Some variants (eg Freecell or Forty Thieves) only allow you to move one card at a time. Moving several cards between piles requires
 you to move them, one at a time, via an empty pile or cell. Enabling power moves automates this, allowing multi-card moves between piles.
 The number of cards you can move is calculated from the number of empty piles and cells (if any).
+
+#### Relax games
+
+Many games can be made a little easier by removing the constraint that a card of a particular rank (usually a King) must the first card placed on an empty tableau pile.
+
+The statistics for relaxed games are recorded separately.
+
+Toggling this will abandon the current game (so it will not count as a loss) and restart it.
 
 #### Extra colors
 

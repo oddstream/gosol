@@ -25,9 +25,7 @@ func (aus *Australian) BuildPiles() VariantInfo {
 	for x := 0; x < 8; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		aus.tableaux = append(aus.tableaux, t)
-		if !aus.relaxed {
-			t.SetLabel("K")
-		}
+		t.SetLabel("K")
 	}
 
 	return VariantInfo{

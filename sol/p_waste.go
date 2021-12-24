@@ -28,14 +28,14 @@ func (*Waste) CanMoveTail(tail []*Card) (bool, error) {
 }
 
 func (w *Waste) CanAcceptCard(card *Card) (bool, error) {
-	if _, ok := (card.owner.subtype).(*Stock); !ok {
+	if !card.owner.IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil
 }
 
 func (w *Waste) CanAcceptTail(tail []*Card) (bool, error) {
-	if _, ok := (tail[0].owner.subtype).(*Stock); !ok {
+	if !tail[0].owner.IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil

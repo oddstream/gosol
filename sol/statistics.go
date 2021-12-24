@@ -48,9 +48,14 @@ func (stats *VariantStatistics) bestPercent() int {
 }
 
 func (stats *VariantStatistics) generalToasts() []string {
+
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed {
+		v = v + " Relaxed"
+	}
 	toasts := []string{}
 	toasts = append(toasts,
-		fmt.Sprintf("You have played %s %s (won %d, lost %d)", ThePreferences.Variant, util.Pluralize("time", stats.Won+stats.Lost), stats.Won, stats.Lost))
+		fmt.Sprintf("You have played %s %s (won %d, lost %d)", v, util.Pluralize("time", stats.Won+stats.Lost), stats.Won, stats.Lost))
 	// fmt.Sprintf("You have won %s, and lost %s (%d%%)",
 	// 	util.Pluralize("game", stats.Won),
 	// 	util.Pluralize("game", stats.Lost),
@@ -79,18 +84,28 @@ func NewStatistics() *Statistics {
 }
 
 func (s *Statistics) findVariant() *VariantStatistics {
-	stats, ok := s.StatsMap[ThePreferences.Variant]
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed {
+		v = v + " Relaxed"
+	}
+
+	stats, ok := s.StatsMap[v]
 	if !ok {
 		stats = &VariantStatistics{} // everything 0
-		s.StatsMap[ThePreferences.Variant] = stats
-		println("statistics has encountered a new variant", ThePreferences.Variant)
+		s.StatsMap[v] = stats
+		println("statistics has encountered a new variant", v)
 	}
 	return stats
 }
 
 func (s *Statistics) RecordWonGame() {
 
-	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", ThePreferences.Variant))
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed {
+		v = v + " Relaxed"
+	}
+
+	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", v))
 
 	stats := s.findVariant()
 
@@ -115,12 +130,17 @@ func (s *Statistics) RecordWonGame() {
 
 func (s *Statistics) RecordLostGame() {
 
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed {
+		v = v + " Relaxed"
+	}
+
 	percent := TheBaize.PercentComplete()
 	if percent == 100 {
 		println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
 
-	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", ThePreferences.Variant, percent))
+	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
 
 	stats := s.findVariant()
 
@@ -141,17 +161,22 @@ func (s *Statistics) RecordLostGame() {
 }
 
 func (s *Statistics) WelcomeToast() {
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed {
+		v = v + " Relaxed"
+	}
+
 	toasts := []string{}
 
-	stats, ok := s.StatsMap[ThePreferences.Variant]
+	stats, ok := s.StatsMap[v]
 	if !ok || stats.Won+stats.Lost == 0 {
-		toasts = append(toasts, fmt.Sprintf("You have not played %s before", ThePreferences.Variant))
+		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
 	} else {
 		avpc := stats.averagePercent()
 		bpc := stats.bestPercent()
 
 		if stats.Won == 0 {
-			toasts = append(toasts, fmt.Sprintf("You have yet to win a game of %s in %s", ThePreferences.Variant, util.Pluralize("attempt", stats.Lost)))
+			toasts = append(toasts, fmt.Sprintf("You have yet to win a game of %s in %s", v, util.Pluralize("attempt", stats.Lost)))
 			if bpc > 0 && bpc != avpc {
 				toasts = append(toasts, fmt.Sprintf("Your best score is %d%%, your average score is %d%%", bpc, avpc))
 			}

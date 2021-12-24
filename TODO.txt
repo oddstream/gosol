@@ -37,25 +37,30 @@ https://calver.org/
   Sir Tommy
   Little Spider
   Will O' the Wisp
-  Russian
+  Russian?
 
- Save and Exit? (for WASM) (or cunning method of ensuring saved.json is up-to-date)
+ put toasts in a queue, and release them at one second intervals
+ cunning method of ensuring saved.json is up-to-date on WASM
+ set preference API that writes preferences
  clean up statistics reporting
+ shortcut to display statistics
  clean up rune to suit &c nonsense in util
  streaks and percentages in README.md
  are both symbol and label needed? encode a glyph into label
- portrait | landscape, adjust screen size?
  fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
  hearts and 10s are too close to the edge
  show NewDeal FAB when loading a complete saved.txt
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
- WASM not getting WindowWidth,Height at startup, try getting from other sources
  WASM not scrunching?
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
-x suppress window resize on GOOS=android GOARCH==WASM
+x don't refan spinning cards (law of surprise)
+x ThePreferences.relaxed, stops tableau.SetLabel()
+x suppress window resize on GOOS==android GOARCH==WASM
+x WASM not getting WindowWidth,Height at startup, try getting from other sources
+x portrait | landscape, adjust screen size?
 x remove window size and position code and preferences
 x BUG recalc dims after increasing window height dirtyScrunch
 x variant picker groups
