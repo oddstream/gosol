@@ -13,7 +13,15 @@ type Toad struct {
 	ScriptBase
 }
 
-func (t *Toad) BuildPiles() VariantInfo {
+func (*Toad) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (t *Toad) BuildPiles() {
 
 	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -30,12 +38,6 @@ func (t *Toad) BuildPiles() VariantInfo {
 	for x := 0; x < 8; x++ {
 		// When moving tableau piles, you must either move the whole pile or only the top card.
 		t.tableaux = append(t.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE_OR_ALL))
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -114,7 +116,7 @@ func (*Toad) UnsortedPairs(pile *Pile) int {
 
 func (t *Toad) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		c := pile.Pop()
 		t.waste.Push(c)
 	} else {

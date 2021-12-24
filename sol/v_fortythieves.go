@@ -13,7 +13,15 @@ type FortyThieves struct {
 	cardsPerTab int
 }
 
-func (ft *FortyThieves) BuildPiles() VariantInfo {
+func (*FortyThieves) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "landscape",
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (ft *FortyThieves) BuildPiles() {
 
 	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -29,12 +37,6 @@ func (ft *FortyThieves) BuildPiles() VariantInfo {
 	for _, x := range ft.tabs {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		ft.tableaux = append(ft.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "landscape",
-		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -104,7 +106,7 @@ func (*FortyThieves) UnsortedPairs(pile *Pile) int {
 
 func (ft *FortyThieves) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		MoveCard(ft.stock, ft.waste)
 	} else {
 		pile.subtype.TailTapped(tail)

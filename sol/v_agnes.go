@@ -12,7 +12,15 @@ type Agnes struct {
 	ScriptBase
 }
 
-func (ag *Agnes) BuildPiles() VariantInfo {
+func (*Agnes) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (ag *Agnes) BuildPiles() {
 
 	ag.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	ag.waste = nil
@@ -33,12 +41,6 @@ func (ag *Agnes) BuildPiles() VariantInfo {
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY)
 		ag.tableaux = append(ag.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -123,7 +125,7 @@ func (ag *Agnes) UnsortedPairs(pile *Pile) int {
 
 func (ag *Agnes) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		for _, pile := range ag.reserves {
 			MoveCard(ag.stock, pile)
 		}

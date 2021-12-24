@@ -13,7 +13,15 @@ type Spider struct {
 	packs, suits int
 }
 
-func (sp *Spider) BuildPiles() VariantInfo {
+func (*Spider) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (sp *Spider) BuildPiles() {
 
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
 
@@ -27,12 +35,6 @@ func (sp *Spider) BuildPiles() VariantInfo {
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		sp.tableaux = append(sp.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
-		relaxable:   false,
 	}
 }
 

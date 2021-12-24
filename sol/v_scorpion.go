@@ -11,7 +11,15 @@ type Scorpion struct {
 	ScriptBase
 }
 
-func (sp *Scorpion) BuildPiles() VariantInfo {
+func (*Scorpion) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "portrait",
+		wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
+		relaxable:   true,
+	}
+}
+
+func (sp *Scorpion) BuildPiles() {
 
 	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 
@@ -26,12 +34,6 @@ func (sp *Scorpion) BuildPiles() VariantInfo {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")
 		sp.tableaux = append(sp.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "portrait",
-		wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
-		relaxable:   true,
 	}
 }
 

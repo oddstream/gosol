@@ -131,6 +131,13 @@ func (p *Pile) IsStock() bool {
 	return ok
 }
 
+func (p *Pile) Stock() *Stock {
+	if stock, ok := (p.subtype).(*Stock); ok {
+		return stock
+	}
+	return nil
+}
+
 func (p *Pile) IsTableau() bool {
 	_, ok := (p.subtype).(*Tableau)
 	return ok
@@ -142,7 +149,7 @@ func (p *Pile) Label() string {
 
 func (p *Pile) SetLabel(label string) {
 	if p.label != label {
-		if p.IsTableau() && ThePreferences.Relaxed && TheBaize.vinfo.relaxable {
+		if p.IsTableau() && ThePreferences.Relaxed && TheBaize.script.Info().relaxable {
 		} else {
 			p.label = label
 			TheBaize.setFlag(dirtyPileBackgrounds)

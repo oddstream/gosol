@@ -10,7 +10,15 @@ type Freecell struct {
 	ScriptBase
 }
 
-func (fc *Freecell) BuildPiles() VariantInfo {
+func (*Freecell) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
+		relaxable:   false,
+	}
+}
+
+func (fc *Freecell) BuildPiles() {
 
 	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -30,12 +38,6 @@ func (fc *Freecell) BuildPiles() VariantInfo {
 	for x := 0; x < 8; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		fc.tableaux = append(fc.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
-		relaxable:   false,
 	}
 }
 

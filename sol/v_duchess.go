@@ -15,7 +15,15 @@ type Duchess struct {
 	ScriptBase
 }
 
-func (du *Duchess) BuildPiles() VariantInfo {
+func (*Duchess) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (du *Duchess) BuildPiles() {
 
 	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
 
@@ -34,12 +42,6 @@ func (du *Duchess) BuildPiles() VariantInfo {
 	du.tableaux = nil
 	for x := 3; x < 7; x++ {
 		du.tableaux = append(du.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -142,7 +144,7 @@ func (*Duchess) UnsortedPairs(pile *Pile) int {
 
 func (du *Duchess) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		MoveCard(du.stock, du.waste)
 	} else {
 		pile.subtype.TailTapped(tail)

@@ -11,7 +11,15 @@ type SimpleSimon struct {
 	ScriptBase
 }
 
-func (ss *SimpleSimon) BuildPiles() VariantInfo {
+func (*SimpleSimon) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (ss *SimpleSimon) BuildPiles() {
 
 	ss.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -25,12 +33,6 @@ func (ss *SimpleSimon) BuildPiles() VariantInfo {
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		ss.tableaux = append(ss.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
-		relaxable:   false,
 	}
 }
 

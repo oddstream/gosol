@@ -10,7 +10,15 @@ type EightOff struct {
 	ScriptBase
 }
 
-func (eo *EightOff) BuildPiles() VariantInfo {
+func (*EightOff) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Eight_Off",
+		relaxable:   true,
+	}
+}
+
+func (eo *EightOff) BuildPiles() {
 
 	eo.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -31,12 +39,6 @@ func (eo *EightOff) BuildPiles() VariantInfo {
 		pile := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		eo.tableaux = append(eo.tableaux, pile)
 		pile.SetLabel("K")
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Eight_Off",
-		relaxable:   true,
 	}
 }
 

@@ -10,7 +10,15 @@ type Easy struct {
 	ScriptBase
 }
 
-func (ez *Easy) BuildPiles() VariantInfo {
+func (*Easy) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "landscape",
+		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+		relaxable:   true,
+	}
+}
+
+func (ez *Easy) BuildPiles() {
 
 	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	ez.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -28,12 +36,6 @@ func (ez *Easy) BuildPiles() VariantInfo {
 		ez.tableaux = append(ez.tableaux, t)
 		t.SetLabel("K")
 	}
-
-	return VariantInfo{
-		windowShape: "landscape",
-		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
-		relaxable:   true,
-	}
 }
 
 func (ez *Easy) StartGame() {
@@ -42,9 +44,19 @@ func (ez *Easy) StartGame() {
 		MoveNamedCard(DIAMOND, 1, ez.foundations[1])
 		MoveNamedCard(HEART, 1, ez.foundations[2])
 		MoveNamedCard(SPADE, 1, ez.foundations[3])
+
+		MoveNamedCard(CLUB, 2, ez.foundations[0])
+		MoveNamedCard(DIAMOND, 2, ez.foundations[1])
+		MoveNamedCard(HEART, 2, ez.foundations[2])
+		MoveNamedCard(SPADE, 2, ez.foundations[3])
+
+		MoveNamedCard(CLUB, 3, ez.foundations[0])
+		MoveNamedCard(DIAMOND, 3, ez.foundations[1])
+		MoveNamedCard(HEART, 3, ez.foundations[2])
+		MoveNamedCard(SPADE, 3, ez.foundations[3])
 	}
 	for _, pile := range ez.tableaux {
-		for i := 0; i < 2; i++ {
+		for i := 0; i < 1; i++ {
 			MoveCard(ez.stock, pile).FlipDown()
 		}
 		MoveCard(ez.stock, pile)
@@ -114,7 +126,7 @@ func (*Easy) UnsortedPairs(pile *Pile) int {
 
 func (ez *Easy) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		c := pile.Pop()
 		ez.waste.Push(c)
 	} else {

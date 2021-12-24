@@ -10,7 +10,15 @@ type Whitehead struct {
 	ScriptBase
 }
 
-func (wh *Whitehead) BuildPiles() VariantInfo {
+func (*Whitehead) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+		relaxable:   false,
+	}
+}
+
+func (wh *Whitehead) BuildPiles() {
 
 	wh.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	wh.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
@@ -26,12 +34,6 @@ func (wh *Whitehead) BuildPiles() VariantInfo {
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		wh.tableaux = append(wh.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -107,7 +109,7 @@ func (*Whitehead) UnsortedPairs(pile *Pile) int {
 
 func (wh *Whitehead) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		MoveCard(wh.stock, wh.waste)
 	} else {
 		pile.subtype.TailTapped(tail)

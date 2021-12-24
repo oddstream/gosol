@@ -12,7 +12,15 @@ type Penguin struct {
 	ScriptBase
 }
 
-func (pen *Penguin) BuildPiles() VariantInfo {
+func (*Penguin) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://www.parlettgames.uk/patience/penguin.html",
+		relaxable:   false,
+	}
+}
+
+func (pen *Penguin) BuildPiles() {
 
 	// hidden (off-screen) stock
 	pen.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
@@ -35,12 +43,6 @@ func (pen *Penguin) BuildPiles() VariantInfo {
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		pen.tableaux = append(pen.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://www.parlettgames.uk/patience/penguin.html",
-		relaxable:   false,
 	}
 }
 

@@ -11,7 +11,15 @@ type BakersDozen struct {
 	ScriptBase
 }
 
-func (bd *BakersDozen) BuildPiles() VariantInfo {
+func (*BakersDozen) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+		relaxable:   true,
+	}
+}
+
+func (bd *BakersDozen) BuildPiles() {
 
 	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -32,12 +40,6 @@ func (bd *BakersDozen) BuildPiles() VariantInfo {
 		f := NewFoundation(image.Point{9, y}, FAN_NONE)
 		bd.foundations = append(bd.foundations, f)
 		f.SetLabel("A")
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
-		relaxable:   true,
 	}
 }
 

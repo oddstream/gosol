@@ -11,7 +11,15 @@ type Yukon struct {
 	extraCells int
 }
 
-func (yuk *Yukon) BuildPiles() VariantInfo {
+func (*Yukon) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "portrait",
+		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
+		relaxable:   true,
+	}
+}
+
+func (yuk *Yukon) BuildPiles() {
 
 	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
@@ -35,12 +43,6 @@ func (yuk *Yukon) BuildPiles() VariantInfo {
 		t := NewTableau(image.Point{x, 0}, FAN_DOWN, MOVE_ANY)
 		yuk.tableaux = append(yuk.tableaux, t)
 		t.SetLabel("K")
-	}
-
-	return VariantInfo{
-		windowShape: "portrait",
-		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
-		relaxable:   true,
 	}
 }
 

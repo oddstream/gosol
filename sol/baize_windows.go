@@ -6,7 +6,7 @@ import (
 )
 
 func (b *Baize) Wikipedia() {
-	err := exec.Command("rundll32", "url.dll,FileProtocolHandler", b.vinfo.wikipedia).Start()
+	err := exec.Command("rundll32", "url.dll,FileProtocolHandler", b.script.Info().wikipedia).Start()
 	if err != nil {
 		log.Println(err)
 	}

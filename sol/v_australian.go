@@ -10,7 +10,15 @@ type Australian struct {
 	ScriptBase
 }
 
-func (aus *Australian) BuildPiles() VariantInfo {
+func (*Australian) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
+		relaxable:   false,
+	}
+}
+
+func (aus *Australian) BuildPiles() {
 	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
 	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
@@ -26,12 +34,6 @@ func (aus *Australian) BuildPiles() VariantInfo {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		aus.tableaux = append(aus.tableaux, t)
 		t.SetLabel("K")
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
-		relaxable:   false,
 	}
 }
 
@@ -91,7 +93,7 @@ func (*Australian) UnsortedPairs(pile *Pile) int {
 
 func (aus *Australian) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		c := pile.Pop()
 		aus.waste.Push(c)
 	} else {

@@ -34,7 +34,6 @@ const (
 type Baize struct {
 	magic        uint32
 	script       ScriptInterface
-	vinfo        VariantInfo
 	piles        []*Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int
@@ -97,7 +96,7 @@ func (b *Baize) Refan() {
 
 func (b *Baize) LongVariantName() string {
 	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed && b.vinfo.relaxable {
+	if ThePreferences.Relaxed && b.script.Info().relaxable {
 		v = v + " Relaxed"
 	}
 	return v
@@ -199,11 +198,11 @@ func (b *Baize) StartFreshGame() {
 		}
 		NoGameLoad = true
 	}
-	b.vinfo = b.script.BuildPiles()
+	b.script.BuildPiles()
 	if !(runtime.GOARCH == "wasm" || runtime.GOOS == "android") {
 		if ThePreferences.PreferredWindow {
 			w := (b.MaxSlotX() + 4) * ThePreferences.FixedCardWidth
-			switch b.vinfo.windowShape {
+			switch b.script.Info().windowShape {
 			case "square":
 				ebiten.SetWindowSize(w, w)
 			case "portrait":

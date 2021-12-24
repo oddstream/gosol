@@ -27,7 +27,9 @@ type VariantInfo struct {
 // type CardPairCompareFunc func(CardPair) (bool, error)
 
 type ScriptInterface interface {
-	BuildPiles() VariantInfo
+	Info() *VariantInfo
+
+	BuildPiles()
 	StartGame()
 	AfterMove()
 

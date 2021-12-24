@@ -13,7 +13,15 @@ type Klondike struct {
 	thoughtful     bool
 }
 
-func (kl *Klondike) BuildPiles() VariantInfo {
+func (*Klondike) Info() *VariantInfo {
+	return &VariantInfo{
+		windowShape: "square",
+		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+		relaxable:   true,
+	}
+}
+
+func (kl *Klondike) BuildPiles() {
 
 	if kl.draw == 0 {
 		kl.draw = 1
@@ -33,12 +41,6 @@ func (kl *Klondike) BuildPiles() VariantInfo {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")
 		kl.tableaux = append(kl.tableaux, t)
-	}
-
-	return VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
-		relaxable:   true,
 	}
 }
 
@@ -124,7 +126,7 @@ func (*Klondike) UnsortedPairs(pile *Pile) int {
 
 func (kl *Klondike) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if _, ok := (pile.subtype).(*Stock); ok && len(tail) == 1 {
+	if pile.IsStock() && len(tail) == 1 {
 		for i := 0; i < kl.draw; i++ {
 			MoveCard(kl.stock, kl.waste)
 		}
