@@ -34,6 +34,7 @@ func (ft *FortyThieves) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "landscape",
 		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		relaxable:   false,
 	}
 }
 

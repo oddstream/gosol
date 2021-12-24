@@ -40,6 +40,7 @@ func (pen *Penguin) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://www.parlettgames.uk/patience/penguin.html",
+		relaxable:   false,
 	}
 }
 

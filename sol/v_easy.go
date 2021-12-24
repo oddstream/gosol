@@ -32,6 +32,7 @@ func (ez *Easy) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "landscape",
 		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+		relaxable:   true,
 	}
 }
 

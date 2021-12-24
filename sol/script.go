@@ -19,6 +19,7 @@ type ScriptBase struct {
 type VariantInfo struct {
 	windowShape string
 	wikipedia   string
+	relaxable   bool
 }
 
 // You can't use functions as keys in maps : the key type must be comparable
@@ -53,6 +54,7 @@ var Variants = map[string]ScriptInterface{
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Thoughtful":          &Klondike{draw: 1, recycles: 32767, thoughtful: true},
 	"Easy":                &Easy{ScriptBase: ScriptBase{easy: true}},
+	"Eight Off":           &EightOff{},
 	"Freecell":            &Freecell{},
 	"Forty Thieves": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
@@ -76,11 +78,10 @@ var Variants = map[string]ScriptInterface{
 var VariantGroups = map[string][]string{
 	// "All" added dynamically by func init()
 	// don't have Agnes here (as a group) because it would come before All
-	// and Agnes Sorel might be retired because it's just too hard
+	// and Agnes Sorel is retired because it's just too hard
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
-	"> Scorpion":      {"Scorpion", "Wasp"},
 	"> Canfield":      {"Canfield", "Acme", "Storehouse"},
 	"> Freecell":      {"Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},

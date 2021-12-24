@@ -142,7 +142,7 @@ func (p *Pile) Label() string {
 
 func (p *Pile) SetLabel(label string) {
 	if p.label != label {
-		if p.IsTableau() && ThePreferences.Relaxed {
+		if p.IsTableau() && ThePreferences.Relaxed && TheBaize.vinfo.relaxable {
 		} else {
 			p.label = label
 			TheBaize.setFlag(dirtyPileBackgrounds)

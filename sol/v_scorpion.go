@@ -31,6 +31,7 @@ func (sp *Scorpion) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "portrait",
 		wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
+		relaxable:   true,
 	}
 }
 

@@ -35,6 +35,7 @@ func (t *Toad) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
+		relaxable:   false,
 	}
 }
 

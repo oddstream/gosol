@@ -184,6 +184,8 @@ The statistics for relaxed games are recorded separately.
 
 Toggling this will abandon the current game (so it will not count as a loss) and restart it.
 
+Some games are already as relaxed as they can be, so this setting will have no effect.
+
 #### Extra colors
 
 Draws the cards in four colors, rather than the usual black and red. Can be useful when scanning cards in variants that sort cards into suit order (like Australian or Spider), but is annoying for variants that sort cards into alternate colors (like Klondike, Freecell or Yukon).

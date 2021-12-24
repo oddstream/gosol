@@ -32,6 +32,7 @@ func (sp *Spider) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		relaxable:   false,
 	}
 }
 

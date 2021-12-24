@@ -38,6 +38,7 @@ func (ag *Agnes) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
+		relaxable:   false,
 	}
 }
 

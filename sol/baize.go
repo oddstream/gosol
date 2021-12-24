@@ -52,7 +52,7 @@ type Baize struct {
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// let WindowWidth,WindowHeight be zero, so that the first Layout will trigger card scaling and pile placement
-	return &Baize{magic: baizemagic, dragOffset: image.Point{0, 0}, dirtyFlags: 0xffffffff}
+	return &Baize{magic: baizemagic, dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -95,6 +95,14 @@ func (b *Baize) Refan() {
 	b.setFlag(dirtyCardPositions)
 }
 
+func (b *Baize) LongVariantName() string {
+	var v string = ThePreferences.Variant
+	if ThePreferences.Relaxed && b.vinfo.relaxable {
+		v = v + " Relaxed"
+	}
+	return v
+}
+
 // NewGame restarts current variant (ie no pile building) with a new seed
 func (b *Baize) NewDeal() {
 
@@ -102,7 +110,7 @@ func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame()
+		TheStatistics.RecordLostGame(b.LongVariantName())
 	}
 
 	b.tail = nil
@@ -122,8 +130,8 @@ func (b *Baize) NewDeal() {
 	b.UndoPush()
 	sound.Play("Fan")
 
-	b.setFlag(dirtyPilePositions | dirtyCardPositions | dirtyScrunch)
-	TheStatistics.WelcomeToast()
+	b.setFlag(dirtyCardPositions | dirtyScrunch)
+	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
 func (b *Baize) ShowVariantGroupPicker() {
@@ -211,28 +219,22 @@ func (b *Baize) StartFreshGame() {
 	}
 	b.FindBuddyPiles()
 
-	if ThePreferences.Relaxed {
-		TheUI.SetTitle(ThePreferences.Variant + " Relaxed")
-	} else {
-		TheUI.SetTitle(ThePreferences.Variant)
-	}
+	TheUI.SetTitle(b.LongVariantName())
+
 	sound.Play("Fan")
 
-	w, h := ebiten.WindowSize()
-	b.Layout(w, h)
+	b.dirtyFlags = 0xFFFF
 
 	b.script.StartGame()
 	b.UndoPush()
 
-	b.setFlag(dirtyPilePositions | dirtyPileBackgrounds | dirtyCardPositions | dirtyCardSizes | dirtyCardPositions | dirtyScrunch)
-
-	TheStatistics.WelcomeToast()
+	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
 func (b *Baize) ChangeVariant(newVariant string) {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame()
+		TheStatistics.RecordLostGame(b.LongVariantName())
 	}
 	ThePreferences.Variant = newVariant
 	b.StartFreshGame()
@@ -341,7 +343,7 @@ func (b *Baize) AfterUserMove() {
 	b.UndoPush()
 	if b.Complete() {
 		sound.Play("Complete")
-		TheStatistics.RecordWonGame()
+		TheStatistics.RecordWonGame(b.LongVariantName())
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {

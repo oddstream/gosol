@@ -31,6 +31,7 @@ func (wh *Whitehead) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+		relaxable:   false,
 	}
 }
 

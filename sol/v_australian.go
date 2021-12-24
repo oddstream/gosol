@@ -31,6 +31,7 @@ func (aus *Australian) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
+		relaxable:   false,
 	}
 }
 

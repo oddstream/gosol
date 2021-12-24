@@ -40,6 +40,7 @@ func (yuk *Yukon) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "portrait",
 		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
+		relaxable:   true,
 	}
 }
 

@@ -39,6 +39,7 @@ func (du *Duchess) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
+		relaxable:   false,
 	}
 }
 

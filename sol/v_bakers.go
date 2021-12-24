@@ -37,6 +37,7 @@ func (bd *BakersDozen) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+		relaxable:   true,
 	}
 }
 

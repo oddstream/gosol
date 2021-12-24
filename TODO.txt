@@ -39,7 +39,7 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
- put toasts in a queue, and release them at one second intervals
+ SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
  set preference API that writes preferences
  clean up statistics reporting
@@ -52,12 +52,12 @@ https://calver.org/
  hearts and 10s are too close to the edge
  show NewDeal FAB when loading a complete saved.txt
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
- WASM not scrunching?
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x WASM FAB Window 0 0 FAB -108 -132 still using ebiten.WindowSize()
 x don't refan spinning cards (law of surprise)
-x ThePreferences.relaxed, stops tableau.SetLabel()
+x ThePreferences.relaxed, and VariantInfo.relaxable, stops tableau.SetLabel()
 x suppress window resize on GOOS==android GOARCH==WASM
 x WASM not getting WindowWidth,Height at startup, try getting from other sources
 x portrait | landscape, adjust screen size?

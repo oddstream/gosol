@@ -35,6 +35,7 @@ func (fc *Freecell) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
+		relaxable:   false,
 	}
 }
 

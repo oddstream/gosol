@@ -81,14 +81,9 @@ func NewFABBar() *FABBar {
 // Layout implements Ebiten's Layout
 func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 	// override BarBase.Layout to get position near bottom right of screen
-	if len(fb.widgets) == 0 {
-		fb.x = outsideWidth
-		fb.y = outsideHeight
-	} else {
-		fb.x = outsideWidth - fb.width - (fb.width / 2)
-		fb.y = outsideHeight - fb.height - (fb.height / 2) - 24 // statusbar is 24 high
-	}
-	println("Window", outsideWidth, outsideHeight, "FAB", fb.x, fb.y)
+	fb.x = outsideWidth - fb.width - (fb.width / 2)
+	fb.y = outsideHeight - fb.height - (fb.height / 2) - 24 // statusbar is 24 high
+	println("FABBar.Layout() Window=", outsideWidth, outsideHeight, "FAB=", fb.x, fb.y)
 	return outsideWidth, outsideHeight
 }
 
@@ -97,9 +92,6 @@ func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (u *UI) ShowFAB(iconName string, key ebiten.Key) {
 	u.fabbar.widgets = nil
 	u.fabbar.widgets = append(u.fabbar.widgets, NewFAB(u.fabbar, iconName, key))
-	// set the widget position, which otherwise wouldn't be done until window resized
-	w, h := ebiten.WindowSize()
-	u.fabbar.Layout(w, h)
 }
 
 func (u *UI) HideFAB() {

@@ -49,10 +49,8 @@ func (stats *VariantStatistics) bestPercent() int {
 
 func (stats *VariantStatistics) generalToasts() []string {
 
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed {
-		v = v + " Relaxed"
-	}
+	v := TheBaize.LongVariantName()
+
 	toasts := []string{}
 	toasts = append(toasts,
 		fmt.Sprintf("You have played %s %s (won %d, lost %d)", v, util.Pluralize("time", stats.Won+stats.Lost), stats.Won, stats.Lost))
@@ -83,12 +81,7 @@ func NewStatistics() *Statistics {
 	return s
 }
 
-func (s *Statistics) findVariant() *VariantStatistics {
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed {
-		v = v + " Relaxed"
-	}
-
+func (s *Statistics) findVariant(v string) *VariantStatistics {
 	stats, ok := s.StatsMap[v]
 	if !ok {
 		stats = &VariantStatistics{} // everything 0
@@ -98,16 +91,11 @@ func (s *Statistics) findVariant() *VariantStatistics {
 	return stats
 }
 
-func (s *Statistics) RecordWonGame() {
-
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed {
-		v = v + " Relaxed"
-	}
+func (s *Statistics) RecordWonGame(v string) {
 
 	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", v))
 
-	stats := s.findVariant()
+	stats := s.findVariant(v)
 
 	stats.Won = stats.Won + 1
 
@@ -128,12 +116,7 @@ func (s *Statistics) RecordWonGame() {
 	s.Save()
 }
 
-func (s *Statistics) RecordLostGame() {
-
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed {
-		v = v + " Relaxed"
-	}
+func (s *Statistics) RecordLostGame(v string) {
 
 	percent := TheBaize.PercentComplete()
 	if percent == 100 {
@@ -142,7 +125,7 @@ func (s *Statistics) RecordLostGame() {
 
 	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
 
-	stats := s.findVariant()
+	stats := s.findVariant(v)
 
 	stats.Lost = stats.Lost + 1
 	// don't see that currStreak can ever be zero
@@ -160,11 +143,7 @@ func (s *Statistics) RecordLostGame() {
 	s.Save()
 }
 
-func (s *Statistics) WelcomeToast() {
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed {
-		v = v + " Relaxed"
-	}
+func (s *Statistics) WelcomeToast(v string) {
 
 	toasts := []string{}
 

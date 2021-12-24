@@ -38,6 +38,7 @@ func (kl *Klondike) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
+		relaxable:   true,
 	}
 }
 

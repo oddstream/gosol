@@ -30,6 +30,7 @@ func (ss *SimpleSimon) BuildPiles() VariantInfo {
 	return VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
+		relaxable:   false,
 	}
 }
 
