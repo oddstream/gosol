@@ -13,12 +13,8 @@ type Foundation struct {
 
 func NewFoundation(slot image.Point, fanType FanType) *Pile {
 	p := &Pile{}
-	p.Ctor(&Foundation{pile: p}, "Foundation", slot, fanType)
+	p.Ctor(&Foundation{pile: p}, "Foundation", slot, fanType, MOVE_NONE)
 	return p
-}
-
-func (*Foundation) CanMoveTail(tail []*Card) (bool, error) {
-	return false, errors.New("Cannot move cards from a Foundation")
 }
 
 func (f *Foundation) CanAcceptCard(card *Card) (bool, error) {

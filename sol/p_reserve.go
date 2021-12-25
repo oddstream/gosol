@@ -13,15 +13,8 @@ type Reserve struct {
 
 func NewReserve(slot image.Point, fanType FanType) *Pile {
 	p := &Pile{}
-	p.Ctor(&Reserve{pile: p}, "Reserve", slot, fanType)
+	p.Ctor(&Reserve{pile: p}, "Reserve", slot, fanType, MOVE_ONE)
 	return p
-}
-
-func (*Reserve) CanMoveTail(tail []*Card) (bool, error) {
-	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot move a face down card")
-	}
-	return true, nil
 }
 
 func (r *Reserve) CanAcceptCard(card *Card) (bool, error) {

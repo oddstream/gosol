@@ -13,12 +13,8 @@ type Discard struct {
 
 func NewDiscard(slot image.Point, fanType FanType) *Pile {
 	p := &Pile{}
-	p.Ctor(&Discard{pile: p}, "Discard", slot, FAN_NONE)
+	p.Ctor(&Discard{pile: p}, "Discard", slot, FAN_NONE, MOVE_NONE)
 	return p
-}
-
-func (*Discard) CanMoveTail(tail []*Card) (bool, error) {
-	return false, errors.New("Cannot move cards from a Discard")
 }
 
 func (*Discard) CanAcceptCard(card *Card) (bool, error) {

@@ -39,6 +39,11 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
+ instead of subtype SubtypeAPI in definition, why not just SubtypeAPI?
+ because subtype has to be assigned to during Pile.Ctor
+ "There's an important way in which embedding differs from subclassing.
+  When we embed a type, the methods of that type become methods of the outer type, but when they're invoked the receiver of the method is the inner type, not the outer one."
+ https://golang.org/doc/effective_go
  SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
  set preference API that writes preferences

@@ -1,6 +1,10 @@
 package sol
 
+//lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+
 import (
+	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -29,7 +33,8 @@ const (
 type MoveType int
 
 const (
-	MOVE_ANY MoveType = iota
+	MOVE_NONE MoveType = iota
+	MOVE_ANY
 	MOVE_ONE
 	MOVE_ONE_PLUS
 	MOVE_ONE_OR_ALL
@@ -67,6 +72,7 @@ type Pile struct {
 	fanType          FanType
 	fanFactor        float64
 	defaultFanFactor float64
+	moveType         MoveType
 	label            string
 	symbol           rune
 	cards            []*Card
@@ -77,12 +83,13 @@ type Pile struct {
 	target           bool // experimental, might delete later, IDK
 }
 
-func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType) {
+func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType, moveType MoveType) {
 	// static
 	p.magic = BASE_MAGIC
 	p.category = category
 	p.slot = slot
 	p.fanType = fanType
+	p.moveType = moveType
 	p.subtype = subtype
 	// dynamic
 	p.defaultFanFactor = FanFactors[fanType]
@@ -410,6 +417,33 @@ func (p *Pile) IndexOf(card *Card) int {
 		}
 	}
 	return -1
+}
+
+func (p *Pile) CanMoveTail(tail []*Card) (bool, error) {
+	if AnyCardsProne(tail) {
+		return false, errors.New("Cannot move a face down card")
+	}
+	switch p.moveType {
+	case MOVE_NONE:
+		return false, fmt.Errorf("Cannot move a card from a %s", p.category)
+	case MOVE_ANY:
+		// well, that was easy
+	case MOVE_ONE:
+		if len(tail) > 1 {
+			return false, fmt.Errorf("Can only move one card from a %s", p.category)
+		}
+	case MOVE_ONE_PLUS:
+		// don't know destination, so we allow this as MOVE_ANY
+	case MOVE_ONE_OR_ALL:
+		if len(tail) == 1 {
+			// that's okay
+		} else if len(tail) == p.Len() {
+			// that's okay too
+		} else {
+			return false, errors.New("Only move one card, or the whole pile")
+		}
+	}
+	return true, nil
 }
 
 func (p *Pile) MakeTail(c *Card) []*Card {

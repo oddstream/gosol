@@ -11,39 +11,13 @@ import (
 )
 
 type Tableau struct {
-	pile     *Pile
-	moveType MoveType
+	pile *Pile
 }
 
 func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
 	p := &Pile{}
-	p.Ctor(&Tableau{pile: p, moveType: moveType}, "Tableau", slot, fanType)
+	p.Ctor(&Tableau{pile: p}, "Tableau", slot, fanType, moveType)
 	return p
-}
-
-func (t *Tableau) CanMoveTail(tail []*Card) (bool, error) {
-	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot move a face down card")
-	}
-	switch t.moveType {
-	case MOVE_ANY:
-		// well, that was easy
-	case MOVE_ONE:
-		if len(tail) > 1 {
-			return false, errors.New("Can only move one card")
-		}
-	case MOVE_ONE_PLUS:
-		// don't know destination, so we allow this as MOVE_ANY
-	case MOVE_ONE_OR_ALL:
-		if len(tail) == 1 {
-			// that's okay
-		} else if len(tail) == t.pile.Len() {
-			// that's okay too
-		} else {
-			return false, errors.New("Only move one card, or the whole pile")
-		}
-	}
-	return TheBaize.script.TailMoveError(tail)
 }
 
 func (t *Tableau) CanAcceptCard(card *Card) (bool, error) {
@@ -82,7 +56,7 @@ func (t *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if t.moveType == MOVE_ONE_PLUS {
+	if t.pile.moveType == MOVE_ONE_PLUS {
 		if ThePreferences.PowerMoves {
 			moves := powerMoves(TheBaize.piles, t.pile)
 			if len(tail) > moves {

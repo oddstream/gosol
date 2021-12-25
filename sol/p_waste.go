@@ -13,18 +13,8 @@ type Waste struct {
 
 func NewWaste(slot image.Point, fanType FanType) *Pile {
 	p := &Pile{}
-	p.Ctor(&Waste{pile: p}, "Waste", slot, fanType)
+	p.Ctor(&Waste{pile: p}, "Waste", slot, fanType, MOVE_ONE)
 	return p
-}
-
-func (*Waste) CanMoveTail(tail []*Card) (bool, error) {
-	if len(tail) > 1 {
-		return false, errors.New("Can only move a single card from Waste")
-	}
-	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot move a face down card")
-	}
-	return true, nil
 }
 
 func (w *Waste) CanAcceptCard(card *Card) (bool, error) {

@@ -435,36 +435,36 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				// println("no intersection for", c.String())
 				b.CancelTailDrag()
 			} else {
-				if ok, err := src.subtype.CanMoveTail(b.tail); !ok {
-					if err != nil {
-						TheUI.Toast(err.Error())
-					} else {
-						println("*** NIL ERROR RETURN FROM CanMoveTail ***")
-					}
+				var ok bool
+				var err error
+				// generically speaking, can this tail be moved?
+				if ok, err = src.CanMoveTail(b.tail); !ok {
+					TheUI.Toast(err.Error())
 					b.CancelTailDrag()
 				} else {
-					// it's ok to move this tail
-					if src == dst {
-						println("putting the tail back")
-						b.CancelTailDrag()
-					} else if ok, err := dst.subtype.CanAcceptTail(b.tail); !ok {
-						if err != nil {
-							TheUI.Toast(err.Error())
-						} else {
-							println("*** NIL ERROR RETURN FROM CanAcceptTail ***")
-						}
+					// is the script ok with moving this tail?
+					if ok, err = b.script.TailMoveError(b.tail); !ok {
+						TheUI.Toast(err.Error())
 						b.CancelTailDrag()
 					} else {
-						crc := b.CRC()
-						if len(b.tail) == 1 {
-							MoveCard(src, dst)
+						// it's ok to move this tail
+						if src == dst {
+							b.CancelTailDrag()
+						} else if ok, err = dst.subtype.CanAcceptTail(b.tail); !ok {
+							TheUI.Toast(err.Error())
+							b.CancelTailDrag()
 						} else {
-							MoveCards(c, dst)
+							crc := b.CRC()
+							if len(b.tail) == 1 {
+								MoveCard(src, dst)
+							} else {
+								MoveCards(c, dst)
+							}
+							if crc != b.CRC() {
+								b.AfterUserMove()
+							}
+							b.StopTailDrag()
 						}
-						if crc != b.CRC() {
-							b.AfterUserMove()
-						}
-						b.StopTailDrag()
 					}
 				}
 			}
