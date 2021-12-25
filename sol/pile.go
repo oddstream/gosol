@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	BASE_MAGIC uint32 = 0xdeadbeef
+	pilemagic uint32 = 0xdeadbeef
 )
 
 type FanType int
@@ -85,7 +85,7 @@ type Pile struct {
 
 func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType, moveType MoveType) {
 	// static
-	p.magic = BASE_MAGIC
+	p.magic = pilemagic
 	p.category = category
 	p.slot = slot
 	p.fanType = fanType
@@ -100,7 +100,7 @@ func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanTy
 }
 
 func (p *Pile) Valid() bool {
-	return p.magic == BASE_MAGIC
+	return p != nil && p.magic == pilemagic
 }
 
 // Hidden returns true if this is off screen
@@ -136,13 +136,6 @@ func (p *Pile) Swap(i, j int) {
 func (p *Pile) IsStock() bool {
 	_, ok := (p.subtype).(*Stock)
 	return ok
-}
-
-func (p *Pile) Stock() *Stock {
-	if stock, ok := (p.subtype).(*Stock); ok {
-		return stock
-	}
-	return nil
 }
 
 func (p *Pile) IsTableau() bool {

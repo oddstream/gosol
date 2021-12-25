@@ -16,9 +16,9 @@ type SavablePile struct {
 }
 
 type SavableBaize struct {
-	Piles    []*SavablePile
-	Bookmark int
-	Recycles int
+	Piles    []*SavablePile `json:",omitempty"`
+	Bookmark int            `json:",omitempty"`
+	Recycles int            `json:",omitempty"`
 }
 
 func (p *Pile) Savable() *SavablePile {
@@ -57,14 +57,10 @@ func (p *Pile) UpdateFromSavable(sp *SavablePile) {
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {
-	ss := &SavableBaize{}
+	ss := &SavableBaize{Bookmark: b.bookmark, Recycles: b.recycles}
 	for _, p := range b.piles {
 		ss.Piles = append(ss.Piles, p.Savable())
 	}
-	if stockobject, ok := (b.script.Stock().subtype).(*Stock); ok {
-		ss.Recycles = stockobject.recycles
-	}
-	ss.Bookmark = b.bookmark
 	return ss
 }
 
@@ -99,10 +95,8 @@ func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
 		b.piles[i].UpdateFromSavable(ss.Piles[i])
 		b.piles[i].Scrunch()
 	}
-	if stockobject, ok := (b.script.Stock().subtype).(*Stock); ok {
-		stockobject.recycles = ss.Recycles
-	}
 	b.bookmark = ss.Bookmark
+	b.recycles = ss.Recycles
 	b.setFlag(dirtyCardPositions)
 }
 
@@ -152,10 +146,7 @@ func (b *Baize) SavePosition() {
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark
-	stockobject, ok := (b.script.Stock().subtype).(*Stock)
-	if ok {
-		sb.Recycles = stockobject.recycles
-	}
+	sb.Recycles = b.recycles
 	TheUI.Toast("Position bookmarked")
 }
 

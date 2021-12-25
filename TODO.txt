@@ -39,8 +39,6 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
- instead of subtype SubtypeAPI in definition, why not just SubtypeAPI?
- because subtype has to be assigned to during Pile.Ctor
  "There's an important way in which embedding differs from subclassing.
   When we embed a type, the methods of that type become methods of the outer type, but when they're invoked the receiver of the method is the inner type, not the outer one."
  https://golang.org/doc/effective_go
@@ -52,6 +50,9 @@ https://calver.org/
  clean up rune to suit &c nonsense in util
  streaks and percentages in README.md
  are both symbol and label needed? encode a glyph into label
+  only Stock has glyph
+  can't have both label and symbol
+  union would be nice...
  fanType becomes more enum-like?
  https://github.com/oneoffcode/picol
  hearts and 10s are too close to the edge
@@ -60,6 +61,8 @@ https://calver.org/
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x move recycles from Stock to Pile
+x move moveType from Pile.subtype to Pile
 x WASM FAB Window 0 0 FAB -108 -132 still using ebiten.WindowSize()
 x don't refan spinning cards (law of surprise)
 x ThePreferences.relaxed, and VariantInfo.relaxable, stops tableau.SetLabel()
@@ -74,7 +77,7 @@ x https://pkg.go.dev/golang.org/x/image/font/gofont/goregular
 x dragging an animated card is not ok
 x try error return from Game.Update() to exit RunGame loop
 x Trying no NoDrawing to stop Windows startup lag? Nope.
-x move working directoreis to T7
+x move working directory to T7
 x Bebas Neue for Acme?
 x Panic stop dragging unknown object
 x pretty up Compare_Empty error message, use long ordinal names

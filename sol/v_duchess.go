@@ -46,9 +46,7 @@ func (du *Duchess) BuildPiles() {
 }
 
 func (du *Duchess) StartGame() {
-	if s, ok := (du.stock.subtype).(*Stock); ok {
-		s.recycles = 1
-	}
+	TheBaize.recycles = 1
 	for _, pile := range du.foundations {
 		pile.SetLabel("")
 	}
@@ -152,20 +150,20 @@ func (du *Duchess) TailTapped(tail []*Card) {
 }
 
 func (du *Duchess) PileTapped(pile *Pile) {
-	if s, ok := (pile.subtype).(*Stock); ok {
-		if s.recycles > 0 {
+	if pile == du.stock {
+		if TheBaize.recycles > 0 {
 			for du.waste.Len() > 0 {
 				MoveCard(du.waste, du.stock)
 			}
-			s.recycles--
+			TheBaize.recycles--
 			switch {
-			case s.recycles == 0:
+			case TheBaize.recycles == 0:
 				du.stock.SetRune(NORECYCLE_RUNE)
 				TheUI.Toast("No more recycles")
-			case s.recycles == 1:
-				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
-			case s.recycles < 10:
-				TheUI.Toast(fmt.Sprintf("%d recycles remaining", s.recycles))
+			case TheBaize.recycles == 1:
+				TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
+			case TheBaize.recycles < 10:
+				TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
 			}
 		} else {
 			TheUI.Toast("No more recycles")

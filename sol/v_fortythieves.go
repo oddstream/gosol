@@ -46,9 +46,7 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(ft.stock, pile)
 		}
 	}
-	if s, ok := (ft.stock.subtype).(*Stock); ok {
-		s.recycles = 0
-	}
+	TheBaize.recycles = 0
 	MoveCard(ft.stock, ft.waste)
 }
 

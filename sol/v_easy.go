@@ -61,9 +61,7 @@ func (ez *Easy) StartGame() {
 		}
 		MoveCard(ez.stock, pile)
 	}
-	if s, ok := (ez.stock.subtype).(*Stock); ok {
-		s.recycles = 32767
-	}
+	TheBaize.recycles = 32767
 	ez.stock.SetRune(RECYCLE_RUNE)
 	MoveCard(ez.stock, ez.waste)
 }
@@ -135,13 +133,13 @@ func (ez *Easy) TailTapped(tail []*Card) {
 }
 
 func (ez *Easy) PileTapped(pile *Pile) {
-	if s, ok := (pile.subtype).(*Stock); ok {
-		if s.recycles > 0 {
+	if pile == ez.stock {
+		if TheBaize.recycles > 0 {
 			for ez.waste.Len() > 0 {
 				MoveCard(ez.waste, ez.stock)
 			}
-			s.recycles--
-			if s.recycles == 0 {
+			TheBaize.recycles--
+			if TheBaize.recycles == 0 {
 				ez.stock.SetRune(NORECYCLE_RUNE)
 			}
 		} else {

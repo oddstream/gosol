@@ -56,9 +56,7 @@ func (kl *Klondike) StartGame() {
 		dealDown++
 		MoveCard(kl.stock, pile)
 	}
-	if s, ok := (kl.stock.subtype).(*Stock); ok {
-		s.recycles = kl.recycles
-	}
+	TheBaize.recycles = kl.recycles
 	kl.stock.SetRune(RECYCLE_RUNE)
 	for i := 0; i < kl.draw; i++ {
 		MoveCard(kl.stock, kl.waste)
@@ -136,20 +134,20 @@ func (kl *Klondike) TailTapped(tail []*Card) {
 }
 
 func (kl *Klondike) PileTapped(pile *Pile) {
-	if s, ok := (pile.subtype).(*Stock); ok {
-		if s.recycles > 0 {
+	if pile == kl.stock {
+		if TheBaize.recycles > 0 {
 			for kl.waste.Len() > 0 {
 				MoveCard(kl.waste, kl.stock)
 			}
-			s.recycles--
+			TheBaize.recycles--
 			switch {
-			case s.recycles == 0:
+			case TheBaize.recycles == 0:
 				kl.stock.SetRune(NORECYCLE_RUNE)
 				TheUI.Toast("No more recycles")
-			case s.recycles == 1:
-				TheUI.Toast(fmt.Sprintf("%d recycle remaining", s.recycles))
-			case s.recycles < 10:
-				TheUI.Toast(fmt.Sprintf("%d recycles remaining", s.recycles))
+			case TheBaize.recycles == 1:
+				TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
+			case TheBaize.recycles < 10:
+				TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
 			}
 		} else {
 			TheUI.Toast("No more recycles")

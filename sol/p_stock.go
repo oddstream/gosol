@@ -46,8 +46,7 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 }
 
 type Stock struct {
-	pile     *Pile
-	recycles int
+	pile *Pile
 }
 
 func (p *Pile) FillFromLibrary() {
@@ -92,7 +91,7 @@ func (p *Pile) Shuffle() {
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Pile {
 
 	p := &Pile{}
-	p.Ctor(&Stock{pile: p, recycles: 32767}, "Stock", slot, fanType, MOVE_ONE)
+	p.Ctor(&Stock{pile: p}, "Stock", slot, fanType, MOVE_ONE)
 	CreateCardLibrary(packs, suits, cardFilter)
 	p.FillFromLibrary()
 	p.Shuffle()

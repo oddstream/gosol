@@ -43,9 +43,7 @@ func (t *Toad) BuildPiles() {
 
 func (t *Toad) StartGame() {
 
-	if s, ok := (t.stock.subtype).(*Stock); ok {
-		s.recycles = 1
-	}
+	TheBaize.recycles = 1
 	t.stock.SetRune(RECYCLE_RUNE)
 
 	for n := 0; n < 20; n++ {
@@ -125,13 +123,13 @@ func (t *Toad) TailTapped(tail []*Card) {
 }
 
 func (t *Toad) PileTapped(pile *Pile) {
-	if s, ok := (pile.subtype).(*Stock); ok {
-		if s.recycles > 0 {
+	if pile == t.stock {
+		if TheBaize.recycles > 0 {
 			for t.waste.Len() > 0 {
 				MoveCard(t.waste, t.stock)
 			}
-			s.recycles--
-			if s.recycles == 0 {
+			TheBaize.recycles--
+			if TheBaize.recycles == 0 {
 				t.stock.SetRune(NORECYCLE_RUNE)
 			}
 		} else {

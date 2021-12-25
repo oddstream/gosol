@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	baizemagic uint32 = 0x19910920
+	baizemagic uint32 = 0xfeedface
 )
 
 const (
@@ -36,9 +36,10 @@ type Baize struct {
 	script       ScriptInterface
 	piles        []*Pile
 	tail         []*Card // array of cards currently being dragged
-	bookmark     int
+	bookmark     int     // index into undo stack
+	recycles     int     // number of available stock recycles
 	undoStack    []*SavableBaize
-	dirtyFlags   uint32
+	dirtyFlags   uint32 // what needs doing when we Update
 	stroke       *input.Stroke
 	dragStart    image.Point
 	dragOffset   image.Point
@@ -67,7 +68,7 @@ func (b *Baize) clearFlag(flag uint32) {
 }
 
 func (b *Baize) Valid() bool {
-	return b.magic == baizemagic
+	return b != nil && b.magic == baizemagic
 }
 
 func (b *Baize) CRC() uint32 {

@@ -37,28 +37,7 @@ import (
 	that satisfy a Pile interface, you end up with a lot of duplicated code
 	or calls to 'GenericPush' and 'GenericLen'
 
-	Extra members: Stock has recycles, Tableau has moveType
-	(maybe moveType should be in Pile and apply to all pile types, and recycles be in Baize)
-		Cell MOVE_ONE
-		Discard MOVE_NONE
-		Foundation MOVE_NONE
-		Reserve MOVE_ONE
-		Stock MOVE_ONE
-		Tableau <specified by constructor>
-		Waste MOVE_ONE
-	so all subtype.CanMoveTail get a check on moveType, and then maybe a call to script.TailMoveError
-
-	ok, err := src.CanMoveTail(tail)
-	if ok {
-		ok, err = script.TailMoveError	// optional check if cards are sorted
-	}
-
-	use title caps for category and fmt.Errorf("Cannot move a card from a %s", p.category)
-	this removes CanMoveTail() from SubtypeAPI, and Tableau.moveType
-
-	then move recycles from  Stock to Baize
-
-	so all subtypes are the same
+	all subtypes are now the same
 
 	https://www.toptal.com/go/golang-oop-tutorial
 

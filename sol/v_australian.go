@@ -38,9 +38,7 @@ func (aus *Australian) BuildPiles() {
 }
 
 func (aus *Australian) StartGame() {
-	if s, ok := (aus.stock.subtype).(*Stock); ok {
-		s.recycles = 0
-	}
+	TheBaize.recycles = 0
 	for _, pile := range aus.tableaux {
 		for i := 0; i < 4; i++ {
 			MoveCard(aus.stock, pile)

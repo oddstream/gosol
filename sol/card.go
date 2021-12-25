@@ -63,7 +63,7 @@ func NewCard(pack, suit, ordinal int) Card {
 }
 
 func (c *Card) Valid() bool {
-	return c.magic == cardmagic
+	return c != nil && c.magic == cardmagic
 }
 
 func (c *Card) SetOwner(p *Pile) {

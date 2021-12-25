@@ -45,9 +45,7 @@ func (wh *Whitehead) StartGame() {
 		}
 		deal++
 	}
-	if s, ok := (wh.stock.subtype).(*Stock); ok {
-		s.recycles = 0
-	}
+	TheBaize.recycles = 0
 	wh.stock.SetRune(NORECYCLE_RUNE)
 	MoveCard(wh.stock, wh.waste)
 }
