@@ -134,17 +134,7 @@ func (ez *Easy) TailTapped(tail []*Card) {
 
 func (ez *Easy) PileTapped(pile *Pile) {
 	if pile == ez.stock {
-		if TheBaize.recycles > 0 {
-			for ez.waste.Len() > 0 {
-				MoveCard(ez.waste, ez.stock)
-			}
-			TheBaize.recycles--
-			if TheBaize.recycles == 0 {
-				ez.stock.SetRune(NORECYCLE_RUNE)
-			}
-		} else {
-			TheUI.Toast("No more recycles")
-		}
+		RecycleWasteToStock(ez.waste, ez.stock)
 	}
 }
 

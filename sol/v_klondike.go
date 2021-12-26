@@ -3,7 +3,6 @@ package sol
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 
 import (
-	"fmt"
 	"image"
 )
 
@@ -135,23 +134,7 @@ func (kl *Klondike) TailTapped(tail []*Card) {
 
 func (kl *Klondike) PileTapped(pile *Pile) {
 	if pile == kl.stock {
-		if TheBaize.recycles > 0 {
-			for kl.waste.Len() > 0 {
-				MoveCard(kl.waste, kl.stock)
-			}
-			TheBaize.recycles--
-			switch {
-			case TheBaize.recycles == 0:
-				kl.stock.SetRune(NORECYCLE_RUNE)
-				TheUI.Toast("No more recycles")
-			case TheBaize.recycles == 1:
-				TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
-			case TheBaize.recycles < 10:
-				TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
-			}
-		} else {
-			TheUI.Toast("No more recycles")
-		}
+		RecycleWasteToStock(kl.waste, kl.stock)
 	}
 }
 

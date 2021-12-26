@@ -61,11 +61,18 @@ var Variants = map[string]ScriptInterface{
 	"Forty Thieves": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		cardsPerTab: 4},
+		cardsPerTab: 4,
+		recycles:    0},
 	"Limited": &FortyThieves{
 		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
-		cardsPerTab: 3},
+		cardsPerTab: 3,
+		recycles:    0},
+	"Forty and Eight": &FortyThieves{
+		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
+		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10},
+		cardsPerTab: 5,
+		recycles:    1},
 	"Penguin":           &Penguin{},
 	"Scorpion":          &Scorpion{},
 	"Simple Simon":      &SimpleSimon{},
@@ -82,7 +89,7 @@ var VariantGroups = map[string][]string{
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
-	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited"},
+	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited", "Forty and Eight"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
 	"> Canfield":      {"Canfield", "Acme", "Storehouse"},
 	"> Freecell":      {"Freecell", "Eight Off"},
@@ -117,6 +124,26 @@ func VariantNames(group string) []string {
 }
 
 // useful generic game library of functions
+
+func RecycleWasteToStock(waste *Pile, stock *Pile) {
+	if TheBaize.recycles > 0 {
+		for waste.Len() > 0 {
+			MoveCard(waste, stock)
+		}
+		TheBaize.recycles--
+		switch {
+		case TheBaize.recycles == 0:
+			stock.SetRune(NORECYCLE_RUNE)
+			TheUI.Toast("No more recycles")
+		case TheBaize.recycles == 1:
+			TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
+		case TheBaize.recycles < 10:
+			TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
+		}
+	} else {
+		TheUI.Toast("No more recycles")
+	}
+}
 
 type CardPair struct {
 	c1, c2 *Card

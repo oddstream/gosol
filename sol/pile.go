@@ -46,7 +46,7 @@ const (
 	CARD_BACK_FAN_FACTOR   = 8
 )
 
-var FanFactors [7]float64 = [7]float64{
+var DefaultFanFactor [7]float64 = [7]float64{
 	1.0,                    // FAN_NONE
 	CARD_FACE_FAN_FACTOR_V, // FAN_DOWN
 	CARD_FACE_FAN_FACTOR_H, // FAN_LEFT,
@@ -63,24 +63,23 @@ const (
 
 // Base is a generic container for cards
 type Pile struct {
-	magic            uint32
-	category         string // just for debugging and checking, never really used
-	slot             image.Point
-	pos              image.Point
-	pos1             image.Point // waste pos #1
-	pos2             image.Point // waste pos #1
-	fanType          FanType
-	fanFactor        float64
-	defaultFanFactor float64
-	moveType         MoveType
-	label            string
-	symbol           rune
-	cards            []*Card
-	subtype          SubtypeAPI
-	img              *ebiten.Image
-	scrunchDims      image.Point
-	buddyPos         image.Point
-	target           bool // experimental, might delete later, IDK
+	magic       uint32
+	category    string // just for debugging and checking, never really used
+	slot        image.Point
+	fanType     FanType
+	moveType    MoveType
+	subtype     SubtypeAPI
+	cards       []*Card
+	pos         image.Point
+	pos1        image.Point // waste pos #1
+	pos2        image.Point // waste pos #1
+	fanFactor   float64
+	scrunchDims image.Point
+	buddyPos    image.Point
+	label       string
+	symbol      rune
+	img         *ebiten.Image
+	target      bool // experimental, might delete later, IDK
 }
 
 func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType, moveType MoveType) {
@@ -92,8 +91,7 @@ func (p *Pile) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanTy
 	p.moveType = moveType
 	p.subtype = subtype
 	// dynamic
-	p.defaultFanFactor = FanFactors[fanType]
-	p.fanFactor = p.defaultFanFactor
+	p.fanFactor = DefaultFanFactor[p.fanType]
 	p.cards = nil
 	// downright ugly design kludge
 	TheBaize.piles = append(TheBaize.piles, p)
@@ -103,34 +101,14 @@ func (p *Pile) Valid() bool {
 	return p != nil && p.magic == pilemagic
 }
 
+func (p *Pile) Reset() {
+	p.cards = p.cards[:0]
+	p.fanFactor = DefaultFanFactor[p.fanType]
+}
+
 // Hidden returns true if this is off screen
 func (p *Pile) Hidden() bool {
 	return p.slot.X < 0 || p.slot.Y < 0
-}
-
-// Empty returns true if this pile is empty.
-// for use outside this chunk
-func (p *Pile) Empty() bool {
-	return len(p.cards) == 0
-}
-
-// Len returns the number of cards in this pile.
-// Len satisfies the sort.Interface interface.
-// for use outside this chunk
-func (p *Pile) Len() int {
-	return len(p.cards)
-}
-
-// Less satisfies the sort.Interface interface
-func (p *Pile) Less(i, j int) bool {
-	c1 := p.cards[i]
-	c2 := p.cards[j]
-	return c1.Suit() < c2.Suit() && c1.Ordinal() < c2.Ordinal()
-}
-
-// Swap satisfies the sort.Interface interface
-func (p *Pile) Swap(i, j int) {
-	p.cards[i], p.cards[j] = p.cards[j], p.cards[i]
 }
 
 func (p *Pile) IsStock() bool {
@@ -166,6 +144,31 @@ func (p *Pile) SetRune(symbol rune) {
 		p.symbol = symbol
 		TheBaize.setFlag(dirtyPileBackgrounds)
 	}
+}
+
+// Empty returns true if this pile is empty.
+// for use outside this chunk
+func (p *Pile) Empty() bool {
+	return len(p.cards) == 0
+}
+
+// Len returns the number of cards in this pile.
+// Len satisfies the sort.Interface interface.
+// for use outside this chunk
+func (p *Pile) Len() int {
+	return len(p.cards)
+}
+
+// Less satisfies the sort.Interface interface
+func (p *Pile) Less(i, j int) bool {
+	c1 := p.cards[i]
+	c2 := p.cards[j]
+	return c1.Suit() < c2.Suit() && c1.Ordinal() < c2.Ordinal()
+}
+
+// Swap satisfies the sort.Interface interface
+func (p *Pile) Swap(i, j int) {
+	p.cards[i], p.cards[j] = p.cards[j], p.cards[i]
 }
 
 // Get a *Card from this collection

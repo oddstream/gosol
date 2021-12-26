@@ -151,23 +151,7 @@ func (du *Duchess) TailTapped(tail []*Card) {
 
 func (du *Duchess) PileTapped(pile *Pile) {
 	if pile == du.stock {
-		if TheBaize.recycles > 0 {
-			for du.waste.Len() > 0 {
-				MoveCard(du.waste, du.stock)
-			}
-			TheBaize.recycles--
-			switch {
-			case TheBaize.recycles == 0:
-				du.stock.SetRune(NORECYCLE_RUNE)
-				TheUI.Toast("No more recycles")
-			case TheBaize.recycles == 1:
-				TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
-			case TheBaize.recycles < 10:
-				TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
-			}
-		} else {
-			TheUI.Toast("No more recycles")
-		}
+		RecycleWasteToStock(du.waste, du.stock)
 	}
 }
 

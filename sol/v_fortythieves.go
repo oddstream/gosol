@@ -11,6 +11,7 @@ type FortyThieves struct {
 	founds      []int
 	tabs        []int
 	cardsPerTab int
+	recycles    int
 }
 
 func (*FortyThieves) Info() *VariantInfo {
@@ -46,7 +47,12 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(ft.stock, pile)
 		}
 	}
-	TheBaize.recycles = 0
+	TheBaize.recycles = ft.recycles
+	if TheBaize.recycles == 0 {
+		ft.stock.SetRune(NORECYCLE_RUNE)
+	} else {
+		ft.stock.SetRune(RECYCLE_RUNE)
+	}
 	MoveCard(ft.stock, ft.waste)
 }
 
@@ -111,7 +117,10 @@ func (ft *FortyThieves) TailTapped(tail []*Card) {
 	}
 }
 
-func (*FortyThieves) PileTapped(*Pile) {
+func (ft *FortyThieves) PileTapped(pile *Pile) {
+	if pile == ft.stock {
+		RecycleWasteToStock(ft.waste, ft.stock)
+	}
 }
 
 func (ft *FortyThieves) Discards() []*Pile {

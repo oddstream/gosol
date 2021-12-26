@@ -60,7 +60,7 @@ func (b *Baize) CalcScrunchDims(w, h int) {
 					p.scrunchDims.X = w - p.pos.X + util.Abs(b.dragOffset.X)
 				}
 			}
-			p.fanFactor = p.defaultFanFactor
+			p.fanFactor = DefaultFanFactor[p.fanType]
 		}
 	}
 }
@@ -120,7 +120,7 @@ func (p *Pile) Scrunch() {
 
 	if len(p.cards) > 2 && (p.scrunchDims.X > CardWidth || p.scrunchDims.Y > CardWidth) {
 		var fanFactor float64
-		for fanFactor = p.defaultFanFactor; fanFactor < 7.0; fanFactor += 0.5 {
+		for fanFactor = DefaultFanFactor[p.fanType]; fanFactor < 7.0; fanFactor += 0.5 {
 			dims := p.CalcFannedRect(fanFactor)
 			switch p.fanType {
 			case FAN_DOWN:

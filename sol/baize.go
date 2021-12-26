@@ -118,8 +118,7 @@ func (b *Baize) NewDeal() {
 	b.bookmark = 0
 
 	for _, p := range b.piles {
-		p.cards = p.cards[:0]
-		p.fanFactor = p.defaultFanFactor
+		p.Reset()
 	}
 
 	stockPile := b.script.Stock()
