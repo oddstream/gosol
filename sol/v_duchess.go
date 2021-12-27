@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"log"
 
 	"oddstream.games/gomps5/util"
 )
@@ -78,8 +77,6 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 				return false, err
 			}
 		}
-	default:
-		log.Panic("unknown pile type in TailMoveError")
 	}
 	return true, nil
 }
@@ -127,17 +124,7 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Duchess) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownAltColorWrap(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (du *Duchess) TailTapped(tail []*Card) {

@@ -76,17 +76,7 @@ func (*Australian) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Australian) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownSuit(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (aus *Australian) TailTapped(tail []*Card) {

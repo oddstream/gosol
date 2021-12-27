@@ -91,17 +91,7 @@ func (*Whitehead) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Whitehead) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownColor(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownColor)
 }
 
 func (wh *Whitehead) TailTapped(tail []*Card) {

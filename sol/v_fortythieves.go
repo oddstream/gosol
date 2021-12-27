@@ -68,8 +68,6 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 				return false, err
 			}
 		}
-	default:
-		println("unknown pile type in TailMoveError")
 	}
 	return true, nil
 }
@@ -93,13 +91,7 @@ func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*FortyThieves) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if ok, _ := pair.Compare_DownSuit(); !ok {
-			unsorted++
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (ft *FortyThieves) TailTapped(tail []*Card) {

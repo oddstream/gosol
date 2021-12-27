@@ -20,7 +20,7 @@ import (
 		type Cell struct {
 			Pile
 		}
-	but that gave odd results when calling Empty() (pile.cards was empty when it wasn't)
+	but (of course) that gave odd results when calling Empty() (pile.cards was empty when it wasn't)
 
 	so for the moment, stuck with the subtype (Cell) containing a pointer to the outer type (Pile)
 	and the Pile containing an interface (SubtypeAPI) to the subtype
@@ -29,39 +29,22 @@ import (
 
 	just want to be able to have a list of piles with identical API
 	that includes operations common to all piles types (like Empty)
-	and operations that have functionality specific to the subtype (like CanMoveTail)
+	and operations that have functionality specific to the subtype (like Tableau.CanMoveTail)
 	tried having a large Pile interface
 	but that got messy when accessing Pile's members; everything had to be done through functions
+	which is maybe the way it should be
 
 	if we are supposed to remove the base type (Pile) and just have a list of types
 	that satisfy a Pile interface, you end up with a lot of duplicated code
 	or calls to 'GenericPush' and 'GenericLen'
 
-	all subtypes are now the same
+	all subtypes are now the same since recycles got moved to Baize, and Tableau.moveType to Pile
+	(so they can be cast to each other, which we don't need to do)
 
-	https://www.toptal.com/go/golang-oop-tutorial
-
-	type PILER interface {
-		Pop()
-		Push()
-		...
-	}
-
-	type Pile struct {
-		cards []*Card
-		...
-	}
-
-	type Cell Pile
-
-	Pile will not satisfy PILER interface, because it's missing the 'subtype' functions
-	Cell will satisfy PILER interface
-	can cast: var myCell Cell = Cell(myPile)
-	becase Cell and Pile have identical underlying types
-
-	*do* now have a 'clean idiomatic go' design for this, with Pile as an interface
-	and a 'struct Core', but it still needs the Pile interface injected into the Core
-	(although it does get rid of the current Pile.subtype thing
+	so the current mini5 model
+	has a struct Core, and Pile beomes an interface
+	this gets rid of the Pile.subtype,
+	and subtype.pile is now not needed because there isn't a subtype)
 */
 
 type Cell struct {

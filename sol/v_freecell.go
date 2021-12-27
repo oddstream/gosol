@@ -83,8 +83,6 @@ func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
 				return false, err
 			}
 		}
-	default:
-		println("unknown pile type in TailMoveError")
 	}
 	return true, nil
 }
@@ -109,17 +107,7 @@ func (*Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Freecell) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownAltColor(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownAltColor)
 }
 
 func (*Freecell) TailTapped(tail []*Card) {

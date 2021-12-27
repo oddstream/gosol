@@ -174,6 +174,20 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	}
 }
 
+func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
+	var unsorted int
+	for _, pair := range NewCardPairs(pile.cards) {
+		if pair.EitherProne() {
+			unsorted++
+		} else {
+			if ok, _ := pair.Compare_DownAltColor(); !ok {
+				unsorted++
+			}
+		}
+	}
+	return unsorted
+}
+
 type CardPair struct {
 	c1, c2 *Card
 }

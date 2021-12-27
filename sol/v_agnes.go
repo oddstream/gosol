@@ -110,17 +110,7 @@ func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (ag *Agnes) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownAltColorWrap(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (ag *Agnes) TailTapped(tail []*Card) {

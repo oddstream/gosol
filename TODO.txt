@@ -37,6 +37,12 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
+[REMODEL]
+Add new pile to Baize.piles (still a []*Pile)
+Card.SetOwner() needs to take a Pile, not a Core
+Scrunch()
+MoveCard()
+
 [TODO]
  Baize.SetRecycles() that also sets rune
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()

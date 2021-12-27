@@ -99,17 +99,7 @@ func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Toad) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownSuitWrap(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 }
 
 func (t *Toad) TailTapped(tail []*Card) {

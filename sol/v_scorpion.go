@@ -89,17 +89,7 @@ func (*Scorpion) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 }
 
 func (*Scorpion) UnsortedPairs(pile *Pile) int {
-	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
-			unsorted++
-		} else {
-			if ok, _ := pair.Compare_DownSuit(); !ok {
-				unsorted++
-			}
-		}
-	}
-	return unsorted
+	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (sp *Scorpion) TailTapped(tail []*Card) {

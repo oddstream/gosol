@@ -20,7 +20,8 @@ func NewNavDrawer() *NavDrawer {
 		NewNavItem(n, "search", "Find game...", ebiten.KeyF),
 		NewNavItem(n, "bookmark_add", "Bookmark", ebiten.KeyS),
 		NewNavItem(n, "bookmark", "Goto bookmark", ebiten.KeyL),
-		NewNavItem(n, "list", "Wikipedia...", ebiten.KeyF1),
+		NewNavItem(n, "info", "Wikipedia...", ebiten.KeyF1),
+		NewNavItem(n, "list", "Statistics", ebiten.KeyF2),
 		NewNavItem(n, "settings", "Settings...", ebiten.KeyF3),
 	}
 	// don't know how to ask a browser window to close

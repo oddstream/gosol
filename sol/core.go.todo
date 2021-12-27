@@ -1,0 +1,613 @@
+package sol
+
+//lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
+
+import (
+	"errors"
+	"fmt"
+	"image"
+	"image/color"
+	"log"
+
+	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gomps5/schriftbank"
+)
+
+const (
+	coremagic uint32 = 0xdeadbeef
+)
+
+type FanType int
+
+const (
+	FAN_NONE FanType = iota
+	FAN_DOWN
+	FAN_LEFT
+	FAN_RIGHT
+	FAN_DOWN3
+	FAN_LEFT3
+	FAN_RIGHT3
+)
+
+type MoveType int
+
+const (
+	MOVE_NONE MoveType = iota
+	MOVE_ANY
+	MOVE_ONE
+	MOVE_ONE_PLUS
+	MOVE_ONE_OR_ALL
+)
+
+const (
+	CARD_FACE_FAN_FACTOR_V = 3.7
+	CARD_FACE_FAN_FACTOR_H = 4
+	CARD_BACK_FAN_FACTOR   = 8
+)
+
+var DefaultFanFactor [7]float64 = [7]float64{
+	1.0,                    // FAN_NONE
+	CARD_FACE_FAN_FACTOR_V, // FAN_DOWN
+	CARD_FACE_FAN_FACTOR_H, // FAN_LEFT,
+	CARD_FACE_FAN_FACTOR_H, // FAN_RIGHT,
+	CARD_FACE_FAN_FACTOR_V, // FAN_DOWN3,
+	CARD_FACE_FAN_FACTOR_H, // FAN_LEFT3,
+	CARD_FACE_FAN_FACTOR_H, // FAN_RIGHT3,
+}
+
+const (
+	RECYCLE_RUNE   = rune(0x2672)
+	NORECYCLE_RUNE = rune(0x2613)
+)
+
+// Base is a generic container for cards
+type Core struct {
+	magic       uint32
+	category    string // just for debugging and checking, never really used
+	slot        image.Point
+	fanType     FanType
+	moveType    MoveType
+	cards       []*Card
+	pos         image.Point
+	pos1        image.Point // waste pos #1
+	pos2        image.Point // waste pos #1
+	fanFactor   float64
+	scrunchDims image.Point
+	buddyPos    image.Point
+	label       string
+	symbol      rune
+	img         *ebiten.Image
+	target      bool // experimental, might delete later, IDK
+}
+
+func (self *Core) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType, moveType MoveType) {
+	// static
+	self.magic = coremagic
+	self.category = category
+	self.slot = slot
+	self.fanType = fanType
+	self.moveType = moveType
+	// dynamic
+	self.fanFactor = DefaultFanFactor[self.fanType]
+	self.cards = nil
+	// downright ugly design kludge
+	TheBaize.pile = append(TheBaize.piles, self)
+}
+
+func (self *Core) Valid() bool {
+	return p != nil && self.magic == coremagic
+}
+
+func (self *Core) Reset() {
+	self.cards = self.cards[:0]
+	self.fanFactor = DefaultFanFactor[self.fanType]
+}
+
+// Hidden returns true if this is off screen
+func (self *Core) Hidden() bool {
+	return self.slot.X < 0 || self.slot.Y < 0
+}
+
+func (self *Core) IsStock() bool {
+	_, ok := (self.subtype).(*Stock)
+	return ok
+}
+
+func (self *Core) IsTableau() bool {
+	_, ok := (self.subtype).(*Tableau)
+	return ok
+}
+
+func (self *Core) Label() string {
+	return self.label
+}
+
+func (self *Core) SetLabel(label string) {
+	if self.label != label {
+		if self.IsTableau() && ThePreferences.Relaxed && TheBaize.script.Info().relaxable {
+		} else {
+			self.label = label
+			TheBaize.setFlag(dirtyPileBackgrounds)
+		}
+	}
+}
+
+func (self *Core) Rune() rune {
+	return self.symbol
+}
+
+func (self *Core) SetRune(symbol rune) {
+	if self.symbol != symbol {
+		self.symbol = symbol
+		TheBaize.setFlag(dirtyPileBackgrounds)
+	}
+}
+
+// Empty returns true if this core is empty.
+// for use outside this chunk
+func (self *Core) Empty() bool {
+	return len(self.cards) == 0
+}
+
+// Len returns the number of cards in this core.
+// Len satisfies the sort.Interface interface.
+// for use outside this chunk
+func (self *Core) Len() int {
+	return len(self.cards)
+}
+
+// Less satisfies the sort.Interface interface
+func (self *Core) Less(i, j int) bool {
+	c1 := self.cards[i]
+	c2 := self.cards[j]
+	return c1.Suit() < c2.Suit() && c1.Ordinal() < c2.Ordinal()
+}
+
+// Swap satisfies the sort.Interface interface
+func (self *Core) Swap(i, j int) {
+	self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
+}
+
+// Get a *Card from this collection
+func (self *Core) Get(i int) *Card {
+	return self.cards[i]
+}
+
+// Append a *Card to this collection
+func (self *Core) Append(c *Card) {
+	self.cards = append(self.cards, c)
+}
+
+// Peek topmost Card of this Pile (a stack)
+func (self *Core) Peek() *Card {
+	if len(self.cards) == 0 {
+		return nil
+	}
+	return self.cards[len(self.cards)-1]
+}
+
+// Pop a Card off the end of this Pile (a stack)
+func (self *Core) Pop() *Card {
+	if len(self.cards) == 0 {
+		return nil
+	}
+	c := self.cards[len(self.cards)-1]
+	self.cards = self.cards[:len(self.cards)-1]
+	c.SetOwner(nil)
+	c.FlipUp()
+	self.Scrunch()
+	return c
+}
+
+// Push a Card onto the end of this Pile (a stack)
+func (self *Core) Push(c *Card) {
+	// c.StopSpinning()
+
+	var pos image.Point
+	if len(self.cards) == 0 {
+		pos = self.pos
+	} else {
+		pos = self.PosAfter(self.Peek()) // get this BEFORE appending card
+	}
+
+	self.cards = append(self.cards, c)
+	c.SetOwner(p)
+	c.TransitionTo(pos)
+
+	if self.IsStock() {
+		c.FlipDown()
+	}
+	self.Scrunch()
+}
+
+// Slot returns the virtual slot this core is positioned at
+// TODO to use fractional slots, scale the slot values up by, say, 10
+func (self *Core) Slot() image.Point {
+	return self.slot
+}
+
+// SetBaizePos sets the position of this Pile in Baize coords,
+// and also sets the auxillary waste core fanned positions
+func (self *Core) SetBaizePos(pos image.Point) {
+	self.pos = pos
+	switch self.fanType {
+	case FAN_DOWN3:
+		self.pos1.X = self.pos.X
+		self.pos1.Y = self.pos.Y + int(float64(CardHeight)/CARD_FACE_FAN_FACTOR_V)
+		self.pos2.X = self.pos.X
+		self.pos2.Y = self.pos1.Y + int(float64(CardHeight)/CARD_FACE_FAN_FACTOR_V)
+	case FAN_LEFT3:
+		self.pos1.X = self.pos.X - int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H)
+		self.pos1.Y = self.pos.Y
+		self.pos2.X = self.pos1.X - int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H)
+		self.pos2.Y = self.pos.Y
+	case FAN_RIGHT3:
+		self.pos1.X = self.pos.X + int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H)
+		self.pos1.Y = self.pos.Y
+		self.pos2.X = self.pos1.X + int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H)
+		self.pos2.Y = self.pos.Y
+	}
+	// println(base.category, base.pos.X, base.pos.Y)
+}
+
+func (self *Core) BaizePos() image.Point {
+	return self.pos
+}
+
+func (self *Core) ScreenPos() image.Point {
+	return self.pos.Add(TheBaize.dragOffset)
+}
+
+func (self *Core) BaizeRect() image.Rectangle {
+	var r image.Rectangle
+	r.Min = self.pos
+	r.Max = r.Min.Add(image.Point{CardWidth, CardHeight})
+	return r
+}
+
+func (self *Core) ScreenRect() image.Rectangle {
+	var r image.Rectangle = self.BaizeRect()
+	r.Min = r.Min.Add(TheBaize.dragOffset)
+	r.Max = r.Max.Add(TheBaize.dragOffset)
+	return r
+}
+
+func (self *Core) FannedBaizeRect() image.Rectangle {
+	var r image.Rectangle = self.BaizeRect()
+	if len(self.cards) > 1 {
+		var c *Card = self.Peek()
+		if c.Dragging() {
+			return r
+		}
+		var cPos = c.BaizePos()
+		switch self.fanType {
+		case FAN_NONE:
+			// do nothing
+		case FAN_RIGHT, FAN_RIGHT3:
+			r.Max.X = cPos.X + CardWidth
+		case FAN_LEFT, FAN_LEFT3:
+			r.Max.X = cPos.X - CardWidth
+		case FAN_DOWN, FAN_DOWN3:
+			r.Max.Y = cPos.Y + CardHeight
+		}
+	}
+	return r
+}
+
+func (self *Core) FannedScreenRect() image.Rectangle {
+	var r image.Rectangle = self.FannedBaizeRect()
+	r.Min = r.Min.Add(TheBaize.dragOffset)
+	r.Max = r.Max.Add(TheBaize.dragOffset)
+	return r
+}
+
+// PosAfter returns the position of the next card
+func (self *Core) PosAfter(c *Card) image.Point {
+	if len(self.cards) == 0 {
+		return self.pos
+	}
+	var pos image.Point
+	if c.Transitioning() {
+		pos = c.dst
+	} else {
+		pos = c.pos
+	}
+	// TODO
+	// if pos.X == 0 && pos.Y == 0 {
+	// 	println("zero pos in PosAfter", self.category)
+	// }
+	switch self.fanType {
+	case FAN_NONE:
+		// nothing to do
+	case FAN_DOWN:
+		if c.Prone() {
+			pos.Y += int(float64(CardHeight) / float64(CARD_BACK_FAN_FACTOR))
+		} else {
+			pos.Y += int(float64(CardHeight) / self.fanFactor)
+		}
+	case FAN_LEFT:
+		if c.Prone() {
+			pos.X -= int(float64(CardWidth) / float64(CARD_BACK_FAN_FACTOR))
+		} else {
+			pos.X -= int(float64(CardWidth) / self.fanFactor)
+		}
+	case FAN_RIGHT:
+		if c.Prone() {
+			pos.X += int(float64(CardWidth) / float64(CARD_BACK_FAN_FACTOR))
+		} else {
+			pos.X += int(float64(CardWidth) / self.fanFactor)
+		}
+	case FAN_DOWN3, FAN_LEFT3, FAN_RIGHT3:
+		switch len(self.cards) {
+		case 0:
+			// nothing to do
+		case 1:
+			pos = self.pos1 // incoming card at slot 1
+		case 2:
+			pos = self.pos2 // incoming card at slot 2
+		default:
+			pos = self.pos2 // incoming card at slot 2
+			// top card needs to transition from slot[2] to slot[1]
+			i := len(self.cards) - 1
+			self.cards[i].TransitionTo(self.pos1)
+			// mid card needs to transition from slot[1] to slot[0]
+			// all other cards to slot[0]
+			for i > 0 {
+				i--
+				self.cards[i].TransitionTo(self.pos)
+			}
+		}
+	}
+	return pos
+}
+
+func (self *Core) Refan() {
+	var doFan3 bool = false
+	switch self.fanType {
+	case FAN_NONE:
+		for _, c := range self.cards {
+			c.TransitionTo(self.pos)
+		}
+	case FAN_DOWN3, FAN_LEFT3, FAN_RIGHT3:
+		for _, c := range self.cards {
+			c.TransitionTo(self.pos)
+		}
+		doFan3 = true
+	case FAN_DOWN, FAN_LEFT, FAN_RIGHT:
+		var pos = self.pos
+		var i = 0
+		for _, c := range self.cards {
+			c.TransitionTo(pos)
+			pos = self.PosAfter(self.cards[i])
+			i++
+		}
+	}
+
+	if doFan3 {
+		switch len(self.cards) {
+		case 0:
+		case 1:
+			// nothing to do
+		case 2:
+			c := self.cards[1]
+			c.TransitionTo(self.pos1)
+		default:
+			i := len(self.cards)
+			i--
+			c := self.cards[i]
+			c.TransitionTo(self.pos2)
+			i--
+			c = self.cards[i]
+			c.TransitionTo(self.pos1)
+		}
+	}
+}
+
+func (self *Core) IndexOf(card *Card) int {
+	for i, c := range self.cards {
+		if c == card {
+			return i
+		}
+	}
+	return -1
+}
+
+func (self *Core) CanMoveTail(tail []*Card) (bool, error) {
+	if AnyCardsProne(tail) {
+		return false, errors.New("Cannot move a face down card")
+	}
+	switch self.moveType {
+	case MOVE_NONE:
+		return false, fmt.Errorf("Cannot move a card from a %s", self.category)
+	case MOVE_ANY:
+		// well, that was easy
+	case MOVE_ONE:
+		if len(tail) > 1 {
+			return false, fmt.Errorf("Can only move one card from a %s", self.category)
+		}
+	case MOVE_ONE_PLUS:
+		// don't know destination, so we allow this as MOVE_ANY
+	case MOVE_ONE_OR_ALL:
+		if len(tail) == 1 {
+			// that's okay
+		} else if len(tail) == self.Len() {
+			// that's okay too
+		} else {
+			return false, errors.New("Only move one card, or the whole core")
+		}
+	}
+	return true, nil
+}
+
+func (self *Core) MakeTail(c *Card) []*Card {
+	var tail []*Card
+	if len(self.cards) > 0 {
+		for i, pc := range self.cards {
+			if pc == c {
+				tail = self.cards[i:]
+				break
+			}
+		}
+	}
+	if len(tail) == 0 {
+		log.Panic("Pile.makeTail made an empty tail")
+	}
+	return tail
+}
+
+// ApplyToCards applies a function to each card in the core
+// caller must use a method expression, eg (*Card).StartSpinning, yielding a function value
+// with a regular first parameter taking the place of the receiver
+func (self *Core) ApplyToCards(fn func(*Card)) {
+	for _, c := range self.cards {
+		fn(c)
+	}
+}
+
+func (self *Core) GenericTailTapped(tail []*Card) {
+	if len(tail) != 1 {
+		return
+	}
+	c := tail[0]
+	for _, fp := range TheBaize.script.Foundations() {
+		if ok, _ := fp.subtype.CanAcceptCard(c); ok {
+			MoveCard(p, fp)
+			break
+		}
+	}
+}
+
+func (self *Core) GenericCollect() {
+	for _, fp := range TheBaize.script.Foundations() {
+		for {
+			// loop to get as many cards as possible from this core
+			if self.Empty() {
+				return
+			}
+			if ok, _ := fp.subtype.CanAcceptCard(self.Peek()); !ok {
+				// this foundation doesn't want this card; onto the next one
+				break
+			}
+			MoveCard(self, fp)
+		}
+	}
+}
+
+// BuryCards moves cards with the specified ordinal to the beginning of the core
+func (self *Core) BuryCards(ordinal int) {
+	tmp := make([]*Card, 0, cap(self.cards))
+	for _, c := range self.cards {
+		if c.Ordinal() == ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	for _, c := range self.cards {
+		if c.Ordinal() != ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	self.cards = self.cards[:0] // keep the underlying array, slice the slice to zero length
+	for i := 0; i < len(tmp); i++ {
+		self.Push(tmp[i])
+	}
+}
+
+func (self *Core) DrawStaticCards(screen *ebiten.Image) {
+	for _, c := range self.cards {
+		if !(c.Transitioning() || c.Flipping() || c.Dragging()) {
+			c.Draw(screen)
+		}
+	}
+}
+
+func (self *Core) DrawTransitioningCards(screen *ebiten.Image) {
+	for _, c := range self.cards {
+		if c.Transitioning() {
+			c.Draw(screen)
+		}
+	}
+}
+
+func (self *Core) DrawFlippingCards(screen *ebiten.Image) {
+	for _, c := range self.cards {
+		if c.Flipping() {
+			c.Draw(screen)
+		}
+	}
+}
+
+func (self *Core) DrawDraggingCards(screen *ebiten.Image) {
+	for _, c := range self.cards {
+		if c.Dragging() {
+			c.Draw(screen)
+		}
+	}
+}
+
+func (self *Core) Update() {
+	for _, card := range self.cards {
+		card.Update()
+	}
+}
+
+func (self *Core) CreateBackgroundImage() *ebiten.Image {
+	if CardWidth == 0 || CardHeight == 0 {
+		println("zero dimension in CreateCardShadowImage, unliked in wasm")
+		return nil
+		// log.Panic("zero dimension in CreateCardShadowImage, unliked in wasm")
+	}
+	if self.Hidden() {
+		// off-screen? don't bother
+		return nil
+	}
+	if _, ok := (self.subtype).(*Reserve); ok {
+		// don't draw anything for reserve cores
+		return nil
+	}
+	dc := gg.NewContext(CardWidth, CardHeight)
+	dc.SetColor(color.NRGBA{255, 255, 255, 31})
+	dc.SetLineWidth(2)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
+	switch (self.subtype).(type) {
+	case *Discard:
+		dc.Fill()
+	default:
+		if self.symbol != 0 {
+			// usually the recycle symbol
+			dc.SetFontFace(schriftbank.CardSymbolLarge)
+			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+		} else if self.label != "" {
+			// usually the "place card in an empty core" constraint
+			dc.SetFontFace(schriftbank.CardOrdinalLarge)
+			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+		}
+	}
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
+}
+
+func (self *Core) Draw(screen *ebiten.Image) {
+	if self.img == nil {
+		return
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
+	if self.target && len(self.cards) == 0 {
+		// oself.GeoM.Translate(-4, -4)
+		// screen.DrawImage(CardHighlightImage, op)
+		// oself.GeoM.Translate(4, 4)
+		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
+	}
+
+	if self.symbol != 0 {
+		if pt := image.Pt(ebiten.CursorPosition()); pt.In(self.ScreenRect()) {
+			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+				op.GeoM.Translate(2, 2)
+			}
+		}
+	}
+	screen.DrawImage(self.img, op)
+}
