@@ -71,6 +71,11 @@ func (pen *Penguin) StartGame() {
 			}
 		}
 	}
+	for len(pen.stock.cards) > 0 {
+		// we have 7x7 cards in tableaux, remaining cards must be ordinal == beak
+		MoveCard(pen.stock, pen.foundations[fnext])
+		fnext += 1
+	}
 
 	// When you empty a column, you may fill the space it leaves with a card one rank lower than the rank of the beak,
 	// together with any other cards attached to it in descending suit-sequence.
@@ -84,14 +89,9 @@ func (pen *Penguin) StartGame() {
 	for _, pile := range pen.tableaux {
 		pile.SetLabel(util.OrdinalToShortString(ord))
 	}
-
-	if len(pen.stock.cards) != 0 {
-		println("Oops, there are still", len(pen.stock.cards), "cards in the stock")
-	}
 }
 
-func (pen *Penguin) AfterMove() {
-}
+func (pen *Penguin) AfterMove() {}
 
 func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
@@ -145,21 +145,4 @@ func (pen *Penguin) TailTapped(tail []*Card) {
 	pile.subtype.TailTapped(tail)
 }
 
-func (pen *Penguin) PileTapped(pile *Pile) {
-}
-
-func (*Penguin) Discards() []*Pile {
-	return nil
-}
-
-func (pen *Penguin) Foundations() []*Pile {
-	return pen.foundations
-}
-
-func (pen *Penguin) Stock() *Pile {
-	return pen.stock
-}
-
-func (pen *Penguin) Waste() *Pile {
-	return pen.waste
-}
+func (pen *Penguin) PileTapped(pile *Pile) {}

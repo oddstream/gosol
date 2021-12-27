@@ -122,19 +122,3 @@ func (ft *FortyThieves) PileTapped(pile *Pile) {
 		RecycleWasteToStock(ft.waste, ft.stock)
 	}
 }
-
-func (ft *FortyThieves) Discards() []*Pile {
-	return nil
-}
-
-func (ft *FortyThieves) Foundations() []*Pile {
-	return ft.foundations
-}
-
-func (ft *FortyThieves) Stock() *Pile {
-	return ft.stock
-}
-
-func (ft *FortyThieves) Waste() *Pile {
-	return ft.waste
-}

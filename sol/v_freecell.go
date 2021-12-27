@@ -128,19 +128,3 @@ func (*Freecell) TailTapped(tail []*Card) {
 
 func (*Freecell) PileTapped(*Pile) {
 }
-
-func (*Freecell) Discards() []*Pile {
-	return nil
-}
-
-func (fc *Freecell) Foundations() []*Pile {
-	return fc.foundations
-}
-
-func (fc *Freecell) Stock() *Pile {
-	return fc.stock
-}
-
-func (*Freecell) Waste() *Pile {
-	return nil
-}

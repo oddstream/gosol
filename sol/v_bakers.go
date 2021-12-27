@@ -107,19 +107,3 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 
 func (*BakersDozen) PileTapped(pile *Pile) {
 }
-
-func (*BakersDozen) Discards() []*Pile {
-	return nil
-}
-
-func (bd *BakersDozen) Foundations() []*Pile {
-	return bd.foundations
-}
-
-func (bd *BakersDozen) Stock() *Pile {
-	return bd.stock
-}
-
-func (*BakersDozen) Waste() *Pile {
-	return nil
-}

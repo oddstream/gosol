@@ -154,19 +154,3 @@ func (du *Duchess) PileTapped(pile *Pile) {
 		RecycleWasteToStock(du.waste, du.stock)
 	}
 }
-
-func (*Duchess) Discards() []*Pile {
-	return nil
-}
-
-func (du *Duchess) Foundations() []*Pile {
-	return du.foundations
-}
-
-func (du *Duchess) Stock() *Pile {
-	return du.stock
-}
-
-func (du *Duchess) Waste() *Pile {
-	return du.waste
-}

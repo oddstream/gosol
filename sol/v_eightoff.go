@@ -56,8 +56,7 @@ func (eo *EightOff) StartGame() {
 	}
 }
 
-func (*EightOff) AfterMove() {
-}
+func (*EightOff) AfterMove() {}
 
 func (*EightOff) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
@@ -109,21 +108,4 @@ func (*EightOff) TailTapped(tail []*Card) {
 	tail[0].Owner().subtype.TailTapped(tail)
 }
 
-func (*EightOff) PileTapped(*Pile) {
-}
-
-func (*EightOff) Discards() []*Pile {
-	return nil
-}
-
-func (eo *EightOff) Foundations() []*Pile {
-	return eo.foundations
-}
-
-func (eo *EightOff) Stock() *Pile {
-	return eo.stock
-}
-
-func (*EightOff) Waste() *Pile {
-	return nil
-}
+func (*EightOff) PileTapped(*Pile) {}

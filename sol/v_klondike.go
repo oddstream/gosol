@@ -137,19 +137,3 @@ func (kl *Klondike) PileTapped(pile *Pile) {
 		RecycleWasteToStock(kl.waste, kl.stock)
 	}
 }
-
-func (*Klondike) Discards() []*Pile {
-	return nil
-}
-
-func (kl *Klondike) Foundations() []*Pile {
-	return kl.foundations
-}
-
-func (kl *Klondike) Stock() *Pile {
-	return kl.stock
-}
-
-func (kl *Klondike) Waste() *Pile {
-	return kl.waste
-}

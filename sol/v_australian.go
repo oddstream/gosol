@@ -101,19 +101,3 @@ func (aus *Australian) TailTapped(tail []*Card) {
 
 func (*Australian) PileTapped(pile *Pile) {
 }
-
-func (*Australian) Discards() []*Pile {
-	return nil
-}
-
-func (aus *Australian) Foundations() []*Pile {
-	return aus.foundations
-}
-
-func (aus *Australian) Stock() *Pile {
-	return aus.stock
-}
-
-func (aus *Australian) Waste() *Pile {
-	return aus.waste
-}

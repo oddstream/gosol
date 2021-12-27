@@ -6,12 +6,14 @@ https://calver.org/
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
   Pile.owner
- grep .subtype).(type) or ).(*Stock)
+ grep .subtype).(type) or ).(*Stock) or .pile. in p_*.go
  having Generic functions doesn't seem quite right
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
 
 [TODO]
+ BUG Penguin leaving a beak ordinal card in stock
+ Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
  host WASM version @ oddstream.github.io instead of gosol
  Copy variant list from opsole/gomps2
   Assembly
@@ -39,11 +41,8 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
+ return NewPile() instead of Ctor? Nope, because pile: p
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
- "There's an important way in which embedding differs from subclassing.
-  When we embed a type, the methods of that type become methods of the outer type,
-  but when they're invoked the receiver of the method is the inner type, not the outer one."
- https://golang.org/doc/effective_go
  SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
  set preference API that writes preferences

@@ -16,6 +16,22 @@ type ScriptBase struct {
 	easy                                             bool
 }
 
+func (sb ScriptBase) Stock() *Pile {
+	return sb.stock
+}
+
+func (sb ScriptBase) Waste() *Pile {
+	return sb.waste
+}
+
+func (sb ScriptBase) Discards() []*Pile {
+	return sb.discards
+}
+
+func (sb ScriptBase) Foundations() []*Pile {
+	return sb.foundations
+}
+
 type VariantInfo struct {
 	windowShape string
 	wikipedia   string
@@ -124,6 +140,20 @@ func VariantNames(group string) []string {
 }
 
 // useful generic game library of functions
+
+func Compare_Empty(p *Pile, c *Card) (bool, error) {
+
+	if p.label != "" {
+		if p.label == "x" {
+			return false, errors.New("Cannot move cards there")
+		}
+		ord := util.OrdinalToShortString(c.Ordinal())
+		if ord != p.label {
+			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.label), util.ShortOrdinalToLongOrdinal(ord))
+		}
+	}
+	return true, nil
+}
 
 func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	if TheBaize.recycles > 0 {
@@ -274,18 +304,4 @@ func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
 		return true, nil
 	}
 	return false, errors.New("Cards must go down in rank (Kings on Aces allowed)")
-}
-
-func Compare_Empty(p *Pile, c *Card) (bool, error) {
-
-	if p.label != "" {
-		if p.label == "x" {
-			return false, errors.New("Cannot move cards there")
-		}
-		ord := util.OrdinalToShortString(c.Ordinal())
-		if ord != p.label {
-			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.label), util.ShortOrdinalToLongOrdinal(ord))
-		}
-	}
-	return true, nil
 }

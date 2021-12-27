@@ -136,19 +136,3 @@ func (ag *Agnes) TailTapped(tail []*Card) {
 
 func (ag *Agnes) PileTapped(pile *Pile) {
 }
-
-func (*Agnes) Discards() []*Pile {
-	return nil
-}
-
-func (ag *Agnes) Foundations() []*Pile {
-	return ag.foundations
-}
-
-func (ag *Agnes) Stock() *Pile {
-	return ag.stock
-}
-
-func (ag *Agnes) Waste() *Pile {
-	return ag.waste
-}

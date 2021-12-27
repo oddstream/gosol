@@ -61,7 +61,7 @@ import (
 
 	*do* now have a 'clean idiomatic go' design for this, with Pile as an interface
 	and a 'struct Core', but it still needs the Pile interface injected into the Core
-
+	(although it does get rid of the current Pile.subtype thing
 */
 
 type Cell struct {

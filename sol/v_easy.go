@@ -137,19 +137,3 @@ func (ez *Easy) PileTapped(pile *Pile) {
 		RecycleWasteToStock(ez.waste, ez.stock)
 	}
 }
-
-func (*Easy) Discards() []*Pile {
-	return nil
-}
-
-func (ez *Easy) Foundations() []*Pile {
-	return ez.foundations
-}
-
-func (ez *Easy) Stock() *Pile {
-	return ez.stock
-}
-
-func (ez *Easy) Waste() *Pile {
-	return ez.waste
-}
