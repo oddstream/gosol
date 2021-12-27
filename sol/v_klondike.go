@@ -55,8 +55,7 @@ func (kl *Klondike) StartGame() {
 		dealDown++
 		MoveCard(kl.stock, pile)
 	}
-	TheBaize.recycles = kl.recycles
-	kl.stock.SetRune(RECYCLE_RUNE)
+	TheBaize.SetRecycles(kl.recycles)
 	for i := 0; i < kl.draw; i++ {
 		MoveCard(kl.stock, kl.waste)
 	}

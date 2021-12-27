@@ -684,6 +684,19 @@ func (b *Baize) PercentComplete() int {
 	return percent
 }
 
+func (b *Baize) Recycles() int {
+	return b.recycles
+}
+
+func (b *Baize) SetRecycles(recycles int) {
+	b.recycles = recycles
+	if TheBaize.recycles == 0 {
+		b.script.Stock().SetRune(NORECYCLE_RUNE)
+	} else {
+		b.script.Stock().SetRune(RECYCLE_RUNE)
+	}
+}
+
 func (b *Baize) UpdateStatusbar() {
 	if !b.script.Stock().Hidden() {
 		TheUI.SetStock(b.script.Stock().Len())

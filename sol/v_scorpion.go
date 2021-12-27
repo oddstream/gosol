@@ -53,7 +53,7 @@ func (sp *Scorpion) StartGame() {
 			tab.cards[j].FlipDown()
 		}
 	}
-	TheBaize.recycles = 0
+	TheBaize.SetRecycles(0)
 	if DebugMode {
 		println(sp.stock.Len(), "cards in stock")
 	}

@@ -124,17 +124,7 @@ func (t *Toad) TailTapped(tail []*Card) {
 
 func (t *Toad) PileTapped(pile *Pile) {
 	if pile == t.stock {
-		if TheBaize.recycles > 0 {
-			for t.waste.Len() > 0 {
-				MoveCard(t.waste, t.stock)
-			}
-			TheBaize.recycles--
-			if TheBaize.recycles == 0 {
-				t.stock.SetRune(NORECYCLE_RUNE)
-			}
-		} else {
-			TheUI.Toast("No more recycles")
-		}
+		RecycleWasteToStock(t.waste, t.stock)
 	}
 }
 

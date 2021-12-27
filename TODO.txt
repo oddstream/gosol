@@ -11,11 +11,7 @@ https://calver.org/
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
 
-[TODO]
- BUG Penguin leaving a beak ordinal card in stock
- Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
- host WASM version @ oddstream.github.io instead of gosol
- Copy variant list from opsole/gomps2
+[Variants]
   Assembly
   Beleaguered Castle
   Blockade
@@ -41,7 +37,10 @@ https://calver.org/
   Will O' the Wisp
   Russian?
 
- return NewPile() instead of Ctor? Nope, because pile: p
+[TODO]
+ Baize.SetRecycles() that also sets rune
+ Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
+ host WASM version @ oddstream.github.io instead of gosol
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
  SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
@@ -62,6 +61,7 @@ https://calver.org/
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x BUG Penguin leaving a beak ordinal card in stock
 x move recycles from Stock to Pile
 x move moveType from Pile.subtype to Pile
 x WASM FAB Window 0 0 FAB -108 -132 still using ebiten.WindowSize()

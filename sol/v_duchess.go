@@ -46,7 +46,7 @@ func (du *Duchess) BuildPiles() {
 }
 
 func (du *Duchess) StartGame() {
-	TheBaize.recycles = 1
+	TheBaize.SetRecycles(1)
 	for _, pile := range du.foundations {
 		pile.SetLabel("")
 	}

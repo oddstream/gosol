@@ -61,8 +61,7 @@ func (ez *Easy) StartGame() {
 		}
 		MoveCard(ez.stock, pile)
 	}
-	TheBaize.recycles = 32767
-	ez.stock.SetRune(RECYCLE_RUNE)
+	TheBaize.SetRecycles(32767)
 	MoveCard(ez.stock, ez.waste)
 }
 

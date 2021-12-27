@@ -156,19 +156,18 @@ func Compare_Empty(p *Pile, c *Card) (bool, error) {
 }
 
 func RecycleWasteToStock(waste *Pile, stock *Pile) {
-	if TheBaize.recycles > 0 {
+	if TheBaize.Recycles() > 0 {
 		for waste.Len() > 0 {
 			MoveCard(waste, stock)
 		}
-		TheBaize.recycles--
+		TheBaize.SetRecycles(TheBaize.Recycles() - 1)
 		switch {
 		case TheBaize.recycles == 0:
-			stock.SetRune(NORECYCLE_RUNE)
 			TheUI.Toast("No more recycles")
 		case TheBaize.recycles == 1:
-			TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.recycles))
+			TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.Recycles()))
 		case TheBaize.recycles < 10:
-			TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.recycles))
+			TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.Recycles()))
 		}
 	} else {
 		TheUI.Toast("No more recycles")

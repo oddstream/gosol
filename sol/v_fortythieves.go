@@ -47,17 +47,12 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(ft.stock, pile)
 		}
 	}
-	TheBaize.recycles = ft.recycles
-	if TheBaize.recycles == 0 {
-		ft.stock.SetRune(NORECYCLE_RUNE)
-	} else {
-		ft.stock.SetRune(RECYCLE_RUNE)
-	}
+	TheBaize.SetRecycles(ft.recycles)
 	MoveCard(ft.stock, ft.waste)
 }
 
 func (ft *FortyThieves) AfterMove() {
-	if ft.waste.Len() == 0 && ft.stock.Len() != 0 {
+	if ft.waste.Empty() && !ft.stock.Empty() {
 		MoveCard(ft.stock, ft.waste)
 	}
 }
@@ -80,7 +75,6 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst.subtype).(type) {
 	case *Foundation:
 		if dst.Empty() {
