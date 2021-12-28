@@ -680,6 +680,7 @@ func (b *Baize) PercentComplete() int {
 		}
 		unsorted += p.subtype.UnsortedPairs()
 	}
+	// TheUI.SetMiddle(fmt.Sprintf("%d/%d", pairs-unsorted, pairs))
 	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
 	return percent
 }

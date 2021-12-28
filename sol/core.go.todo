@@ -82,7 +82,7 @@ type Core struct {
 	target      bool // experimental, might delete later, IDK
 }
 
-func (self *Core) Ctor(subtype SubtypeAPI, category string, slot image.Point, fanType FanType, moveType MoveType) {
+func (self *Core) Ctor(category string, slot image.Point, fanType FanType, moveType MoveType) {
 	// static
 	self.magic = coremagic
 	self.category = category
@@ -97,7 +97,7 @@ func (self *Core) Ctor(subtype SubtypeAPI, category string, slot image.Point, fa
 }
 
 func (self *Core) Valid() bool {
-	return p != nil && self.magic == coremagic
+	return self != nil && self.magic == coremagic
 }
 
 func (self *Core) Reset() {

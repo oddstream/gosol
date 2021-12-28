@@ -180,7 +180,7 @@ func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
-			if ok, _ := pair.Compare_DownAltColor(); !ok {
+			if ok, _ := fn(pair); !ok {
 				unsorted++
 			}
 		}

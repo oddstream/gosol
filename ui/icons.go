@@ -85,7 +85,7 @@ func LoadIconMapFromZipFiles() {
 
 	var gofile *os.File
 	var err error
-	gofile, err = os.Create("/home/gilbert/gosol/ui/embeddedicons.go")
+	gofile, err = os.Create("/media/gilbert/T7/gomps/5/ui/embeddedicons.go")
 	if err != nil {
 		log.Fatal(err)
 	}
