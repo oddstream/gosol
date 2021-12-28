@@ -175,6 +175,9 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 }
 
 func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
+	if pile.Len() < 2 {
+		return 0
+	}
 	var unsorted int
 	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {

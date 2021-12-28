@@ -84,10 +84,7 @@ func (t *Tableau) Collect() {
 }
 
 func (t *Tableau) Conformant() bool {
-	if t.pile.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(t.pile) == 0
-	}
-	return true
+	return TheBaize.script.UnsortedPairs(t.pile) == 0
 }
 
 func (t *Tableau) Complete() bool {
@@ -106,6 +103,7 @@ func (t *Tableau) Complete() bool {
 	}
 	if len(TheBaize.script.Discards()) > 0 {
 		if t.pile.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
+			// eg 13 == 52 / 4
 			if TheBaize.script.UnsortedPairs(t.pile) == 0 {
 				return true
 			}
@@ -115,9 +113,5 @@ func (t *Tableau) Complete() bool {
 }
 
 func (t *Tableau) UnsortedPairs() int {
-	if t.pile.Len() > 1 {
-		return TheBaize.script.UnsortedPairs(t.pile)
-	} else {
-		return 0
-	}
+	return TheBaize.script.UnsortedPairs(t.pile)
 }
