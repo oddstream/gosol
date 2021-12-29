@@ -43,8 +43,7 @@ func (t *Toad) BuildPiles() {
 
 func (t *Toad) StartGame() {
 
-	TheBaize.recycles = 1
-	t.stock.SetRune(RECYCLE_RUNE)
+	TheBaize.SetRecycles(1)
 
 	for n := 0; n < 20; n++ {
 		MoveCard(t.stock, t.reserves[0])
@@ -75,9 +74,9 @@ func (*Toad) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (t *Toad) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -98,38 +97,22 @@ func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Toad) UnsortedPairs(pile *Pile) int {
+func (*Toad) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 }
 
 func (t *Toad) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	if pile.IsStock() && len(tail) == 1 {
+	var pile Pile = tail[0].Owner()
+	if pile == t.stock && len(tail) == 1 {
 		c := pile.Pop()
 		t.waste.Push(c)
 	} else {
-		pile.subtype.TailTapped(tail)
+		pile.TailTapped(tail)
 	}
 }
 
-func (t *Toad) PileTapped(pile *Pile) {
+func (t *Toad) PileTapped(pile Pile) {
 	if pile == t.stock {
 		RecycleWasteToStock(t.waste, t.stock)
 	}
-}
-
-func (*Toad) Discards() []*Pile {
-	return nil
-}
-
-func (t *Toad) Foundations() []*Pile {
-	return t.foundations
-}
-
-func (t *Toad) Stock() *Pile {
-	return t.stock
-}
-
-func (t *Toad) Waste() *Pile {
-	return t.waste
 }

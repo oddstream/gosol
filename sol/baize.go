@@ -34,7 +34,7 @@ const (
 type Baize struct {
 	magic        uint32
 	script       ScriptInterface
-	piles        []*Pile
+	piles        []Pile
 	tail         []*Card // array of cards currently being dragged
 	bookmark     int     // index into undo stack
 	recycles     int     // number of available stock recycles
@@ -91,6 +91,10 @@ func (b *Baize) CRC() uint32 {
 	return crc32.ChecksumIEEE(lens)
 }
 
+func (b *Baize) AddPile(pile Pile) {
+	b.piles = append(b.piles, pile)
+}
+
 func (b *Baize) Refan() {
 	b.setFlag(dirtyCardPositions)
 }
@@ -141,7 +145,7 @@ func (b *Baize) ShowVariantPicker(group string) {
 	TheUI.ShowVariantPicker(VariantNames(group))
 }
 
-func (b *Baize) Mirror() {
+func (b *Baize) MirrorSlots() {
 	/*
 		0 1 2 3 4 5
 		5 4 3 2 1 0
@@ -152,30 +156,31 @@ func (b *Baize) Mirror() {
 	var minX int = 32767
 	var maxX int = 0
 	for _, p := range b.piles {
-		if p.slot.X < 0 {
+		if p.Slot().X < 0 {
 			continue // ignore hidden pile
 		}
-		if p.slot.X < minX {
-			minX = p.slot.X
+		if p.Slot().X < minX {
+			minX = p.Slot().X
 		}
-		if p.slot.X > maxX {
-			maxX = p.slot.X
+		if p.Slot().X > maxX {
+			maxX = p.Slot().X
 		}
 	}
 	for _, p := range b.piles {
-		if p.slot.X < 0 {
+		slot := p.Slot()
+		if slot.X < 0 {
 			continue // ignore hidden pile
 		}
-		p.slot.X = maxX - p.slot.X + minX
-		switch p.fanType {
+		p.SetSlot(image.Point{X: maxX - slot.X + minX, Y: slot.Y})
+		switch p.FanType() {
 		case FAN_RIGHT:
-			p.fanType = FAN_LEFT
+			p.SetFanType(FAN_LEFT)
 		case FAN_LEFT:
-			p.fanType = FAN_RIGHT
+			p.SetFanType(FAN_RIGHT)
 		case FAN_RIGHT3:
-			p.fanType = FAN_LEFT3
+			p.SetFanType(FAN_LEFT3)
 		case FAN_LEFT3:
-			p.fanType = FAN_RIGHT3
+			p.SetFanType(FAN_RIGHT3)
 		}
 	}
 }
@@ -214,9 +219,9 @@ func (b *Baize) StartFreshGame() {
 	}
 
 	if ThePreferences.MirrorBaize {
-		b.Mirror()
+		b.MirrorSlots()
 	}
-	b.FindBuddyPiles()
+	// b.FindBuddyPiles()
 
 	TheUI.SetTitle(b.LongVariantName())
 
@@ -247,7 +252,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 }
 
 // findPileAt finds the Pile under the mouse click or touch
-func (b *Baize) FindPileAt(pt image.Point) *Pile {
+func (b *Baize) FindPileAt(pt image.Point) Pile {
 	for _, p := range b.piles {
 		if pt.In(p.FannedScreenRect()) {
 			return p
@@ -271,9 +276,9 @@ func (b *Baize) FindCardAt(pt image.Point) *Card {
 	return nil
 }
 
-func (b *Baize) LargestIntersection(c *Card) *Pile {
+func (b *Baize) LargestIntersection(c *Card) Pile {
 	var largestArea int = 0
-	var pile *Pile = nil
+	var pile Pile = nil
 	cardRect := c.BaizeRect()
 	for _, p := range b.piles {
 		if p == c.owner {
@@ -392,7 +397,7 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		log.Panic("*** move stroke with nil dragged object ***")
 	}
 	for _, p := range b.piles {
-		p.target = false
+		p.SetTarget(false)
 	}
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Container:
@@ -402,10 +407,10 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		b.DragTailBy(v.Stroke.PositionDiff())
 		if c, ok := v.Stroke.DraggedObject().(*Card); ok {
 			if p := b.LargestIntersection(c); p != nil {
-				p.target = true
+				p.SetTarget(true)
 			}
 		}
-	case *Pile:
+	case Pile:
 		// do nothing
 	case *Baize:
 		b.DragBy(v.Stroke.PositionDiff())
@@ -419,7 +424,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 		log.Panic("*** stop stroke with nil dragged object ***")
 	}
 	for _, p := range b.piles {
-		p.target = false
+		p.SetTarget(false)
 	}
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Container:
@@ -450,7 +455,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 						// it's ok to move this tail
 						if src == dst {
 							b.CancelTailDrag()
-						} else if ok, err = dst.subtype.CanAcceptTail(b.tail); !ok {
+						} else if ok, err = dst.CanAcceptTail(b.tail); !ok {
 							TheUI.Toast(err.Error())
 							b.CancelTailDrag()
 						} else {
@@ -458,7 +463,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 							if len(b.tail) == 1 {
 								MoveCard(src, dst)
 							} else {
-								MoveCards(c, dst)
+								MoveCards(src, src.IndexOf(c), dst)
 							}
 							if crc != b.CRC() {
 								b.AfterUserMove()
@@ -469,7 +474,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				}
 			}
 		}
-	case *Pile:
+	case Pile:
 		// do nothing
 	case *Baize:
 		// println("stop dragging baize")
@@ -489,8 +494,8 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 		con.StopDrag()
 	case *Card:
 		b.CancelTailDrag()
-	case *Pile:
-		// p := v.Stroke.DraggedObject().(*Pile)
+	case Pile:
+		// p := v.Stroke.DraggedObject().(Pile)
 		// println("stop dragging pile", p.Class)
 		// do nothing
 	case *Baize:
@@ -518,7 +523,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 			b.AfterUserMove()
 		}
 		b.StopTailDrag()
-	case *Pile:
+	case Pile:
 		crc := b.CRC()
 		b.script.PileTapped(obj)
 		if crc != b.CRC() {
@@ -595,7 +600,7 @@ func (b *Baize) Collect() {
 	for {
 		innerCRC := b.CRC()
 		for _, p := range b.piles {
-			p.subtype.Collect()
+			p.Collect()
 		}
 		if b.CRC() == innerCRC {
 			break
@@ -678,7 +683,7 @@ func (b *Baize) PercentComplete() int {
 		if p.Len() > 1 {
 			pairs += p.Len() - 1
 		}
-		unsorted += p.subtype.UnsortedPairs()
+		unsorted += p.UnsortedPairs()
 	}
 	// TheUI.SetMiddle(fmt.Sprintf("%d/%d", pairs-unsorted, pairs))
 	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
@@ -715,7 +720,7 @@ func (b *Baize) UpdateStatusbar() {
 
 func (b *Baize) Conformant() bool {
 	for _, p := range b.piles {
-		if !p.subtype.Conformant() {
+		if !p.Conformant() {
 			return false
 		}
 	}
@@ -724,7 +729,7 @@ func (b *Baize) Conformant() bool {
 
 func (b *Baize) Complete() bool {
 	for _, p := range b.piles {
-		if !p.subtype.Complete() {
+		if !p.Complete() {
 			return false
 		}
 	}
@@ -776,7 +781,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		}
 		if b.flagSet(dirtyPileBackgrounds) {
 			for _, p := range b.piles {
-				p.img = p.CreateBackgroundImage()
+				p.CreateBackgroundImage()
 			}
 			b.clearFlag(dirtyPileBackgrounds)
 		}
@@ -871,14 +876,13 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 			if c := b.FindCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
 				p := c.owner
 				index := p.IndexOf(c)
-				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, cat=%s index=%d",
+				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, index=%d",
 					c.String(),
 					c.Dragging(),
 					c.pos.String(),
 					c.src.String(),
 					c.dst.String(),
 					c.lerpStep,
-					p.category,
 					index))
 			}
 		}

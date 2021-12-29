@@ -58,9 +58,9 @@ func (ft *FortyThieves) AfterMove() {
 }
 
 func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
-	var pile *Pile = tail[0].Owner()
+	var pile Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (pile.subtype).(type) {
+	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
@@ -72,8 +72,8 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch (dst.subtype).(type) {
+func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -90,20 +90,20 @@ func (*FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*FortyThieves) UnsortedPairs(pile *Pile) int {
+func (*FortyThieves) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (ft *FortyThieves) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	if pile.IsStock() && len(tail) == 1 {
+	var pile Pile = tail[0].Owner()
+	if pile == ft.stock && len(tail) == 1 {
 		MoveCard(ft.stock, ft.waste)
 	} else {
-		pile.subtype.TailTapped(tail)
+		pile.TailTapped(tail)
 	}
 }
 
-func (ft *FortyThieves) PileTapped(pile *Pile) {
+func (ft *FortyThieves) PileTapped(pile Pile) {
 	if pile == ft.stock {
 		RecycleWasteToStock(ft.waste, ft.stock)
 	}

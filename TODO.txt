@@ -38,13 +38,12 @@ https://calver.org/
   Russian?
 
 [REMODEL]
-Add new pile to Baize.piles (still a []*Pile)
-Card.SetOwner() needs to take a Pile, not a Core
-Scrunch()
-MoveCard()
+grep iface
+buddyPiles
+pile generics AND extras?
+Pile.Cards() is only used once, in UnsortedPairs
 
 [TODO]
- Baize.SetRecycles() that also sets rune
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
  host WASM version @ oddstream.github.io instead of gosol
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
@@ -67,6 +66,7 @@ MoveCard()
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x Baize.SetRecycles() that also sets rune
 x BUG Penguin leaving a beak ordinal card in stock
 x move recycles from Stock to Pile
 x move moveType from Pile.subtype to Pile

@@ -1,5 +1,7 @@
 package sol
 
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
+
 import (
 	"log"
 
@@ -21,25 +23,25 @@ type SavableBaize struct {
 	Recycles int            `json:",omitempty"`
 }
 
-func (p *Pile) Savable() *SavablePile {
-	sp := &SavablePile{Category: p.category, Label: p.label, Symbol: p.symbol}
-	for _, c := range p.cards {
+func (self *Core) Savable() *SavablePile {
+	sp := &SavablePile{Category: self.category, Label: self.label, Symbol: self.symbol}
+	for _, c := range self.cards {
 		sp.Cards = append(sp.Cards, c.ID)
 	}
 	return sp
 }
 
-func (p *Pile) UpdateFromSavable(sp *SavablePile) {
-	if p.category != sp.Category {
+func (self *Core) UpdateFromSavable(sp *SavablePile) {
+	if self.category != sp.Category {
 		log.Panic("Baize pile and SavablePile are different")
 	}
-	p.cards = p.cards[:0]
+	self.cards = self.cards[:0]
 	for _, cid := range sp.Cards {
 		for i := 0; i < len(CardLibrary); i++ {
 			if SameCardAndPack(cid, CardLibrary[i].ID) {
 				c := &CardLibrary[i]
 				// c.SetProne(cid.Prone())
-				p.Push(c)
+				self.Push(c)
 				if cid.Prone() {
 					c.FlipDown()
 				} else {
@@ -49,11 +51,11 @@ func (p *Pile) UpdateFromSavable(sp *SavablePile) {
 			}
 		}
 	}
-	if len(p.cards) != len(sp.Cards) {
+	if len(self.cards) != len(sp.Cards) {
 		log.Panic("cards rebuilt incorrectly")
 	}
-	p.SetLabel(sp.Label)
-	p.SetRune(sp.Symbol)
+	self.SetLabel(sp.Label)
+	self.SetRune(sp.Symbol)
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {

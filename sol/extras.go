@@ -15,11 +15,8 @@ func AnyCardsProne(cards []*Card) bool {
 	return false
 }
 
-func FlipUpExposedCard(p *Pile) {
-	if p.IsStock() {
-		// this Pile's subtype is *Stock
-		// so don't flip an exposed card
-	} else {
+func FlipUpExposedCard(p Pile) {
+	if !p.IsStock() {
 		if c := p.Peek(); c != nil {
 			c.FlipUp()
 		}
@@ -27,7 +24,7 @@ func FlipUpExposedCard(p *Pile) {
 }
 
 // MoveCard is an optimized, single card version of MoveCards
-func MoveCard(src *Pile, dst *Pile) *Card {
+func MoveCard(src Pile, dst Pile) *Card {
 	if c := src.Pop(); c != nil {
 		sound.Play("Place")
 		dst.Push(c)
@@ -39,7 +36,7 @@ func MoveCard(src *Pile, dst *Pile) *Card {
 	return nil
 }
 
-func MoveNamedCard(suit, ordinal int, dst *Pile) {
+func MoveNamedCard(suit, ordinal int, dst Pile) {
 
 	// 1. find the card in the library
 	var ID CardID = NewCardID(0, suit, ordinal)
@@ -55,21 +52,15 @@ func MoveNamedCard(suit, ordinal int, dst *Pile) {
 	}
 
 	// 2.find the card in it's owning pile
-	var src *Pile = c.owner
-	var index int = -1
-	for i := 0; i < len(src.cards); i++ {
-		if c == src.cards[i] {
-			index = i
-			break
-		}
-	}
+	var src Pile = c.owner
+	var index int = src.IndexOf(c)
 	if index == -1 {
 		println("Could not find card", c.String(), "in pile")
 		return
 	}
 
 	// 3. extract the card from it's owning pile
-	src.cards = append(src.cards[:index], src.cards[index+1:]...)
+	src.Delete(index)
 
 	// 4. push the card onto the dst pile
 	sound.Play("Place")
@@ -80,25 +71,14 @@ func MoveNamedCard(suit, ordinal int, dst *Pile) {
 	dst.Scrunch()
 }
 
-func MoveCards(c *Card, dst *Pile) {
-
-	src := c.Owner()
-	if src == nil || !src.Valid() {
-		log.Panic("invalid pile")
-	}
+func MoveCards(src Pile, moveFromIndex int, dst Pile) {
 
 	oldSrcLen := src.Len()
-
-	// find the index of the first card we will move
-	moveFrom := src.IndexOf(c)
-	if moveFrom == -1 {
-		log.Panic("")
-	}
 
 	tmp := make([]*Card, 0, oldSrcLen)
 
 	// pop the tail off the source and push onto temp stack
-	for i := oldSrcLen - 1; i >= moveFrom; i-- {
+	for i := oldSrcLen - 1; i >= moveFromIndex; i-- {
 		tmp = append(tmp, src.Pop())
 	}
 
@@ -117,4 +97,33 @@ func MoveCards(c *Card, dst *Pile) {
 
 	src.Scrunch()
 	dst.Scrunch()
+}
+
+func GenericTailTapped(self Pile, tail []*Card) {
+	if len(tail) != 1 {
+		return
+	}
+	c := tail[0]
+	for _, fp := range TheBaize.script.Foundations() {
+		if ok, _ := fp.CanAcceptCard(c); ok {
+			MoveCard(self, fp)
+			break
+		}
+	}
+}
+
+func GenericCollect(self Pile) {
+	for _, fp := range TheBaize.script.Foundations() {
+		for {
+			// loop to get as many cards as possible from this core
+			if self.Empty() {
+				return
+			}
+			if ok, _ := fp.CanAcceptCard(self.Peek()); !ok {
+				// this foundation doesn't want this card; onto the next one
+				break
+			}
+			MoveCard(self, fp)
+		}
+	}
 }

@@ -59,7 +59,7 @@ func (pen *Penguin) StartGame() {
 
 	// 49-card layout consisting of seven rows and seven columns
 	for _, pile := range pen.tableaux {
-		for len(pile.cards) < 7 {
+		for pile.Len() < 7 {
 			// As and when the other three cards of the same rank turn up in the deal,
 			// take them out and set them apart as foundations.
 			card := pen.stock.Peek()
@@ -71,7 +71,7 @@ func (pen *Penguin) StartGame() {
 			}
 		}
 	}
-	for len(pen.stock.cards) > 0 {
+	for pen.stock.Len() > 0 {
 		// we have 7x7 cards in tableaux, remaining cards must be ordinal == beak
 		MoveCard(pen.stock, pen.foundations[fnext])
 		fnext += 1
@@ -94,8 +94,8 @@ func (pen *Penguin) StartGame() {
 func (pen *Penguin) AfterMove() {}
 
 func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
-	var pile *Pile = tail[0].Owner()
-	switch (pile.subtype).(type) {
+	var pile Pile = tail[0].Owner()
+	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
@@ -107,9 +107,9 @@ func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Penguin) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (*Penguin) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -126,13 +126,13 @@ func (*Penguin) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Penguin) UnsortedPairs(pile *Pile) int {
+func (*Penguin) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 }
 
 func (pen *Penguin) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	pile.subtype.TailTapped(tail)
+	var pile Pile = tail[0].Owner()
+	pile.TailTapped(tail)
 }
 
-func (pen *Penguin) PileTapped(pile *Pile) {}
+func (pen *Penguin) PileTapped(pile Pile) {}

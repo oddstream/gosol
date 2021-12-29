@@ -57,8 +57,8 @@ func (*Australian) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Australian) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch (dst.subtype).(type) {
+func (*Australian) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -75,19 +75,18 @@ func (*Australian) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Australian) UnsortedPairs(pile *Pile) int {
+func (*Australian) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (aus *Australian) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	if pile.IsStock() && len(tail) == 1 {
+	var pile Pile = tail[0].Owner()
+	if pile == aus.stock && len(tail) == 1 {
 		c := pile.Pop()
 		aus.waste.Push(c)
 	} else {
-		pile.subtype.TailTapped(tail)
+		pile.TailTapped(tail)
 	}
 }
 
-func (*Australian) PileTapped(pile *Pile) {
-}
+func (*Australian) PileTapped(Pile) {}

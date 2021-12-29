@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"errors"
@@ -8,21 +9,22 @@ import (
 )
 
 type Discard struct {
-	pile *Pile
+	Core
 }
 
-func NewDiscard(slot image.Point, fanType FanType) *Pile {
-	p := &Pile{}
-	p.Ctor(&Discard{pile: p}, "Discard", slot, FAN_NONE, MOVE_NONE)
-	return p
+func NewDiscard(slot image.Point, fanType FanType) *Discard {
+	discard := &Discard{Core: NewCore("Discard", slot, FAN_NONE, MOVE_NONE)}
+	discard.iface = discard
+	TheBaize.AddPile(discard)
+	return discard
 }
 
 func (*Discard) CanAcceptCard(card *Card) (bool, error) {
 	return false, errors.New("Cannot move a single card to a Discard")
 }
 
-func (d *Discard) CanAcceptTail(tail []*Card) (bool, error) {
-	if !d.pile.Empty() {
+func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
+	if !self.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")
 	}
 	if AnyCardsProne(tail) {
@@ -50,17 +52,17 @@ func (*Discard) Conformant() bool {
 	return false
 }
 
-func (d *Discard) Complete() bool {
-	if d.pile.Empty() {
+func (self *Discard) Complete() bool {
+	if self.Empty() {
 		return true
 	}
-	if d.pile.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
+	if self.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
 		return true
 	}
 	return false
 }
 
-func (d *Discard) UnsortedPairs() int {
+func (*Discard) UnsortedPairs() int {
 	// you can only put a sorted sequence into a Discard, so this will always be zero
 	return 0
 }

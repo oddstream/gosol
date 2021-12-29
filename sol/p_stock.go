@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"errors"
@@ -46,11 +47,11 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 }
 
 type Stock struct {
-	pile *Pile
+	Core
 }
 
-func (p *Pile) FillFromLibrary() {
-	if !p.Empty() {
+func (self *Stock) FillFromLibrary() {
+	if !self.Empty() {
 		log.Panic("stock should be empty")
 	}
 	for i := 0; i < len(CardLibrary); i++ {
@@ -59,9 +60,9 @@ func (p *Pile) FillFromLibrary() {
 			log.Panicf("invalid card at library index %d", i)
 		}
 		// the following mimics Base.Push
-		p.Append(c)
-		c.SetOwner(p)
-		c.pos = p.BaizePos() // start at the Stock pile position
+		self.Append(c)
+		c.SetOwner(self)
+		c.pos = self.BaizePos() // start at the Stock pile position
 		c.src = image.Point{0, 0}
 		c.dst = c.pos
 		c.SetProne(true)
@@ -69,9 +70,9 @@ func (p *Pile) FillFromLibrary() {
 	}
 }
 
-func (p *Pile) Shuffle() {
+func (self *Stock) Shuffle() {
 
-	if p == nil || !p.Valid() {
+	if !self.Valid() {
 		log.Fatal("invalid stock")
 	}
 	if NoShuffle {
@@ -84,26 +85,25 @@ func (p *Pile) Shuffle() {
 	}
 	rand.Seed(seed)
 	for i := 0; i < 6; i++ {
-		rand.Shuffle(p.Len(), p.Swap)
+		rand.Shuffle(self.Len(), self.Swap)
 	}
 }
 
-func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Pile {
-
-	p := &Pile{}
-	p.Ctor(&Stock{pile: p}, "Stock", slot, fanType, MOVE_ONE)
+func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Stock {
 	CreateCardLibrary(packs, suits, cardFilter)
-	p.FillFromLibrary()
-	p.Shuffle()
-
-	return p
+	stock := &Stock{Core: NewCore("Stock", slot, fanType, MOVE_ONE)}
+	stock.iface = stock
+	stock.FillFromLibrary()
+	stock.Shuffle()
+	TheBaize.AddPile(stock)
+	return stock
 }
 
-func (s *Stock) CanAcceptCard(*Card) (bool, error) {
+func (*Stock) CanAcceptCard(*Card) (bool, error) {
 	return false, errors.New("Cannot move cards to the Stock")
 }
 
-func (s *Stock) CanAcceptTail([]*Card) (bool, error) {
+func (*Stock) CanAcceptTail([]*Card) (bool, error) {
 	return false, errors.New("Cannot move cards to the Stock")
 }
 
@@ -111,23 +111,23 @@ func (*Stock) TailTapped([]*Card) {
 	// do nothing, handled by script, which had first dibs
 }
 
-func (s *Stock) Collect() {
+func (*Stock) Collect() {
 	// never collect from the stock
 	// over-ride base collect to do nothing
 }
 
-func (s *Stock) Conformant() bool {
-	return s.pile.Empty()
+func (self *Stock) Conformant() bool {
+	return self.Empty()
 }
 
-func (s *Stock) Complete() bool {
-	return s.pile.Empty()
+func (self *Stock) Complete() bool {
+	return self.Empty()
 }
 
-func (s *Stock) UnsortedPairs() int {
+func (self *Stock) UnsortedPairs() int {
 	// Stock is always considered unsorted
-	if s.pile.Empty() {
+	if self.Empty() {
 		return 0
 	}
-	return s.pile.Len() - 1
+	return self.Len() - 1
 }

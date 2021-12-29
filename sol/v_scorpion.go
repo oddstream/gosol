@@ -66,9 +66,9 @@ func (*Scorpion) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Scorpion) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (*Scorpion) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Discard:
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
@@ -88,13 +88,13 @@ func (*Scorpion) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Scorpion) UnsortedPairs(pile *Pile) int {
+func (*Scorpion) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (sp *Scorpion) TailTapped(tail []*Card) {
 	pile := tail[0].Owner()
-	switch (pile.subtype).(type) {
+	switch (pile).(type) {
 	case *Stock:
 		if !sp.stock.Empty() {
 			for _, tab := range sp.tableaux {
@@ -104,21 +104,4 @@ func (sp *Scorpion) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Scorpion) PileTapped(*Pile) {
-}
-
-func (sp *Scorpion) Discards() []*Pile {
-	return sp.discards
-}
-
-func (*Scorpion) Foundations() []*Pile {
-	return nil
-}
-
-func (sp *Scorpion) Stock() *Pile {
-	return sp.stock
-}
-
-func (*Scorpion) Waste() *Pile {
-	return nil
-}
+func (*Scorpion) PileTapped(Pile) {}

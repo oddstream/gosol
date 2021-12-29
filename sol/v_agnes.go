@@ -76,8 +76,8 @@ func (*Agnes) AfterMove() {
 }
 
 func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
-	var pile *Pile = tail[0].Owner()
-	switch (pile.subtype).(type) {
+	var pile Pile = tail[0].Owner()
+	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
@@ -90,9 +90,9 @@ func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (ag *Agnes) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -109,20 +109,19 @@ func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) UnsortedPairs(pile *Pile) int {
+func (ag *Agnes) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (ag *Agnes) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	if pile.IsStock() && len(tail) == 1 {
+	var pile Pile = tail[0].Owner()
+	if pile == ag.stock && len(tail) == 1 {
 		for _, pile := range ag.reserves {
 			MoveCard(ag.stock, pile)
 		}
 	} else {
-		pile.subtype.TailTapped(tail)
+		pile.TailTapped(tail)
 	}
 }
 
-func (ag *Agnes) PileTapped(pile *Pile) {
-}
+func (ag *Agnes) PileTapped(Pile) {}

@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"errors"
@@ -8,54 +9,55 @@ import (
 )
 
 type Foundation struct {
-	pile *Pile
+	Core
 }
 
-func NewFoundation(slot image.Point, fanType FanType) *Pile {
-	p := &Pile{}
-	p.Ctor(&Foundation{pile: p}, "Foundation", slot, fanType, MOVE_NONE)
-	return p
+func NewFoundation(slot image.Point, fanType FanType) *Foundation {
+	foundation := &Foundation{Core: NewCore("Foundation", slot, fanType, MOVE_NONE)}
+	foundation.iface = foundation
+	TheBaize.AddPile(foundation)
+	return foundation
 }
 
-func (f *Foundation) CanAcceptCard(card *Card) (bool, error) {
+func (self *Foundation) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if f.pile.Len() == len(CardLibrary)/len(TheBaize.script.Foundations()) {
+	if self.Len() == len(CardLibrary)/len(TheBaize.script.Foundations()) {
 		return false, errors.New("The Foundation is full")
 	}
 	var tail []*Card = []*Card{card}
-	// pearl from the mudbank cannot pass a *Foundation to script functions, only a *Pile
-	return TheBaize.script.TailAppendError(f.pile, tail)
+	// pearl from the mudbank cannot pass a *Foundation to script functions, only a Pile
+	return TheBaize.script.TailAppendError(self, tail)
 }
 
-func (f *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
+func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
 	}
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card")
 	}
-	return TheBaize.script.TailAppendError(f.pile, tail)
+	return TheBaize.script.TailAppendError(self, tail)
 }
 
 func (*Foundation) TailTapped([]*Card) {
 	// do nothing
 }
 
-func (f *Foundation) Collect() {
+func (*Foundation) Collect() {
 	// over-ride base collect to do nothing
 }
 
-func (f *Foundation) Conformant() bool {
+func (*Foundation) Conformant() bool {
 	return true
 }
 
-func (f *Foundation) Complete() bool {
-	return f.pile.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
+func (self *Foundation) Complete() bool {
+	return self.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
 }
 
-func (f *Foundation) UnsortedPairs() int {
+func (*Foundation) UnsortedPairs() int {
 	// you can only put a sorted sequence into a Foundation, so this will always be zero
 	return 0
 }

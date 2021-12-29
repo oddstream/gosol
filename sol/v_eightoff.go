@@ -59,8 +59,8 @@ func (eo *EightOff) StartGame() {
 func (*EightOff) AfterMove() {}
 
 func (*EightOff) TailMoveError(tail []*Card) (bool, error) {
-	var pile *Pile = tail[0].Owner()
-	switch (pile.subtype).(type) {
+	var pile Pile = tail[0].Owner()
+	switch (pile).(type) {
 	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownSuit(); !ok {
@@ -71,9 +71,9 @@ func (*EightOff) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*EightOff) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (*EightOff) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -90,12 +90,12 @@ func (*EightOff) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*EightOff) UnsortedPairs(pile *Pile) int {
+func (*EightOff) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (*EightOff) TailTapped(tail []*Card) {
-	tail[0].Owner().subtype.TailTapped(tail)
+	tail[0].Owner().TailTapped(tail)
 }
 
-func (*EightOff) PileTapped(*Pile) {}
+func (*EightOff) PileTapped(Pile) {}

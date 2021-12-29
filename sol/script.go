@@ -11,24 +11,29 @@ import (
 )
 
 type ScriptBase struct {
-	stock, waste                                     *Pile
-	cells, discards, foundations, reserves, tableaux []*Pile
-	easy                                             bool
+	stock       *Stock
+	waste       *Waste
+	cells       []*Cell
+	discards    []*Discard
+	foundations []*Foundation
+	reserves    []*Reserve
+	tableaux    []*Tableau
+	easy        bool
 }
 
-func (sb ScriptBase) Stock() *Pile {
+func (sb ScriptBase) Stock() *Stock {
 	return sb.stock
 }
 
-func (sb ScriptBase) Waste() *Pile {
+func (sb ScriptBase) Waste() *Waste {
 	return sb.waste
 }
 
-func (sb ScriptBase) Discards() []*Pile {
+func (sb ScriptBase) Discards() []*Discard {
 	return sb.discards
 }
 
-func (sb ScriptBase) Foundations() []*Pile {
+func (sb ScriptBase) Foundations() []*Foundation {
 	return sb.foundations
 }
 
@@ -50,16 +55,16 @@ type ScriptInterface interface {
 	AfterMove()
 
 	TailMoveError([]*Card) (bool, error)
-	TailAppendError(*Pile, []*Card) (bool, error)
-	UnsortedPairs(*Pile) int
+	TailAppendError(Pile, []*Card) (bool, error)
+	UnsortedPairs(Pile) int
 
 	TailTapped([]*Card)
-	PileTapped(*Pile)
+	PileTapped(Pile)
 
-	Discards() []*Pile
-	Foundations() []*Pile
-	Stock() *Pile
-	Waste() *Pile
+	Discards() []*Discard
+	Foundations() []*Foundation
+	Stock() *Stock
+	Waste() *Waste
 }
 
 var Variants = map[string]ScriptInterface{
@@ -141,21 +146,21 @@ func VariantNames(group string) []string {
 
 // useful generic game library of functions
 
-func Compare_Empty(p *Pile, c *Card) (bool, error) {
+func Compare_Empty(p Pile, c *Card) (bool, error) {
 
-	if p.label != "" {
-		if p.label == "x" {
+	if p.Label() != "" {
+		if p.Label() == "x" {
 			return false, errors.New("Cannot move cards there")
 		}
 		ord := util.OrdinalToShortString(c.Ordinal())
-		if ord != p.label {
-			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.label), util.ShortOrdinalToLongOrdinal(ord))
+		if ord != p.Label() {
+			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.Label()), util.ShortOrdinalToLongOrdinal(ord))
 		}
 	}
 	return true, nil
 }
 
-func RecycleWasteToStock(waste *Pile, stock *Pile) {
+func RecycleWasteToStock(waste Pile, stock Pile) {
 	if TheBaize.Recycles() > 0 {
 		for waste.Len() > 0 {
 			MoveCard(waste, stock)
@@ -174,12 +179,12 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	}
 }
 
-func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
+func UnsortedPairs(pile Pile, fn func(CardPair) (bool, error)) int {
 	if pile.Len() < 2 {
 		return 0
 	}
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.cards) {
+	for _, pair := range NewCardPairs(pile.Cards()) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {

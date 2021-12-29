@@ -67,8 +67,8 @@ func (du *Duchess) AfterMove() {
 
 func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	// One card can be moved at a time, but sequences can also be moved as one unit.
-	var pile *Pile = tail[0].Owner()
-	switch (pile.subtype).(type) {
+	var pile Pile = tail[0].Owner()
+	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
@@ -81,23 +81,23 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (du *Duchess) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst.subtype).(type) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			c := tail[0]
 			ord := util.OrdinalToShortString(c.Ordinal())
-			if dst.label == "" {
-				if _, ok := (c.owner.subtype).(*Reserve); !ok {
+			if dst.Label() == "" {
+				if _, ok := (c.owner).(*Reserve); !ok {
 					return false, errors.New("The first Foundation card must come from a Reserve")
 				}
 				for _, pile := range du.foundations {
 					pile.SetLabel(ord)
 				}
 			}
-			if ord != dst.label {
-				return false, fmt.Errorf("Foundations can only accept an %s, not a %s", dst.label, ord)
+			if ord != dst.Label() {
+				return false, fmt.Errorf("Foundations can only accept an %s, not a %s", dst.Label(), ord)
 			}
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
@@ -111,7 +111,7 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 			if rescards > 0 {
 				// Spaces that occur on the tableau are filled with any top card in the reserve
 				c := tail[0]
-				if _, ok := (c.owner.subtype).(*Reserve); !ok {
+				if _, ok := (c.owner).(*Reserve); !ok {
 					return false, errors.New("An empty Tableau must be filled from a Reserve")
 				}
 			}
@@ -123,20 +123,20 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Duchess) UnsortedPairs(pile *Pile) int {
+func (*Duchess) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (du *Duchess) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	if pile.IsStock() && len(tail) == 1 {
+	var pile Pile = tail[0].Owner()
+	if pile == du.stock && len(tail) == 1 {
 		MoveCard(du.stock, du.waste)
 	} else {
-		pile.subtype.TailTapped(tail)
+		pile.TailTapped(tail)
 	}
 }
 
-func (du *Duchess) PileTapped(pile *Pile) {
+func (du *Duchess) PileTapped(pile Pile) {
 	if pile == du.stock {
 		RecycleWasteToStock(du.waste, du.stock)
 	}

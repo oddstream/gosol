@@ -75,25 +75,26 @@ type Core struct {
 	pos2        image.Point // waste pos #1
 	fanFactor   float64
 	scrunchDims image.Point
-	buddyPos    image.Point
-	label       string
-	symbol      rune
-	img         *ebiten.Image
-	target      bool // experimental, might delete later, IDK
+	// buddyPos    image.Point
+	label  string
+	symbol rune
+	img    *ebiten.Image
+	iface  Pile // don't like doing this, just for Card.owner at the moment?
+	target bool // experimental, might delete later, IDK
 }
 
-func (self *Core) Ctor(category string, slot image.Point, fanType FanType, moveType MoveType) {
-	// static
-	self.magic = coremagic
-	self.category = category
-	self.slot = slot
-	self.fanType = fanType
-	self.moveType = moveType
-	// dynamic
-	self.fanFactor = DefaultFanFactor[self.fanType]
-	self.cards = nil
-	// downright ugly design kludge
-	TheBaize.pile = append(TheBaize.piles, self)
+func NewCore(category string, slot image.Point, fanType FanType, moveType MoveType) Core {
+	self := Core{
+		// static
+		magic:    coremagic,
+		category: category,
+		slot:     slot,
+		fanType:  fanType,
+		moveType: moveType,
+		// dynamic
+		fanFactor: DefaultFanFactor[fanType],
+	}
+	return self
 }
 
 func (self *Core) Valid() bool {
@@ -111,13 +112,39 @@ func (self *Core) Hidden() bool {
 }
 
 func (self *Core) IsStock() bool {
-	_, ok := (self.subtype).(*Stock)
-	return ok
+	return self.category == "Stock"
 }
 
 func (self *Core) IsTableau() bool {
-	_, ok := (self.subtype).(*Tableau)
-	return ok
+	return self.category == "Tableau"
+}
+
+func (self *Core) Cards() []*Card {
+	return self.cards
+}
+
+func (self *Core) FanType() FanType {
+	return self.fanType
+}
+
+func (self *Core) SetFanType(fanType FanType) {
+	self.fanType = fanType
+}
+
+func (self *Core) FanFactor() float64 {
+	return self.fanFactor
+}
+
+func (self *Core) SetFanFactor(fanFactor float64) {
+	self.fanFactor = fanFactor
+}
+
+func (self *Core) SetScrunchDims(scrunchDims image.Point) {
+	self.scrunchDims = scrunchDims
+}
+
+func (self *Core) MoveType() MoveType {
+	return self.moveType
 }
 
 func (self *Core) Label() string {
@@ -143,6 +170,14 @@ func (self *Core) SetRune(symbol rune) {
 		self.symbol = symbol
 		TheBaize.setFlag(dirtyPileBackgrounds)
 	}
+}
+
+func (self *Core) Target() bool {
+	return self.target
+}
+
+func (self *Core) SetTarget(target bool) {
+	self.target = target
 }
 
 // Empty returns true if this core is empty.
@@ -180,6 +215,11 @@ func (self *Core) Append(c *Card) {
 	self.cards = append(self.cards, c)
 }
 
+// Delete a *Card from this collection
+func (self *Core) Delete(index int) {
+	self.cards = append(self.cards[:index], self.cards[index+1:]...)
+}
+
 // Peek topmost Card of this Pile (a stack)
 func (self *Core) Peek() *Card {
 	if len(self.cards) == 0 {
@@ -213,7 +253,7 @@ func (self *Core) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.SetOwner(p)
+	c.SetOwner(self.iface) // TODO ugly and smelly
 	c.TransitionTo(pos)
 
 	if self.IsStock() {
@@ -226,6 +266,10 @@ func (self *Core) Push(c *Card) {
 // TODO to use fractional slots, scale the slot values up by, say, 10
 func (self *Core) Slot() image.Point {
 	return self.slot
+}
+
+func (self *Core) SetSlot(slot image.Point) {
+	self.slot = slot
 }
 
 // SetBaizePos sets the position of this Pile in Baize coords,
@@ -466,35 +510,6 @@ func (self *Core) ApplyToCards(fn func(*Card)) {
 	}
 }
 
-func (self *Core) GenericTailTapped(tail []*Card) {
-	if len(tail) != 1 {
-		return
-	}
-	c := tail[0]
-	for _, fp := range TheBaize.script.Foundations() {
-		if ok, _ := fp.subtype.CanAcceptCard(c); ok {
-			MoveCard(p, fp)
-			break
-		}
-	}
-}
-
-func (self *Core) GenericCollect() {
-	for _, fp := range TheBaize.script.Foundations() {
-		for {
-			// loop to get as many cards as possible from this core
-			if self.Empty() {
-				return
-			}
-			if ok, _ := fp.subtype.CanAcceptCard(self.Peek()); !ok {
-				// this foundation doesn't want this card; onto the next one
-				break
-			}
-			MoveCard(self, fp)
-		}
-	}
-}
-
 // BuryCards moves cards with the specified ordinal to the beginning of the core
 func (self *Core) BuryCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(self.cards))
@@ -512,6 +527,7 @@ func (self *Core) BuryCards(ordinal int) {
 	for i := 0; i < len(tmp); i++ {
 		self.Push(tmp[i])
 	}
+	// nb the card owner does not change
 }
 
 func (self *Core) DrawStaticCards(screen *ebiten.Image) {
@@ -552,27 +568,28 @@ func (self *Core) Update() {
 	}
 }
 
-func (self *Core) CreateBackgroundImage() *ebiten.Image {
+func (self *Core) CreateBackgroundImage() {
+	self.img = nil
 	if CardWidth == 0 || CardHeight == 0 {
 		println("zero dimension in CreateCardShadowImage, unliked in wasm")
-		return nil
+		return
 		// log.Panic("zero dimension in CreateCardShadowImage, unliked in wasm")
 	}
 	if self.Hidden() {
 		// off-screen? don't bother
-		return nil
+		return
 	}
-	if _, ok := (self.subtype).(*Reserve); ok {
+	if self.category == "Reserve" {
 		// don't draw anything for reserve cores
-		return nil
+		return
 	}
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(color.NRGBA{255, 255, 255, 31})
 	dc.SetLineWidth(2)
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	switch (self.subtype).(type) {
-	case *Discard:
+	switch self.category {
+	case "Discard":
 		dc.Fill()
 	default:
 		if self.symbol != 0 {
@@ -586,7 +603,7 @@ func (self *Core) CreateBackgroundImage() *ebiten.Image {
 		}
 	}
 	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
+	self.img = ebiten.NewImageFromImage(dc.Image())
 }
 
 func (self *Core) Draw(screen *ebiten.Image) {
@@ -596,9 +613,6 @@ func (self *Core) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
 	if self.target && len(self.cards) == 0 {
-		// oself.GeoM.Translate(-4, -4)
-		// screen.DrawImage(CardHighlightImage, op)
-		// oself.GeoM.Translate(4, 4)
 		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
 	}
 

@@ -64,10 +64,10 @@ func (stats *VariantStatistics) generalToasts() []string {
 		toasts = append(toasts, fmt.Sprintf("Your average score is %d%%", avpc))
 	}
 
-	if stats.CurrStreak > 0 {
+	if stats.CurrStreak > 1 {
 		toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
 	}
-	if stats.CurrStreak < 0 {
+	if stats.CurrStreak < 1 {
 		toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
 	}
 

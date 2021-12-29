@@ -73,12 +73,12 @@ func (yuk *Yukon) StartGame() {
 
 func (*Yukon) AfterMove() {}
 
-func (*Yukon) TailMoveError(tail []*Card) (bool, error) {
+func (*Yukon) TailMoveError([]*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Yukon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch (dst.subtype).(type) {
+func (*Yukon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
@@ -95,13 +95,13 @@ func (*Yukon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Yukon) UnsortedPairs(pile *Pile) int {
+func (*Yukon) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColor)
 }
 
 func (*Yukon) TailTapped(tail []*Card) {
-	var pile *Pile = tail[0].Owner()
-	pile.subtype.TailTapped(tail)
+	var pile Pile = tail[0].Owner()
+	pile.TailTapped(tail)
 }
 
-func (*Yukon) PileTapped(pile *Pile) {}
+func (*Yukon) PileTapped(Pile) {}

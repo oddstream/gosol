@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"errors"
@@ -8,43 +9,44 @@ import (
 )
 
 type Reserve struct {
-	pile *Pile
+	Core
 }
 
-func NewReserve(slot image.Point, fanType FanType) *Pile {
-	p := &Pile{}
-	p.Ctor(&Reserve{pile: p}, "Reserve", slot, fanType, MOVE_ONE)
-	return p
+func NewReserve(slot image.Point, fanType FanType) *Reserve {
+	reserve := &Reserve{Core: NewCore("Reserve", slot, fanType, MOVE_ONE)}
+	reserve.iface = reserve
+	TheBaize.AddPile(reserve)
+	return reserve
 }
 
-func (r *Reserve) CanAcceptCard(card *Card) (bool, error) {
+func (*Reserve) CanAcceptCard(card *Card) (bool, error) {
 	return false, errors.New("Cannot add a card to a Reserve")
 }
 
-func (r *Reserve) CanAcceptTail(tail []*Card) (bool, error) {
+func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {
 	return false, errors.New("Cannot add a card to a Reserve")
 }
 
-func (r *Reserve) TailTapped(tail []*Card) {
-	r.pile.GenericTailTapped(tail)
+func (self *Reserve) TailTapped(tail []*Card) {
+	GenericTailTapped(self, tail)
 }
 
-func (r *Reserve) Collect() {
-	r.pile.GenericCollect()
+func (self *Reserve) Collect() {
+	GenericCollect(self)
 }
 
-func (r *Reserve) Conformant() bool {
-	return r.pile.Len() < 2
+func (self *Reserve) Conformant() bool {
+	return self.Len() < 2
 }
 
-func (r *Reserve) Complete() bool {
-	return r.pile.Empty()
+func (self *Reserve) Complete() bool {
+	return self.Empty()
 }
 
-func (r *Reserve) UnsortedPairs() int {
+func (self *Reserve) UnsortedPairs() int {
 	// Reserve (like Stock) is always considered unsorted
-	if r.pile.Empty() {
+	if self.Empty() {
 		return 0
 	}
-	return r.pile.Len() - 1
+	return self.Len() - 1
 }

@@ -1,81 +1,102 @@
 package sol
 
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
+
 import (
+	"fmt"
 	"image"
 
 	"oddstream.games/gomps5/util"
 )
 
-func (b *Baize) FindBuddyPiles() {
-	for _, p1 := range b.piles {
-		switch (p1.subtype).(type) {
-		case *Tableau, *Reserve:
-			p1.buddyPos = image.Point{0, 0}
-			for _, p2 := range b.piles {
-				switch (p2.subtype).(type) {
-				case *Tableau, *Reserve:
-					switch p1.fanType {
-					case FAN_DOWN:
-						if p1.slot.X == p2.slot.X && p2.slot.Y > p1.slot.Y {
-							p1.buddyPos = p2.pos
-						}
-					case FAN_LEFT:
-						if p1.slot.Y == p2.slot.Y && p2.slot.X < p1.slot.X {
-							p1.buddyPos = p2.pos
-						}
-					case FAN_RIGHT:
-						if p1.slot.Y == p2.slot.Y && p2.slot.X > p1.slot.X {
-							p1.buddyPos = p2.pos
-						}
-					}
-				}
-			}
-		}
-	}
-}
+// func (b *Baize) FindBuddyPiles() {
+// 	for _, p1 := range b.piles {
+// 		switch (p1).(type) {
+// 		case *Tableau, *Reserve:
+// 			p1.buddyPos = image.Point{0, 0}
+// 			for _, p2 := range b.piles {
+// 				switch (p2).(type) {
+// 				case *Tableau, *Reserve:
+// 					switch p1.fanType {
+// 					case FAN_DOWN:
+// 						if p1.slot.X == p2.slot.X && p2.slot.Y > p1.slot.Y {
+// 							p1.buddyPos = p2.pos
+// 						}
+// 					case FAN_LEFT:
+// 						if p1.slot.Y == p2.slot.Y && p2.slot.X < p1.slot.X {
+// 							p1.buddyPos = p2.pos
+// 						}
+// 					case FAN_RIGHT:
+// 						if p1.slot.Y == p2.slot.Y && p2.slot.X > p1.slot.X {
+// 							p1.buddyPos = p2.pos
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
+// func (b *Baize) CalcScrunchDims(w, h int) {
+// 	for _, pile := range b.piles {
+// 		switch (pile).(type) {
+// 		case *Tableau, *Reserve:
+// 			switch pile.FanType() {
+// 			case FAN_DOWN:
+// 				if pile.buddyPos.Y != 0 {
+// 					pile.scrunchDims.Y = pile.buddyPos.Y - pile.pos.Y
+// 				} else {
+// 					// baize->dragOffset is always -ve
+// 					pile.scrunchDims.Y = h - pile.pos.Y + util.Abs(b.dragOffset.Y)
+// 				}
+// 			case FAN_LEFT:
+// 				if pile.buddyPos.X != 0 {
+// 					pile.scrunchDims.X = pile.buddyPos.X - pile.pos.X
+// 				} else {
+// 					pile.scrunchDims.X = pile.pos.X
+// 				}
+// 			case FAN_RIGHT:
+// 				if pile.buddyPos.X != 0 {
+// 					pile.scrunchDims.X = pile.buddyPos.X - pile.pos.X
+// 				} else {
+// 					// baize->dragOffset is always -ve
+// 					pile.scrunchDims.X = w - pile.pos.X + util.Abs(b.dragOffset.X)
+// 				}
+// 			}
+// 			pile.fanFactor = DefaultFanFactor[pile.fanType]
+// 		}
+// 	}
+// }
 func (b *Baize) CalcScrunchDims(w, h int) {
-	for _, p := range b.piles {
-		switch (p.subtype).(type) {
+	for _, pile := range b.piles {
+		switch (pile).(type) {
 		case *Tableau, *Reserve:
-			switch p.fanType {
+			switch pile.FanType() {
 			case FAN_DOWN:
-				if p.buddyPos.Y != 0 {
-					p.scrunchDims.Y = p.buddyPos.Y - p.pos.Y
-				} else {
-					// baize->dragOffset is always -ve
-					p.scrunchDims.Y = h - p.pos.Y + util.Abs(b.dragOffset.Y)
-				}
+				// baize->dragOffset is always -ve
+				pile.SetScrunchDims(image.Point{X: 0, Y: h - pile.BaizePos().Y + util.Abs(b.dragOffset.Y)})
 			case FAN_LEFT:
-				if p.buddyPos.X != 0 {
-					p.scrunchDims.X = p.buddyPos.X - p.pos.X
-				} else {
-					p.scrunchDims.X = p.pos.X
-				}
+				pile.SetScrunchDims(image.Point{X: pile.BaizePos().X, Y: 0})
 			case FAN_RIGHT:
-				if p.buddyPos.X != 0 {
-					p.scrunchDims.X = p.buddyPos.X - p.pos.X
-				} else {
-					// baize->dragOffset is always -ve
-					p.scrunchDims.X = w - p.pos.X + util.Abs(b.dragOffset.X)
-				}
+				// baize->dragOffset is always -ve
+				pile.SetScrunchDims(image.Point{X: w - pile.BaizePos().X + util.Abs(b.dragOffset.X), Y: 0})
 			}
-			p.fanFactor = DefaultFanFactor[p.fanType]
+			pile.SetFanFactor(DefaultFanFactor[pile.FanType()])
 		}
 	}
 }
 
 // CalcFannedRect calculates the width and height this pile would be if it had a specified fan factor
-func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
+func (self *Core) CalcFannedRect(fanFactor float64) image.Point {
 	dims := image.Point{CardWidth, CardHeight}
-	if len(p.cards) < 2 {
+	if len(self.cards) < 2 {
 		return dims
 	}
-	switch p.fanType {
+	switch self.fanType {
 	case FAN_NONE:
 		// well, that was easy
 	case FAN_DOWN3:
-		switch len(p.cards) {
+		switch len(self.cards) {
 		case 0, 1:
 		case 2:
 			dims.Y += int(float64(CardHeight) / CARD_FACE_FAN_FACTOR_V)
@@ -83,7 +104,7 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 			dims.Y += int(float64(CardHeight)/CARD_FACE_FAN_FACTOR_V) * 2
 		}
 	case FAN_LEFT3, FAN_RIGHT3:
-		switch len(p.cards) {
+		switch len(self.cards) {
 		case 0, 1:
 		case 2:
 			dims.X += int(float64(CardWidth) / CARD_FACE_FAN_FACTOR_H)
@@ -91,8 +112,8 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 			dims.X += int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H) * 2
 		}
 	case FAN_DOWN:
-		for i := 0; i < len(p.cards)-1; i++ {
-			c := p.cards[i]
+		for i := 0; i < len(self.cards)-1; i++ {
+			c := self.cards[i]
 			if c.Prone() {
 				dims.Y += int(float64(CardHeight) / CARD_BACK_FAN_FACTOR)
 			} else {
@@ -100,8 +121,8 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 			}
 		}
 	case FAN_LEFT, FAN_RIGHT:
-		for i := 0; i < len(p.cards)-1; i++ {
-			c := p.cards[i]
+		for i := 0; i < len(self.cards)-1; i++ {
+			c := self.cards[i]
 			if c.Prone() {
 				dims.X += int(float64(CardWidth) / CARD_BACK_FAN_FACTOR)
 			} else {
@@ -112,36 +133,41 @@ func (p *Pile) CalcFannedRect(fanFactor float64) image.Point {
 	return dims
 }
 
-func (p *Pile) Scrunch() {
+func (self *Core) Scrunch() {
 
 	if NoScrunch {
 		goto RefanAndReturn
 	}
 
-	if len(p.cards) > 2 && (p.scrunchDims.X > CardWidth || p.scrunchDims.Y > CardWidth) {
+	if len(self.cards) > 2 && (self.scrunchDims.X > CardWidth || self.scrunchDims.Y > CardWidth) {
+		var nloops int
 		var fanFactor float64
-		for fanFactor = DefaultFanFactor[p.fanType]; fanFactor < 7.0; fanFactor += 0.5 {
-			dims := p.CalcFannedRect(fanFactor)
-			switch p.fanType {
+		for fanFactor = DefaultFanFactor[self.fanType]; fanFactor < 7.0; fanFactor += 0.5 {
+			dims := self.CalcFannedRect(fanFactor)
+			switch self.fanType {
 			case FAN_DOWN:
-				if dims.Y < p.scrunchDims.Y {
+				if dims.Y < self.scrunchDims.Y {
 					goto exitloop
 				}
 			case FAN_LEFT, FAN_RIGHT:
-				if dims.X < p.scrunchDims.X {
+				if dims.X < self.scrunchDims.X {
 					goto exitloop
 				}
 			default:
 				goto exitloop
 			}
+			nloops++
 			println("going around again", fanFactor)
 		}
 	exitloop:
-		p.fanFactor = fanFactor
+		self.fanFactor = fanFactor
+		if DebugMode && nloops > 0 {
+			fmt.Printf("%d loops to go from %.f to %.f\n", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
+		}
 	}
 
 RefanAndReturn:
-	p.Refan()
+	self.Refan()
 }
 
 func (b *Baize) Scrunch() {

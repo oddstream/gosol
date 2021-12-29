@@ -6,27 +6,38 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type PileInterface interface { // TODO rename to "Pile"
+type Pile interface {
 	// implemented by Core
 	Valid() bool
 	Reset()
 	Hidden() bool
 	IsStock() bool
 	IsTableau() bool
+	Cards() []*Card
+	MoveType() MoveType
+	FanType() FanType
+	SetFanType(FanType)
+	FanFactor() float64
+	SetFanFactor(float64)
+	SetScrunchDims(image.Point)
 	Label() string
 	SetLabel(string)
 	Rune() rune
 	SetRune(rune)
+	Target() bool
+	SetTarget(bool)
 	Empty() bool
 	Len() int
 	Less(int, int) bool
 	Swap(int, int)
 	Get(int) *Card
 	Append(*Card)
+	Delete(int)
 	Peek() *Card
 	Pop() *Card
 	Push(*Card)
 	Slot() image.Point
+	SetSlot(image.Point)
 	SetBaizePos(image.Point)
 	BaizePos() image.Point
 	BaizeRect() image.Rectangle
@@ -34,14 +45,16 @@ type PileInterface interface { // TODO rename to "Pile"
 	FannedBaizeRect() image.Rectangle
 	FannedScreenRect() image.Rectangle
 	PosAfter(*Card) image.Point
+	Scrunch()
 	Refan()
 	IndexOf(*Card) int
 	CanMoveTail([]*Card) (bool, error)
 	MakeTail(*Card) []*Card
 	ApplyToCards(func(*Card))
-	GenericTailTapped([]*Card)
-	GenericCollect()
 	BuryCards(int)
+
+	Savable() *SavablePile
+	UpdateFromSavable(*SavablePile)
 
 	DrawStaticCards(*ebiten.Image)
 	DrawTransitioningCards(*ebiten.Image)
@@ -49,7 +62,7 @@ type PileInterface interface { // TODO rename to "Pile"
 	DrawDraggingCards(*ebiten.Image)
 
 	Update()
-	CreateBackgroundImage() *ebiten.Image
+	CreateBackgroundImage()
 	Draw(*ebiten.Image)
 
 	// implemented by Cell, Discard, Foundation, Reserve, Stock, Tableau, Waste
