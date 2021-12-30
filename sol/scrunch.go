@@ -157,12 +157,11 @@ func (self *Core) Scrunch() {
 				goto exitloop
 			}
 			nloops++
-			println("going around again", fanFactor)
 		}
 	exitloop:
 		self.fanFactor = fanFactor
 		if DebugMode && nloops > 0 {
-			fmt.Printf("%d loops to go from %.f to %.f\n", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
+			fmt.Printf("%d loops to go from %f to %f\n", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
 		}
 	}
 

@@ -20,7 +20,7 @@ func (*Freecell) Info() *VariantInfo {
 
 func (fc *Freecell) BuildPiles() {
 
-	fc.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
+	fc.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 
 	fc.cells = nil
 	for x := 0; x < 4; x++ {
@@ -42,28 +42,16 @@ func (fc *Freecell) BuildPiles() {
 }
 
 func (fc *Freecell) StartGame() {
-	if fc.easy {
-		MoveNamedCard(CLUB, 1, fc.foundations[0])
-		MoveNamedCard(DIAMOND, 1, fc.foundations[1])
-		MoveNamedCard(HEART, 1, fc.foundations[2])
-		MoveNamedCard(SPADE, 1, fc.foundations[3])
-		for _, pile := range fc.tableaux {
-			for j := 0; j < 6; j++ {
-				MoveCard(fc.stock, pile)
-			}
+	for i := 0; i < 4; i++ {
+		pile := fc.tableaux[i]
+		for j := 0; j < 7; j++ {
+			MoveCard(fc.stock, pile)
 		}
-	} else {
-		for i := 0; i < 4; i++ {
-			pile := fc.tableaux[i]
-			for j := 0; j < 7; j++ {
-				MoveCard(fc.stock, pile)
-			}
-		}
-		for i := 4; i < 8; i++ {
-			pile := fc.tableaux[i]
-			for j := 0; j < 6; j++ {
-				MoveCard(fc.stock, pile)
-			}
+	}
+	for i := 4; i < 8; i++ {
+		pile := fc.tableaux[i]
+		for j := 0; j < 6; j++ {
+			MoveCard(fc.stock, pile)
 		}
 	}
 	if fc.stock.Len() > 0 {

@@ -14,20 +14,19 @@ type Waste struct {
 
 func NewWaste(slot image.Point, fanType FanType) *Waste {
 	waste := &Waste{Core: NewCore("Waste", slot, fanType, MOVE_ONE)}
-	waste.iface = waste
 	TheBaize.AddPile(waste)
 	return waste
 }
 
 func (*Waste) CanAcceptCard(card *Card) (bool, error) {
-	if !card.owner.IsStock() {
+	if !card.Owner().IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil
 }
 
 func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {
-	if !tail[0].owner.IsStock() {
+	if !tail[0].Owner().IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil

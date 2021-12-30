@@ -40,8 +40,8 @@ func (self *Core) UpdateFromSavable(sp *SavablePile) {
 		for i := 0; i < len(CardLibrary); i++ {
 			if SameCardAndPack(cid, CardLibrary[i].ID) {
 				c := &CardLibrary[i]
-				// c.SetProne(cid.Prone())
 				self.Push(c)
+				// Push() may have flipped the card, so do this afterwards ...
 				if cid.Prone() {
 					c.FlipDown()
 				} else {

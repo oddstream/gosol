@@ -79,7 +79,6 @@ type Core struct {
 	label  string
 	symbol rune
 	img    *ebiten.Image
-	iface  Pile // don't like doing this, just for Card.owner at the moment?
 	target bool // experimental, might delete later, IDK
 }
 
@@ -253,7 +252,7 @@ func (self *Core) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.SetOwner(self.iface) // TODO ugly and smelly
+	c.SetOwner(FindCardOwner(c))
 	c.TransitionTo(pos)
 
 	if self.IsStock() {
@@ -350,6 +349,7 @@ func (self *Core) FannedScreenRect() image.Rectangle {
 // PosAfter returns the position of the next card
 func (self *Core) PosAfter(c *Card) image.Point {
 	if len(self.cards) == 0 {
+		println("Panic! PosAfter called in impossible way")
 		return self.pos
 	}
 	var pos image.Point
@@ -358,10 +358,12 @@ func (self *Core) PosAfter(c *Card) image.Point {
 	} else {
 		pos = c.pos
 	}
-	// TODO
-	// if pos.X == 0 && pos.Y == 0 {
-	// 	println("zero pos in PosAfter", self.category)
-	// }
+	if pos.X <= 0 && pos.Y <= 0 {
+		// the card is still at 0,0 where it started life
+		// and is yet to have pos calculated from the pile slot
+		// println("zero pos in PosAfter", self.category)
+		return pos
+	}
 	switch self.fanType {
 	case FAN_NONE:
 		// nothing to do
@@ -523,10 +525,11 @@ func (self *Core) BuryCards(ordinal int) {
 			tmp = append(tmp, c)
 		}
 	}
-	self.cards = self.cards[:0] // keep the underlying array, slice the slice to zero length
+	self.Reset()
 	for i := 0; i < len(tmp); i++ {
 		self.Push(tmp[i])
 	}
+	self.Refan()
 	// nb the card owner does not change
 }
 

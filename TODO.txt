@@ -6,12 +6,14 @@ https://calver.org/
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
   Pile.owner
- grep .subtype).(type) or ).(*Stock) or .pile. in p_*.go
  having Generic functions doesn't seem quite right
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
 
-[Variants]
+[ANDROID]
+https://github.com/golang/go/wiki/Mobile
+
+[VARIANTS]
   Assembly
   Beleaguered Castle
   Blockade
@@ -38,9 +40,8 @@ https://calver.org/
   Russian?
 
 [REMODEL]
-grep iface
 buddyPiles
-pile generics AND extras?
+extras?
 Pile.Cards() is only used once, in UnsortedPairs
 
 [TODO]
@@ -66,6 +67,8 @@ Pile.Cards() is only used once, in UnsortedPairs
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x sound when recording a lost game
+x initial deal slower and more chaotic? card start from the middle of the screen?
 x Baize.SetRecycles() that also sets rune
 x BUG Penguin leaving a beak ordinal card in stock
 x move recycles from Stock to Pile

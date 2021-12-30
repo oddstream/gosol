@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec // indirect
-	github.com/hajimehoshi/oto/v2 v2.1.0-alpha.4 // indirect
+	github.com/hajimehoshi/oto/v2 v2.1.0-alpha.5 // indirect
 	github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 // indirect
 	golang.org/x/exp v0.0.0-20211221223016-e29036178569 // indirect
 	golang.org/x/mobile v0.0.0-20211207041440-4e6c2922fdee // indirect

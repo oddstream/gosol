@@ -85,6 +85,9 @@ var cardTakeOutPackage2Bytes []byte
 //go:embed assets/complete.wav
 var completeBytes []byte
 
+//go:embed assets/488797__phonosupf__piano-chord-8.wav
+var failBytes []byte
+
 var audioContext *audio.Context
 
 var soundMap map[string]*audio.Player
@@ -136,6 +139,7 @@ func init() {
 	decode("TakeOutPackage1", cardTakeOutPackage1Bytes)
 	decode("TakeOutPackage2", cardTakeOutPackage2Bytes)
 	decode("Complete", completeBytes)
+	decode("Fail", failBytes)
 }
 
 var soundRandomizer = map[string]int{
@@ -147,6 +151,7 @@ var soundRandomizer = map[string]int{
 	"Slide":          8,
 	"TakeOutPackage": 2,
 	"Complete":       0,
+	"Fail":           0,
 }
 
 func SetVolume(vol float64) {

@@ -84,7 +84,7 @@ type Stroke struct {
 type EventType int
 
 const (
-	Start EventType = iota
+	Start EventType = iota + 1
 	Move
 	Tap
 	Stop

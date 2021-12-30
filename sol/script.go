@@ -18,7 +18,6 @@ type ScriptBase struct {
 	foundations []*Foundation
 	reserves    []*Reserve
 	tableaux    []*Tableau
-	easy        bool
 }
 
 func (sb ScriptBase) Stock() *Stock {
@@ -76,7 +75,7 @@ var Variants = map[string]ScriptInterface{
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
 	"Thoughtful":          &Klondike{draw: 1, recycles: 32767, thoughtful: true},
-	"Easy":                &Easy{ScriptBase: ScriptBase{easy: true}},
+	"Easy":                &Easy{},
 	"Eight Off":           &EightOff{},
 	"Freecell":            &Freecell{},
 	"Forty Thieves": &FortyThieves{

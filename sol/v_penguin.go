@@ -23,7 +23,7 @@ func (*Penguin) Info() *VariantInfo {
 func (pen *Penguin) BuildPiles() {
 
 	// hidden (off-screen) stock
-	pen.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
+	pen.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
 	pen.waste = nil
 
 	// the flipper, seven cells

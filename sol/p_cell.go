@@ -14,7 +14,6 @@ type Cell struct {
 
 func NewCell(slot image.Point) *Cell {
 	cell := &Cell{Core: NewCore("Stock", slot, FAN_NONE, MOVE_ONE)}
-	cell.iface = cell
 	TheBaize.AddPile(cell)
 	return cell
 }

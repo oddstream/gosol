@@ -23,6 +23,8 @@ const (
 	flipStepAmount = 0.075 // flipStepAmount is the amount we shrink/grow the flipping card width every tick
 )
 
+var CardStartPoint image.Point = image.Point{400, -100}
+
 /*
 	Cards have several states: idle, being dragged, transitioning, shaking, spinning, flipping
 	You'd think that cards should have a 'state' enum, but the states can overlap (eg a card
@@ -56,7 +58,7 @@ type Card struct {
 
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
-	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal)}
+	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: CardStartPoint}
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
 	return c
@@ -131,14 +133,19 @@ func (c *Card) TransitionTo(pos image.Point) {
 	// the further the card has to travel, the smaller the lerp step amount
 	// eg when dropping a card onto a pile
 	// or moving a card from stock to waste
-	dist := util.Distance(c.src, c.dst)
-	if int(dist) < CardWidth {
-		c.lerpStep = lerpStartClose
-		c.lerpStepAmount = normalSpeed
-		// println("fast", dist, c.String())
-	} else {
+	if c.src.X < 0 || c.src.Y < 0 {
 		c.lerpStep = lerpStartNormal
-		c.lerpStepAmount = normalSpeed
+		c.lerpStepAmount = slowSpeed
+	} else {
+		dist := util.Distance(c.src, c.dst)
+		if int(dist) < CardWidth {
+			c.lerpStep = lerpStartClose
+			c.lerpStepAmount = normalSpeed
+			// println("fast", dist, c.String())
+		} else {
+			c.lerpStep = lerpStartNormal
+			c.lerpStepAmount = normalSpeed
+		}
 	}
 }
 
@@ -284,7 +291,6 @@ func (c *Card) Update() error {
 		c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
 		c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
 		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
-			// c.SetBaizePos(c.dst)
 			c.pos = c.dst
 			c.src = image.Point{0, 0}
 		}
@@ -401,7 +407,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
 	}
 
-	if c.owner.Target() && c == c.owner.Peek() {
+	if c.Owner().Target() && c == c.Owner().Peek() {
 		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
 		// 	op.GeoM.Translate(-4, -4)
 		// 	screen.DrawImage(CardHighlightImage, op)

@@ -14,7 +14,6 @@ type Foundation struct {
 
 func NewFoundation(slot image.Point, fanType FanType) *Foundation {
 	foundation := &Foundation{Core: NewCore("Foundation", slot, fanType, MOVE_NONE)}
-	foundation.iface = foundation
 	TheBaize.AddPile(foundation)
 	return foundation
 }

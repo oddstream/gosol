@@ -124,6 +124,8 @@ github.com/hajimehoshi/oto v0.6.8/go.mod h1:0QXGEkbuJRohbJaxr7ZQSxnju7hEhseiPx2h
 github.com/hajimehoshi/oto/v2 v2.1.0-alpha.2/go.mod h1:rUKQmwMkqmRxe+IAof9+tuYA2ofm8cAWXFmSfzDN8vQ=
 github.com/hajimehoshi/oto/v2 v2.1.0-alpha.4 h1:6NIzk6tIJIOUB7mB00FtE5pz0Yt9LDBPcGirBIteJsI=
 github.com/hajimehoshi/oto/v2 v2.1.0-alpha.4/go.mod h1:rUKQmwMkqmRxe+IAof9+tuYA2ofm8cAWXFmSfzDN8vQ=
+github.com/hajimehoshi/oto/v2 v2.1.0-alpha.5 h1:AwLKf51fpOTVIBxgQUvNokmj/IaYMYsqJQBh6wif1c8=
+github.com/hajimehoshi/oto/v2 v2.1.0-alpha.5/go.mod h1:rUKQmwMkqmRxe+IAof9+tuYA2ofm8cAWXFmSfzDN8vQ=
 github.com/hashicorp/consul/api v1.3.0/go.mod h1:MmDNSzIMUjNpY/mQ398R4bk2FnqQLoPndWW5VkKPlCE=
 github.com/hashicorp/consul/sdk v0.3.0/go.mod h1:VKf9jXwCTEY1QZP2MOLRhb5i/I/ssyNV1vwHyQBF0x8=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=

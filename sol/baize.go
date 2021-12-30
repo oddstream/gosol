@@ -281,7 +281,7 @@ func (b *Baize) LargestIntersection(c *Card) Pile {
 	var pile Pile = nil
 	cardRect := c.BaizeRect()
 	for _, p := range b.piles {
-		if p == c.owner {
+		if p == c.Owner() {
 			continue
 		}
 		pileRect := p.FannedBaizeRect()
@@ -346,7 +346,6 @@ func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
 	if b.Complete() {
-		sound.Play("Complete")
 		TheStatistics.RecordWonGame(b.LongVariantName())
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
@@ -791,6 +790,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			b.clearFlag(dirtyScrunch)
 		}
 		if b.flagSet(dirtyWindowSize) {
+			CardStartPoint.X = (outsideWidth / 2) - (CardWidth / 2)
 			TheUI.Layout(outsideWidth, outsideHeight)
 			b.clearFlag(dirtyWindowSize)
 		}
@@ -874,7 +874,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	if DebugMode {
 		if ebiten.IsMouseButtonPressed(1) {
 			if c := b.FindCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
-				p := c.owner
+				p := c.Owner()
 				index := p.IndexOf(c)
 				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, index=%d",
 					c.String(),

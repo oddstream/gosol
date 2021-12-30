@@ -51,7 +51,6 @@ func (bd *BakersDozen) StartGame() {
 		}
 		// demote kings
 		tab.BuryCards(13)
-		tab.Refan()
 	}
 
 	if bd.stock.Len() > 0 {

@@ -14,7 +14,6 @@ type Discard struct {
 
 func NewDiscard(slot image.Point, fanType FanType) *Discard {
 	discard := &Discard{Core: NewCore("Discard", slot, FAN_NONE, MOVE_NONE)}
-	discard.iface = discard
 	TheBaize.AddPile(discard)
 	return discard
 }

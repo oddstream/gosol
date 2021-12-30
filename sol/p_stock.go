@@ -62,8 +62,8 @@ func (self *Stock) FillFromLibrary() {
 		// the following mimics Base.Push
 		self.Append(c)
 		c.SetOwner(self)
-		c.pos = self.BaizePos() // start at the Stock pile position
-		c.src = image.Point{0, 0}
+		c.pos = CardStartPoint
+		c.src = c.pos
 		c.dst = c.pos
 		c.SetProne(true)
 		// s.Push(c)
@@ -92,7 +92,6 @@ func (self *Stock) Shuffle() {
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Stock {
 	CreateCardLibrary(packs, suits, cardFilter)
 	stock := &Stock{Core: NewCore("Stock", slot, fanType, MOVE_ONE)}
-	stock.iface = stock
 	stock.FillFromLibrary()
 	stock.Shuffle()
 	TheBaize.AddPile(stock)

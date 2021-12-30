@@ -3,6 +3,7 @@ package sol
 import (
 	"fmt"
 
+	"oddstream.games/gomps5/sound"
 	"oddstream.games/gomps5/util"
 )
 
@@ -93,6 +94,7 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 
 func (s *Statistics) RecordWonGame(v string) {
 
+	sound.Play("Complete")
 	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", v))
 
 	stats := s.findVariant(v)
@@ -123,6 +125,7 @@ func (s *Statistics) RecordLostGame(v string) {
 		println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
 
+	sound.Play("Fail")
 	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
 
 	stats := s.findVariant(v)

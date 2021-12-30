@@ -17,7 +17,6 @@ type Tableau struct {
 
 func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Tableau {
 	tableau := &Tableau{Core: NewCore("Tableau", slot, fanType, moveType)}
-	tableau.iface = tableau
 	TheBaize.AddPile(tableau)
 	return tableau
 }

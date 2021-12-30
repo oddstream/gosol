@@ -14,7 +14,6 @@ type Reserve struct {
 
 func NewReserve(slot image.Point, fanType FanType) *Reserve {
 	reserve := &Reserve{Core: NewCore("Reserve", slot, fanType, MOVE_ONE)}
-	reserve.iface = reserve
 	TheBaize.AddPile(reserve)
 	return reserve
 }

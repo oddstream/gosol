@@ -6,6 +6,18 @@ import (
 	"oddstream.games/gomps5/sound"
 )
 
+func FindCardOwner(card *Card) Pile {
+	for _, pile := range TheBaize.piles {
+		for _, c := range pile.Cards() {
+			if c == card {
+				return pile
+			}
+		}
+	}
+	log.Panic("Cannot find card")
+	return nil
+}
+
 func AnyCardsProne(cards []*Card) bool {
 	for _, c := range cards {
 		if c.Prone() {
@@ -52,7 +64,7 @@ func MoveNamedCard(suit, ordinal int, dst Pile) {
 	}
 
 	// 2.find the card in it's owning pile
-	var src Pile = c.owner
+	var src Pile = c.Owner()
 	var index int = src.IndexOf(c)
 	if index == -1 {
 		println("Could not find card", c.String(), "in pile")
