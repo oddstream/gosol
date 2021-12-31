@@ -17,9 +17,6 @@ type Pile interface {
 	MoveType() MoveType
 	FanType() FanType
 	SetFanType(FanType)
-	FanFactor() float64
-	SetFanFactor(float64)
-	SetScrunchDims(image.Point)
 	Label() string
 	SetLabel(string)
 	Rune() rune

@@ -42,7 +42,9 @@ func MoveCard(src Pile, dst Pile) *Card {
 		dst.Push(c)
 		FlipUpExposedCard(src)
 		src.Scrunch()
+		src.Refan()
 		dst.Scrunch()
+		dst.Refan()
 		return c
 	}
 	return nil
@@ -80,7 +82,9 @@ func MoveNamedCard(suit, ordinal int, dst Pile) {
 	dst.Push(c)
 	FlipUpExposedCard(src)
 	src.Scrunch()
+	src.Refan()
 	dst.Scrunch()
+	dst.Refan()
 }
 
 func MoveCards(src Pile, moveFromIndex int, dst Pile) {
@@ -108,7 +112,9 @@ func MoveCards(src Pile, moveFromIndex int, dst Pile) {
 	}
 
 	src.Scrunch()
+	src.Refan()
 	dst.Scrunch()
+	dst.Refan()
 }
 
 func GenericTailTapped(self Pile, tail []*Card) {

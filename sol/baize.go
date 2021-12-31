@@ -508,18 +508,24 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 func (b *Baize) InputTap(v input.StrokeEvent) {
 	// println("Baize.NotifyCallback() tap", v.X, v.Y)
 	// a tap outside any open ui drawer (ie on the baize) closes the drawer
-	switch obj := v.Stroke.DraggedObject().(type) { // type switch
+	switch obj := v.Stroke.DraggedObject().(type) {
 	case *Card:
-		crc := b.CRC()
 		// offer TailTapped to the script first
 		// to implement things like Stock.TailTapped
 		// if the script doesn't want to do anything, it can call pile.subtype.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
 		// or use Pile.GenericTailTapped to try to collect a card to Foundation (eg Tableau)
-		b.script.TailTapped(b.tail)
-		if crc != b.CRC() {
-			sound.Play("Slide")
-			b.AfterUserMove()
+		if len(b.tail) == 1 && b.tail[0].Spinning() {
+			// won't work on face down cards,
+			// because CanMoveTail prohibits dragging a tail with any prone cards
+			b.tail[0].Flip()
+		} else {
+			crc := b.CRC()
+			b.script.TailTapped(b.tail)
+			if crc != b.CRC() {
+				sound.Play("Slide")
+				b.AfterUserMove()
+			}
 		}
 		b.StopTailDrag()
 	case Pile:
@@ -785,8 +791,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			b.clearFlag(dirtyPileBackgrounds)
 		}
 		if b.flagSet(dirtyScrunch) {
-			b.CalcScrunchDims(outsideWidth, outsideHeight)
-			b.Scrunch()
+			for _, p := range b.piles {
+				p.Scrunch()
+				p.Refan()
+			}
 			b.clearFlag(dirtyScrunch)
 		}
 		if b.flagSet(dirtyWindowSize) {
@@ -796,7 +804,8 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		}
 		if b.flagSet(dirtyCardPositions) {
 			for _, p := range b.piles {
-				p.Scrunch() // always does a Refan()
+				p.Scrunch()
+				p.Refan()
 			}
 			b.clearFlag(dirtyCardPositions)
 		}

@@ -45,6 +45,8 @@ extras?
 Pile.Cards() is only used once, in UnsortedPairs
 
 [TODO]
+ variants auto select two/four colors (four if compare by suit?)
+ tap spinning cards to flip them
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
  host WASM version @ oddstream.github.io instead of gosol
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
@@ -67,6 +69,7 @@ Pile.Cards() is only used once, in UnsortedPairs
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x tidy up scrunch (eg don't need a Point, don't need to keep scrunchDims outside of Scrunch, &c)
 x sound when recording a lost game
 x initial deal slower and more chaotic? card start from the middle of the screen?
 x Baize.SetRecycles() that also sets rune

@@ -12,6 +12,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gomps5/schriftbank"
 )
 
@@ -64,17 +65,16 @@ const (
 
 // Base is a generic container for cards
 type Core struct {
-	magic       uint32
-	category    string // just for debugging and checking, never really used
-	slot        image.Point
-	fanType     FanType
-	moveType    MoveType
-	cards       []*Card
-	pos         image.Point
-	pos1        image.Point // waste pos #1
-	pos2        image.Point // waste pos #1
-	fanFactor   float64
-	scrunchDims image.Point
+	magic     uint32
+	category  string // just for debugging and checking, never really used
+	slot      image.Point
+	fanType   FanType
+	moveType  MoveType
+	cards     []*Card
+	pos       image.Point
+	pos1      image.Point // waste pos #1
+	pos2      image.Point // waste pos #1
+	fanFactor float64
 	// buddyPos    image.Point
 	label  string
 	symbol rune
@@ -128,18 +128,6 @@ func (self *Core) FanType() FanType {
 
 func (self *Core) SetFanType(fanType FanType) {
 	self.fanType = fanType
-}
-
-func (self *Core) FanFactor() float64 {
-	return self.fanFactor
-}
-
-func (self *Core) SetFanFactor(fanFactor float64) {
-	self.fanFactor = fanFactor
-}
-
-func (self *Core) SetScrunchDims(scrunchDims image.Point) {
-	self.scrunchDims = scrunchDims
 }
 
 func (self *Core) MoveType() MoveType {
@@ -237,13 +225,12 @@ func (self *Core) Pop() *Card {
 	c.SetOwner(nil)
 	c.FlipUp()
 	self.Scrunch()
+	self.Refan()
 	return c
 }
 
 // Push a Card onto the end of this Pile (a stack)
 func (self *Core) Push(c *Card) {
-	// c.StopSpinning()
-
 	var pos image.Point
 	if len(self.cards) == 0 {
 		pos = self.pos
@@ -259,6 +246,7 @@ func (self *Core) Push(c *Card) {
 		c.FlipDown()
 	}
 	self.Scrunch()
+	self.Refan()
 }
 
 // Slot returns the virtual slot this core is positioned at
@@ -321,9 +309,9 @@ func (self *Core) FannedBaizeRect() image.Rectangle {
 	var r image.Rectangle = self.BaizeRect()
 	if len(self.cards) > 1 {
 		var c *Card = self.Peek()
-		if c.Dragging() {
-			return r
-		}
+		// if c.Dragging() {
+		// 	return r
+		// }
 		var cPos = c.BaizePos()
 		switch self.fanType {
 		case FAN_NONE:
@@ -626,5 +614,21 @@ func (self *Core) Draw(screen *ebiten.Image) {
 			}
 		}
 	}
+
+	if DebugMode {
+		if sz := self.SizeWithFanFactor(self.fanFactor); sz != 0 {
+			switch self.fanType {
+			case FAN_DOWN:
+				rect := self.FannedScreenRect()
+				ebitenutil.DrawRect(screen,
+					float64(rect.Min.X),
+					float64(rect.Min.Y),
+					float64(rect.Max.X-rect.Min.X),
+					float64(sz),
+					color.RGBA{0, 0, 0, 32})
+			}
+		}
+	}
+
 	screen.DrawImage(self.img, op)
 }
