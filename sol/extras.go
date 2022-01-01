@@ -41,10 +41,7 @@ func MoveCard(src Pile, dst Pile) *Card {
 		sound.Play("Place")
 		dst.Push(c)
 		FlipUpExposedCard(src)
-		src.Scrunch()
-		src.Refan()
-		dst.Scrunch()
-		dst.Refan()
+		TheBaize.setFlag(dirtyCardPositions)
 		return c
 	}
 	return nil
@@ -81,12 +78,10 @@ func MoveNamedCard(suit, ordinal int, dst Pile) {
 	c.FlipUp()
 	dst.Push(c)
 	FlipUpExposedCard(src)
-	src.Scrunch()
-	src.Refan()
-	dst.Scrunch()
-	dst.Refan()
+	TheBaize.setFlag(dirtyCardPositions)
 }
 
+// MoveCards is used when dragging a tail from ome pile to another
 func MoveCards(src Pile, moveFromIndex int, dst Pile) {
 
 	oldSrcLen := src.Len()
@@ -111,10 +106,18 @@ func MoveCards(src Pile, moveFromIndex int, dst Pile) {
 		log.Println("nothing happened in MoveCards")
 	}
 
-	src.Scrunch()
-	src.Refan()
-	dst.Scrunch()
-	dst.Refan()
+	TheBaize.setFlag(dirtyCardPositions)
+}
+
+func MoveAllCards(src Pile, dst Pile) {
+	if src.Empty() {
+		return
+	}
+	for i := 0; i < src.Len(); i++ {
+		dst.Push(src.Get(i))
+	}
+	src.Reset()
+	TheBaize.setFlag(dirtyCardPositions)
 }
 
 func GenericTailTapped(self Pile, tail []*Card) {

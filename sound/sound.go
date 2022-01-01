@@ -85,9 +85,6 @@ var cardTakeOutPackage2Bytes []byte
 //go:embed assets/complete.wav
 var completeBytes []byte
 
-//go:embed assets/488797__phonosupf__piano-chord-8.wav
-var failBytes []byte
-
 var audioContext *audio.Context
 
 var soundMap map[string]*audio.Player
@@ -102,7 +99,7 @@ func decode(name string, wavBytes []byte) {
 	if err != nil {
 		log.Panic(err)
 	}
-	audioPlayer, err := audio.NewPlayer(audioContext, d)
+	audioPlayer, err := audioContext.NewPlayer(d)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -139,7 +136,6 @@ func init() {
 	decode("TakeOutPackage1", cardTakeOutPackage1Bytes)
 	decode("TakeOutPackage2", cardTakeOutPackage2Bytes)
 	decode("Complete", completeBytes)
-	decode("Fail", failBytes)
 }
 
 var soundRandomizer = map[string]int{
@@ -151,7 +147,6 @@ var soundRandomizer = map[string]int{
 	"Slide":          8,
 	"TakeOutPackage": 2,
 	"Complete":       0,
-	"Fail":           0,
 }
 
 func SetVolume(vol float64) {
@@ -184,19 +179,3 @@ func Play(name string) {
 		audioPlayer.Play()
 	}
 }
-
-/*
-  _G.OPSOLE_SOUNDS = {
-    complete = audio.loadSound('assets/complete.wav'),
-    deal = audio.loadSound('assets/cardFan1.wav'),
-    load = audio.loadSound('assets/cardFan2.wav'),
-    move1 = audio.loadSound('assets/cardPlace3.wav'),
-    move2 = audio.loadSound('assets/cardPlace4.wav'),
-    move3 = audio.loadSound('assets/cardPlace1.wav'),
-    move4 = audio.loadSound('assets/cardPlace2.wav'),
-    undo = audio.loadSound('assets/cardOpenPackage2.wav'),
-    menuopen = audio.loadSound('assets/cardSlide1.wav'),
-    menuclose = audio.loadSound('assets/cardSlide2.wav'),
-    uitap = audio.loadSound('assets/cardSlide8.wav'),
-  }
-*/

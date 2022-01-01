@@ -96,7 +96,6 @@ func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
 	for i := 0; i < len(ss.Piles); i++ {
 		b.piles[i].UpdateFromSavable(ss.Piles[i])
 		b.piles[i].Scrunch()
-		b.piles[i].Refan()
 	}
 	b.bookmark = ss.Bookmark
 	b.recycles = ss.Recycles

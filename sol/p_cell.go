@@ -13,7 +13,7 @@ type Cell struct {
 }
 
 func NewCell(slot image.Point) *Cell {
-	cell := &Cell{Core: NewCore("Stock", slot, FAN_NONE, MOVE_ONE)}
+	cell := &Cell{Core: NewCore("Cell", slot, FAN_NONE, MOVE_ONE)}
 	TheBaize.AddPile(cell)
 	return cell
 }

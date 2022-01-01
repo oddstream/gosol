@@ -66,7 +66,7 @@ const (
 // Base is a generic container for cards
 type Core struct {
 	magic     uint32
-	category  string // just for debugging and checking, never really used
+	category  string
 	slot      image.Point
 	fanType   FanType
 	moveType  MoveType
@@ -224,8 +224,7 @@ func (self *Core) Pop() *Card {
 	self.cards = self.cards[:len(self.cards)-1]
 	c.SetOwner(nil)
 	c.FlipUp()
-	self.Scrunch()
-	self.Refan()
+	TheBaize.setFlag(dirtyCardPositions)
 	return c
 }
 
@@ -245,8 +244,7 @@ func (self *Core) Push(c *Card) {
 	if self.IsStock() {
 		c.FlipDown()
 	}
-	self.Scrunch()
-	self.Refan()
+	TheBaize.setFlag(dirtyCardPositions)
 }
 
 // Slot returns the virtual slot this core is positioned at

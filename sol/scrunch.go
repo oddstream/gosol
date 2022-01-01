@@ -97,39 +97,36 @@ func (self *Core) SizeWithFanFactor(fanFactor float64) int {
 // only Scrunch piles with fanType LEFT/RIGHT/UP/DOWN, ignore the waste-style piles and those that do not fan
 func (self *Core) Scrunch() {
 
-	if NoScrunch {
-		return
-	}
-
 	self.fanFactor = DefaultFanFactor[self.fanType]
 
-	if len(self.cards) < 2 {
+	if NoScrunch || len(self.cards) < 2 {
+		self.Refan()
 		return
 	}
 
 	var maxPileSize int
-	scpos := self.ScreenPos()
 	switch self.fanType {
 	case FAN_DOWN:
 		// baize->dragOffset is always -ve
 		// statusbar height is 24
 		// maxPileSize = TheBaize.WindowHeight - scpos.Y + util.Abs(TheBaize.dragOffset.Y)
-		maxPileSize = TheBaize.WindowHeight - scpos.Y
+		maxPileSize = TheBaize.WindowHeight - self.ScreenPos().Y + (CardHeight / 2)
 	case FAN_LEFT:
-		maxPileSize = scpos.X
+		maxPileSize = self.ScreenPos().X
 	case FAN_RIGHT:
 		// baize->dragOffset is always -ve
 		// maxPileSize = TheBaize.WindowWidth - scpos.X + util.Abs(TheBaize.dragOffset.X)
-		maxPileSize = TheBaize.WindowWidth - scpos.X
+		maxPileSize = TheBaize.WindowWidth - self.ScreenPos().X
 	}
 	if maxPileSize == 0 {
 		// this pile doesn't need scrunching
+		self.Refan()
 		return
 	}
 
 	var nloops int
 	var fanFactor float64
-	for fanFactor = DefaultFanFactor[self.fanType]; fanFactor < 7.0; fanFactor += 0.5 {
+	for fanFactor = DefaultFanFactor[self.fanType]; fanFactor < 7.0; fanFactor += 0.1 {
 		size := self.SizeWithFanFactor(fanFactor)
 		switch self.fanType {
 		case FAN_DOWN:
@@ -150,4 +147,5 @@ exitloop:
 	if DebugMode && nloops > 0 {
 		fmt.Printf("%d loops to go from %f to %f\n", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
 	}
+	self.Refan()
 }

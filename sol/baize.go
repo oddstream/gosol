@@ -27,7 +27,6 @@ const (
 	dirtyCardImages
 	dirtyPileBackgrounds
 	dirtyCardPositions
-	dirtyScrunch
 )
 
 // Baize object describes the baize
@@ -133,7 +132,7 @@ func (b *Baize) NewDeal() {
 	b.UndoPush()
 	sound.Play("Fan")
 
-	b.setFlag(dirtyCardPositions | dirtyScrunch)
+	b.setFlag(dirtyCardPositions)
 	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
@@ -316,7 +315,7 @@ func (b *Baize) DragBy(dx, dy int) {
 
 // StopDrag stop dragging the Baize
 func (b *Baize) StopDrag() {
-	b.setFlag(dirtyScrunch)
+	b.setFlag(dirtyCardPositions)
 }
 
 // StartSpinning tells all the cards to start spinning
@@ -754,11 +753,11 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	}
 
 	if outsideWidth != b.WindowWidth {
-		b.setFlag(dirtyWindowSize | dirtyScrunch | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
+		b.setFlag(dirtyWindowSize | dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		b.WindowWidth = outsideWidth
 	}
 	if outsideHeight != b.WindowHeight {
-		b.setFlag(dirtyWindowSize | dirtyScrunch)
+		b.setFlag(dirtyWindowSize | dirtyCardPositions)
 		b.WindowHeight = outsideHeight
 	}
 
@@ -790,13 +789,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			}
 			b.clearFlag(dirtyPileBackgrounds)
 		}
-		if b.flagSet(dirtyScrunch) {
-			for _, p := range b.piles {
-				p.Scrunch()
-				p.Refan()
-			}
-			b.clearFlag(dirtyScrunch)
-		}
 		if b.flagSet(dirtyWindowSize) {
 			CardStartPoint.X = (outsideWidth / 2) - (CardWidth / 2)
 			TheUI.Layout(outsideWidth, outsideHeight)
@@ -805,7 +797,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 		if b.flagSet(dirtyCardPositions) {
 			for _, p := range b.piles {
 				p.Scrunch()
-				p.Refan()
 			}
 			b.clearFlag(dirtyCardPositions)
 		}

@@ -125,7 +125,6 @@ func (s *Statistics) RecordLostGame(v string) {
 		println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
 
-	sound.Play("Fail")
 	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
 
 	stats := s.findVariant(v)

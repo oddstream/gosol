@@ -5,7 +5,6 @@ https://calver.org/
 [ONGOING]
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
-  Pile.owner
  having Generic functions doesn't seem quite right
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
@@ -32,7 +31,13 @@ https://github.com/golang/go/wiki/Mobile
   Martha
   Mrs Mop
   Osmosis/Peek
-  Perseverance
+  Perseverance A, B/Cruel/Ripple Fan
+    https://politaire.com/help/cruel
+	   The redeal procedure begins by picking up all cards on the tableau.
+	   The cards from the tableau are collected, one column at a time, starting with the left-most column,
+	   picking up the cards in each column in top to bottom order.
+	   Then, without shuffling, the cards are dealt out again, starting with the first card picked up,
+	   and dealing the cards in the same order as they were picked up.
   Single Rail
   Sir Tommy
   Little Spider
@@ -45,8 +50,8 @@ extras?
 Pile.Cards() is only used once, in UnsortedPairs
 
 [TODO]
+ int fanFactor10 operates on CardSize * 10
  variants auto select two/four colors (four if compare by suit?)
- tap spinning cards to flip them
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
  host WASM version @ oddstream.github.io instead of gosol
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
@@ -69,6 +74,8 @@ Pile.Cards() is only used once, in UnsortedPairs
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x audio.NewPlayer is deprecated: as of v2.2. Use (*Context).NewPlayer instead.  (SA1019)
+x tap spinning cards to flip them
 x tidy up scrunch (eg don't need a Point, don't need to keep scrunchDims outside of Scrunch, &c)
 x sound when recording a lost game
 x initial deal slower and more chaotic? card start from the middle of the screen?
