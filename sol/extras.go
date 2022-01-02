@@ -28,7 +28,7 @@ func AnyCardsProne(cards []*Card) bool {
 }
 
 func FlipUpExposedCard(p Pile) {
-	if !p.IsStock() {
+	if _, isStock := (p).(*Stock); !isStock {
 		if c := p.Peek(); c != nil {
 			c.FlipUp()
 		}

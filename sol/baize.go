@@ -506,7 +506,6 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 
 func (b *Baize) InputTap(v input.StrokeEvent) {
 	// println("Baize.NotifyCallback() tap", v.X, v.Y)
-	// a tap outside any open ui drawer (ie on the baize) closes the drawer
 	switch obj := v.Stroke.DraggedObject().(type) {
 	case *Card:
 		// offer TailTapped to the script first
@@ -514,17 +513,11 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		// if the script doesn't want to do anything, it can call pile.subtype.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
 		// or use Pile.GenericTailTapped to try to collect a card to Foundation (eg Tableau)
-		if len(b.tail) == 1 && b.tail[0].Spinning() {
-			// won't work on face down cards,
-			// because CanMoveTail prohibits dragging a tail with any prone cards
-			b.tail[0].Flip()
-		} else {
-			crc := b.CRC()
-			b.script.TailTapped(b.tail)
-			if crc != b.CRC() {
-				sound.Play("Slide")
-				b.AfterUserMove()
-			}
+		crc := b.CRC()
+		b.script.TailTapped(b.tail)
+		if crc != b.CRC() {
+			sound.Play("Slide")
+			b.AfterUserMove()
 		}
 		b.StopTailDrag()
 	case Pile:
@@ -536,6 +529,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		}
 	case *Baize:
 		pt := image.Pt(v.X, v.Y)
+		// a tap outside any open ui drawer (ie on the baize) closes the drawer
 		if con := TheUI.VisibleDrawer(); con != nil && !pt.In(image.Rect(con.Rect())) {
 			con.Hide()
 		}
@@ -673,10 +667,12 @@ func (b *Baize) ScaleCards() bool {
 	CardCornerRadius = float64(CardWidth) / 15.0
 	TopMargin = 48 + CardHeight/3
 
-	if CardWidth != OldWidth || CardHeight != OldHeight {
-		println("ScaleCards did something")
-	} else {
-		println("ScaleCards did nothing")
+	if DebugMode {
+		if CardWidth != OldWidth || CardHeight != OldHeight {
+			println("ScaleCards did something")
+		} else {
+			println("ScaleCards did nothing")
+		}
 	}
 	return CardWidth != OldWidth || CardHeight != OldHeight
 }

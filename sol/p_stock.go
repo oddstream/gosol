@@ -56,17 +56,16 @@ func (self *Stock) FillFromLibrary() {
 	}
 	for i := 0; i < len(CardLibrary); i++ {
 		var c *Card = &CardLibrary[i]
-		if c == nil || !c.Valid() {
+		if !c.Valid() {
 			log.Panicf("invalid card at library index %d", i)
 		}
 		// the following mimics Base.Push
 		self.Append(c)
 		c.SetOwner(self)
-		c.pos = CardStartPoint
-		c.src = c.pos
-		c.dst = c.pos
+		// don't set Card.pos here
+		// so that a new deal makes the spinning cards fall into place
+		// without going back to the CardStartPoint
 		c.SetProne(true)
-		// s.Push(c)
 	}
 }
 
@@ -85,6 +84,8 @@ func (self *Stock) Shuffle() {
 	}
 	rand.Seed(seed)
 	for i := 0; i < 6; i++ {
+		// it doesn't make sense, but testing shows that you need to do this
+		// more than once to get a randomly distributed shuffle
 		rand.Shuffle(self.Len(), self.Swap)
 	}
 }

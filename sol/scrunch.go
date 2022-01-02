@@ -145,7 +145,8 @@ func (self *Core) Scrunch() {
 exitloop:
 	self.fanFactor = fanFactor
 	if DebugMode && nloops > 0 {
-		fmt.Printf("%d loops to go from %f to %f\n", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
+		fmt.Printf("%d loops to go from %f to %f", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
+		fmt.Printf(" WindowWidth, Height = %d,%d\n", TheBaize.WindowWidth, TheBaize.WindowHeight)
 	}
 	self.Refan()
 }

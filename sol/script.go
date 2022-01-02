@@ -110,11 +110,11 @@ var VariantGroups = map[string][]string{
 	// and Agnes Sorel is retired because it's just too hard
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited", "Forty and Eight"},
-	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits"},
-	"> Canfield":      {"Canfield", "Acme", "Storehouse"},
-	"> Freecell":      {"Freecell", "Eight Off"},
-	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
-	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
+	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
+	// "> Canfield":      {"Canfield", "Acme", "Storehouse"},
+	"> Freecell": {"Freecell", "Eight Off"},
+	"> Yukon":    {"Yukon", "Yukon Cells", "Alaska"},
+	"> Puzzlers": {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 }
 
 func init() {

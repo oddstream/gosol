@@ -19,17 +19,17 @@ func NewWaste(slot image.Point, fanType FanType) *Waste {
 }
 
 func (*Waste) CanAcceptCard(card *Card) (bool, error) {
-	if !card.Owner().IsStock() {
+	if _, isStock := (card.Owner()).(*Stock); !isStock {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil
 }
 
-func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {
-	if !tail[0].Owner().IsStock() {
-		return false, errors.New("Waste can only accept cards from the Stock")
+func (self *Waste) CanAcceptTail(tail []*Card) (bool, error) {
+	if len(tail) > 1 {
+		return false, errors.New("Can only move a single card to Waste")
 	}
-	return true, nil
+	return self.CanAcceptCard(tail[0])
 }
 
 func (self *Waste) TailTapped(tail []*Card) {

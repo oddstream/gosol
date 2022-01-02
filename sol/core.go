@@ -448,7 +448,9 @@ func (self *Core) IndexOf(card *Card) int {
 
 func (self *Core) CanMoveTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot move a face down card")
+		if _, isStock := (tail[0].Owner()).(*Stock); !isStock {
+			return false, errors.New("Cannot move a face down card")
+		}
 	}
 	switch self.moveType {
 	case MOVE_NONE:

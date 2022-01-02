@@ -5,9 +5,11 @@ https://calver.org/
 [ONGOING]
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
+  so go back to Pile.owner
  having Generic functions doesn't seem quite right
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
+ any use of Pile.category or a switch means the model ain't working
 
 [ANDROID]
 https://github.com/golang/go/wiki/Mobile
@@ -19,7 +21,6 @@ https://github.com/golang/go/wiki/Mobile
   Canfield, Rainbow Canfield, Acme, Storehouse
   Chessboard
   Creepy Crawly
-  Cruel
   Good Measure
   Fortress
   Forty and Eight
