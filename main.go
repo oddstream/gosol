@@ -20,7 +20,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gomps5/sol"
-	"oddstream.games/gomps5/sound"
 	"oddstream.games/gomps5/ui"
 )
 
@@ -44,14 +43,6 @@ func main() {
 		for i, a := range os.Args {
 			println(i, a)
 		}
-	}
-
-	sol.ThePreferences.Load()
-
-	if sol.ThePreferences.Mute {
-		sound.SetVolume(0.0)
-	} else {
-		sound.SetVolume(sol.ThePreferences.Volume)
 	}
 
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable

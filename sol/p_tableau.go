@@ -76,13 +76,9 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	return TheBaize.script.TailAppendError(self, tail)
 }
 
-func (self *Tableau) TailTapped(tail []*Card) {
-	GenericTailTapped(self, tail)
-}
+// use Core.TailTapped
 
-func (self *Tableau) Collect() {
-	GenericCollect(self)
-}
+// use Core.Collect
 
 func (self *Tableau) Conformant() bool {
 	return TheBaize.script.UnsortedPairs(self) == 0

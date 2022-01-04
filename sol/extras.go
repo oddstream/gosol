@@ -119,32 +119,3 @@ func MoveAllCards(src Pile, dst Pile) {
 	src.Reset()
 	TheBaize.setFlag(dirtyCardPositions)
 }
-
-func GenericTailTapped(self Pile, tail []*Card) {
-	if len(tail) != 1 {
-		return
-	}
-	c := tail[0]
-	for _, fp := range TheBaize.script.Foundations() {
-		if ok, _ := fp.CanAcceptCard(c); ok {
-			MoveCard(self, fp)
-			break
-		}
-	}
-}
-
-func GenericCollect(self Pile) {
-	for _, fp := range TheBaize.script.Foundations() {
-		for {
-			// loop to get as many cards as possible from this core
-			if self.Empty() {
-				return
-			}
-			if ok, _ := fp.CanAcceptCard(self.Peek()); !ok {
-				// this foundation doesn't want this card; onto the next one
-				break
-			}
-			MoveCard(self, fp)
-		}
-	}
-}

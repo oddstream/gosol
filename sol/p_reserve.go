@@ -26,13 +26,9 @@ func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {
 	return false, errors.New("Cannot add a card to a Reserve")
 }
 
-func (self *Reserve) TailTapped(tail []*Card) {
-	GenericTailTapped(self, tail)
-}
+// use Core.TailTapped
 
-func (self *Reserve) Collect() {
-	GenericCollect(self)
-}
+// use Core.Collect
 
 func (self *Reserve) Conformant() bool {
 	return self.Len() < 2

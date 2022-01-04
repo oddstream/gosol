@@ -45,7 +45,7 @@ func (*Foundation) TailTapped([]*Card) {
 }
 
 func (*Foundation) Collect() {
-	// over-ride base collect to do nothing
+	// over-ride Core collect to do nothing
 }
 
 func (*Foundation) Conformant() bool {

@@ -40,7 +40,7 @@ func (*Discard) TailTapped([]*Card) {
 }
 
 func (*Discard) Collect() {
-	// do nothing
+	// over-ride Core collect to do nothing
 }
 
 func (*Discard) Conformant() bool {

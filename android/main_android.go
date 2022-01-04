@@ -1,6 +1,6 @@
 //go:build android
 
-package main
+package mobilegomps5
 
 import (
 	"log"
@@ -13,14 +13,6 @@ import (
 )
 
 func init() {
-
-	sol.ThePreferences.Load()
-
-	if sol.ThePreferences.Mute {
-		sound.SetVolume(0.0)
-	} else {
-		sound.SetVolume(sol.ThePreferences.Volume)
-	}
 
 	game, err := sol.NewGame()
 	if err != nil {

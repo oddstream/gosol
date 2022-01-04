@@ -239,6 +239,7 @@ func (self *Core) Push(c *Card) {
 
 	self.cards = append(self.cards, c)
 	c.SetOwner(FindCardOwner(c))
+	// c.SetOwner(self)
 	c.TransitionTo(pos)
 
 	if self.IsStock() {
@@ -520,6 +521,44 @@ func (self *Core) BuryCards(ordinal int) {
 	self.Refan()
 	// nb the card owner does not change
 }
+
+// default behaviours for all pile types, that can be over-ridden by providing (eg) *Stock.Collect
+
+func (self *Core) CanAcceptCard(*Card) (bool, error)   { return false, nil }
+func (self *Core) CanAcceptTail([]*Card) (bool, error) { return false, nil }
+
+func (self *Core) TailTapped(tail []*Card) {
+	if len(tail) != 1 {
+		return
+	}
+	c := tail[0]
+	for _, fp := range TheBaize.script.Foundations() {
+		if ok, _ := fp.CanAcceptCard(c); ok {
+			MoveCard(self, fp)
+			break
+		}
+	}
+}
+
+func (self *Core) Collect() {
+	for _, fp := range TheBaize.script.Foundations() {
+		for {
+			// loop to get as many cards as possible from this pile
+			if self.Empty() {
+				return
+			}
+			if ok, _ := fp.CanAcceptCard(self.Peek()); !ok {
+				// this foundation doesn't want this card; onto the next one
+				break
+			}
+			MoveCard(self, fp)
+		}
+	}
+}
+
+func (self *Core) Conformant() bool   { return false }
+func (self *Core) Complete() bool     { return false }
+func (self *Core) UnsortedPairs() int { return 0 }
 
 func (self *Core) DrawStaticCards(screen *ebiten.Image) {
 	for _, c := range self.cards {

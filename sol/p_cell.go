@@ -41,13 +41,9 @@ func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (self *Cell) TailTapped(tail []*Card) {
-	GenericTailTapped(self, tail)
-}
+// use Core.TailTapped
 
-func (self *Cell) Collect() {
-	GenericCollect(self)
-}
+// use Core.Collect
 
 func (*Cell) Conformant() bool {
 	return true

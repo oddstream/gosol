@@ -512,7 +512,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		// to implement things like Stock.TailTapped
 		// if the script doesn't want to do anything, it can call pile.subtype.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
-		// or use Pile.GenericTailTapped to try to collect a card to Foundation (eg Tableau)
+		// or use Core.TailTapped to try to collect a card to Foundation (eg Tableau)
 		crc := b.CRC()
 		b.script.TailTapped(b.tail)
 		if crc != b.CRC() {

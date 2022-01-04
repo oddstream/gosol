@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gomps5/sound"
 	"oddstream.games/gomps5/ui"
 )
 
@@ -100,12 +101,17 @@ var CardLibrary []Card
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
-	g := &Game{}
+	ThePreferences.Load()
+	if ThePreferences.Mute {
+		sound.SetVolume(0.0)
+	} else {
+		sound.SetVolume(ThePreferences.Volume)
+	}
 	TheUI = ui.New(Execute)
 	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
 	TheBaize.StartFreshGame()
-	return g, nil
+	return &Game{}, nil
 }
 
 // Layout implements ebiten.Game's Layout.

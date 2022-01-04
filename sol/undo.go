@@ -35,7 +35,7 @@ func (self *Core) UpdateFromSavable(sp *SavablePile) {
 	if self.category != sp.Category {
 		log.Panic("Baize pile and SavablePile are different")
 	}
-	self.cards = self.cards[:0]
+	self.Reset()
 	for _, cid := range sp.Cards {
 		for i := 0; i < len(CardLibrary); i++ {
 			if SameCardAndPack(cid, CardLibrary[i].ID) {
@@ -88,16 +88,16 @@ func (b *Baize) UndoPop() (*SavableBaize, bool) {
 	return &SavableBaize{}, false
 }
 
-func (b *Baize) UpdateFromSavable(ss *SavableBaize) {
-	if len(b.piles) != len(ss.Piles) {
+func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
+	if len(b.piles) != len(sb.Piles) {
 		log.Panic("Baize piles and SavableBaize piles are different")
 	}
 	sound.Play("OpenPackage")
-	for i := 0; i < len(ss.Piles); i++ {
-		b.piles[i].UpdateFromSavable(ss.Piles[i])
+	for i := 0; i < len(sb.Piles); i++ {
+		b.piles[i].UpdateFromSavable(sb.Piles[i])
 	}
-	b.bookmark = ss.Bookmark
-	b.recycles = ss.Recycles
+	b.bookmark = sb.Bookmark
+	b.recycles = sb.Recycles
 	b.setFlag(dirtyCardPositions)
 }
 

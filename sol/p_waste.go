@@ -32,13 +32,9 @@ func (self *Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	return self.CanAcceptCard(tail[0])
 }
 
-func (self *Waste) TailTapped(tail []*Card) {
-	GenericTailTapped(self, tail)
-}
+// use Core.TailTapped
 
-func (self *Waste) Collect() {
-	GenericCollect(self)
-}
+// use Core.Collect
 
 func (self *Waste) Conformant() bool {
 	// zero or one cards would be conformant

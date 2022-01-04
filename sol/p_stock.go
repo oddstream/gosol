@@ -90,6 +90,22 @@ func (self *Stock) Shuffle() {
 	}
 }
 
+/*
+	Push a card onto the Stock pile.
+	Specific version of Push that overrides Core.Push,
+	to try to get rid of IsStock() and FindOwner() in Core.Push,
+	and also since Stock piles are never fanned.
+	Trouble is, this func is only called by Stock Recycle
+	(UpdateFromSaveable uses Core, not Pile).
+*/
+func (self *Stock) Push(card *Card) {
+	self.Append(card)
+	card.TransitionTo(card.BaizePos())
+	card.FlipDown()
+	card.SetOwner(self)
+	TheBaize.setFlag(dirtyCardPositions)
+}
+
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Stock {
 	CreateCardLibrary(packs, suits, cardFilter)
 	stock := &Stock{Core: NewCore("Stock", slot, fanType, MOVE_ONE)}
@@ -113,7 +129,7 @@ func (*Stock) TailTapped([]*Card) {
 
 func (*Stock) Collect() {
 	// never collect from the stock
-	// over-ride base collect to do nothing
+	// over-ride Core collect to do nothing
 }
 
 func (self *Stock) Conformant() bool {

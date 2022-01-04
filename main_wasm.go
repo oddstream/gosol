@@ -13,18 +13,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gomps5/sol"
-	"oddstream.games/gomps5/sound"
 )
 
 func main() {
-
-	sol.ThePreferences.Load()
-
-	if sol.ThePreferences.Mute {
-		sound.SetVolume(0.0)
-	} else {
-		sound.SetVolume(sol.ThePreferences.Volume)
-	}
 
 	game, err := sol.NewGame()
 	if err != nil {
