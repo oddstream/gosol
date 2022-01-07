@@ -758,7 +758,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	}
 
 	if b.dirtyFlags != 0 {
-		// NoDrawing = true
 		if b.flagSet(dirtyCardSizes) {
 			if b.ScaleCards() {
 				CreateCardImages()
@@ -796,7 +795,6 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			}
 			b.clearFlag(dirtyCardPositions)
 		}
-		// NoDrawing = false
 	}
 
 	return outsideWidth, outsideHeight
@@ -833,10 +831,6 @@ func (b *Baize) Update() error {
 func (b *Baize) Draw(screen *ebiten.Image) {
 
 	screen.Fill(ExtendedColors[ThePreferences.BaizeColor])
-
-	// if NoDrawing {
-	// 	return
-	// }
 
 	for _, p := range b.piles {
 		p.Draw(screen)

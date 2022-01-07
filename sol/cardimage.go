@@ -227,15 +227,6 @@ func CreateCardShadowImage() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func CreateCardHighlightImage() *ebiten.Image {
-	dc := gg.NewContext(CardWidth+8, CardHeight+8)
-	dc.SetColor(ExtendedColors["Grey"])
-	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(4, 4, float64(CardWidth), float64(CardHeight), CardCornerRadius)
-	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
-}
-
 func CreateCardFaceImageLibrary() {
 	defer util.Duration(time.Now(), "CreateCardFaceImageLibrary")
 
@@ -257,5 +248,4 @@ func CreateCardImages() {
 	CreateCardFaceImageLibrary()
 	CardBackImage = CreateCardBackImage()
 	CardShadowImage = CreateCardShadowImage()
-	CardHighlightImage = CreateCardHighlightImage()
 }

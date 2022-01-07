@@ -36,6 +36,10 @@ func (sb ScriptBase) Foundations() []*Foundation {
 	return sb.foundations
 }
 
+func (sb ScriptBase) Tableaux() []*Tableau {
+	return sb.tableaux
+}
+
 type VariantInfo struct {
 	windowShape string
 	wikipedia   string
@@ -63,6 +67,7 @@ type ScriptInterface interface {
 	Discards() []*Discard
 	Foundations() []*Foundation
 	Stock() *Stock
+	Tableaux() []*Tableau
 	Waste() *Waste
 }
 

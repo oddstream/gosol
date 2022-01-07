@@ -183,7 +183,6 @@ func (c *Card) StopDrag() {
 func (c *Card) CancelDrag() {
 	// println("cancel drag", c.ID.String(), "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
 	c.TransitionTo(c.dragStart)
-	// TODO should go back to Pile.PushedFannedPosition in case of a mis-drag
 }
 
 // WasDragged returns true of this card has been dragged
@@ -409,9 +408,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	if c.Owner().Target() && c == c.Owner().Peek() {
 		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
-		// 	op.GeoM.Translate(-4, -4)
-		// 	screen.DrawImage(CardHighlightImage, op)
-		// 	op.GeoM.Translate(4, 4)
 	}
 
 	screen.DrawImage(img, op)

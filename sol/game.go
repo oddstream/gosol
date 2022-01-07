@@ -16,8 +16,6 @@ type Game struct {
 var (
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
-	// NoDrawing is set when resizing cards to stop the screen flickering
-	// NoDrawing bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
 	NoGameLoad bool = false
 	// NoGameSave is a boolean set by command line flag -nosave
@@ -54,8 +52,6 @@ var (
 	CardBackImage *ebiten.Image
 	// CardShadowImage applies to all cards so is kept globally as an optimization
 	CardShadowImage *ebiten.Image
-	// CardHighlightImage applies to all cards so is kept globally as an optimization
-	CardHighlightImage *ebiten.Image
 	// ExitRequested is set when user has had enough
 	ExitRequested bool = false
 )

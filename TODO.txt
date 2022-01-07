@@ -6,7 +6,6 @@ https://calver.org/
  work at reducing the size of variant.go files (CardPair &c)
  get rid of TheBaize.* (used 134, now 78, now 70 times 16 Dec 2021)
   so go back to Pile.owner
- having Generic functions doesn't seem quite right
  Add more Preferences (Card transition and flip speed)
  Complete ExtendedColors
  any use of Pile.category or a switch means the model ain't working
@@ -48,9 +47,10 @@ https://github.com/golang/go/wiki/Mobile
 [REMODEL]
 buddyPiles
 extras?
-Pile.Cards() is only used once, in UnsortedPairs
+Pile.Cards() is only in UnsortedPairs, FindCardOwner
 
 [TODO]
+ TailTapped() for Spider
  int fanFactor10 operates on CardSize * 10
  variants auto select two/four colors (four if compare by suit?)
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
@@ -75,6 +75,8 @@ Pile.Cards() is only used once, in UnsortedPairs
  scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x tapped tail to largest non-empty accepting pile (foundations, then tableau)
+x having Generic functions doesn't seem quite right
 x audio.NewPlayer is deprecated: as of v2.2. Use (*Context).NewPlayer instead.  (SA1019)
 x tap spinning cards to flip them
 x tidy up scrunch (eg don't need a Point, don't need to keep scrunchDims outside of Scrunch, &c)

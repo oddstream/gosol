@@ -528,15 +528,34 @@ func (self *Core) CanAcceptCard(*Card) (bool, error)   { return false, nil }
 func (self *Core) CanAcceptTail([]*Card) (bool, error) { return false, nil }
 
 func (self *Core) TailTapped(tail []*Card) {
-	if len(tail) != 1 {
-		return
-	}
-	c := tail[0]
-	for _, fp := range TheBaize.script.Foundations() {
-		if ok, _ := fp.CanAcceptCard(c); ok {
-			MoveCard(self, fp)
-			break
+	tappedCard := tail[0]
+	src := tappedCard.Owner()
+	if len(tail) == 1 {
+		for _, fp := range TheBaize.script.Foundations() {
+			if ok, _ := fp.CanAcceptCard(tappedCard); ok {
+				MoveCard(self, fp)
+				return
+			}
 		}
+	}
+	var longestPile *Tableau
+	for _, tp := range TheBaize.script.Tableaux() {
+		if tail[0].Owner() == tp {
+			continue
+		}
+		if ok, _ := tp.CanAcceptTail(tail); ok {
+			// very annoying to move cards to an empty pile
+			// in games where creating empty piles is useful
+			if tp.Empty() {
+				continue
+			}
+			if longestPile == nil || tp.Len() > longestPile.Len() {
+				longestPile = tp
+			}
+		}
+	}
+	if longestPile != nil {
+		MoveCards(src, src.IndexOf(tappedCard), longestPile)
 	}
 }
 
