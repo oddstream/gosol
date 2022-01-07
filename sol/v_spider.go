@@ -128,6 +128,9 @@ func (sp *Spider) TailTapped(tail []*Card) {
 				MoveCard(sp.stock, tab)
 			}
 		}
+	default:
+		tail[0].Owner().TailTapped(tail)
+
 	}
 }
 

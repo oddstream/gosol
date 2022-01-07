@@ -546,7 +546,7 @@ func (self *Core) TailTapped(tail []*Card) {
 		if ok, _ := tp.CanAcceptTail(tail); ok {
 			// very annoying to move cards to an empty pile
 			// in games where creating empty piles is useful
-			if tp.Empty() {
+			if tp.Empty() && tp.Label() == "" {
 				continue
 			}
 			if longestPile == nil || tp.Len() > longestPile.Len() {
@@ -589,7 +589,7 @@ func (self *Core) DrawStaticCards(screen *ebiten.Image) {
 
 func (self *Core) DrawTransitioningCards(screen *ebiten.Image) {
 	for _, c := range self.cards {
-		if c.Transitioning() {
+		if c.Transitioning() && !c.Flipping() {
 			c.Draw(screen)
 		}
 	}
