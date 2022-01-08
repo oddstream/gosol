@@ -1,3 +1,4 @@
+https://earthly.dev/blog/golang-errors/
 https://www.toptal.com/go/golang-oop-tutorial
 https://en.wikipedia.org/wiki/Dependency_injection
 https://calver.org/
@@ -22,12 +23,9 @@ https://github.com/golang/go/wiki/Mobile
   Creepy Crawly
   Good Measure
   Fortress
-  Forty and Eight
-  Lucas
   Number Ten
   Baker's Game
   Josephine
-  Busy Aces
   Martha
   Mrs Mop
   Osmosis/Peek

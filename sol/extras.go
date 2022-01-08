@@ -47,26 +47,26 @@ func MoveCard(src Pile, dst Pile) *Card {
 	return nil
 }
 
-func MoveNamedCard(suit, ordinal int, dst Pile) {
+func MoveNamedCard(src Pile, suit, ordinal int, dst Pile) {
 
-	// 1. find the card in the library
+	// 1. find the card in the src Pile
 	var ID CardID = NewCardID(0, suit, ordinal)
-	var c *Card
-	for i := 0; i < len(CardLibrary); i++ {
-		if SameCard(ID, CardLibrary[i].ID) {
-			c = &CardLibrary[i]
+	var card *Card
+	for _, c := range src.Cards() {
+		if SameCard(ID, c.ID) {
+			card = c
+			break
 		}
 	}
-	if c == nil {
-		println("Could not find card", c.String(), "in library")
+	if card == nil {
+		println("Could not find card in src Pile")
 		return
 	}
 
 	// 2.find the card in it's owning pile
-	var src Pile = c.Owner()
-	var index int = src.IndexOf(c)
+	var index int = src.IndexOf(card)
 	if index == -1 {
-		println("Could not find card", c.String(), "in pile")
+		println("Could not find card", card.String(), "in pile")
 		return
 	}
 
@@ -75,8 +75,8 @@ func MoveNamedCard(suit, ordinal int, dst Pile) {
 
 	// 4. push the card onto the dst pile
 	sound.Play("Place")
-	c.FlipUp()
-	dst.Push(c)
+	card.FlipUp()
+	dst.Push(card)
 	FlipUpExposedCard(src)
 	TheBaize.setFlag(dirtyCardPositions)
 }

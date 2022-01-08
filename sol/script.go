@@ -86,18 +86,40 @@ var Variants = map[string]ScriptInterface{
 	"Forty Thieves": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		cardsPerTab: 4,
-		recycles:    0},
+		cardsPerTab: 4},
+	"Streets": &FortyThieves{
+		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
+		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		cardsPerTab:    4,
+		tabCompareFunc: CardPair.Compare_DownAltColor},
 	"Limited": &FortyThieves{
-		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
-		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
-		cardsPerTab: 3,
-		recycles:    0},
+		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
+		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+		cardsPerTab: 3},
 	"Forty and Eight": &FortyThieves{
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab: 5,
 		recycles:    1},
+	"Lucas": &FortyThieves{
+		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
+		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+		cardsPerTab: 3,
+		dealAces:    true},
+	"Busy Aces": &FortyThieves{
+		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
+		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+		cardsPerTab: 1},
+	"Maria": &FortyThieves{
+		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
+		tabs:           []int{2, 3, 4, 5, 6, 7, 8, 9, 10},
+		cardsPerTab:    4,
+		tabCompareFunc: CardPair.Compare_DownAltColor},
+	"Sixty Thieves": &FortyThieves{
+		packs:       3,
+		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
+		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
+		cardsPerTab: 5},
 	"Penguin":           &Penguin{},
 	"Scorpion":          &Scorpion{},
 	"Simple Simon":      &SimpleSimon{},
@@ -114,7 +136,7 @@ var VariantGroups = map[string][]string{
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
-	"> Forty Thieves": {"Forty Thieves", "Josephine", "Limited", "Forty and Eight"},
+	"> Forty Thieves": {"Forty Thieves", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	// "> Canfield":      {"Canfield", "Acme", "Storehouse"},
 	"> Freecell": {"Freecell", "Eight Off"},

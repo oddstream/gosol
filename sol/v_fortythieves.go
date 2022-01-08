@@ -8,10 +8,13 @@ import (
 
 type FortyThieves struct {
 	ScriptBase
-	founds      []int
-	tabs        []int
-	cardsPerTab int
-	recycles    int
+	packs          int
+	founds         []int
+	tabs           []int
+	cardsPerTab    int
+	recycles       int
+	dealAces       bool
+	tabCompareFunc func(CardPair) (bool, error)
 }
 
 func (*FortyThieves) Info() *VariantInfo {
@@ -24,7 +27,14 @@ func (*FortyThieves) Info() *VariantInfo {
 
 func (ft *FortyThieves) BuildPiles() {
 
-	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
+	if ft.packs == 0 {
+		ft.packs = 2
+	}
+	if ft.tabCompareFunc == nil {
+		ft.tabCompareFunc = CardPair.Compare_DownSuit
+	}
+
+	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, ft.packs, 4, nil)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	ft.foundations = nil
@@ -42,6 +52,17 @@ func (ft *FortyThieves) BuildPiles() {
 }
 
 func (ft *FortyThieves) StartGame() {
+	if ft.dealAces {
+		MoveNamedCard(ft.stock, CLUB, 1, ft.foundations[0])
+		MoveNamedCard(ft.stock, DIAMOND, 1, ft.foundations[1])
+		MoveNamedCard(ft.stock, HEART, 1, ft.foundations[2])
+		MoveNamedCard(ft.stock, SPADE, 1, ft.foundations[3])
+
+		MoveNamedCard(ft.stock, CLUB, 1, ft.foundations[4])
+		MoveNamedCard(ft.stock, DIAMOND, 1, ft.foundations[5])
+		MoveNamedCard(ft.stock, HEART, 1, ft.foundations[6])
+		MoveNamedCard(ft.stock, SPADE, 1, ft.foundations[7])
+	}
 	for _, pile := range ft.tableaux {
 		for i := 0; i < ft.cardsPerTab; i++ {
 			MoveCard(ft.stock, pile)
@@ -57,14 +78,15 @@ func (ft *FortyThieves) AfterMove() {
 	}
 }
 
-func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
+func (ft *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	var pile Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
-			if ok, err := pair.Compare_DownSuit(); !ok {
+			// if ok, err := pair.Compare_DownSuit(); !ok {
+			if ok, err := ft.tabCompareFunc(pair); !ok {
 				return false, err
 			}
 		}
@@ -72,7 +94,7 @@ func (*FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (ft *FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	switch (dst).(type) {
 	case *Foundation:
 		if dst.Empty() {
@@ -84,14 +106,16 @@ func (*FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
+			// return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
+			return ft.tabCompareFunc(CardPair{dst.Peek(), tail[0]})
 		}
 	}
 	return true, nil
 }
 
-func (*FortyThieves) UnsortedPairs(pile Pile) int {
-	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
+func (ft *FortyThieves) UnsortedPairs(pile Pile) int {
+	// return UnsortedPairs(pile, CardPair.Compare_DownSuit)
+	return UnsortedPairs(pile, ft.tabCompareFunc)
 }
 
 func (ft *FortyThieves) TailTapped(tail []*Card) {
