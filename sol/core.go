@@ -13,6 +13,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gomps5/sound"
 )
 
 const (
@@ -562,6 +563,8 @@ func (self *Core) TailTapped(tail []*Card) {
 	}
 	if longestPile != nil {
 		MoveCards(src, src.IndexOf(tappedCard), longestPile)
+	} else {
+		sound.Play("Blip")
 	}
 }
 

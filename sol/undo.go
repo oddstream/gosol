@@ -104,6 +104,7 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.undoStack) < 2 {
+		sound.Play("Blip")
 		TheUI.Toast("Nothing to undo")
 		return
 	}
@@ -154,7 +155,8 @@ func (b *Baize) SavePosition() {
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.bookmark == 0 || b.bookmark > len(b.undoStack) {
-		println("bookmark", b.bookmark, "undostack", len(b.undoStack))
+		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
+		sound.Play("Blip")
 		TheUI.Toast("No bookmark")
 		return
 	}

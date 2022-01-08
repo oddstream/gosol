@@ -442,11 +442,13 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				var err error
 				// generically speaking, can this tail be moved?
 				if ok, err = src.CanMoveTail(b.tail); !ok {
+					sound.Play("Blip")
 					TheUI.Toast(err.Error())
 					b.CancelTailDrag()
 				} else {
 					// is the script ok with moving this tail?
 					if ok, err = b.script.TailMoveError(b.tail); !ok {
+						sound.Play("Blip")
 						TheUI.Toast(err.Error())
 						b.CancelTailDrag()
 					} else {
@@ -454,6 +456,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 						if src == dst {
 							b.CancelTailDrag()
 						} else if ok, err = dst.CanAcceptTail(b.tail); !ok {
+							sound.Play("Blip")
 							TheUI.Toast(err.Error())
 							b.CancelTailDrag()
 						} else {
@@ -606,6 +609,8 @@ func (b *Baize) Collect() {
 	}
 	if b.CRC() != outerCRC {
 		b.AfterUserMove()
+	} else {
+		sound.Play("Blip")
 	}
 }
 
