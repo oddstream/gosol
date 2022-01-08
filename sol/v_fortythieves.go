@@ -11,9 +11,11 @@ type FortyThieves struct {
 	packs          int
 	founds         []int
 	tabs           []int
+	proneRows      []int
 	cardsPerTab    int
 	recycles       int
 	dealAces       bool
+	moveType       MoveType
 	tabCompareFunc func(CardPair) (bool, error)
 }
 
@@ -29,6 +31,9 @@ func (ft *FortyThieves) BuildPiles() {
 
 	if ft.packs == 0 {
 		ft.packs = 2
+	}
+	if ft.moveType == MOVE_NONE /* 0 */ {
+		ft.moveType = MOVE_ONE_PLUS
 	}
 	if ft.tabCompareFunc == nil {
 		ft.tabCompareFunc = CardPair.Compare_DownSuit
@@ -46,7 +51,7 @@ func (ft *FortyThieves) BuildPiles() {
 
 	ft.tableaux = nil
 	for _, x := range ft.tabs {
-		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
+		t := NewTableau(image.Point{x, 1}, FAN_DOWN, ft.moveType)
 		ft.tableaux = append(ft.tableaux, t)
 	}
 }
@@ -68,6 +73,11 @@ func (ft *FortyThieves) StartGame() {
 			MoveCard(ft.stock, pile)
 		}
 	}
+	for _, row := range ft.proneRows {
+		for _, pile := range ft.tableaux {
+			pile.Get(row).FlipDown()
+		}
+	}
 	TheBaize.SetRecycles(ft.recycles)
 	MoveCard(ft.stock, ft.waste)
 }
@@ -80,7 +90,6 @@ func (ft *FortyThieves) AfterMove() {
 
 func (ft *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	var pile Pile = tail[0].Owner()
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (pile).(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)

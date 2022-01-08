@@ -6,6 +6,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// "the bigger the interface, the weaker the abstraction"
+
 type Pile interface {
 	// implemented by Core
 	Valid() bool

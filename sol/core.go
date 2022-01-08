@@ -12,7 +12,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"oddstream.games/gomps5/schriftbank"
 )
 
@@ -543,14 +542,21 @@ func (self *Core) TailTapped(tail []*Card) {
 		if tail[0].Owner() == tp {
 			continue
 		}
-		if ok, _ := tp.CanAcceptTail(tail); ok {
-			// very annoying to move cards to an empty pile
-			// in games where creating empty piles is useful
-			if tp.Empty() && tp.Label() == "" {
-				continue
-			}
-			if longestPile == nil || tp.Len() > longestPile.Len() {
-				longestPile = tp
+		// can the tail be moved in general (MoveType check)?
+		if ok, _ := tp.CanMoveTail(tail); ok {
+			// is the tail conformant enough to move?
+			if ok, _ := TheBaize.script.TailMoveError(tail); ok {
+				// can the dst accept the tail?
+				if ok, _ := tp.CanAcceptTail(tail); ok {
+					// very annoying to move cards to an empty pile
+					// in games where creating empty piles is useful
+					if tp.Empty() && tp.Label() == "" {
+						continue
+					}
+					if longestPile == nil || tp.Len() > longestPile.Len() {
+						longestPile = tp
+					}
+				}
 			}
 		}
 	}
@@ -673,20 +679,20 @@ func (self *Core) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if DebugMode {
-		if sz := self.SizeWithFanFactor(self.fanFactor); sz != 0 {
-			switch self.fanType {
-			case FAN_DOWN:
-				rect := self.FannedScreenRect()
-				ebitenutil.DrawRect(screen,
-					float64(rect.Min.X),
-					float64(rect.Min.Y),
-					float64(rect.Max.X-rect.Min.X),
-					float64(sz),
-					color.RGBA{0, 0, 0, 32})
-			}
-		}
-	}
+	// if DebugMode {
+	// 	if sz := self.SizeWithFanFactor(self.fanFactor); sz != 0 {
+	// 		switch self.fanType {
+	// 		case FAN_DOWN:
+	// 			rect := self.FannedScreenRect()
+	// 			ebitenutil.DrawRect(screen,
+	// 				float64(rect.Min.X),
+	// 				float64(rect.Min.Y),
+	// 				float64(rect.Max.X-rect.Min.X),
+	// 				float64(sz),
+	// 				color.RGBA{0, 0, 0, 32})
+	// 		}
+	// 	}
+	// }
 
 	screen.DrawImage(self.img, op)
 }
