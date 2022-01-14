@@ -1,12 +1,10 @@
 # Minimal Polymorphic Solitaire in Go
 
-Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg), with game variants run by (user supplied) scripts.
+Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg) (both of which are highly recommended), with game variants run by (user supplied) scripts.
 
 ![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
-It's tested on Linux, Windows and in a web browser.
-
-There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html)
+It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download, I'm working on that).
 
 ## Variants
 
@@ -71,9 +69,7 @@ So taken out were:
 * Movable card highlighting (I used to think this was a good thing, but now I realise that it sucks the essence out of solitaire).
 * Choice of card sets or card backs.
 
-## Configurability is the root of all evil
-
-Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
+Configurability is the root of all evil, someone said. Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
 
 ![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/American%20Toad.png)
 
@@ -82,10 +78,10 @@ Every configuration option in a program is a place where the program is too stup
 ### What makes this different from the other solitaire implementations?
 
 This solitaire is all about [Flow](https://en.wikipedia.org/wiki/Flow_(psychology)).
+
 Anything that distracts from your interaction with the flow of the game has been either been tried and removed or not included.
-Crucially, the games can be played by single-clicking the card you wish to move, and the software figures out where you want the card to go
-(mostly to the foundation if possible, and if not, the biggest tableau). If you don't like where the card goes,
-just try clicking it again or dragging it.
+
+Crucially, the games can be played by single-clicking the card you wish to move, and the software figures out where you want the card to go (mostly to the foundation if possible, and if not, the biggest tableau). If you don't like where the card goes, just try clicking it again or dragging it.
 
 Also, I'm trying to make games authentic, by taking the rules from reputable sources and implementing them exactly.
 
@@ -101,8 +97,7 @@ keeping an arbitrary score,
 distracting graphics on the screen.
 
 The user interface tries to stick to the Material Design guidelines, and so is minimal and tactile.
-I looked at a lot of the other solitaire websites out there, and think how distracting some of them are.
-Features seem to have been added because the developers thought they were cool; they never seem to have stopped to consider that just because they *could* implement a feature, that they *should*.
+I looked at a lot of the other solitaire websites and apps out there, and think how distracting some of them are. Features seem to have been added because the developers thought they were cool; they never seem to have stopped to consider that just because they *could* implement a feature, that they *should*.
 
 ### Sometimes the cards are really huge or really tiny
 
@@ -232,9 +227,9 @@ that anyone else ever has, or ever will.
 
 ## TODO
 
-* Scripted game variants.
-* Get it working on Android.
-* Get the size of the executable and WASM down.
+* Scripted game variants (currently looking at using [Picol](https://wiki.tcl-lang.org/page/Picol), because I'm a fan of Tcl - I've used Lua in the past for this, but I'd like to keep the binary in one file, and as small as possible).
+* Get it working on Android (agggh! help!).
+* Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
 * Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Kotlin+Korge, or something else.
 
