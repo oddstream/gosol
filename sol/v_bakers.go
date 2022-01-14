@@ -90,8 +90,7 @@ func (*BakersDozen) UnsortedPairs(pile Pile) int {
 }
 
 func (*BakersDozen) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	pile.TailTapped(tail)
+	tail[0].Owner().TailTapped(tail)
 }
 
 func (*BakersDozen) PileTapped(Pile) {}

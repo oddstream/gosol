@@ -100,8 +100,7 @@ func (*Yukon) UnsortedPairs(pile Pile) int {
 }
 
 func (*Yukon) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	pile.TailTapped(tail)
+	tail[0].Owner().TailTapped(tail)
 }
 
 func (*Yukon) PileTapped(Pile) {}

@@ -545,14 +545,20 @@ func (self *Core) TailTapped(tail []*Card) {
 		}
 		// can the tail be moved in general (MoveType check)?
 		if ok, _ := tp.CanMoveTail(tail); ok {
-			// is the tail conformant enough to move?
-			if ok, _ := TheBaize.script.TailMoveError(tail); ok {
-				// can the dst accept the tail?
-				if ok, _ := tp.CanAcceptTail(tail); ok {
+			// can the dst accept the tail?
+			if ok, _ := tp.CanAcceptTail(tail); ok {
+				// is the tail conformant enough to move?
+				if ok, _ := TheBaize.script.TailMoveError(tail); ok {
 					// very annoying to move cards to an empty pile
 					// in games where creating empty piles is useful
 					if tp.Empty() && tp.Label() == "" {
 						continue
+					}
+					if !tp.Empty() {
+						if tail[0].Suit() == tp.Peek().Suit() {
+							longestPile = tp
+							break
+						}
 					}
 					if longestPile == nil || tp.Len() > longestPile.Len() {
 						longestPile = tp

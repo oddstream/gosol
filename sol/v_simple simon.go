@@ -100,6 +100,8 @@ func (*SimpleSimon) UnsortedPairs(pile Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
-func (*SimpleSimon) TailTapped([]*Card) {}
+func (*SimpleSimon) TailTapped(tail []*Card) {
+	tail[0].Owner().TailTapped(tail)
+}
 
 func (*SimpleSimon) PileTapped(Pile) {}

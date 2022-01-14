@@ -131,8 +131,7 @@ func (*Penguin) UnsortedPairs(pile Pile) int {
 }
 
 func (pen *Penguin) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	pile.TailTapped(tail)
+	tail[0].Owner().TailTapped(tail)
 }
 
 func (pen *Penguin) PileTapped(pile Pile) {}

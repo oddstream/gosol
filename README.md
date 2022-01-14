@@ -4,37 +4,31 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 ![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
-It's tested on Linux, Windows and in a web browser (when compiled to WASM with  `GOOS=js GOARCH=wasm go build -v -o gomps5.wasm -ldflags="-s -w"`).
+It's tested on Linux, Windows and in a web browser.
+
+There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html)
 
 ## Variants
 
-It will know how to play:
+It currently knows how to play:
 
 * Agnes Bernauer
-* Aces and Kings
-* Algerian
-* Alhambra
-* American Toad (also The Toad)
+* American Toad
 * Australian
 * Baker's Dozen
-* Bisley
-* Bristol (also Dover)
-* Canfield (also Acme, Storehouse)
-* Cruel, Ripple Fan
 * Duchess
 * Easy (an easy to win game, for debugging)
-* Fortune's Favor
-* Forty Thieves (also Busy Aces, Fortune's Favor, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black)
+* Forty Thieves (also Sixty Thieves, Busy Aces, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black, Rank and File, Number Ten)
 * Freecell (also Eight Off)
-* Klondike (also Draw One, Draw Three, Batsford, Double Klondike, Gargantua, Thumb and Pouch, Thoughtful)
-* La Belle Lucie (and Trefoil, The Fan)
-* Mistress and Mrs Mop
+* Klondike (also Klondike Draw Three, Thoughtful)
 * Penguin
-* Scorpion
+* Scorpion (also Wasp)
 * Simple Simon
-* Spider (also Beetle, Spiderette, Spider One Suit, Spider Two Suits, Will o' the Wisp)
+* Spider (also Spider One Suit, Spider Two Suits)
 * Whitehead
-* Yukon
+* Yukon (also Yukon Cells)
+
+Variants are added when the whim takes me, or when some aspect of the engine needs testing/extending, or when someone asks.
 
 Some variants have been tried and discarded as being a bit silly, or just too hard:
 
@@ -52,18 +46,19 @@ Some will never make it here because they are just poor games:
 
 ## Other features
 
-* Permissive card moves. If you want to move a card from here to there, go ahead and do it. If that move is not allowed by the current rules, the game will put the cards back *and explain why that move is not allowed*
-* Unlimited undo, without penalty. Also, you can restart a deal without penalty
-* Bookmarking positions (really good for puzzle-style games like Freecell or Simple Simon)
-* Scalable or fixed-size cards
-* Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider)
+* Permissive card moves. If you want to move a card from here to there, go ahead and do it. If that move is not allowed by the current rules, the game will put the cards back *and explain why that move is not allowed*.
+* Unlimited undo, without penalty. Also, you can restart a deal without penalty.
+* Bookmarking positions (really good for puzzle-style games like Freecell or Simple Simon).
+* Scalable or fixed-size cards.
+* One-tap interface. Tapping on a card or cards tries to move them to a foundation, or to a suitable tableau pile. An empty tableau with a constraint is not considered suitable, as empty tableau are precious.
+* Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider).
 * The rules for a game can be relaxed to make them easier (for example, relaxed Scorpion is known as Wasp, Yukon and Baker's Dozen are often played as the relaxed version. Relaxing the rules means removing the constraint that an empty tableau must be filled by a certain card, usually a King.
-* Every game has a link to it's Wikipedia page
-* Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are)
-* Cards spin and flutter when you complete a game, so you feel rewarded and happy
-* Slightly randomized sounds
-* Automatic saving of game in progress
-* A dragable baize; if cards spill out of view to the bottom or right of the screen, just drag the baize to move them into view
+* Every game has a link to it's Wikipedia page.
+* Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are).
+* Cards spin and flutter when you complete a game, so you feel rewarded and happy.
+* Slightly randomized sounds.
+* Automatic saving of game in progress.
+* A dragable baize; if cards spill out of view to the bottom or right of the screen, just drag the baize to move them into view.
 
 ## Deliberate minimalism
 
@@ -71,13 +66,10 @@ A lot a features have been tried and discarded, in order to keep the game (and p
 
 So taken out were:
 
-* Reporting if there were no more available moves (that's for you to puzzle over, just like in real life)
-* Reporting the number of moves made (which is arbitary - does turning a card from stock to waste count as one move, or moving a group of cards with  power moves turned on count as one move or several?)
-* Movable card highlighting (I used to think this was a good thing, but now I realise that it sucks the essence out of solitaire)
-* Turn-offable single-tap interface (ie trying to find a home for a tapped card, all this does is either try to move a stack card to the waste, or try to move the card to a foundation)
-* Choice of card sets or card backs
-
-Solitaire is a puzzle game of sorting cards into and between piles into a certain order, and moving those cards to the foundation piles to complete the game.
+* Reporting if there were no more available moves (that's for you to puzzle over, just like in real life).
+* Reporting the number of moves made (which is arbitary - does turning a card from stock to waste count as one move, or moving a group of cards with  power moves turned on count as one move or several?).
+* Movable card highlighting (I used to think this was a good thing, but now I realise that it sucks the essence out of solitaire).
+* Choice of card sets or card backs.
 
 ## Configurability is the root of all evil
 
@@ -95,8 +87,7 @@ Crucially, the games can be played by single-clicking the card you wish to move,
 (mostly to the foundation if possible, and if not, the biggest tableau). If you don't like where the card goes,
 just try clicking it again or dragging it.
 
-Also, I'm trying to make games authentic, by taking the rules from reputable sources
-and implementing them exactly.
+Also, I'm trying to make games authentic, by taking the rules from reputable sources and implementing them exactly.
 
 ### Why are the graphics so basic?
 
@@ -111,9 +102,7 @@ distracting graphics on the screen.
 
 The user interface tries to stick to the Material Design guidelines, and so is minimal and tactile.
 I looked at a lot of the other solitaire websites out there, and think how distracting some of them are.
-Features seem to have been added because the developers thought they were cool;
-they never seem to have stopped to
-consider that just because they *could* implement a feature, that they *should*.
+Features seem to have been added because the developers thought they were cool; they never seem to have stopped to consider that just because they *could* implement a feature, that they *should*.
 
 ### Sometimes the cards are really huge or really tiny
 
@@ -124,10 +113,7 @@ Either resize your browser/desktop window (if using scalable cards) or change th
 There's no ISO or ANSI or FIDE-like governing body for solitaire; so there's no standard set of rules.
 Other implementations vary in how they interpret each variant.
 For example, some variants of American Toad build the tableau down by suit, some by alternate color.
-So, rather than just making this stuff up, I've tried to find a well researched set of rules for each variant and stick to them,
-leaning heavily on Jan Wolter (RIP, and thanks for all the fish), David Parlett and Thomas Warfield.
-Where possible, I've implemented the games from the book
-"The Complete Book of Solitaire and Patience Games" by Albert Morehead and Geoffrey Mott-Smith.
+So, rather than just making this stuff up, I've tried to find a well researched set of rules for each variant and stick to them, leaning heavily on Jan Wolter (RIP, and thanks for all the fish), David Parlett and Thomas Warfield. Where possible, I've implemented the games from the book "The Complete Book of Solitaire and Patience Games" by Albert Morehead and Geoffrey Mott-Smith.
 
 ### Keyboard shortcuts?
 
@@ -250,7 +236,7 @@ that anyone else ever has, or ever will.
 * Get it working on Android.
 * Get the size of the executable and WASM down.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
-* Give up and rewrite the whole thing in [Defold](https://www.defold.com).
+* Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Kotlin+Korge, or something else.
 
 ## History
 

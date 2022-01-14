@@ -85,6 +85,7 @@ var cardTakeOutPackage2Bytes []byte
 //go:embed assets/complete.wav
 var completeBytes []byte
 
+// https://freesound.org/people/AlienXXX/sounds/249895/
 //go:embed assets/249895__alienxxx__blip2.wav
 var blipBytes []byte
 

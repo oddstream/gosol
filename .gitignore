@@ -1,3 +1,5 @@
 *.ttf
 *.wav
-*.wasm
+solitaire.wasm
+solitaire.exe
+solitaire.
