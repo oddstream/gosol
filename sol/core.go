@@ -470,7 +470,7 @@ func (self *Core) CanMoveTail(tail []*Card) (bool, error) {
 		} else if len(tail) == self.Len() {
 			// that's okay too
 		} else {
-			return false, errors.New("Only move one card, or the whole core")
+			return false, errors.New("Only move one card, or the whole pile")
 		}
 	}
 	return true, nil
@@ -540,11 +540,11 @@ func (self *Core) TailTapped(tail []*Card) {
 	}
 	var longestPile *Tableau
 	for _, tp := range TheBaize.script.Tableaux() {
-		if tail[0].Owner() == tp {
+		if tp == src {
 			continue
 		}
 		// can the tail be moved in general (MoveType check)?
-		if ok, _ := tp.CanMoveTail(tail); ok {
+		if ok, _ := src.CanMoveTail(tail); ok {
 			// can the dst accept the tail?
 			if ok, _ := tp.CanAcceptTail(tail); ok {
 				// is the tail conformant enough to move?

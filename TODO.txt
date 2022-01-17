@@ -18,7 +18,7 @@ https://github.com/golang/go/wiki/Mobile
   Assembly
   Beleaguered Castle
   Blockade
-  Canfield, Rainbow Canfield, Acme, Storehouse
+  Rainbow Canfield
   Chessboard
   Creepy Crawly
   Good Measure
@@ -47,10 +47,12 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
   what have to Romans ever done for us?
 
 [TODO]
+ win a game with no blips and no undos
+ ...still creating cards with NOSUIT (because CLUB == 1?)
+ About.. in menu
  int fanFactor10 operates on CardSize * 10
  variants auto select two/four colors (four if compare by suit?)
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
- host WASM version @ oddstream.github.io instead of gosol
  Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
  SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
@@ -58,7 +60,6 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
  clean up statistics reporting
  shortcut to display statistics
  clean up rune to suit &c nonsense in util
- streaks and percentages in README.md
  are both symbol and label needed? encode a glyph into label
   only Stock has glyph
   can't have both label and symbol
@@ -68,9 +69,11 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
  hearts and 10s are too close to the edge
  show NewDeal FAB when loading a complete saved.txt
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
- scale slot up by 10, call it slot10 to help remember
 
 [DONE]
+x Can't tap a legal Canfield move (whole pile -> append another pile)
+x Canfield isn't centered, because stock was at 1,1 and not 0,0
+x  host WASM version @ oddstream.github.io instead of gosol
 x  core.CanMoveTail
 x  script.TailMoveError
 x  pile.CanAcceptTail

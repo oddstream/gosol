@@ -56,30 +56,6 @@ var (
 	ExitRequested bool = false
 )
 
-// ThePreferences holds serialized game progress data
-// Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
-var ThePreferences = &Preferences{
-	Title:           "Solitaire",
-	Variant:         "Klondike",
-	BaizeColor:      "BaizeGreen",
-	PowerMoves:      true,
-	CardFaceColor:   "Ivory",
-	CardBackColor:   "CornflowerBlue",
-	FourColors:      false,
-	RedColor:        "Crimson",
-	BlackColor:      "Black",
-	ClubColor:       "Indigo",
-	DiamondColor:    "OrangeRed",
-	HeartColor:      "Crimson",
-	SpadeColor:      "Black",
-	FixedCards:      true,
-	Mute:            false,
-	Volume:          0.5,
-	FixedCardWidth:  90,
-	FixedCardHeight: 122,
-	CardRatio:       1.357,
-}
-
 // TheStatistics holds statistics for all variants
 var TheStatistics *Statistics
 

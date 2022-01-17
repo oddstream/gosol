@@ -76,6 +76,8 @@ var Variants = map[string]ScriptInterface{
 	"American Toad":       &Toad{},
 	"Australian":          &Australian{},
 	"Baker's Dozen":       &BakersDozen{},
+	"Canfield":            &Canfield{draw: 3, recycles: 32767, tabCompareFunc: CardPair.Compare_DownAltColorWrap},
+	"Storehouse":          &Canfield{draw: 1, recycles: 2, tabCompareFunc: CardPair.Compare_DownSuitWrap, variant: "storehouse"},
 	"Duchess":             &Duchess{},
 	"Klondike":            &Klondike{draw: 1, recycles: 2},
 	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
@@ -181,10 +183,10 @@ var VariantGroups = map[string][]string{
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
-	// "> Canfield":      {"Canfield", "Acme", "Storehouse"},
-	"> Freecell": {"Freecell", "Eight Off"},
-	"> Yukon":    {"Yukon", "Yukon Cells", "Alaska"},
-	"> Puzzlers": {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
+	"> Canfield":      {"Canfield", "Storehouse"},
+	"> Freecell":      {"Freecell", "Eight Off"},
+	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
+	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 }
 
 func init() {

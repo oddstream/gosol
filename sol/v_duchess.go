@@ -58,7 +58,6 @@ func (du *Duchess) StartGame() {
 	for _, pile := range du.tableaux {
 		MoveCard(du.stock, pile)
 	}
-	du.stock.SetRune(RECYCLE_RUNE)
 	TheUI.Toast("Move a Reserve card to a Foundation")
 }
 

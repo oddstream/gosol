@@ -121,7 +121,6 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	} else {
 		dc.SetFontFace(schriftbank.CardOrdinal)
 	}
-	// ordinals in top left and bottom right corners
 	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CTLX, h*CTLY, 0.5, 0.4)
 	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
 	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CBRX, h*CBRY, 0.5, 0.4)
@@ -243,7 +242,7 @@ func CreateCardImages() {
 		println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
 		return
 	}
-	// TODO turn off drawing globally while this runs
+	// TODO MAYBE turn off drawing globally while this runs
 	schriftbank.MakeCardFonts(CardWidth)
 	CreateCardFaceImageLibrary()
 	CardBackImage = CreateCardBackImage()
