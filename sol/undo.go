@@ -143,6 +143,7 @@ func (b *Baize) RestartDeal() {
 func (b *Baize) SavePosition() {
 	if b.Complete() {
 		TheUI.Toast("Cannot bookmark a completed game") // otherwise the stats can be cooked
+		sound.Play("Blip")
 		return
 	}
 	b.bookmark = len(b.undoStack)
@@ -154,10 +155,10 @@ func (b *Baize) SavePosition() {
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
-	if b.bookmark == 0 || b.bookmark > len(b.undoStack) {
+	if b.bookmark == 0 || b.bookmark > len(b.undoStack) || b.Complete() {
 		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
-		sound.Play("Blip")
 		TheUI.Toast("No bookmark")
+		sound.Play("Blip")
 		return
 	}
 	var sav *SavableBaize

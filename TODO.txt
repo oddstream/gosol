@@ -47,7 +47,9 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
   what have to Romans ever done for us?
 
 [TODO]
+ TailTapped to store 13 cards to Discard
  win a game with no blips and no undos
+ what's new
  ...still creating cards with NOSUIT (because CLUB == 1?)
  About.. in menu
  int fanFactor10 operates on CardSize * 10

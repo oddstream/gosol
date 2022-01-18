@@ -68,9 +68,6 @@ var TheUI *ui.UI
 // CardLibrary is the slice where Card objects actually exist, everything else is a *Card
 var CardLibrary []Card
 
-// TheError is a global copy of the last error reported, for optional toasting
-// var TheError string
-
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	ThePreferences.Load()
