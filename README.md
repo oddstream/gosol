@@ -11,10 +11,9 @@ It's tested on Linux, Windows and in a web browser. You should be able to run it
 It currently knows how to play:
 
 * Agnes Bernauer
-* American Toad
 * Australian
 * Baker's Dozen
-* Duchess
+* Canfield (also Storehouse, American Toad, Duchess)
 * Easy (an easy to win game, for debugging)
 * Forty Thieves (also Sixty Thieves, Busy Aces, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black, Rank and File, Number Ten)
 * Freecell (also Eight Off)
@@ -38,6 +37,7 @@ Some variants have been tried and discarded as being a bit silly, or just too ha
 Some will never make it here because they are just poor games:
 
 * Accordian
+* Golf
 * Pyramid (or any card matching variant)
 
 ![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Australian.png)
@@ -227,7 +227,7 @@ that anyone else ever has, or ever will.
 
 ## TODO
 
-* Scripted game variants (currently looking at using [Picol](https://wiki.tcl-lang.org/page/Picol), because I'm a fan of Tcl - I've used Lua in the past for this, but I'd like to keep the binary in one file, and as small as possible).
+* Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua).
 * Get it working on Android (agggh! help!).
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
