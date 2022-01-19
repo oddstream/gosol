@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Picker object (hamburger button, variant name, undo, help buttons)

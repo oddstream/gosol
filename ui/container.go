@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/input"
+	"oddstream.games/gosol/input"
 )
 
 // Container is an interface for a UI widget

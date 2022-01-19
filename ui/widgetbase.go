@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 // WidgetBase is a button that displays a single rune

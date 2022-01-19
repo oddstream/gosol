@@ -1,6 +1,6 @@
 //go:build android
 
-package mobilegomps5
+package mobilegosol
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2/mobile"
-	sol "oddstream.games/gomps5/sol"
+	sol "oddstream.games/gosol/sol"
 )
 
 func init() {

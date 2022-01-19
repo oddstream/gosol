@@ -10,10 +10,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"oddstream.games/gomps5/input"
-	"oddstream.games/gomps5/sound"
-	"oddstream.games/gomps5/ui"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/ui"
+	"oddstream.games/gosol/util"
 )
 
 const (

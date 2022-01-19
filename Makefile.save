@@ -15,7 +15,7 @@ windows:
 	GOOS=windows GOARCH=amd64 go build -v -o solitaire.exe -ldflags="-s -w"
 
 android:
-	ANDROID_HOME=$(ANDROID_HOME) ebitenmobile bind -target android -javapkg games.oddstream.g -o ~/gomps/5/android/gomps5.aar .
+	ANDROID_HOME=$(ANDROID_HOME) ebitenmobile bind -target android -javapkg games.oddstream.g -o ~/gomps/5/android/gosol.aar .
 
 server:
 	python3 -m http.server

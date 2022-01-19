@@ -13,10 +13,10 @@ import (
 	"syscall/js"
 	"time"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
-const keyPrefix = "gomps5/"
+const keyPrefix = "gosol/"
 
 func loadBytesFromLocalStorage(key string, leaveNoTrace bool) ([]byte, error) {
 	keyName := keyPrefix + key

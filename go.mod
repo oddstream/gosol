@@ -1,4 +1,4 @@
-module oddstream.games/gomps5
+module oddstream.games/gosol
 
 go 1.17
 

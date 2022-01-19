@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 func fullPath(jsonFname string) (string, error) {
@@ -22,7 +22,7 @@ func fullPath(jsonFname string) (string, error) {
 		return "", err
 	}
 	// println("UserConfigDir", userConfigDir) // /home/gilbert/.config
-	return path.Join(userConfigDir, "oddstream.games", "gomps5", jsonFname), nil
+	return path.Join(userConfigDir, "oddstream.games", "gosol", jsonFname), nil
 }
 
 func makeConfigDir() {
@@ -31,7 +31,7 @@ func makeConfigDir() {
 		log.Fatal(err)
 	}
 
-	dir := path.Join(userConfigDir, "oddstream.games", "gomps5")
+	dir := path.Join(userConfigDir, "oddstream.games", "gosol")
 	err = os.MkdirAll(dir, 0755) // https://stackoverflow.com/questions/14249467/os-mkdir-and-os-mkdirall-permission-value
 	if err != nil {
 		log.Fatal(err)

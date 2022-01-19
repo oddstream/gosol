@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 // assets/RobotoSlab-Bold.ttf

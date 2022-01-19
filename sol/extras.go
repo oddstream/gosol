@@ -3,7 +3,7 @@ package sol
 import (
 	"log"
 
-	"oddstream.games/gomps5/sound"
+	"oddstream.games/gosol/sound"
 )
 
 func FindCardOwner(card *Card) Pile {

@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/sound"
-	"oddstream.games/gomps5/ui"
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/ui"
 )
 
 // Game represents a game state

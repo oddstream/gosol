@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sort"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 type ScriptBase struct {

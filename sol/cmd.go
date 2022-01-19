@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/sound"
-	"oddstream.games/gomps5/ui"
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/ui"
 )
 
 var CommandTable = map[ebiten.Key]func(){

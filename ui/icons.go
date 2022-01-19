@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 var IconMap = map[string]image.Image{}

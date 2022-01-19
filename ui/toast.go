@@ -3,7 +3,7 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gosol/schriftbank"
 )
 
 /*

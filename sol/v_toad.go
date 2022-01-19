@@ -6,7 +6,7 @@ import (
 	"errors"
 	"image"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 type Toad struct {

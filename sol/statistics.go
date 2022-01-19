@@ -3,8 +3,8 @@ package sol
 import (
 	"fmt"
 
-	"oddstream.games/gomps5/sound"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/util"
 )
 
 // Statistics is a container for the statistics for all variants

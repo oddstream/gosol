@@ -1,7 +1,7 @@
 //go:build linux || windows
 
 // https://go.googlesource.com/proposal/+/master/design/draft-gobuild.md
-// $ go mod init oddstream.games/gomps5
+// $ go mod init oddstream.games/gosol
 // $ go mod tidy
 
 // the package defining a command (an excutable Go program) always has the name main
@@ -19,8 +19,8 @@ import (
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	sol "oddstream.games/gomps5/sol"
-	"oddstream.games/gomps5/ui"
+	sol "oddstream.games/gosol/sol"
+	"oddstream.games/gosol/ui"
 )
 
 func main() {

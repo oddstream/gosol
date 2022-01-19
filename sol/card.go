@@ -6,7 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 const (

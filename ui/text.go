@@ -5,8 +5,8 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/input"
-	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Text is a widget that displays a a multiline of text

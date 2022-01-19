@@ -10,7 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 //go:embed assets/cardFan1.wav

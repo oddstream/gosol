@@ -188,7 +188,7 @@ x retire ghost card images, show target
 x add cardLibrary (including suitless cards with suit=0, one blank card and one card back (Cornflowerblue))
 x also retires modern.go, TheCIP, and CardImageProvider
 x retire retro cards, Preferences.CardType, cardimageprovider, TheCIP
-x rename module from oddstream.games/gosol to oddstream.games/gomps5
+x rename module from oddstream.games/gosol to oddstream.games/gosol
 x retire GSM
 x retire Splash
 

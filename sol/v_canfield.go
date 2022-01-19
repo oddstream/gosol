@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"image"
 
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 type Canfield struct {

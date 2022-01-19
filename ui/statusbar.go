@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Statusbar object (hamburger button, variant name, undo, help buttons)

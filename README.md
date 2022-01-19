@@ -2,7 +2,7 @@
 
 Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](https://ebiten.org/), with help from [fogleman/gg](https://github.com/fogleman/gg) (both of which are highly recommended), with game variants run by (user supplied) scripts.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
+![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
 It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download, I'm working on that).
 
@@ -40,7 +40,7 @@ Some will never make it here because they are just poor games:
 * Golf
 * Pyramid (or any card matching variant)
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Australian.png)
+![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Australian.png)
 
 ## Other features
 
@@ -71,7 +71,7 @@ So taken out were:
 
 Configurability is the root of all evil, someone said. Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/American%20Toad.png)
+![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/American%20Toad.png)
 
 ## FAQ
 
@@ -223,7 +223,7 @@ that anyone else ever has, or ever will.
 
 * A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
 
-![Screenshot](https://github.com/oddstream/gomps5/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Klondike.png)
+![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Klondike.png)
 
 ## TODO
 

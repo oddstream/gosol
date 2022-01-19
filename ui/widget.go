@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/input"
+	"oddstream.games/gosol/input"
 )
 
 // Widget is an interface for widget objects

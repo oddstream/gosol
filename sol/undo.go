@@ -5,7 +5,7 @@ package sol
 import (
 	"log"
 
-	"oddstream.games/gomps5/sound"
+	"oddstream.games/gosol/sound"
 )
 
 // The CardID contains everything we need to serialize the card: pack, ordinal, suit and prone flag

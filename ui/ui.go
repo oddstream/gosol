@@ -6,7 +6,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/util"
 )
 
 var (

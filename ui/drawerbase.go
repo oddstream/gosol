@@ -3,9 +3,9 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/input"
-	"oddstream.games/gomps5/sound"
-	"oddstream.games/gomps5/util"
+	"oddstream.games/gosol/input"
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/util"
 )
 
 const (

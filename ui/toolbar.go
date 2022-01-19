@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gomps5/schriftbank"
+	"oddstream.games/gosol/schriftbank"
 )
 
 // Toolbar object (hamburger button, variant name, undo, help buttons)
