@@ -62,9 +62,6 @@ func main() {
 
 	ebiten.SetScreenClearedEveryFrame(true)
 
-	// interp := picol.InitInterp()
-	// interp.RegisterCoreCommands()
-
 	game, err := sol.NewGame()
 	if err != nil {
 		log.Fatal(err)

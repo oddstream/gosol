@@ -83,10 +83,10 @@ var Pips [13][]PipInfo = [13][]PipInfo{
 	},
 	/* 10 */ {
 		{X: XL, Y: YT}, {X: XR, Y: YT},
-		{X: XC, Y: Y1 - 0.06, SZ: -1}, // smaller
+		{X: XC, Y: Y1 - 0.03, SZ: -1}, // smaller
 		{X: XL, Y: Y2}, {X: XR, Y: Y2},
 		{X: XL, Y: Y3}, {X: XR, Y: Y3},
-		{X: XC, Y: Y4 + 0.06, SZ: -1}, // smaller
+		{X: XC, Y: Y4 + 0.05, SZ: -1}, // smaller
 		{X: XL, Y: YB}, {X: XR, Y: YB},
 	},
 	{},

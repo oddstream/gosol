@@ -183,7 +183,7 @@ var VariantGroups = map[string][]string{
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
-	"> Canfield":      {"Canfield", "Storehouse"},
+	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
 	"> Freecell":      {"Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
