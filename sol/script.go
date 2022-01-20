@@ -174,6 +174,8 @@ var Variants = map[string]ScriptInterface{
 	"Whitehead":         &Whitehead{},
 	"Yukon":             &Yukon{},
 	"Yukon Cells":       &Yukon{extraCells: 2},
+	"Crimean":           &Crimean{},
+	"Ukranian":          &Crimean{ukranian: true},
 }
 
 var VariantGroups = map[string][]string{
