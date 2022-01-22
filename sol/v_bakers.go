@@ -21,7 +21,7 @@ func (*BakersDozen) Info() *VariantInfo {
 
 func (bd *BakersDozen) BuildPiles() {
 
-	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
+	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	bd.tableaux = nil
 	for x := 0; x < 7; x++ {

@@ -23,7 +23,7 @@ func (*Spider) Info() *VariantInfo {
 
 func (sp *Spider) BuildPiles() {
 
-	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil)
+	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil, 0)
 
 	sp.discards = nil
 	for x := 2; x < 10; x++ {

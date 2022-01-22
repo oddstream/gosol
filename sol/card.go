@@ -35,7 +35,7 @@ var CardStartPoint image.Point = image.Point{400, -100}
 type Card struct {
 	// static things
 	magic uint32
-	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone flag bit)
+	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
 
 	// dynamic things
 	owner Pile
@@ -59,6 +59,7 @@ type Card struct {
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
 	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: CardStartPoint}
+	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
 	return c

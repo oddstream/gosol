@@ -20,7 +20,7 @@ func (*Easy) Info() *VariantInfo {
 
 func (ez *Easy) BuildPiles() {
 
-	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	ez.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	ez.foundations = nil

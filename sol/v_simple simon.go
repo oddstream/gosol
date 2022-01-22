@@ -21,7 +21,7 @@ func (*SimpleSimon) Info() *VariantInfo {
 
 func (ss *SimpleSimon) BuildPiles() {
 
-	ss.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
+	ss.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	ss.discards = nil
 	for x := 3; x < 7; x++ {

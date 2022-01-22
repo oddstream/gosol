@@ -25,7 +25,7 @@ func (kl *Klondike) BuildPiles() {
 	if kl.draw == 0 {
 		kl.draw = 1
 	}
-	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	kl.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	kl.foundations = nil

@@ -21,7 +21,7 @@ func (*Scorpion) Info() *VariantInfo {
 
 func (sp *Scorpion) BuildPiles() {
 
-	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 
 	sp.discards = nil
 	for x := 3; x < 7; x++ {

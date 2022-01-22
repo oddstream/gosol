@@ -23,7 +23,7 @@ func (*Toad) Info() *VariantInfo {
 
 func (t *Toad) BuildPiles() {
 
-	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil)
+	t.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil, 0)
 	t.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	t.reserves = nil

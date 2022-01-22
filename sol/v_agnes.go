@@ -22,7 +22,7 @@ func (*Agnes) Info() *VariantInfo {
 
 func (ag *Agnes) BuildPiles() {
 
-	ag.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	ag.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	ag.waste = nil
 
 	ag.foundations = nil

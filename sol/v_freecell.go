@@ -20,7 +20,7 @@ func (*Freecell) Info() *VariantInfo {
 
 func (fc *Freecell) BuildPiles() {
 
-	fc.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
+	fc.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	fc.cells = nil
 	for x := 0; x < 4; x++ {

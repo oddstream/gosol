@@ -708,13 +708,15 @@ func (b *Baize) SetRecycles(recycles int) {
 }
 
 func (b *Baize) UpdateStatusbar() {
-	if !b.script.Stock().Hidden() {
+	if b.script.Stock().Hidden() {
+		TheUI.SetStock(-1)
+	} else {
 		TheUI.SetStock(b.script.Stock().Len())
 	}
 	if b.script.Waste() != nil {
 		TheUI.SetWaste(b.script.Waste().Len())
 	} else {
-		TheUI.SetWaste(0) // previous variant may have had a waste, and this one does not
+		TheUI.SetWaste(-1) // previous variant may have had a waste, and this one does not
 	}
 	// if DebugMode {
 	// 	TheUI.SetMiddle(fmt.Sprintf("len(undoStack) = %d", len(b.undoStack)))

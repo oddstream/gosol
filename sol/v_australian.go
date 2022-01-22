@@ -19,7 +19,7 @@ func (*Australian) Info() *VariantInfo {
 }
 
 func (aus *Australian) BuildPiles() {
-	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	aus.foundations = nil

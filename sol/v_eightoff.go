@@ -20,7 +20,7 @@ func (*EightOff) Info() *VariantInfo {
 
 func (eo *EightOff) BuildPiles() {
 
-	eo.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil)
+	eo.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	eo.cells = nil
 	for x := 0; x < 8; x++ {

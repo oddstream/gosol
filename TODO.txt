@@ -47,6 +47,8 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
   what have to Romans ever done for us?
 
 [TODO]
+ BUG Simple Simon says "Stock 19"
+ Show LongVariantNames in variant picker, will have to remove 'Relaxed' suffix downstream
  TailTapped to store 13 cards to Discard
  win a game with no blips and no undos
  what's new
@@ -55,7 +57,6 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
  int fanFactor10 operates on CardSize * 10
  variants auto select two/four colors (four if compare by suit?)
  Card.Ordinal(), OrdinalShortString(), OrdinalLongString()
- Show LongVariantNames in variant picker, will have to removed 'Relaxed' suffix downstream
  SUGGESTION put toasts in a queue, and release them at one second intervals
  cunning method of ensuring saved.json is up-to-date on WASM
  set preference API that writes preferences

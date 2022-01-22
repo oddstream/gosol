@@ -39,7 +39,7 @@ func (ft *FortyThieves) BuildPiles() {
 		ft.tabCompareFunc = CardPair.Compare_DownSuit
 	}
 
-	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, ft.packs, 4, nil)
+	ft.stock = NewStock(image.Point{0, 0}, FAN_NONE, ft.packs, 4, nil, 0)
 	ft.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	ft.foundations = nil

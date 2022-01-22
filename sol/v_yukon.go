@@ -21,7 +21,7 @@ func (*Yukon) Info() *VariantInfo {
 
 func (yuk *Yukon) BuildPiles() {
 
-	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
+	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	yuk.foundations = nil
 	for y := 0; y < 4; y++ {

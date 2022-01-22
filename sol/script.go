@@ -189,6 +189,7 @@ var VariantGroups = map[string][]string{
 	"> Freecell":      {"Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
+	"> Places":        {"Australian", "Yukon", "Klondike", "Crimean", "Ukranian"},
 }
 
 func init() {

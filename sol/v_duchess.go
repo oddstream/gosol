@@ -24,7 +24,7 @@ func (*Duchess) Info() *VariantInfo {
 
 func (du *Duchess) BuildPiles() {
 
-	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil)
+	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil, 0)
 
 	du.reserves = nil
 	for i := 0; i < 4; i++ {

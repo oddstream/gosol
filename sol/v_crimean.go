@@ -22,7 +22,7 @@ func (*Crimean) Info() *VariantInfo {
 
 func (self *Crimean) BuildPiles() {
 
-	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	if !self.ukranian {
 		self.reserves = nil

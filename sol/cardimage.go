@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"image/color"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -114,16 +115,24 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.DrawRoundedRectangle(1, 1, w-2, h-2, CardCornerRadius)
 	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
 
+	var cardOrdinal = ID.Ordinal()
+	var suitRune rune = ID.SuitRune()
+	var cardColor color.RGBA = ID.Color()
+	if ID.Joker() {
+		// if a joker is pretending to be a certain card, then show it's pretend ordinal and suit, but faded
+		cardColor.A = 64
+	}
+
 	// draw the card ordinals in top left and bottom right corners
-	dc.SetColor(ID.Color())
-	if ID.Ordinal() == 10 {
+	dc.SetColor(cardColor)
+	if cardOrdinal == 10 {
 		dc.SetFontFace(schriftbank.CardOrdinalSmall)
 	} else {
 		dc.SetFontFace(schriftbank.CardOrdinal)
 	}
-	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CTLX, h*CTLY, 0.5, 0.4)
+	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*CTLX, h*CTLY, 0.5, 0.4)
 	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
-	dc.DrawStringAnchored(util.OrdinalToShortString(ID.Ordinal()), w*CBRX, h*CBRY, 0.5, 0.4)
+	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*CBRX, h*CBRY, 0.5, 0.4)
 	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
 	dc.Stroke()
 
@@ -136,17 +145,16 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	// https://www.fileformat.info/info/unicode/char/2660/fontsupport.htm
 
 	// https://github.com/fogleman/gg/blob/v1.3.0/context.go#L679
-	var r rune = ID.SuitRune()
-	if r != 0 {
-		if ID.Ordinal() == 1 || ID.Ordinal() > 10 {
+	if suitRune != 0 {
+		if cardOrdinal == 1 || cardOrdinal > 10 {
 			// Ace, Jack, Queen, King get suit runes at top right and bottom left
 			// so the suit can be seen when fanned
 			// they also get purdy rectangles in the middle
 			dc.SetFontFace(schriftbank.CardSymbolRegular)
-			dc.SetColor(ID.Color())
-			dc.DrawStringAnchored(string(r), w*CTRX, h*CTRY, 0.5, 0.4)
+			dc.SetColor(cardColor)
+			dc.DrawStringAnchored(string(suitRune), w*CTRX, h*CTRY, 0.5, 0.4)
 			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
-			dc.DrawStringAnchored(string(r), w*CBLX, h*CBLY, 0.5, 0.4)
+			dc.DrawStringAnchored(string(suitRune), w*CBLX, h*CBLY, 0.5, 0.4)
 			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
 			// dc.DrawStringAnchored(string(r), w*0.16, h*0.27, 0.5, 0.5)
 			// dc.DrawStringAnchored(string(r), w*0.84, h*0.73, 0.5, 0.5)
@@ -156,13 +164,13 @@ func createFaceImage(ID CardID) *ebiten.Image {
 			dc.DrawRectangle(w*0.25, h*0.25, w*0.5, h*0.5)
 			dc.Fill()
 
-			dc.SetColor(ID.Color())
+			dc.SetColor(cardColor)
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(string(r), w*0.5, h*0.44, 0.5, 0.5)
+			dc.DrawStringAnchored(string(suitRune), w*0.5, h*0.44, 0.5, 0.5)
 
-		} else {
-
-			dc.SetColor(ID.Color())
+		} else if cardOrdinal > 0 {
+			// a blank joker will have an ordinal of zero
+			dc.SetColor(cardColor)
 			// TODO would really like to draw some crown-ish symbols here
 			// the chess glyphs only have king and queen, and would look a bit off
 			// so using J Q K will have to do for now
@@ -176,12 +184,11 @@ func createFaceImage(ID CardID) *ebiten.Image {
 				case 1:
 					dc.SetFontFace(schriftbank.CardSymbolLarge)
 				}
-				dc.DrawStringAnchored(string(r), w*pip.X, h*pip.Y, 0.5, 0.5)
+				dc.DrawStringAnchored(string(suitRune), w*pip.X, h*pip.Y, 0.5, 0.5)
 			}
 		}
 		dc.Stroke()
 	}
-
 	return ebiten.NewImageFromImage(dc.Image())
 }
 

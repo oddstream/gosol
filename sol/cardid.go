@@ -30,6 +30,7 @@ const (
 	suitMask    CardID = 0b0000000011110000
 	ordinalMask CardID = 0b0000000000001111
 	proneFlag   CardID = 0b0001000000000000
+	jokerFlag   CardID = 0b0010000000000000
 )
 
 func (cid CardID) String() string {
@@ -121,6 +122,16 @@ func (c *Card) SetProne(prone bool) {
 	}
 }
 
+// Prone returns the joker flag buried in the card id
+func (cid CardID) Joker() bool {
+	return cid&jokerFlag == jokerFlag
+}
+
+// Prone returns true if the card is face down, false if it is face up
+func (c *Card) Joker() bool {
+	return c.ID.Joker()
+}
+
 // Color returns Red or Black
 func (cid CardID) Color() color.RGBA {
 	suit := cid.Suit()
@@ -170,6 +181,9 @@ func NewCardID(pack, suit, ordinal int) CardID {
 	u += uint32(pack) << 8
 	u += uint32(suit) << 4
 	u += uint32(ordinal)
+	if suit == NOSUIT && ordinal == 0 {
+		u += uint32(jokerFlag)
+	}
 	return CardID(u)
 }
 

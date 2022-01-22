@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
+func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
 
 	var numberOfCardsInSuit int = 0
 	if cardFilter == nil {
@@ -24,7 +24,9 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 			}
 		}
 	}
+
 	var cardsRequired int = packs * suits * numberOfCardsInSuit
+	cardsRequired += packs * jokersPerPack
 	CardLibrary = make([]Card, 0, cardsRequired)
 
 	for pack := 0; pack < packs; pack++ {
@@ -32,7 +34,7 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 			for suit := 0; suit < suits; suit++ {
 				if cardFilter[ord] {
 					/*
-						suits are numbered CLUB=1, DIAMOND=2, HEART=3, SPADE=4
+						suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
 						(i.e. not 0..3)
 						run the suits loop backwards, so spades are used first
 						(folks expect Spider One Suit to use spades)
@@ -41,6 +43,10 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool) {
 					CardLibrary = append(CardLibrary, c)
 				}
 			}
+		}
+		for i := 0; i < jokersPerPack; i++ {
+			var c Card = NewCard(pack, NOSUIT, 0) // NOSUIT and ordinal == 0 creates a joker
+			CardLibrary = append(CardLibrary, c)
 		}
 	}
 	log.Printf("%d packs, %d suits, %d cards created\n", packs, suits, len(CardLibrary))
@@ -106,8 +112,8 @@ func (self *Stock) Push(card *Card) {
 	TheBaize.setFlag(dirtyCardPositions)
 }
 
-func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool) *Stock {
-	CreateCardLibrary(packs, suits, cardFilter)
+func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Stock {
+	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
 	stock := &Stock{Core: NewCore("Stock", slot, fanType, MOVE_ONE)}
 	stock.FillFromLibrary()
 	stock.Shuffle()

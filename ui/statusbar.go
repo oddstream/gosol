@@ -29,14 +29,9 @@ func NewStatusbar() *Statusbar {
 // SetStock of the statusbar
 func (u *UI) SetStock(cards int) {
 	var l *Label = u.statusbar.widgets[0].(*Label)
-	switch cards {
-	case 0:
+	if cards == -1 {
 		l.UpdateText("") // hide hidden stock
-	// case 1:
-	// 	l.UpdateText("1 STOCK CARD")
-	// default:
-	// 	l.UpdateText(fmt.Sprintf("%d STOCK CARDS", cards))
-	default:
+	} else {
 		l.UpdateText(fmt.Sprintf("STOCK: %d", cards))
 	}
 	u.statusbar.LayoutWidgets()
@@ -45,14 +40,9 @@ func (u *UI) SetStock(cards int) {
 // SetWaste of the statusbar
 func (u *UI) SetWaste(cards int) {
 	var l *Label = u.statusbar.widgets[1].(*Label)
-	switch cards {
-	case 0:
-		l.UpdateText("") // hide hidden stock
-		// case 1:
-		// 	l.UpdateText("1 WASTE CARD")
-		// default:
-		// 	l.UpdateText(fmt.Sprintf("%d WASTE CARDS", cards))
-	default:
+	if cards == -1 {
+		l.UpdateText("")
+	} else {
 		l.UpdateText(fmt.Sprintf("WASTE: %d", cards))
 	}
 	u.statusbar.LayoutWidgets()

@@ -20,7 +20,7 @@ func (*Whitehead) Info() *VariantInfo {
 
 func (wh *Whitehead) BuildPiles() {
 
-	wh.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil)
+	wh.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	wh.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	wh.foundations = nil
