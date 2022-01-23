@@ -350,6 +350,8 @@ func (b *Baize) AfterUserMove() {
 		b.StartSpinning()
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
+	} else if b.Stuck() {
+		TheUI.Toast("No movable cards")
 	} else {
 		TheUI.HideFAB()
 	}

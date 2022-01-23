@@ -20,24 +20,32 @@ type ScriptBase struct {
 	tableaux    []*Tableau
 }
 
-func (sb ScriptBase) Stock() *Stock {
-	return sb.stock
-}
-
-func (sb ScriptBase) Waste() *Waste {
-	return sb.waste
-}
-
-func (sb ScriptBase) Discards() []*Discard {
-	return sb.discards
+func (sb ScriptBase) Cells() []*Cell {
+	return sb.cells
 }
 
 func (sb ScriptBase) Foundations() []*Foundation {
 	return sb.foundations
 }
 
+func (sb ScriptBase) Discards() []*Discard {
+	return sb.discards
+}
+
+func (sb ScriptBase) Reserves() []*Reserve {
+	return sb.reserves
+}
+
+func (sb ScriptBase) Stock() *Stock {
+	return sb.stock
+}
+
 func (sb ScriptBase) Tableaux() []*Tableau {
 	return sb.tableaux
+}
+
+func (sb ScriptBase) Waste() *Waste {
+	return sb.waste
 }
 
 type VariantInfo struct {
@@ -64,8 +72,10 @@ type ScriptInterface interface {
 	TailTapped([]*Card)
 	PileTapped(Pile)
 
+	Cells() []*Cell
 	Discards() []*Discard
 	Foundations() []*Foundation
+	Reserves() []*Reserve
 	Stock() *Stock
 	Tableaux() []*Tableau
 	Waste() *Waste
