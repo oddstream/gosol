@@ -94,7 +94,9 @@ func (b *Baize) Stuck() bool {
 			}
 			if dst := b.FindHomeForTail(pile, tail); dst != nil {
 				if !(dst.Empty() && len(tail) == pile.Len()) {
-					moves++
+					if ok, _ := b.script.TailMoveError(tail); ok {
+						moves++
+					}
 				}
 			}
 		}

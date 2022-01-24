@@ -248,6 +248,19 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
 	b.UpdateStatusbar()
+	if b.Complete() {
+		TheUI.Toast("Complete")
+		TheUI.ShowFAB("star", ebiten.KeyN)
+		b.StartSpinning()
+	} else if b.Conformant() {
+		TheUI.ShowFAB("done_all", ebiten.KeyC)
+	} else if b.Stuck() {
+		TheUI.Toast("No movable cards")
+		TheUI.ShowFAB("star", ebiten.KeyN)
+	} else {
+		TheUI.HideFAB()
+	}
+
 }
 
 // findPileAt finds the Pile under the mouse click or touch
@@ -352,6 +365,7 @@ func (b *Baize) AfterUserMove() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.Stuck() {
 		TheUI.Toast("No movable cards")
+		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
 		TheUI.HideFAB()
 	}
