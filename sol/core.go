@@ -538,7 +538,7 @@ func (self *Core) TailTapped(tail []*Card) {
 			}
 		}
 	}
-	var longestPile *Tableau
+	var chosenPile *Tableau
 	for _, tp := range TheBaize.script.Tableaux() {
 		if tp == src {
 			continue
@@ -556,19 +556,19 @@ func (self *Core) TailTapped(tail []*Card) {
 					}
 					if !tp.Empty() {
 						if tail[0].Suit() == tp.Peek().Suit() {
-							longestPile = tp
+							chosenPile = tp
 							break
 						}
 					}
-					if longestPile == nil || tp.Len() > longestPile.Len() {
-						longestPile = tp
+					if chosenPile == nil || tp.Len() < chosenPile.Len() {
+						chosenPile = tp
 					}
 				}
 			}
 		}
 	}
-	if longestPile != nil {
-		MoveCards(src, src.IndexOf(tappedCard), longestPile)
+	if chosenPile != nil {
+		MoveCards(src, src.IndexOf(tappedCard), chosenPile)
 	} else {
 		sound.Play("Blip")
 	}

@@ -54,6 +54,8 @@ type Card struct {
 	directionX, directionY int // direction vector when card is spinning
 	directionZ, scaleZ     float64
 	angle, spin            float64 // current angle and spin when card is spinning
+
+	movable bool
 }
 
 // NewCard is a factory for Card objects
@@ -408,7 +410,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if c.Owner().Target() && c == c.Owner().Peek() {
-		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+	}
+
+	if DebugMode && c.movable {
+		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 
 	screen.DrawImage(img, op)

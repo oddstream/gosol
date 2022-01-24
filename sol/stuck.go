@@ -34,7 +34,31 @@ func (b *Baize) FindHomeForTail(owner Pile, tail []*Card) Pile {
 	return nil
 }
 
+func meaninglessMove(dst Pile, src Pile, tail []*Card) bool {
+	if _, isFoundation := (dst).(*Foundation); isFoundation {
+		return false
+	}
+	if dst.Empty() {
+		if len(tail) == src.Len() {
+			return true
+		}
+	}
+	return false
+}
+
 func (b *Baize) Stuck() bool {
+
+	// Go uses a copy of the value instead of the value itself within a range clause.
+	// for _, c := range CardLibrary {
+	// 	c.movable = false
+	// }
+
+	if DebugMode {
+		for i := 0; i < len(CardLibrary); i++ {
+			CardLibrary[i].movable = false
+		}
+	}
+
 	var moves int
 
 	if !b.script.Stock().Empty() {
@@ -45,6 +69,9 @@ func (b *Baize) Stuck() bool {
 			var tail []*Card
 			tail = append(tail, wastePile.Peek())
 			if dst := b.FindHomeForTail(wastePile, tail); dst != nil {
+				if DebugMode {
+					tail[0].movable = true
+				}
 				moves++
 			}
 
@@ -65,6 +92,9 @@ func (b *Baize) Stuck() bool {
 				continue
 			}
 			if dst := b.FindHomeForTail(pile, tail); dst != nil {
+				if DebugMode {
+					tail[0].movable = true
+				}
 				moves++
 			}
 		}
@@ -79,6 +109,9 @@ func (b *Baize) Stuck() bool {
 				continue
 			}
 			if dst := b.FindHomeForTail(pile, tail); dst != nil {
+				if DebugMode {
+					tail[0].movable = true
+				}
 				moves++
 			}
 		}
@@ -93,8 +126,11 @@ func (b *Baize) Stuck() bool {
 				continue
 			}
 			if dst := b.FindHomeForTail(pile, tail); dst != nil {
-				if !(dst.Empty() && len(tail) == pile.Len()) {
+				if !meaninglessMove(dst, pile, tail) {
 					if ok, _ := b.script.TailMoveError(tail); ok {
+						if DebugMode {
+							tail[0].movable = true
+						}
 						moves++
 					}
 				}

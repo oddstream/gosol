@@ -54,9 +54,14 @@ func powerMoves(piles []Pile, pDraggingTo Pile) int {
 }
 
 func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
+	// AnyCardsProne check done by pile.CanMoveTail
+	// checking at this level probably isn't needed
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card")
 	}
+	// we couldn't check MOVE_PLUS_ONE in pile.CanMoveTail
+	// because we didn't then know the destination pile
+	// which we need to know to calculate power moves
 	if self.MoveType() == MOVE_ONE_PLUS {
 		if ThePreferences.PowerMoves {
 			moves := powerMoves(TheBaize.piles, self)

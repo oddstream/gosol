@@ -120,6 +120,12 @@ func (b *Baize) NewDeal() {
 	b.undoStack = nil
 	b.bookmark = 0
 
+	if DebugMode {
+		for i := 0; i < len(CardLibrary); i++ {
+			CardLibrary[i].movable = false
+		}
+	}
+
 	for _, p := range b.piles {
 		p.Reset()
 	}

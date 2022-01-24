@@ -47,12 +47,10 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
   what have to Romans ever done for us?
 
 [TODO]
- BUG Simple Simon says "Stock 19"
  Show LongVariantNames in variant picker, will have to remove 'Relaxed' suffix downstream
  TailTapped to store 13 cards to Discard
  win a game with no blips and no undos
  what's new
- ...still creating cards with NOSUIT (because CLUB == 1?)
  About.. in menu
  int fanFactor10 operates on CardSize * 10
  variants auto select two/four colors (four if compare by suit?)
@@ -74,6 +72,9 @@ Pile.Cards() is only in UnsortedPairs, MoveNamedCard(), FindCardOwner
  explain UI in README.md (a game of sorting cards and moving them to the foundation piles...)
 
 [DONE]
+x mark movable cards in DebugMode
+x simple Stuck check of movable cards
+x BUG Simple Simon says "Stock 19"
 x Can't tap a legal Canfield move (whole pile -> append another pile)
 x Canfield isn't centered, because stock was at 1,1 and not 0,0
 x  host WASM version @ oddstream.github.io instead of gosol
