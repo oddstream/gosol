@@ -42,6 +42,9 @@ func meaninglessMove(dst Pile, src Pile, tail []*Card) bool {
 		if len(tail) == src.Len() {
 			return true
 		}
+		// if dst.Label() == "" {
+		// 	return true
+		// }
 	}
 	return false
 }

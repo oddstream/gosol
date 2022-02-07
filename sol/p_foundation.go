@@ -12,8 +12,8 @@ type Foundation struct {
 	Core
 }
 
-func NewFoundation(slot image.Point, fanType FanType) *Foundation {
-	foundation := &Foundation{Core: NewCore("Foundation", slot, fanType, MOVE_NONE)}
+func NewFoundation(slot image.Point) *Foundation {
+	foundation := &Foundation{Core: NewCore("Foundation", slot, FAN_NONE, MOVE_NONE)}
 	TheBaize.AddPile(foundation)
 	return foundation
 }
@@ -33,9 +33,6 @@ func (self *Foundation) CanAcceptCard(card *Card) (bool, error) {
 func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
-	}
-	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot add a face down card")
 	}
 	return TheBaize.script.TailAppendError(self, tail)
 }

@@ -25,7 +25,7 @@ func (yuk *Yukon) BuildPiles() {
 
 	yuk.foundations = nil
 	for y := 0; y < 4; y++ {
-		f := NewFoundation(image.Point{8, y}, FAN_NONE)
+		f := NewFoundation(image.Point{8, y})
 		yuk.foundations = append(yuk.foundations, f)
 		f.SetLabel("A")
 	}

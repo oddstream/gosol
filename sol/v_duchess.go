@@ -35,7 +35,7 @@ func (du *Duchess) BuildPiles() {
 
 	du.foundations = nil
 	for x := 3; x < 7; x++ {
-		du.foundations = append(du.foundations, NewFoundation(image.Point{x, 1}, FAN_NONE))
+		du.foundations = append(du.foundations, NewFoundation(image.Point{x, 1}))
 	}
 
 	du.tableaux = nil

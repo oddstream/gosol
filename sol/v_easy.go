@@ -25,7 +25,7 @@ func (ez *Easy) BuildPiles() {
 
 	ez.foundations = nil
 	for x := 9; x < 13; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		f := NewFoundation(image.Point{x, 0})
 		ez.foundations = append(ez.foundations, f)
 		f.SetLabel("A")
 	}

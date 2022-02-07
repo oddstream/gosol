@@ -92,6 +92,11 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
 		log.Panic("Baize piles and SavableBaize piles are different")
 	}
+	if DebugMode {
+		for i := 0; i < len(CardLibrary); i++ {
+			CardLibrary[i].movable = false
+		}
+	}
 	sound.Play("OpenPackage")
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])

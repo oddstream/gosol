@@ -8,6 +8,18 @@ import (
 
 // "the bigger the interface, the weaker the abstraction"
 
+/*
+	3. Open, extensible object models
+	An object typically describes both state and behaviour that
+	acts on (or is influenced by) that state. We might account
+	for both state and behaviour in our object model, but it
+	would be simpler to model just one of them and then use
+	it to provide the other indirectly. We choose to model (and
+	expose) behaviour as a set of methods that are invoked in
+	an object by name; access to state, if appropriate, is then
+	provided through ‘accessor’ methods.
+*/
+
 type Pile interface {
 	// implemented by Core
 	Valid() bool

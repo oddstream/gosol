@@ -31,7 +31,7 @@ func (t *Toad) BuildPiles() {
 
 	t.foundations = nil
 	for x := 0; x < 8; x++ {
-		t.foundations = append(t.foundations, NewFoundation(image.Point{x, 1}, FAN_NONE))
+		t.foundations = append(t.foundations, NewFoundation(image.Point{x, 1}))
 	}
 
 	t.tableaux = nil

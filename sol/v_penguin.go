@@ -35,7 +35,7 @@ func (pen *Penguin) BuildPiles() {
 
 	pen.foundations = nil
 	for y := 0; y < 4; y++ {
-		pile := NewFoundation(image.Point{8, y}, FAN_NONE)
+		pile := NewFoundation(image.Point{8, y})
 		pen.foundations = append(pen.foundations, pile)
 	}
 

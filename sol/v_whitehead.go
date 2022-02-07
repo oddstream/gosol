@@ -25,7 +25,7 @@ func (wh *Whitehead) BuildPiles() {
 
 	wh.foundations = nil
 	for x := 3; x < 7; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		f := NewFoundation(image.Point{x, 0})
 		wh.foundations = append(wh.foundations, f)
 		f.SetLabel("A")
 	}

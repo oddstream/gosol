@@ -413,7 +413,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 
-	if DebugMode && c.movable {
+	if DebugMode && ThePreferences.MarkMovableCards && c.movable {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 

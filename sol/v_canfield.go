@@ -37,7 +37,7 @@ func (self *Canfield) BuildPiles() {
 
 	self.foundations = nil
 	for x := 3; x < 7; x++ {
-		self.foundations = append(self.foundations, NewFoundation(image.Point{x, 0}, FAN_NONE))
+		self.foundations = append(self.foundations, NewFoundation(image.Point{x, 0}))
 	}
 
 	self.tableaux = nil

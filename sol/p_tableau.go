@@ -74,7 +74,7 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 			}
 		} else {
 			if len(tail) > 1 {
-				return false, errors.New("Cannot move more than one card")
+				return false, errors.New("Cannot add more than one card")
 			}
 		}
 	}

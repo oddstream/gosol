@@ -29,7 +29,7 @@ func (fc *Freecell) BuildPiles() {
 
 	fc.foundations = nil
 	for x := 4; x < 8; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		f := NewFoundation(image.Point{x, 0})
 		fc.foundations = append(fc.foundations, f)
 		f.SetLabel("A")
 	}

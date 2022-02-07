@@ -14,7 +14,7 @@ func FindCardOwner(card *Card) Pile {
 			}
 		}
 	}
-	log.Panic("Cannot find card")
+	// log.Panic("Cannot find card")
 	return nil
 }
 

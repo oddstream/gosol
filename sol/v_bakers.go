@@ -37,7 +37,7 @@ func (bd *BakersDozen) BuildPiles() {
 
 	bd.foundations = nil
 	for y := 0; y < 4; y++ {
-		f := NewFoundation(image.Point{9, y}, FAN_NONE)
+		f := NewFoundation(image.Point{9, y})
 		bd.foundations = append(bd.foundations, f)
 		f.SetLabel("A")
 	}

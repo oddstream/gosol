@@ -29,7 +29,7 @@ func (eo *EightOff) BuildPiles() {
 
 	eo.foundations = nil
 	for y := 0; y < 4; y++ {
-		pile := NewFoundation(image.Point{9, y}, FAN_NONE)
+		pile := NewFoundation(image.Point{9, y})
 		eo.foundations = append(eo.foundations, pile)
 		pile.SetLabel("A")
 	}

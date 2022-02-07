@@ -20,6 +20,7 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect() },
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
+	ebiten.KeyM: func() { ThePreferences.MarkMovableCards = !ThePreferences.MarkMovableCards },
 	ebiten.KeyX: func() { ExitRequested = true },
 	ebiten.KeyTab: func() {
 		if DebugMode {

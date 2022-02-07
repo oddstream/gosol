@@ -116,16 +116,7 @@ func (b *Baize) NewDeal() {
 		TheStatistics.RecordLostGame(b.LongVariantName())
 	}
 
-	b.tail = nil
-	b.undoStack = nil
-	b.bookmark = 0
-
-	if DebugMode {
-		for i := 0; i < len(CardLibrary); i++ {
-			CardLibrary[i].movable = false
-		}
-	}
-
+	b.Reset()
 	for _, p := range b.piles {
 		p.Reset()
 	}
@@ -190,13 +181,23 @@ func (b *Baize) MirrorSlots() {
 	}
 }
 
+func (b *Baize) Reset() {
+	b.tail = nil
+	b.undoStack = nil
+	b.bookmark = 0
+
+	if DebugMode {
+		for i := 0; i < len(CardLibrary); i++ {
+			CardLibrary[i].movable = false
+		}
+	}
+}
+
 // StartFreshGame resets Baize and starts a new game with a new seed
 func (b *Baize) StartFreshGame() {
 
-	b.tail = nil
+	b.Reset()
 	b.piles = nil
-	b.undoStack = nil
-	b.bookmark = 0
 
 	var ok bool
 	if b.script, ok = Variants[ThePreferences.Variant]; !ok {

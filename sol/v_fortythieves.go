@@ -44,7 +44,7 @@ func (ft *FortyThieves) BuildPiles() {
 
 	ft.foundations = nil
 	for _, x := range ft.founds {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		f := NewFoundation(image.Point{x, 0})
 		ft.foundations = append(ft.foundations, f)
 		f.SetLabel("A")
 	}

@@ -33,7 +33,7 @@ func (self *Crimean) BuildPiles() {
 
 	self.foundations = nil
 	for x := 3; x < 7; x++ {
-		f := NewFoundation(image.Point{x, 0}, FAN_NONE)
+		f := NewFoundation(image.Point{x, 0})
 		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
