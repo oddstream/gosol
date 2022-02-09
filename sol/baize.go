@@ -273,7 +273,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 // findPileAt finds the Pile under the mouse click or touch
 func (b *Baize) FindPileAt(pt image.Point) Pile {
 	for _, p := range b.piles {
-		if pt.In(p.FannedScreenRect()) {
+		if pt.In(p.ScreenRect()) {
 			return p
 		}
 	}
@@ -282,9 +282,7 @@ func (b *Baize) FindPileAt(pt image.Point) Pile {
 
 // FindCardAt finds the Card under the mouse click or touch
 func (b *Baize) FindCardAt(pt image.Point) *Card {
-	// go backwards, for King Albert's overlapping reserve piles
-	for j := len(b.piles) - 1; j >= 0; j-- {
-		p := b.piles[j]
+	for _, p := range b.piles {
 		for i := p.Len() - 1; i >= 0; i-- {
 			c := p.Get(i)
 			if pt.In(c.ScreenRect()) {
