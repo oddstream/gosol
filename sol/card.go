@@ -386,18 +386,22 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		if !c.Flipping() {
 			switch {
 			case c.Transitioning():
-				offset := float64(CardWidth) / 20.0
-				op.GeoM.Translate(offset, offset)
+				xoffset := float64(CardWidth) / 20.0
+				yoffset := float64(CardHeight) / 20.0
+				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
-				offset = -offset
-				op.GeoM.Translate(offset, offset)
+				xoffset = -xoffset
+				yoffset = -yoffset
+				op.GeoM.Translate(xoffset, yoffset)
 			case c.Dragging():
-				offset := float64(CardWidth) / 20.0
-				op.GeoM.Translate(offset, offset)
+				xoffset := float64(CardWidth) / 20.0
+				yoffset := float64(CardHeight) / 20.0
+				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
 				// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
-				offset = -offset * 0.5
-				op.GeoM.Translate(offset, offset)
+				xoffset = -xoffset * 0.5
+				yoffset = -yoffset * 0.5
+				op.GeoM.Translate(xoffset, yoffset)
 				// this looks intuitively better than "lifting" the card with
 				// op.GeoM.Translate(-offset*2, -offset*2)
 				// even though "lifting" it (moving it up/left towards the light source) would be more "correct"

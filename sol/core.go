@@ -397,6 +397,7 @@ func (self *Core) PosAfter(c *Card) image.Point {
 }
 
 func (self *Core) Refan() {
+	// TODO trying set pos instead of transition
 	var doFan3 bool = false
 	switch self.fanType {
 	case FAN_NONE:

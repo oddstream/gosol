@@ -16,36 +16,20 @@ type Statistics struct {
 // VariantStatistics holds the statistics for one variant
 type VariantStatistics struct {
 	// PascalCase for JSON
-	Won, Lost, CurrStreak, BestStreak, WorstStreak int   `json:",omitempty"`
-	Percents                                       []int `json:",omitempty"`
+	Won, Lost, CurrStreak, BestStreak, WorstStreak, SumPercents, BestPercent int `json:",omitempty"`
 	// Won is number of games with 100%
 	// Lost is number of games with % less than 100
 	// Won + Lost is total number of games played (won or abandoned)
-	// []Percents is a record of games where % < 100
+	// SumPercents is a record of games where % < 100
 	// average % is (sum of Percents) + (100 * Won) / (Won+Lost)
 }
 
 func (stats *VariantStatistics) averagePercent() int {
 	played := stats.Won + stats.Lost
-	if played == 0 {
-		return 0
+	if played > 0 {
+		return (stats.SumPercents + (stats.Won * 100)) / played
 	}
-	var av int
-	for _, percent := range stats.Percents {
-		av += percent
-	}
-	av += stats.Won * 100
-	return av / played
-}
-
-func (stats *VariantStatistics) bestPercent() int {
-	var best = 0
-	for _, percent := range stats.Percents {
-		if percent > best {
-			best = percent
-		}
-	}
-	return best
+	return 0
 }
 
 func (stats *VariantStatistics) generalToasts() []string {
@@ -110,6 +94,8 @@ func (s *Statistics) RecordWonGame(v string) {
 		stats.BestStreak = stats.CurrStreak
 	}
 
+	stats.BestPercent = 100
+
 	toasts := stats.generalToasts()
 	for _, t := range toasts {
 		TheUI.Toast(t)
@@ -140,7 +126,10 @@ func (s *Statistics) RecordLostGame(v string) {
 		stats.WorstStreak = stats.CurrStreak
 	}
 
-	stats.Percents = append(stats.Percents, percent)
+	if percent > stats.BestPercent {
+		stats.BestPercent = percent
+	}
+	stats.SumPercents += percent
 
 	s.Save()
 }
@@ -154,12 +143,11 @@ func (s *Statistics) WelcomeToast(v string) {
 		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
 	} else {
 		avpc := stats.averagePercent()
-		bpc := stats.bestPercent()
 
 		if stats.Won == 0 {
 			toasts = append(toasts, fmt.Sprintf("You have yet to win a game of %s in %s", v, util.Pluralize("attempt", stats.Lost)))
-			if bpc > 0 && bpc != avpc {
-				toasts = append(toasts, fmt.Sprintf("Your best score is %d%%, your average score is %d%%", bpc, avpc))
+			if stats.BestPercent > 0 && stats.BestPercent != avpc {
+				toasts = append(toasts, fmt.Sprintf("Your best score is %d%%, your average score is %d%%", stats.BestPercent, avpc))
 			}
 		} else {
 			toasts = stats.generalToasts()
