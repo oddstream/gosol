@@ -86,6 +86,7 @@ func (b *Baize) Stuck() bool {
 	}
 
 	for _, pile := range b.script.Cells() {
+		// TODO only check one card, FFS
 		for _, card := range pile.cards {
 			if card.Prone() {
 				continue
@@ -103,6 +104,7 @@ func (b *Baize) Stuck() bool {
 		}
 	}
 	for _, pile := range b.script.Reserves() {
+		// TODO only check top card, FFS
 		for _, card := range pile.cards {
 			if card.Prone() {
 				continue
