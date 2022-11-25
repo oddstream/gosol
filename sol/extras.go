@@ -6,7 +6,7 @@ import (
 	"oddstream.games/gosol/sound"
 )
 
-func FindCardOwner(card *Card) Pile {
+func FindCardOwner(card *Card) *Pile {
 	for _, pile := range TheBaize.piles {
 		for _, c := range pile.Cards() {
 			if c == card {
@@ -27,8 +27,8 @@ func AnyCardsProne(cards []*Card) bool {
 	return false
 }
 
-func FlipUpExposedCard(p Pile) {
-	if _, isStock := (p).(*Stock); !isStock {
+func FlipUpExposedCard(p *Pile) {
+	if !p.IsStock() {
 		if c := p.Peek(); c != nil {
 			c.FlipUp()
 		}
@@ -36,7 +36,7 @@ func FlipUpExposedCard(p Pile) {
 }
 
 // MoveCard is an optimized, single card version of MoveCards
-func MoveCard(src Pile, dst Pile) *Card {
+func MoveCard(src *Pile, dst *Pile) *Card {
 	if c := src.Pop(); c != nil {
 		sound.Play("Place")
 		dst.Push(c)
@@ -47,7 +47,7 @@ func MoveCard(src Pile, dst Pile) *Card {
 	return nil
 }
 
-func MoveNamedCard(src Pile, suit, ordinal int, dst Pile) {
+func MoveNamedCard(src *Pile, suit, ordinal int, dst *Pile) {
 
 	// 1. find the card in the src Pile
 	var ID CardID = NewCardID(0, suit, ordinal)
@@ -82,7 +82,7 @@ func MoveNamedCard(src Pile, suit, ordinal int, dst Pile) {
 }
 
 // MoveCards is used when dragging a tail from ome pile to another
-func MoveCards(src Pile, moveFromIndex int, dst Pile) {
+func MoveCards(src *Pile, moveFromIndex int, dst *Pile) {
 
 	oldSrcLen := src.Len()
 
@@ -109,7 +109,7 @@ func MoveCards(src Pile, moveFromIndex int, dst Pile) {
 	TheBaize.setFlag(dirtyCardPositions)
 }
 
-func MoveAllCards(src Pile, dst Pile) {
+func MoveAllCards(src *Pile, dst *Pile) {
 	if src.Empty() {
 		return
 	}
@@ -118,4 +118,15 @@ func MoveAllCards(src Pile, dst Pile) {
 	}
 	src.Reset()
 	TheBaize.setFlag(dirtyCardPositions)
+}
+
+func MarkAllCardsImmovable() {
+	// Go uses a copy of the value instead of the value itself within a range clause.
+	// for _, c := range CardLibrary {
+	// 	c.movable = false
+	// }
+	// TODO find reference for this
+	for i := 0; i < len(CardLibrary); i++ {
+		CardLibrary[i].movable = false
+	}
 }

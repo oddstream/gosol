@@ -14,7 +14,6 @@ func (*Whitehead) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -56,10 +55,10 @@ func (wh *Whitehead) AfterMove() {
 }
 
 func (*Whitehead) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (pile).(type) {
-	case *Tableau:
+	switch (pile).category {
+	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
@@ -71,16 +70,16 @@ func (*Whitehead) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Whitehead) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Whitehead) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch (dst).category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -90,20 +89,20 @@ func (*Whitehead) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Whitehead) UnsortedPairs(pile Pile) int {
+func (*Whitehead) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownColor)
 }
 
 func (wh *Whitehead) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == wh.stock && len(tail) == 1 {
 		MoveCard(wh.stock, wh.waste)
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (wh *Whitehead) PileTapped(Pile) {
+func (wh *Whitehead) PileTapped(*Pile) {
 	// https://politaire.com/help/whitehead
 	// Only one pass through the Stock is permitted
 }

@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	baizemagic uint32 = 0xfeedface
+	BAIZEMAGIC uint32 = 0xfeedface
 )
 
 const (
@@ -31,19 +31,22 @@ const (
 
 // Baize object describes the baize
 type Baize struct {
-	magic        uint32
-	script       ScriptInterface
-	piles        []Pile
-	tail         []*Card // array of cards currently being dragged
-	bookmark     int     // index into undo stack
-	recycles     int     // number of available stock recycles
-	undoStack    []*SavableBaize
-	dirtyFlags   uint32 // what needs doing when we Update
-	stroke       *input.Stroke
-	dragStart    image.Point
-	dragOffset   image.Point
-	WindowWidth  int // the most recent window width given to Layout
-	WindowHeight int // the most recent window height given to Layout
+	magic            uint32
+	script           ScriptInterface
+	piles            []*Pile
+	tail             []*Card // array of cards currently being dragged
+	bookmark         int     // index into undo stack
+	recycles         int     // number of available stock recycles
+	undoStack        []*SavableBaize
+	dirtyFlags       uint32 // what needs doing when we Update
+	moves            int    // number of possible (not useless) moves
+	fmoves           int    // number of possible moves to a Foundation (for enabling Collect button)
+	stroke           *input.Stroke
+	dragStart        image.Point
+	dragOffset       image.Point
+	showMovableCards bool // show movable cards until the next move (default: false)
+	WindowWidth      int  // the most recent window width given to Layout
+	WindowHeight     int  // the most recent window height given to Layout
 }
 
 //--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
@@ -51,7 +54,7 @@ type Baize struct {
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// let WindowWidth,WindowHeight be zero, so that the first Layout will trigger card scaling and pile placement
-	return &Baize{magic: baizemagic, dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
+	return &Baize{magic: BAIZEMAGIC, dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -67,7 +70,7 @@ func (b *Baize) clearFlag(flag uint32) {
 }
 
 func (b *Baize) Valid() bool {
-	return b != nil && b.magic == baizemagic
+	return b != nil && b.magic == BAIZEMAGIC
 }
 
 func (b *Baize) CRC() uint32 {
@@ -90,7 +93,7 @@ func (b *Baize) CRC() uint32 {
 	return crc32.ChecksumIEEE(lens)
 }
 
-func (b *Baize) AddPile(pile Pile) {
+func (b *Baize) AddPile(pile *Pile) {
 	b.piles = append(b.piles, pile)
 }
 
@@ -99,11 +102,7 @@ func (b *Baize) Refan() {
 }
 
 func (b *Baize) LongVariantName() string {
-	var v string = ThePreferences.Variant
-	if ThePreferences.Relaxed && b.script.Info().relaxable {
-		v = v + " Relaxed"
-	}
-	return v
+	return ThePreferences.Variant
 }
 
 // NewGame restarts current variant (ie no pile building) with a new seed
@@ -122,8 +121,8 @@ func (b *Baize) NewDeal() {
 	}
 
 	stockPile := b.script.Stock()
-	stockPile.FillFromLibrary()
-	stockPile.Shuffle()
+	FillFromLibrary(stockPile)
+	Shuffle(stockPile)
 
 	b.script.StartGame()
 	b.UndoPush()
@@ -185,12 +184,7 @@ func (b *Baize) Reset() {
 	b.tail = nil
 	b.undoStack = nil
 	b.bookmark = 0
-
-	if DebugMode {
-		for i := 0; i < len(CardLibrary); i++ {
-			CardLibrary[i].movable = false
-		}
-	}
+	MarkAllCardsImmovable()
 }
 
 // StartFreshGame resets Baize and starts a new game with a new seed
@@ -254,24 +248,24 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.undoStack = undoStack
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
-	b.UpdateStatusbar()
+	b.CountMoves()
 	if b.Complete() {
 		TheUI.Toast("Complete")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
-	} else if b.Stuck() {
+	} else if b.moves == 0 {
 		TheUI.Toast("No movable cards")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
 		TheUI.HideFAB()
 	}
-
+	b.UpdateStatusbar()
 }
 
 // findPileAt finds the Pile under the mouse click or touch
-func (b *Baize) FindPileAt(pt image.Point) Pile {
+func (b *Baize) FindPileAt(pt image.Point) *Pile {
 	for _, p := range b.piles {
 		if pt.In(p.ScreenRect()) {
 			return p
@@ -293,9 +287,9 @@ func (b *Baize) FindCardAt(pt image.Point) *Card {
 	return nil
 }
 
-func (b *Baize) LargestIntersection(c *Card) Pile {
+func (b *Baize) LargestIntersection(c *Card) *Pile {
 	var largestArea int = 0
-	var pile Pile = nil
+	var pile *Pile = nil
 	cardRect := c.BaizeRect()
 	for _, p := range b.piles {
 		if p == c.Owner() {
@@ -360,15 +354,17 @@ func (b *Baize) MakeTail(c *Card) bool {
 }
 
 func (b *Baize) AfterUserMove() {
+	b.showMovableCards = false
 	b.script.AfterMove()
 	b.UndoPush()
+	b.CountMoves()
 	if b.Complete() {
-		TheStatistics.RecordWonGame(b.LongVariantName())
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
+		TheStatistics.RecordWonGame(b.LongVariantName())
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
-	} else if b.Stuck() {
+	} else if b.moves == 0 {
 		TheUI.Toast("No movable cards")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
@@ -429,7 +425,7 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 				p.SetTarget(true)
 			}
 		}
-	case Pile:
+	case *Pile:
 		// do nothing
 	case *Baize:
 		b.DragBy(v.Stroke.PositionDiff())
@@ -467,7 +463,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 					TheUI.Toast(err.Error())
 					b.CancelTailDrag()
 				} else {
-					if ok, err = dst.CanAcceptTail(b.tail); !ok {
+					if ok, err = dst.vtable.CanAcceptTail(b.tail); !ok {
 						sound.Play("Blip")
 						TheUI.Toast(err.Error())
 						b.CancelTailDrag()
@@ -495,7 +491,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				}
 			}
 		}
-	case Pile:
+	case *Pile:
 		// do nothing
 	case *Baize:
 		// println("stop dragging baize")
@@ -515,8 +511,8 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 		con.StopDrag()
 	case *Card:
 		b.CancelTailDrag()
-	case Pile:
-		// p := v.Stroke.DraggedObject().(Pile)
+	case *Pile:
+		// p := v.Stroke.DraggedObject().(*Pile)
 		// println("stop dragging pile", p.Class)
 		// do nothing
 	case *Baize:
@@ -533,9 +529,9 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 	case *Card:
 		// offer TailTapped to the script first
 		// to implement things like Stock.TailTapped
-		// if the script doesn't want to do anything, it can call pile.subtype.TailTapped
+		// if the script doesn't want to do anything, it can call pile.vtable.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
-		// or use Core.TailTapped to try to collect a card to Foundation (eg Tableau)
+		// or use Pile.DefaultTailTapped
 		crc := b.CRC()
 		b.script.TailTapped(b.tail)
 		if crc != b.CRC() {
@@ -543,7 +539,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 			b.AfterUserMove()
 		}
 		b.StopTailDrag()
-	case Pile:
+	case *Pile:
 		crc := b.CRC()
 		b.script.PileTapped(obj)
 		if crc != b.CRC() {
@@ -589,7 +585,7 @@ func (b *Baize) ApplyToTail(fn func(*Card)) {
 
 // DragTailBy repositions all the cards in the tail: dx, dy is the position difference from the start of the drag
 func (b *Baize) DragTailBy(dx, dy int) {
-	// println("Pile.DragTailBy(", dx, dy, ")")
+	// println("Baize.DragTailBy(", dx, dy, ")")
 	for _, tc := range b.tail {
 		tc.DragBy(dx, dy)
 	}
@@ -621,7 +617,7 @@ func (b *Baize) Collect() {
 	for {
 		innerCRC := b.CRC()
 		for _, p := range b.piles {
-			p.Collect()
+			p.vtable.Collect()
 		}
 		if b.CRC() == innerCRC {
 			break
@@ -689,7 +685,7 @@ func (b *Baize) ScaleCards() bool {
 		CardHeight = int(slotHeight) - PilePaddingY
 		LeftMargin = (CardWidth / 2) + PilePaddingX
 	}
-	CardCornerRadius = float64(CardWidth) / 15.0
+	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
 	TopMargin = 48 + CardHeight/3
 
 	if DebugMode {
@@ -708,7 +704,7 @@ func (b *Baize) PercentComplete() int {
 		if p.Len() > 1 {
 			pairs += p.Len() - 1
 		}
-		unsorted += p.UnsortedPairs()
+		unsorted += p.vtable.UnsortedPairs()
 	}
 	// TheUI.SetMiddle(fmt.Sprintf("%d/%d", pairs-unsorted, pairs))
 	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
@@ -739,15 +735,13 @@ func (b *Baize) UpdateStatusbar() {
 	} else {
 		TheUI.SetWaste(-1) // previous variant may have had a waste, and this one does not
 	}
-	// if DebugMode {
-	// 	TheUI.SetMiddle(fmt.Sprintf("len(undoStack) = %d", len(b.undoStack)))
-	// }
+	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
 	TheUI.SetPercent(b.PercentComplete())
 }
 
 func (b *Baize) Conformant() bool {
 	for _, p := range b.piles {
-		if !p.Conformant() {
+		if !p.vtable.Conformant() {
 			return false
 		}
 	}
@@ -756,7 +750,7 @@ func (b *Baize) Conformant() bool {
 
 func (b *Baize) Complete() bool {
 	for _, p := range b.piles {
-		if !p.Complete() {
+		if !p.vtable.Complete() {
 			return false
 		}
 	}

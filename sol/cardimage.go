@@ -107,8 +107,8 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
-	// surround with a border
-	dc.SetLineWidth(2)
+	// surround with a thin border
+	dc.SetLineWidth(1)
 	// card face is probably light, so darken the border a bit
 	dc.SetRGBA(0, 0, 0, 0.1)
 	// draw the RoundedRect entirely INSIDE the context

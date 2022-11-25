@@ -17,7 +17,6 @@ func (*Toad) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -74,16 +73,16 @@ func (*Toad) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (t *Toad) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (t *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch dst.category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			// Once the reserve is empty, spaces in the tableau can be filled with a card from the Deck [Stock/Waste], but NOT from another tableau pile.
 			// pointless rule, since tableuax move rule is MOVE_ONE_OR_ALL
@@ -97,21 +96,21 @@ func (t *Toad) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Toad) UnsortedPairs(pile Pile) int {
+func (*Toad) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 }
 
 func (t *Toad) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == t.stock && len(tail) == 1 {
 		c := pile.Pop()
 		t.waste.Push(c)
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (t *Toad) PileTapped(pile Pile) {
+func (t *Toad) PileTapped(pile *Pile) {
 	if pile == t.stock {
 		RecycleWasteToStock(t.waste, t.stock)
 	}

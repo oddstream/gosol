@@ -16,7 +16,6 @@ func (*Penguin) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://www.parlettgames.uk/patience/penguin.html",
-		relaxable:   false,
 	}
 }
 
@@ -94,9 +93,9 @@ func (pen *Penguin) StartGame() {
 func (pen *Penguin) AfterMove() {}
 
 func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
-	switch (pile).(type) {
-	case *Tableau:
+	var pile *Pile = tail[0].Owner()
+	switch (pile).category {
+	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownSuitWrap(); !ok {
@@ -107,16 +106,16 @@ func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Penguin) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Penguin) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch (dst).category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -126,12 +125,12 @@ func (*Penguin) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Penguin) UnsortedPairs(pile Pile) int {
+func (*Penguin) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 }
 
 func (pen *Penguin) TailTapped(tail []*Card) {
-	tail[0].Owner().TailTapped(tail)
+	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (pen *Penguin) PileTapped(pile Pile) {}
+func (pen *Penguin) PileTapped(pile *Pile) {}

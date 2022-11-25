@@ -12,13 +12,14 @@ import (
 )
 
 type Tableau struct {
-	Core
+	parent *Pile
 }
 
-func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Tableau {
-	tableau := &Tableau{Core: NewCore("Tableau", slot, fanType, moveType)}
-	TheBaize.AddPile(tableau)
-	return tableau
+func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
+	tableau := NewPile("Tableau", slot, fanType, moveType)
+	tableau.vtable = &Tableau{parent: &tableau}
+	TheBaize.AddPile(&tableau)
+	return &tableau
 }
 
 func (self *Tableau) CanAcceptCard(card *Card) (bool, error) {
@@ -26,20 +27,20 @@ func (self *Tableau) CanAcceptCard(card *Card) (bool, error) {
 		return false, errors.New("Cannot add a face down card")
 	}
 	var tail []*Card = []*Card{card}
-	return TheBaize.script.TailAppendError(self, tail)
+	return TheBaize.script.TailAppendError(self.parent, tail)
 }
 
-func powerMoves(piles []Pile, pDraggingTo Pile) int {
+func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
 	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
 	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
 	var emptyCells, emptyCols int
 	for _, p := range piles {
 		if p.Empty() {
-			switch (p).(type) {
-			case *Cell:
+			switch p.category {
+			case "Cell":
 				emptyCells++
-			case *Tableau:
+			case "Tableau":
 				if p.Label() == "" && p != pDraggingTo {
 					// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
 					emptyCols++
@@ -62,9 +63,9 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	// we couldn't check MOVE_PLUS_ONE in pile.CanMoveTail
 	// because we didn't then know the destination pile
 	// which we need to know to calculate power moves
-	if self.MoveType() == MOVE_ONE_PLUS {
+	if self.parent.moveType == MOVE_ONE_PLUS {
 		if ThePreferences.PowerMoves {
-			moves := powerMoves(TheBaize.piles, self)
+			moves := powerMoves(TheBaize.piles, self.parent)
 			if len(tail) > moves {
 				if moves == 1 {
 					return false, fmt.Errorf("Space to move 1 card, not %d", len(tail))
@@ -78,15 +79,19 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 			}
 		}
 	}
-	return TheBaize.script.TailAppendError(self, tail)
+	return TheBaize.script.TailAppendError(self.parent, tail)
 }
 
-// use Core.TailTapped
+func (self *Tableau) TailTapped(tail []*Card) {
+	self.parent.DefaultTailTapped(tail)
+}
 
-// use Core.Collect
+func (self *Tableau) Collect() {
+	self.parent.DefaultCollect()
+}
 
 func (self *Tableau) Conformant() bool {
-	return TheBaize.script.UnsortedPairs(self) == 0
+	return TheBaize.script.UnsortedPairs(self.parent) == 0
 }
 
 func (self *Tableau) Complete() bool {
@@ -100,13 +105,13 @@ func (self *Tableau) Complete() bool {
 	           (Simple Simon has 10 tableau piles and 4 discard piles)
 	           (Spider has 10 tableau piles and 8 discard piles)
 	*/
-	if self.Empty() {
+	if self.parent.Empty() {
 		return true
 	}
 	if len(TheBaize.script.Discards()) > 0 {
-		if self.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
+		if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
 			// eg 13 == 52 / 4
-			if TheBaize.script.UnsortedPairs(self) == 0 {
+			if TheBaize.script.UnsortedPairs(self.parent) == 0 {
 				return true
 			}
 		}
@@ -115,5 +120,23 @@ func (self *Tableau) Complete() bool {
 }
 
 func (self *Tableau) UnsortedPairs() int {
-	return TheBaize.script.UnsortedPairs(self)
+	return TheBaize.script.UnsortedPairs(self.parent)
+}
+
+func (self *Tableau) MovableTails() []*MovableTail {
+	var tails []*MovableTail = []*MovableTail{}
+	if self.parent.Len() > 0 {
+		for _, card := range self.parent.cards {
+			var tail = self.parent.MakeTail(card)
+			if ok, _ := self.parent.CanMoveTail(tail); ok {
+				if ok, _ := TheBaize.script.TailMoveError(tail); ok {
+					var homes []*Pile = TheBaize.FindHomesForTail(tail)
+					for _, home := range homes {
+						tails = append(tails, &MovableTail{dst: home, tail: tail})
+					}
+				}
+			}
+		}
+	}
+	return tails
 }

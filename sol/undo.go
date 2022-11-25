@@ -23,7 +23,7 @@ type SavableBaize struct {
 	Recycles int            `json:",omitempty"`
 }
 
-func (self *Core) Savable() *SavablePile {
+func (self *Pile) Savable() *SavablePile {
 	sp := &SavablePile{Category: self.category, Label: self.label, Symbol: self.symbol}
 	for _, c := range self.cards {
 		sp.Cards = append(sp.Cards, c.ID)
@@ -31,7 +31,7 @@ func (self *Core) Savable() *SavablePile {
 	return sp
 }
 
-func (self *Core) UpdateFromSavable(sp *SavablePile) {
+func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 	if self.category != sp.Category {
 		log.Panic("Baize pile and SavablePile are different")
 	}
@@ -92,12 +92,8 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
 		log.Panic("Baize piles and SavableBaize piles are different")
 	}
-	if DebugMode {
-		for i := 0; i < len(CardLibrary); i++ {
-			CardLibrary[i].movable = false
-		}
-	}
 	sound.Play("OpenPackage")
+	MarkAllCardsImmovable()
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])
 	}

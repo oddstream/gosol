@@ -16,7 +16,6 @@ func (*Agnes) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -76,9 +75,9 @@ func (*Agnes) AfterMove() {
 }
 
 func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
-	switch (pile).(type) {
-	case *Tableau:
+	var pile *Pile = tail[0].Owner()
+	switch pile.category {
+	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
@@ -90,16 +89,16 @@ func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch dst.category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -109,19 +108,19 @@ func (ag *Agnes) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) UnsortedPairs(pile Pile) int {
+func (ag *Agnes) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (ag *Agnes) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == ag.stock && len(tail) == 1 {
 		for _, pile := range ag.reserves {
 			MoveCard(ag.stock, pile)
 		}
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (ag *Agnes) PileTapped(Pile) {}
+func (ag *Agnes) PileTapped(*Pile) {}

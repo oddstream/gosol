@@ -23,7 +23,6 @@ func (*FortyThieves) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "landscape",
 		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -89,9 +88,9 @@ func (ft *FortyThieves) AfterMove() {
 }
 
 func (ft *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
-	switch (pile).(type) {
-	case *Tableau:
+	var pile *Pile = tail[0].Owner()
+	switch (pile).category {
+	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
 			// if ok, err := pair.Compare_DownSuit(); !ok {
@@ -103,15 +102,15 @@ func (ft *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ft *FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
-	switch (dst).(type) {
-	case *Foundation:
+func (ft *FortyThieves) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+	switch (dst).category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -122,21 +121,21 @@ func (ft *FortyThieves) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ft *FortyThieves) UnsortedPairs(pile Pile) int {
+func (ft *FortyThieves) UnsortedPairs(pile *Pile) int {
 	// return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 	return UnsortedPairs(pile, ft.tabCompareFunc)
 }
 
 func (ft *FortyThieves) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == ft.stock && len(tail) == 1 {
 		MoveCard(ft.stock, ft.waste)
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (ft *FortyThieves) PileTapped(pile Pile) {
+func (ft *FortyThieves) PileTapped(pile *Pile) {
 	if pile == ft.stock {
 		RecycleWasteToStock(ft.waste, ft.stock)
 	}

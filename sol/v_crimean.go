@@ -16,7 +16,6 @@ func (*Crimean) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://old.reddit.com/r/solitaire/comments/s8ce8d/help_me_find_this_solitaire_online_please/",
-		relaxable:   true,
 	}
 }
 
@@ -80,16 +79,16 @@ func (*Crimean) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Crimean) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Crimean) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch dst.category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -99,13 +98,13 @@ func (*Crimean) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Crimean) UnsortedPairs(pile Pile) int {
+func (*Crimean) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (self *Crimean) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
-	pile.TailTapped(tail)
+	var pile *Pile = tail[0].Owner()
+	pile.vtable.TailTapped(tail)
 }
 
-func (self *Crimean) PileTapped(pile Pile) {}
+func (self *Crimean) PileTapped(pile *Pile) {}

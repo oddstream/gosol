@@ -9,32 +9,32 @@ import (
 )
 
 type Foundation struct {
-	Core
+	parent *Pile
 }
 
-func NewFoundation(slot image.Point) *Foundation {
-	foundation := &Foundation{Core: NewCore("Foundation", slot, FAN_NONE, MOVE_NONE)}
-	TheBaize.AddPile(foundation)
-	return foundation
+func NewFoundation(slot image.Point) *Pile {
+	foundation := NewPile("Foundation", slot, FAN_NONE, MOVE_NONE)
+	foundation.vtable = &Foundation{parent: &foundation}
+	TheBaize.AddPile(&foundation)
+	return &foundation
 }
 
 func (self *Foundation) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if self.Len() == len(CardLibrary)/len(TheBaize.script.Foundations()) {
+	if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Foundations()) {
 		return false, errors.New("The Foundation is full")
 	}
 	var tail []*Card = []*Card{card}
-	// pearl from the mudbank cannot pass a *Foundation to script functions, only a Pile
-	return TheBaize.script.TailAppendError(self, tail)
+	return TheBaize.script.TailAppendError(self.parent, tail)
 }
 
 func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
 	}
-	return TheBaize.script.TailAppendError(self, tail)
+	return TheBaize.script.TailAppendError(self.parent, tail)
 }
 
 func (*Foundation) TailTapped([]*Card) {
@@ -42,7 +42,7 @@ func (*Foundation) TailTapped([]*Card) {
 }
 
 func (*Foundation) Collect() {
-	// over-ride Core collect to do nothing
+	// do nothing
 }
 
 func (*Foundation) Conformant() bool {
@@ -50,10 +50,14 @@ func (*Foundation) Conformant() bool {
 }
 
 func (self *Foundation) Complete() bool {
-	return self.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
+	return self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
 }
 
 func (*Foundation) UnsortedPairs() int {
 	// you can only put a sorted sequence into a Foundation, so this will always be zero
 	return 0
+}
+
+func (self *Foundation) MovableTails() []*MovableTail {
+	return nil
 }

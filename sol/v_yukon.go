@@ -15,7 +15,6 @@ func (*Yukon) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "portrait",
 		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
-		relaxable:   true,
 	}
 }
 
@@ -77,15 +76,15 @@ func (*Yukon) TailMoveError([]*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Yukon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
-	switch (dst).(type) {
-	case *Foundation:
+func (*Yukon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+	switch (dst).category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -95,12 +94,12 @@ func (*Yukon) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Yukon) UnsortedPairs(pile Pile) int {
+func (*Yukon) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColor)
 }
 
 func (*Yukon) TailTapped(tail []*Card) {
-	tail[0].Owner().TailTapped(tail)
+	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*Yukon) PileTapped(Pile) {}
+func (*Yukon) PileTapped(*Pile) {}

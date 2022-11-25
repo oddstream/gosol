@@ -53,11 +53,11 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 }
 
 type Stock struct {
-	Core
+	parent *Pile
 }
 
-func (self *Stock) FillFromLibrary() {
-	if !self.Empty() {
+func FillFromLibrary(pile *Pile) {
+	if !pile.Empty() {
 		log.Panic("stock should be empty")
 	}
 	for i := 0; i < len(CardLibrary); i++ {
@@ -65,9 +65,9 @@ func (self *Stock) FillFromLibrary() {
 		if !c.Valid() {
 			log.Panicf("invalid card at library index %d", i)
 		}
-		// the following mimics Base.Push
-		self.Append(c)
-		c.SetOwner(self)
+		// the following mimics Pile.Push
+		pile.Append(c)
+		c.SetOwner(pile)
 		// don't set Card.pos here
 		// so that a new deal makes the spinning cards fall into place
 		// without going back to the CardStartPoint
@@ -75,9 +75,9 @@ func (self *Stock) FillFromLibrary() {
 	}
 }
 
-func (self *Stock) Shuffle() {
+func Shuffle(pile *Pile) {
 
-	if !self.Valid() {
+	if !pile.Valid() {
 		log.Fatal("invalid stock")
 	}
 	if NoShuffle {
@@ -92,33 +92,18 @@ func (self *Stock) Shuffle() {
 	for i := 0; i < 6; i++ {
 		// it doesn't make sense, but testing shows that you need to do this
 		// more than once to get a randomly distributed shuffle
-		rand.Shuffle(self.Len(), self.Swap)
+		rand.Shuffle(pile.Len(), pile.Swap)
 	}
 }
 
-/*
-	Push a card onto the Stock pile.
-	Specific version of Push that overrides Core.Push,
-	to try to get rid of IsStock() and FindOwner() in Core.Push,
-	and also since Stock piles are never fanned.
-	Trouble is, this func is only called by Stock Recycle
-	(UpdateFromSaveable uses Core, not Pile).
-*/
-func (self *Stock) Push(card *Card) {
-	self.Append(card)
-	card.TransitionTo(card.BaizePos())
-	card.FlipDown()
-	card.SetOwner(self)
-	TheBaize.setFlag(dirtyCardPositions)
-}
-
-func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Stock {
+func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
-	stock := &Stock{Core: NewCore("Stock", slot, fanType, MOVE_ONE)}
-	stock.FillFromLibrary()
-	stock.Shuffle()
-	TheBaize.AddPile(stock)
-	return stock
+	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
+	stock.vtable = &Stock{parent: &stock}
+	FillFromLibrary(&stock)
+	Shuffle(&stock)
+	TheBaize.AddPile(&stock)
+	return &stock
 }
 
 func (*Stock) CanAcceptCard(*Card) (bool, error) {
@@ -135,21 +120,24 @@ func (*Stock) TailTapped([]*Card) {
 
 func (*Stock) Collect() {
 	// never collect from the stock
-	// over-ride Core collect to do nothing
 }
 
 func (self *Stock) Conformant() bool {
-	return self.Empty()
+	return self.parent.Empty()
 }
 
 func (self *Stock) Complete() bool {
-	return self.Empty()
+	return self.parent.Empty()
 }
 
 func (self *Stock) UnsortedPairs() int {
 	// Stock is always considered unsorted
-	if self.Empty() {
+	if self.parent.Empty() {
 		return 0
 	}
-	return self.Len() - 1
+	return self.parent.Len() - 1
+}
+
+func (self *Stock) MovableTails() []*MovableTail {
+	return nil
 }

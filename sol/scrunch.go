@@ -66,7 +66,7 @@ import (
 // }
 
 // SizeWithFanFactor calculates the width or height this pile would be if it had a specified fan factor
-func (self *Core) SizeWithFanFactor(fanFactor float64) int {
+func (self *Pile) SizeWithFanFactor(fanFactor float64) int {
 	var max int
 	switch self.fanType {
 	case FAN_DOWN:
@@ -95,7 +95,7 @@ func (self *Core) SizeWithFanFactor(fanFactor float64) int {
 
 // Scrunch prepares to refan cards after Push() or Pop(), adjusting the amount of overlap to try to keep them fitting on the screen
 // only Scrunch piles with fanType LEFT/RIGHT/UP/DOWN, ignore the waste-style piles and those that do not fan
-func (self *Core) Scrunch() {
+func (self *Pile) Scrunch() {
 
 	self.fanFactor = DefaultFanFactor[self.fanType]
 

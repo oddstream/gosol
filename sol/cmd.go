@@ -19,8 +19,8 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyS: func() { TheBaize.SavePosition() },
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect() },
+	ebiten.KeyH: func() { TheBaize.showMovableCards = !TheBaize.showMovableCards },
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
-	ebiten.KeyM: func() { ThePreferences.MarkMovableCards = !ThePreferences.MarkMovableCards },
 	ebiten.KeyX: func() { ExitRequested = true },
 	ebiten.KeyTab: func() {
 		if DebugMode {
@@ -69,10 +69,6 @@ func Execute(cmd interface{}) {
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
-		case "Relax games":
-			ThePreferences.Relaxed, _ = strconv.ParseBool(v.Data)
-			TheBaize.RestartDeal()
-			TheBaize.StartFreshGame()
 		case "Four colors":
 			ThePreferences.FourColors, _ = strconv.ParseBool(v.Data)
 			TheBaize.setFlag(dirtyCardImages)

@@ -9,17 +9,18 @@ import (
 )
 
 type Waste struct {
-	Core
+	parent *Pile
 }
 
-func NewWaste(slot image.Point, fanType FanType) *Waste {
-	waste := &Waste{Core: NewCore("Waste", slot, fanType, MOVE_ONE)}
-	TheBaize.AddPile(waste)
-	return waste
+func NewWaste(slot image.Point, fanType FanType) *Pile {
+	waste := NewPile("Waste", slot, fanType, MOVE_ONE)
+	waste.vtable = &Waste{parent: &waste}
+	TheBaize.AddPile(&waste)
+	return &waste
 }
 
-func (*Waste) CanAcceptCard(card *Card) (bool, error) {
-	if _, isStock := (card.Owner()).(*Stock); !isStock {
+func (self *Waste) CanAcceptCard(card *Card) (bool, error) {
+	if !self.parent.IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil
@@ -32,23 +33,41 @@ func (self *Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	return self.CanAcceptCard(tail[0])
 }
 
-// use Core.TailTapped
+func (self *Waste) TailTapped(tail []*Card) {
+	self.parent.DefaultTailTapped(tail)
+}
 
-// use Core.Collect
+func (self *Waste) Collect() {
+	self.parent.DefaultCollect()
+}
 
 func (self *Waste) Conformant() bool {
 	// zero or one cards would be conformant
-	return self.Len() < 2
+	return self.parent.Len() < 2
 }
 
 func (self *Waste) Complete() bool {
-	return self.Empty()
+	return self.parent.Empty()
 }
 
 func (self *Waste) UnsortedPairs() int {
 	// Waste (like Stock, Reserve) is always considered unsorted
-	if self.Empty() {
+	if self.parent.Empty() {
 		return 0
 	}
-	return self.Len() - 1
+	return self.parent.Len() - 1
+}
+
+func (self *Waste) MovableTails() []*MovableTail {
+	// nb same as Reserve.MovableTails
+	var tails []*MovableTail = []*MovableTail{}
+	if self.parent.Len() > 0 {
+		var card *Card = self.parent.Peek()
+		var tail []*Card = []*Card{card}
+		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		for _, home := range homes {
+			tails = append(tails, &MovableTail{dst: home, tail: tail})
+		}
+	}
+	return tails
 }

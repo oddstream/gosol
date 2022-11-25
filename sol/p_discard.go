@@ -9,13 +9,14 @@ import (
 )
 
 type Discard struct {
-	Core
+	parent *Pile
 }
 
-func NewDiscard(slot image.Point, fanType FanType) *Discard {
-	discard := &Discard{Core: NewCore("Discard", slot, FAN_NONE, MOVE_NONE)}
-	TheBaize.AddPile(discard)
-	return discard
+func NewDiscard(slot image.Point, fanType FanType) *Pile {
+	discard := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
+	discard.vtable = &Discard{parent: &discard}
+	TheBaize.AddPile(&discard)
+	return &discard
 }
 
 func (*Discard) CanAcceptCard(card *Card) (bool, error) {
@@ -23,7 +24,7 @@ func (*Discard) CanAcceptCard(card *Card) (bool, error) {
 }
 
 func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
-	if !self.Empty() {
+	if !self.parent.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")
 	}
 	if AnyCardsProne(tail) {
@@ -40,7 +41,7 @@ func (*Discard) TailTapped([]*Card) {
 }
 
 func (*Discard) Collect() {
-	// over-ride Core collect to do nothing
+	// do nothing
 }
 
 func (*Discard) Conformant() bool {
@@ -52,10 +53,10 @@ func (*Discard) Conformant() bool {
 }
 
 func (self *Discard) Complete() bool {
-	if self.Empty() {
+	if self.parent.Empty() {
 		return true
 	}
-	if self.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
+	if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
 		return true
 	}
 	return false
@@ -64,4 +65,8 @@ func (self *Discard) Complete() bool {
 func (*Discard) UnsortedPairs() int {
 	// you can only put a sorted sequence into a Discard, so this will always be zero
 	return 0
+}
+
+func (self *Discard) MovableTails() []*MovableTail {
+	return nil
 }

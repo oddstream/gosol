@@ -9,13 +9,14 @@ import (
 )
 
 type Reserve struct {
-	Core
+	parent *Pile
 }
 
-func NewReserve(slot image.Point, fanType FanType) *Reserve {
-	reserve := &Reserve{Core: NewCore("Reserve", slot, fanType, MOVE_ONE)}
-	TheBaize.AddPile(reserve)
-	return reserve
+func NewReserve(slot image.Point, fanType FanType) *Pile {
+	reserve := NewPile("Reserve", slot, fanType, MOVE_ONE)
+	reserve.vtable = &Reserve{parent: &reserve}
+	TheBaize.AddPile(&reserve)
+	return &reserve
 }
 
 func (*Reserve) CanAcceptCard(card *Card) (bool, error) {
@@ -26,22 +27,40 @@ func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {
 	return false, errors.New("Cannot add a card to a Reserve")
 }
 
-// use Core.TailTapped
+func (self *Reserve) TailTapped(tail []*Card) {
+	self.parent.DefaultTailTapped(tail)
+}
 
-// use Core.Collect
+func (self *Reserve) Collect() {
+	self.parent.DefaultCollect()
+}
 
 func (self *Reserve) Conformant() bool {
-	return self.Len() < 2
+	return self.parent.Len() < 2
 }
 
 func (self *Reserve) Complete() bool {
-	return self.Empty()
+	return self.parent.Empty()
 }
 
 func (self *Reserve) UnsortedPairs() int {
 	// Reserve (like Stock) is always considered unsorted
-	if self.Empty() {
+	if self.parent.Empty() {
 		return 0
 	}
-	return self.Len() - 1
+	return self.parent.Len() - 1
+}
+
+func (self *Reserve) MovableTails() []*MovableTail {
+	// nb same as Cell.MovableTails
+	var tails []*MovableTail = []*MovableTail{}
+	if self.parent.Len() > 0 {
+		var card *Card = self.parent.Peek()
+		var tail []*Card = []*Card{card}
+		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		for _, home := range homes {
+			tails = append(tails, &MovableTail{dst: home, tail: tail})
+		}
+	}
+	return tails
 }

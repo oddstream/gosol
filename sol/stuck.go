@@ -1,16 +1,12 @@
 package sol
 
-import (
-	"fmt"
-)
-
-func (b *Baize) FindHomeForTail(owner Pile, tail []*Card) Pile {
+func (b *Baize) FindHomeForTail(owner *Pile, tail []*Card) *Pile {
 	if len(tail) == 1 {
 		for _, dst := range b.script.Foundations() {
 			if dst == owner {
 				continue
 			}
-			if ok, _ := dst.CanAcceptTail(tail); ok {
+			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
 				return dst
 			}
 		}
@@ -18,7 +14,7 @@ func (b *Baize) FindHomeForTail(owner Pile, tail []*Card) Pile {
 			if dst == owner {
 				continue
 			}
-			if ok, _ := dst.CanAcceptTail(tail); ok {
+			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
 				return dst
 			}
 		}
@@ -27,123 +23,97 @@ func (b *Baize) FindHomeForTail(owner Pile, tail []*Card) Pile {
 		if dst == owner {
 			continue
 		}
-		if ok, _ := dst.CanAcceptTail(tail); ok {
+		if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
 			return dst
 		}
 	}
 	return nil
 }
 
-func meaninglessMove(dst Pile, src Pile, tail []*Card) bool {
-	if _, isFoundation := (dst).(*Foundation); isFoundation {
-		return false
+func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
+	var homes []*Pile
+
+	var card = tail[0]
+	var src = card.owner
+
+	// can the tail be moved in general?
+	if ok, _ := src.CanMoveTail(tail); !ok {
+		return homes
 	}
-	if dst.Empty() {
-		if len(tail) == src.Len() {
-			return true
+
+	// is the tail conformant enough to move?
+	if ok, _ := b.script.TailMoveError(tail); !ok {
+		return homes
+	}
+
+	var pilesToCheck []*Pile = []*Pile{}
+	pilesToCheck = append(pilesToCheck, b.script.Foundations()...)
+	pilesToCheck = append(pilesToCheck, b.script.Tableaux()...)
+	pilesToCheck = append(pilesToCheck, b.script.Cells()...)
+
+	for _, dst := range pilesToCheck {
+		if dst == src {
+			continue
 		}
-		// if dst.Label() == "" {
-		// 	return true
-		// }
+		if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
+			homes = append(homes, dst)
+		}
 	}
-	return false
+
+	return homes
 }
 
-func (b *Baize) Stuck() bool {
-
-	// Go uses a copy of the value instead of the value itself within a range clause.
-	// for _, c := range CardLibrary {
-	// 	c.movable = false
-	// }
-
-	if DebugMode {
-		for i := 0; i < len(CardLibrary); i++ {
-			CardLibrary[i].movable = false
+func (b *Baize) findAllMovableTails() []*MovableTail {
+	var tails = []*MovableTail{}
+	for _, p := range b.piles {
+		var t2 []*MovableTail = p.vtable.MovableTails()
+		if len(t2) > 0 {
+			tails = append(tails, t2...)
 		}
 	}
+	return tails
+}
 
-	var moves int
+// func isWeakMove(src *Pile, card *Card) bool {
+// 	return false
+// }
 
-	if !b.script.Stock().Empty() {
-		moves++
+// CountMoves sets Baize.moves, Baize.fmoves, Card.movable
+// 	0 - can't move, or pointless move
+//	1 - weak move (conformant with card above)
+//	2 - move to cell or empty pile
+//	3 - move
+//	4 - move to foundation
+func (b *Baize) CountMoves() {
+	b.moves, b.fmoves = 0, 0
+	MarkAllCardsImmovable()
+	if b.script.Stock().Empty() {
+		if b.Recycles() > 0 {
+			b.moves++
+		}
+	} else {
+		b.moves++
+		b.script.Stock().Peek().movable = true
 	}
-	if wastePile := b.script.Waste(); wastePile != nil {
-		if !wastePile.Empty() {
-			var tail []*Card
-			tail = append(tail, wastePile.Peek())
-			if dst := b.FindHomeForTail(wastePile, tail); dst != nil {
-				if DebugMode {
-					tail[0].movable = true
-				}
-				moves++
-			}
 
-			if b.script.Stock().Empty() && b.recycles > 0 {
-				println("can recycle")
-				moves++
+	for _, mc := range b.findAllMovableTails() {
+		movable := true
+		card := mc.tail[0]
+		src := card.owner
+		dst := mc.dst
+		// moving an full tail from one pile to another empty pile is pointless
+		if dst.Len() == 0 && len(mc.tail) == len(src.cards) {
+			if src.label == dst.label && src.category == dst.category {
+				movable = false
 			}
 		}
-	}
-
-	for _, pile := range b.script.Cells() {
-		// TODO only check one card, FFS
-		for _, card := range pile.cards {
-			if card.Prone() {
-				continue
+		if movable {
+			b.moves++
+			card.movable = true
+			if dst.category == "Foundation" {
+				b.fmoves++
 			}
-			tail := pile.MakeTail(card)
-			if ok, _ := pile.CanMoveTail(tail); !ok {
-				continue
-			}
-			if dst := b.FindHomeForTail(pile, tail); dst != nil {
-				if DebugMode {
-					tail[0].movable = true
-				}
-				moves++
-			}
+			// that's it, unless Card.movable changes from bool to int (like lsol)
 		}
 	}
-	for _, pile := range b.script.Reserves() {
-		// TODO only check top card, FFS
-		for _, card := range pile.cards {
-			if card.Prone() {
-				continue
-			}
-			tail := pile.MakeTail(card)
-			if ok, _ := pile.CanMoveTail(tail); !ok {
-				continue
-			}
-			if dst := b.FindHomeForTail(pile, tail); dst != nil {
-				if DebugMode {
-					tail[0].movable = true
-				}
-				moves++
-			}
-		}
-	}
-	for _, pile := range b.script.Tableaux() {
-		for _, card := range pile.cards {
-			if card.Prone() {
-				continue
-			}
-			tail := pile.MakeTail(card)
-			if ok, _ := pile.CanMoveTail(tail); !ok {
-				continue
-			}
-			if dst := b.FindHomeForTail(pile, tail); dst != nil {
-				if !meaninglessMove(dst, pile, tail) {
-					if ok, _ := b.script.TailMoveError(tail); ok {
-						if DebugMode {
-							tail[0].movable = true
-						}
-						moves++
-					}
-				}
-			}
-		}
-	}
-	if DebugMode {
-		TheUI.SetMiddle(fmt.Sprintf("MOVES: %d", moves))
-	}
-	return moves == 0
 }

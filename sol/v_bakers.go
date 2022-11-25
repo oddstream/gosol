@@ -15,7 +15,6 @@ func (*BakersDozen) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
-		relaxable:   true,
 	}
 }
 
@@ -67,15 +66,15 @@ func (*BakersDozen) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*BakersDozen) TailAppendError(dst Pile, tail []*Card) (bool, error) {
-	switch (dst).(type) {
-	case *Foundation:
+func (*BakersDozen) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+	switch dst.category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return false, errors.New("Cannot move a card to an empty Tableau")
 		} else {
@@ -85,12 +84,12 @@ func (*BakersDozen) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*BakersDozen) UnsortedPairs(pile Pile) int {
+func (*BakersDozen) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (*BakersDozen) TailTapped(tail []*Card) {
-	tail[0].Owner().TailTapped(tail)
+	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*BakersDozen) PileTapped(Pile) {}
+func (*BakersDozen) PileTapped(*Pile) {}

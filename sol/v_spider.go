@@ -17,7 +17,6 @@ func (*Spider) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -71,10 +70,10 @@ func (*Spider) AfterMove() {
 }
 
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (pile).(type) {
-	case *Tableau:
+	switch (pile).category {
+	case "Tableau":
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
@@ -84,10 +83,10 @@ func (*Spider) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (*Spider) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Discard:
+	switch (dst).category {
+	case "Discard":
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
 		}
@@ -96,7 +95,7 @@ func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 				return false, err
 			}
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()
@@ -105,14 +104,14 @@ func (*Spider) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Spider) UnsortedPairs(pile Pile) int {
+func (*Spider) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (sp *Spider) TailTapped(tail []*Card) {
-	pile := tail[0].Owner()
-	switch (pile).(type) {
-	case *Stock:
+	var pile *Pile = tail[0].Owner()
+	switch (pile).category {
+	case "Stock":
 		var tabCards, emptyTabs int
 		for _, tab := range sp.tableaux {
 			if tab.Len() == 0 {
@@ -129,9 +128,9 @@ func (sp *Spider) TailTapped(tail []*Card) {
 			}
 		}
 	default:
-		tail[0].Owner().TailTapped(tail)
+		tail[0].Owner().vtable.TailTapped(tail)
 
 	}
 }
 
-func (*Spider) PileTapped(Pile) {}
+func (*Spider) PileTapped(*Pile) {}

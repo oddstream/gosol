@@ -14,7 +14,6 @@ func (*Australian) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
-		relaxable:   false,
 	}
 }
 
@@ -57,15 +56,15 @@ func (*Australian) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Australian) TailAppendError(dst Pile, tail []*Card) (bool, error) {
-	switch (dst).(type) {
-	case *Foundation:
+func (*Australian) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+	switch dst.category {
+	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -75,18 +74,18 @@ func (*Australian) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Australian) UnsortedPairs(pile Pile) int {
+func (*Australian) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
 func (aus *Australian) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == aus.stock && len(tail) == 1 {
 		c := pile.Pop()
 		aus.waste.Push(c)
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (*Australian) PileTapped(Pile) {}
+func (*Australian) PileTapped(*Pile) {}

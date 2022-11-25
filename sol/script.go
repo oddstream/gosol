@@ -11,47 +11,46 @@ import (
 )
 
 type ScriptBase struct {
-	stock       *Stock
-	waste       *Waste
-	cells       []*Cell
-	discards    []*Discard
-	foundations []*Foundation
-	reserves    []*Reserve
-	tableaux    []*Tableau
+	cells       []*Pile
+	discards    []*Pile
+	foundations []*Pile
+	reserves    []*Pile
+	stock       *Pile
+	tableaux    []*Pile
+	waste       *Pile
 }
 
-func (sb ScriptBase) Cells() []*Cell {
+func (sb ScriptBase) Cells() []*Pile {
 	return sb.cells
 }
 
-func (sb ScriptBase) Foundations() []*Foundation {
+func (sb ScriptBase) Foundations() []*Pile {
 	return sb.foundations
 }
 
-func (sb ScriptBase) Discards() []*Discard {
+func (sb ScriptBase) Discards() []*Pile {
 	return sb.discards
 }
 
-func (sb ScriptBase) Reserves() []*Reserve {
+func (sb ScriptBase) Reserves() []*Pile {
 	return sb.reserves
 }
 
-func (sb ScriptBase) Stock() *Stock {
+func (sb ScriptBase) Stock() *Pile {
 	return sb.stock
 }
 
-func (sb ScriptBase) Tableaux() []*Tableau {
+func (sb ScriptBase) Tableaux() []*Pile {
 	return sb.tableaux
 }
 
-func (sb ScriptBase) Waste() *Waste {
+func (sb ScriptBase) Waste() *Pile {
 	return sb.waste
 }
 
 type VariantInfo struct {
 	windowShape string
 	wikipedia   string
-	relaxable   bool
 }
 
 // You can't use functions as keys in maps : the key type must be comparable
@@ -66,19 +65,19 @@ type ScriptInterface interface {
 	AfterMove()
 
 	TailMoveError([]*Card) (bool, error)
-	TailAppendError(Pile, []*Card) (bool, error)
-	UnsortedPairs(Pile) int
+	TailAppendError(*Pile, []*Card) (bool, error)
+	UnsortedPairs(*Pile) int
 
 	TailTapped([]*Card)
-	PileTapped(Pile)
+	PileTapped(*Pile)
 
-	Cells() []*Cell
-	Discards() []*Discard
-	Foundations() []*Foundation
-	Reserves() []*Reserve
-	Stock() *Stock
-	Tableaux() []*Tableau
-	Waste() *Waste
+	Cells() []*Pile
+	Discards() []*Pile
+	Foundations() []*Pile
+	Reserves() []*Pile
+	Stock() *Pile
+	Tableaux() []*Pile
+	Waste() *Pile
 }
 
 var Variants = map[string]ScriptInterface{
@@ -230,7 +229,7 @@ func VariantNames(group string) []string {
 
 // useful generic game library of functions
 
-func Compare_Empty(p Pile, c *Card) (bool, error) {
+func Compare_Empty(p *Pile, c *Card) (bool, error) {
 
 	if p.Label() != "" {
 		if p.Label() == "x" {
@@ -244,7 +243,7 @@ func Compare_Empty(p Pile, c *Card) (bool, error) {
 	return true, nil
 }
 
-func RecycleWasteToStock(waste Pile, stock Pile) {
+func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	if TheBaize.Recycles() > 0 {
 		for waste.Len() > 0 {
 			MoveCard(waste, stock)
@@ -263,7 +262,7 @@ func RecycleWasteToStock(waste Pile, stock Pile) {
 	}
 }
 
-func UnsortedPairs(pile Pile, fn func(CardPair) (bool, error)) int {
+func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
 	if pile.Len() < 2 {
 		return 0
 	}

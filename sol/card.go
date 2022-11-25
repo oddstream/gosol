@@ -38,8 +38,7 @@ type Card struct {
 	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
 
 	// dynamic things
-	owner Pile
-
+	owner          *Pile
 	pos            image.Point
 	src            image.Point // lerp origin
 	dst            image.Point // lerp destination
@@ -71,12 +70,12 @@ func (c *Card) Valid() bool {
 	return c != nil && c.magic == cardmagic
 }
 
-func (c *Card) SetOwner(p Pile) {
+func (c *Card) SetOwner(p *Pile) {
 	// p may be nil if we have just popped the card
 	c.owner = p
 }
 
-func (c *Card) Owner() Pile {
+func (c *Card) Owner() *Pile {
 	return c.owner
 }
 
@@ -290,8 +289,8 @@ func (c *Card) Flipping() bool {
 // Update the card state (transitions)
 func (c *Card) Update() error {
 	if c.pos != c.dst && c.lerpStep < 1.0 {
-		c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
-		c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
+		c.pos.X = int(util.Smootherstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
+		c.pos.Y = int(util.Smootherstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
 		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
 			c.pos = c.dst
 			c.src = image.Point{0, 0}
@@ -386,16 +385,14 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		if !c.Flipping() {
 			switch {
 			case c.Transitioning():
-				xoffset := float64(CardWidth) / 20.0
-				yoffset := float64(CardHeight) / 20.0
+				xoffset, yoffset := 1.0, 1.0 // same as lsol
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
 				xoffset = -xoffset
 				yoffset = -yoffset
 				op.GeoM.Translate(xoffset, yoffset)
 			case c.Dragging():
-				xoffset := float64(CardWidth) / 20.0
-				yoffset := float64(CardHeight) / 20.0
+				xoffset, yoffset := 2.0, 2.0 // same as lsol
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
 				// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
@@ -417,7 +414,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 
-	if DebugMode && ThePreferences.MarkMovableCards && c.movable {
+	if TheBaize.showMovableCards && c.movable {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 

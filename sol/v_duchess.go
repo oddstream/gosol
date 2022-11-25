@@ -18,7 +18,6 @@ func (*Duchess) Info() *VariantInfo {
 	return &VariantInfo{
 		windowShape: "square",
 		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
-		relaxable:   false,
 	}
 }
 
@@ -66,9 +65,9 @@ func (du *Duchess) AfterMove() {
 
 func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	// One card can be moved at a time, but sequences can also be moved as one unit.
-	var pile Pile = tail[0].Owner()
-	switch (pile).(type) {
-	case *Tableau:
+	var pile *Pile = tail[0].Owner()
+	switch pile.category {
+	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
@@ -80,15 +79,15 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (du *Duchess) TailAppendError(dst Pile, tail []*Card) (bool, error) {
+func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).(type) {
-	case *Foundation:
+	switch (dst).category {
+	case "Foundation":
 		if dst.Empty() {
 			c := tail[0]
 			ord := util.OrdinalToShortString(c.Ordinal())
 			if dst.Label() == "" {
-				if _, ok := (c.owner).(*Reserve); !ok {
+				if c.owner.category != "Reserve" {
 					return false, errors.New("The first Foundation card must come from a Reserve")
 				}
 				for _, pile := range du.foundations {
@@ -101,7 +100,7 @@ func (du *Duchess) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
-	case *Tableau:
+	case "Tableau":
 		if dst.Empty() {
 			var rescards int = 0
 			for _, p := range du.reserves {
@@ -110,7 +109,7 @@ func (du *Duchess) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 			if rescards > 0 {
 				// Spaces that occur on the tableau are filled with any top card in the reserve
 				c := tail[0]
-				if _, ok := (c.owner).(*Reserve); !ok {
+				if c.owner.category != "Reserve" {
 					return false, errors.New("An empty Tableau must be filled from a Reserve")
 				}
 			}
@@ -122,20 +121,20 @@ func (du *Duchess) TailAppendError(dst Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Duchess) UnsortedPairs(pile Pile) int {
+func (*Duchess) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
 func (du *Duchess) TailTapped(tail []*Card) {
-	var pile Pile = tail[0].Owner()
+	var pile *Pile = tail[0].Owner()
 	if pile == du.stock && len(tail) == 1 {
 		MoveCard(du.stock, du.waste)
 	} else {
-		pile.TailTapped(tail)
+		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (du *Duchess) PileTapped(pile Pile) {
+func (du *Duchess) PileTapped(pile *Pile) {
 	if pile == du.stock {
 		RecycleWasteToStock(du.waste, du.stock)
 	}

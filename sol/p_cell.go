@@ -9,27 +9,28 @@ import (
 )
 
 type Cell struct {
-	Core
+	parent *Pile
 }
 
-func NewCell(slot image.Point) *Cell {
-	cell := &Cell{Core: NewCore("Cell", slot, FAN_NONE, MOVE_ONE)}
-	TheBaize.AddPile(cell)
-	return cell
+func NewCell(slot image.Point) *Pile {
+	cell := NewPile("Cell", slot, FAN_NONE, MOVE_ONE)
+	cell.vtable = &Cell{parent: &cell}
+	TheBaize.AddPile(&cell)
+	return &cell
 }
 
 func (self *Cell) CanAcceptCard(card *Card) (bool, error) {
 	if card.Prone() {
 		return false, errors.New("Cannot add a face down card")
 	}
-	if !self.Empty() {
+	if !self.parent.Empty() {
 		return false, errors.New("A Cell can only contain one card")
 	}
 	return true, nil
 }
 
 func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
-	if !self.Empty() {
+	if !self.parent.Empty() {
 		return false, errors.New("A Cell can only contain one card")
 	}
 	if len(tail) > 1 {
@@ -41,18 +42,36 @@ func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-// use Core.TailTapped
+func (self *Cell) TailTapped(tail []*Card) {
+	self.parent.DefaultTailTapped(tail)
+}
 
-// use Core.Collect
+func (self *Cell) Collect() {
+	self.parent.DefaultCollect()
+}
 
 func (*Cell) Conformant() bool {
 	return true
 }
 
 func (self *Cell) Complete() bool {
-	return self.Empty()
+	return self.parent.Empty()
 }
 
 func (*Cell) UnsortedPairs() int {
 	return 0
+}
+
+func (self *Cell) MovableTails() []*MovableTail {
+	// nb same as Reserve.MovableTails
+	var tails []*MovableTail = []*MovableTail{}
+	if self.parent.Len() > 0 {
+		var card *Card = self.parent.Peek()
+		var tail []*Card = []*Card{card}
+		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		for _, home := range homes {
+			tails = append(tails, &MovableTail{dst: home, tail: tail})
+		}
+	}
+	return tails
 }
