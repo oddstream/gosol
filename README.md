@@ -50,7 +50,6 @@ Some will never make it here because they are just poor games:
 * Scalable or fixed-size cards.
 * One-tap interface. Tapping on a card or cards tries to move them to a foundation, or to a suitable tableau pile. An empty tableau with a constraint is not considered suitable, as empty tableau are precious.
 * Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider).
-* The rules for a game can be relaxed to make them easier (for example, relaxed Scorpion is known as Wasp, Yukon and Baker's Dozen are often played as the relaxed version. Relaxing the rules means removing the constraint that an empty tableau must be filled by a certain card, usually a King.
 * Every game has a link to it's Wikipedia page.
 * Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are).
 * Cards spin and flutter when you complete a game, so you feel rewarded and happy.
@@ -157,16 +156,6 @@ Some variants (eg Freecell or Forty Thieves) only allow you to move one card at 
 you to move them, one at a time, via an empty pile or cell. Enabling power moves automates this, allowing multi-card moves between piles.
 The number of cards you can move is calculated from the number of empty piles and cells (if any).
 
-#### Relax games
-
-Many games can be made a little easier by removing the constraint that a card of a particular rank (usually a King) must the first card placed on an empty tableau pile.
-
-The statistics for relaxed games are recorded separately.
-
-Toggling this will abandon the current game (so it will not count as a loss) and restart it.
-
-Some games are already as relaxed as they can be, so this setting will have no effect.
-
 #### Extra colors
 
 Draws the cards in four colors, rather than the usual black and red. Can be useful when scanning cards in variants that sort cards into suit order (like Australian or Spider), but is annoying for variants that sort cards into alternate colors (like Klondike, Freecell or Yukon).
@@ -219,8 +208,6 @@ that anyone else ever has, or ever will.
 
 * Stock only has face down cards
 
-* A game is RELAXED when some constraint (usually, which card you can place in an empty tableau) has been removed.
-
 * A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
 
 ![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Klondike.png)
@@ -243,7 +230,9 @@ Third, there was a version in Go, using the Ebiten game engine, with help from g
 
 Fourth, there is a version in C that uses the Raylib game engine and uses Lua to script the game variants. The design was good, but has problems with scaling cards.
 
-Fifth, there is this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
+Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
+
+Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store.
 
 ## Acknowledgements
 
