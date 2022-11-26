@@ -115,6 +115,6 @@ func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
 		}
 		paw = append(paw, &tmp)
 	}
-	sort.Slice(paw, func(i, j int) bool { return paw[i].weight < paw[j].weight })
+	sort.Slice(paw, func(i, j int) bool { return paw[i].weight > paw[j].weight })
 	return paw[0].pile
 }
