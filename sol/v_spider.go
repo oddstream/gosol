@@ -66,8 +66,7 @@ func (sp *Spider) StartGame() {
 	}
 }
 
-func (*Spider) AfterMove() {
-}
+func (*Spider) AfterMove() {}
 
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()

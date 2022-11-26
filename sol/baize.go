@@ -124,11 +124,16 @@ func (b *Baize) NewDeal() {
 	FillFromLibrary(stockPile)
 	Shuffle(stockPile)
 
+	b.showMovableCards = false
 	b.script.StartGame()
 	b.UndoPush()
+	b.FindDestinations()
+	b.UpdateStatusbar()
+
 	sound.Play("Fan")
 
 	b.setFlag(dirtyCardPositions)
+
 	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
@@ -229,8 +234,11 @@ func (b *Baize) StartFreshGame() {
 
 	b.dirtyFlags = 0xFFFF
 
+	b.showMovableCards = false
 	b.script.StartGame()
 	b.UndoPush()
+	b.FindDestinations()
+	b.UpdateStatusbar()
 
 	TheStatistics.WelcomeToast(b.LongVariantName())
 }
@@ -248,7 +256,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.undoStack = undoStack
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
-	b.CountMoves()
+	b.FindDestinations()
 	if b.Complete() {
 		TheUI.Toast("Complete")
 		TheUI.ShowFAB("star", ebiten.KeyN)
@@ -357,7 +365,9 @@ func (b *Baize) AfterUserMove() {
 	b.showMovableCards = false
 	b.script.AfterMove()
 	b.UndoPush()
-	b.CountMoves()
+	b.FindDestinations()
+	b.UpdateStatusbar()
+
 	if b.Complete() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
@@ -373,11 +383,11 @@ func (b *Baize) AfterUserMove() {
 }
 
 /*
-	InputStart finds out what object the user input is starting on
-	(UI Container > Card > Pile > Baize, in that order)
-	then tells that object.
+InputStart finds out what object the user input is starting on
+(UI Container > Card > Pile > Baize, in that order)
+then tells that object.
 
-	If the Input starts on a Card, then a tail of cards is formed.
+If the Input starts on a Card, then a tail of cards is formed.
 */
 func (b *Baize) InputStart(v input.StrokeEvent) {
 	b.stroke = v.Stroke
@@ -480,7 +490,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 							if len(b.tail) == 1 {
 								MoveCard(src, dst)
 							} else {
-								MoveCards(src, src.IndexOf(c), dst)
+								MoveTail(c, dst)
 							}
 							if crc != b.CRC() {
 								b.AfterUserMove()

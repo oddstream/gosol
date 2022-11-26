@@ -20,7 +20,7 @@ func NewWaste(slot image.Point, fanType FanType) *Pile {
 }
 
 func (self *Waste) CanAcceptCard(card *Card) (bool, error) {
-	if !self.parent.IsStock() {
+	if !card.owner.IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	return true, nil

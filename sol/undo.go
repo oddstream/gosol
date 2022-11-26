@@ -69,7 +69,6 @@ func (b *Baize) NewSavableBaize() *SavableBaize {
 func (b *Baize) UndoPush() {
 	ss := b.NewSavableBaize()
 	b.undoStack = append(b.undoStack, ss)
-	b.UpdateStatusbar()
 }
 
 func (b *Baize) UndoPeek() *SavableBaize {
@@ -93,7 +92,6 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 		log.Panic("Baize piles and SavableBaize piles are different")
 	}
 	sound.Play("OpenPackage")
-	MarkAllCardsImmovable()
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])
 	}
@@ -124,6 +122,8 @@ func (b *Baize) Undo() {
 	}
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
+	b.FindDestinations()
+	b.UpdateStatusbar()
 }
 
 func (b *Baize) RestartDeal() {
@@ -137,7 +137,10 @@ func (b *Baize) RestartDeal() {
 	}
 	b.UpdateFromSavable(sav)
 	b.bookmark = 0 // do this AFTER UpdateFromSavable
-	b.UndoPush()   // replace current state
+
+	b.UndoPush() // replace current state
+	b.FindDestinations()
+	b.UpdateStatusbar()
 }
 
 // SavePosition saves the current Baize state
@@ -172,4 +175,6 @@ func (b *Baize) LoadPosition() {
 	}
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
+	b.FindDestinations()
+	b.UpdateStatusbar()
 }

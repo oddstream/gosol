@@ -109,6 +109,10 @@ func MoveCards(src *Pile, moveFromIndex int, dst *Pile) {
 	TheBaize.setFlag(dirtyCardPositions)
 }
 
+func MoveTail(card *Card, dst *Pile) {
+	MoveCards(card.owner, card.owner.IndexOf(card), dst)
+}
+
 func MoveAllCards(src *Pile, dst *Pile) {
 	if src.Empty() {
 		return
@@ -127,6 +131,6 @@ func MarkAllCardsImmovable() {
 	// }
 	// TODO find reference for this
 	for i := 0; i < len(CardLibrary); i++ {
-		CardLibrary[i].movable = false
+		CardLibrary[i].destinations = nil
 	}
 }

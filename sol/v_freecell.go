@@ -38,6 +38,10 @@ func (fc *Freecell) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		fc.tableaux = append(fc.tableaux, t)
 	}
+
+	fc.discards = nil
+	fc.reserves = nil
+	fc.waste = nil
 }
 
 func (fc *Freecell) StartGame() {

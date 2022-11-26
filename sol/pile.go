@@ -469,8 +469,8 @@ func (self *Pile) IndexOf(card *Card) int {
 }
 
 func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {
-	if AnyCardsProne(tail) {
-		if !self.IsStock() {
+	if !self.IsStock() {
+		if AnyCardsProne(tail) {
 			return false, errors.New("Cannot move a face down card")
 		}
 	}
@@ -549,13 +549,28 @@ func (self *Pile) BuryCards(ordinal int) {
 //func (self *Pile) DefaultCanAcceptTail([]*Card) (bool, error) { return false, nil }
 
 func (self *Pile) DefaultTailTapped(tail []*Card) {
-	var homes []*Pile = TheBaize.FindHomesForTail(tail)
-	if len(homes) > 0 {
-		card := tail[0]
-		if len(tail) == 1 {
-			MoveCard(card.owner, homes[0])
+	// var homes []*Pile = TheBaize.FindHomesForTail(tail)
+	// if len(homes) > 0 {
+	// 	card := tail[0]
+	// 	if len(tail) == 1 {
+	// 		MoveCard(card.owner, homes[0])
+	// 	} else {
+	// 		MoveTail(card, homes[0])
+	// 	}
+	card := tail[0]
+	if len(card.destinations) > 0 {
+		var dst *Pile
+		if len(card.destinations) == 1 {
+			dst = card.destinations[0]
 		} else {
-			MoveCards(card.owner, card.owner.IndexOf(card), homes[0])
+			dst = TheBaize.BestDestination(card, card.destinations)
+		}
+		src := card.owner
+		tail = src.MakeTail(card)
+		if len(tail) == 1 {
+			MoveCard(src, dst)
+		} else {
+			MoveTail(card, dst)
 		}
 	} else {
 		sound.Play("Blip")

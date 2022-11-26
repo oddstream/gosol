@@ -1,41 +1,12 @@
 package sol
 
-func (b *Baize) FindHomeForTail(owner *Pile, tail []*Card) *Pile {
-	if len(tail) == 1 {
-		for _, dst := range b.script.Foundations() {
-			if dst == owner {
-				continue
-			}
-			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
-				return dst
-			}
-		}
-		for _, dst := range b.script.Cells() {
-			if dst == owner {
-				continue
-			}
-			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
-				return dst
-			}
-		}
-	}
-	for _, dst := range b.script.Tableaux() {
-		if dst == owner {
-			continue
-		}
-		if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
-			return dst
-		}
-	}
-	return nil
-}
+import "sort"
 
 func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	var homes []*Pile
 
 	var card = tail[0]
 	var src = card.owner
-
 	// can the tail be moved in general?
 	if ok, _ := src.CanMoveTail(tail); !ok {
 		return homes
@@ -50,13 +21,20 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	pilesToCheck = append(pilesToCheck, b.script.Foundations()...)
 	pilesToCheck = append(pilesToCheck, b.script.Tableaux()...)
 	pilesToCheck = append(pilesToCheck, b.script.Cells()...)
+	if b.script.Waste() != nil {
+		// in Go 1.19, append will add a nil
+		// in Go 1.17, nil was not appended
+		pilesToCheck = append(pilesToCheck, b.script.Waste())
+	}
 
 	for _, dst := range pilesToCheck {
-		if dst == src {
-			continue
+		if !dst.Valid() {
+			println("Destination pile not valid", dst)
 		}
-		if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
-			homes = append(homes, dst)
+		if dst != src {
+			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
+				homes = append(homes, dst)
+			}
 		}
 	}
 
@@ -78,22 +56,20 @@ func (b *Baize) findAllMovableTails() []*MovableTail {
 // 	return false
 // }
 
-// CountMoves sets Baize.moves, Baize.fmoves, Card.movable
-// 	0 - can't move, or pointless move
-//	1 - weak move (conformant with card above)
-//	2 - move to cell or empty pile
-//	3 - move
-//	4 - move to foundation
-func (b *Baize) CountMoves() {
+// FindDestinations sets Baize.moves, Baize.fmoves, Card.destinations
+func (b *Baize) FindDestinations() {
 	b.moves, b.fmoves = 0, 0
+
 	MarkAllCardsImmovable()
+
 	if b.script.Stock().Empty() {
 		if b.Recycles() > 0 {
 			b.moves++
 		}
 	} else {
-		b.moves++
-		b.script.Stock().Peek().movable = true
+		card := b.script.Stock().Peek()
+		card.destinations = b.FindHomesForTail([]*Card{card})
+		b.moves += len(card.destinations)
 	}
 
 	for _, mc := range b.findAllMovableTails() {
@@ -109,11 +85,36 @@ func (b *Baize) CountMoves() {
 		}
 		if movable {
 			b.moves++
-			card.movable = true
+			card.destinations = append(card.destinations, mc.dst)
 			if dst.category == "Foundation" {
 				b.fmoves++
 			}
-			// that's it, unless Card.movable changes from bool to int (like lsol)
 		}
 	}
+}
+
+type PileAndWeight struct {
+	pile   *Pile
+	weight int
+}
+
+func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
+	var paw []*PileAndWeight
+	for _, dst := range destinations {
+		var tmp PileAndWeight = PileAndWeight{pile: dst, weight: len(dst.cards)}
+
+		switch dst.category {
+		case "Foundation":
+			tmp.weight += 52 // magic number, sorry
+		case "Tableau":
+			if len(dst.cards) > 0 {
+				if card.Suit() == dst.Peek().Suit() {
+					tmp.weight += 26 // magic number, sorry
+				}
+			}
+		}
+		paw = append(paw, &tmp)
+	}
+	sort.Slice(paw, func(i, j int) bool { return paw[i].weight < paw[j].weight })
+	return paw[0].pile
 }

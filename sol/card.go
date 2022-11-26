@@ -54,7 +54,7 @@ type Card struct {
 	directionZ, scaleZ     float64
 	angle, spin            float64 // current angle and spin when card is spinning
 
-	movable bool
+	destinations []*Pile
 }
 
 // NewCard is a factory for Card objects
@@ -414,7 +414,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 
-	if TheBaize.showMovableCards && c.movable {
+	if TheBaize.showMovableCards && len(c.destinations) > 0 {
 		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 	}
 

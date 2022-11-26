@@ -139,5 +139,14 @@ func (self *Stock) UnsortedPairs() int {
 }
 
 func (self *Stock) MovableTails() []*MovableTail {
-	return nil
+	var tails []*MovableTail = []*MovableTail{}
+	if self.parent.Len() > 0 {
+		var card *Card = self.parent.Peek()
+		var tail []*Card = []*Card{card}
+		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		for _, home := range homes {
+			tails = append(tails, &MovableTail{dst: home, tail: tail})
+		}
+	}
+	return tails
 }
