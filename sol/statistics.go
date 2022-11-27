@@ -16,7 +16,7 @@ type Statistics struct {
 // VariantStatistics holds the statistics for one variant
 type VariantStatistics struct {
 	// PascalCase for JSON
-	Won, Lost, CurrStreak, BestStreak, WorstStreak, SumPercents, BestPercent int `json:",omitempty"`
+	Won, Lost, CurrStreak, BestStreak, WorstStreak, SumPercents, BestPercent, BestMoves, WorstMoves, SumMoves int `json:",omitempty"`
 	// Won is number of games with 100%
 	// Lost is number of games with % less than 100
 	// Won + Lost is total number of games played (won or abandoned)
@@ -76,7 +76,7 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 	return stats
 }
 
-func (s *Statistics) RecordWonGame(v string) {
+func (s *Statistics) RecordWonGame(v string, moves int) {
 
 	sound.Play("Complete")
 	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", v))
@@ -95,6 +95,14 @@ func (s *Statistics) RecordWonGame(v string) {
 	}
 
 	stats.BestPercent = 100
+
+	if stats.BestMoves == 0 || moves < stats.BestMoves {
+		stats.BestMoves = moves
+	}
+	if stats.WorstMoves == 0 || moves > stats.WorstMoves {
+		stats.WorstMoves = moves
+	}
+	stats.SumMoves += moves
 
 	toasts := stats.generalToasts()
 	for _, t := range toasts {

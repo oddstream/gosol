@@ -17,7 +17,7 @@ const (
 
 	debugSpeed  = 0.005
 	slowSpeed   = 0.01
-	normalSpeed = 0.02
+	normalSpeed = 0.025
 	fastSpeed   = 0.04
 
 	flipStepAmount = 0.075 // flipStepAmount is the amount we shrink/grow the flipping card width every tick
@@ -411,11 +411,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if c.Owner().Target() && c == c.Owner().Peek() {
-		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+		op.ColorM.Scale(0.9, 1.0, 0.9, 1)
 	}
 
 	if TheBaize.showMovableCards && len(c.destinations) > 0 {
-		op.ColorM.Scale(0.9, 0.9, 0.9, 1)
+		op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
 	}
 
 	screen.DrawImage(img, op)

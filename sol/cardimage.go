@@ -202,7 +202,7 @@ func CreateCardBackImage() *ebiten.Image {
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
-	dc.SetLineWidth(2)
+	dc.SetLineWidth(1)
 	// card back probably dark, so lighten the border a bit
 	dc.SetRGBA(1, 1, 1, 0.1)
 	// draw the RoundedRect entirely INSIDE the context

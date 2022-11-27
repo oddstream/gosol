@@ -371,7 +371,7 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
-		TheStatistics.RecordWonGame(b.LongVariantName())
+		TheStatistics.RecordWonGame(b.LongVariantName(), len(b.undoStack)-1)
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {

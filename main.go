@@ -21,6 +21,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gosol/sol"
 	"oddstream.games/gosol/ui"
+	"oddstream.games/gosol/util"
 )
 
 func main() {
@@ -45,12 +46,18 @@ func main() {
 		}
 	}
 
+	// this is deprecated, but there's a name clash with 'ui'
+	// ebiten.SetWindowResizingMode(ebiten.ui.WindowResizingModeEnabled)
 	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
 	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
 		// GNOME (maybe) annoyingly keeps maximizing the window
 		ebiten.RestoreWindow()
 	}
-
+	{
+		x, y := ebiten.ScreenSizeInFullscreen()
+		z := util.Min(x, y)
+		ebiten.SetWindowSize(z, z)
+	}
 	ebiten.SetWindowIcon(sol.WindowIcons())
 	{
 		var title string = sol.ThePreferences.Title

@@ -89,11 +89,7 @@ func Shuffle(pile *Pile) {
 		log.Println("shuffle with seed", seed)
 	}
 	rand.Seed(seed)
-	for i := 0; i < 6; i++ {
-		// it doesn't make sense, but testing shows that you need to do this
-		// more than once to get a randomly distributed shuffle
-		rand.Shuffle(pile.Len(), pile.Swap)
-	}
+	rand.Shuffle(pile.Len(), pile.Swap)
 }
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
