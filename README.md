@@ -116,10 +116,10 @@ So, rather than just making this stuff up, I've tried to find a well researched 
 * R - restart deal
 * S - save current position ('bookmark')
 * L - load/return to a previously saved position
+* H - hint/help - show movable cards
 * C - collect cards to the foundations
-* A - collect all cards to the foundations
 * 2 - switch to two colors of cards (black and red)
-* 4 - switch to four colors of cards (black, red, dark orange and indigo)
+* 4 - switch to four colors of cards (black, red, dark blue and dark green)
 
 ### What about scores?
 
@@ -171,13 +171,9 @@ So you can, for example, listen to an audio book while playing.
 
 ### Is the game rigged?
 
-No. The cards are shuffled randomly using a Fisher-Yates shuffle
-driven by a Park-Miller pseudo random number generator,
-which is in itself seeded by a random number. This mechanism was tested and analysed to make sure it produced an even distribution of shuffled cards.
+No. The cards are shuffled randomly using a Fisher-Yates shuffle driven by a Park-Miller pseudo random number generator, which is in itself seeded by a random number. This mechanism was tested and analysed to make sure it produced an even distribution of shuffled cards.
 
-There are 80658175170943878571660636856403766975289505440883277824000000000000
-possible deals of a pack of 52 playing cards; you're never going to play the same game twice, nor indeed play the same game
-that anyone else ever has, or ever will.
+There are 80658175170943878571660636856403766975289505440883277824000000000000 possible deals of a pack of 52 playing cards; you're probably more likely to grow wings than play the same game twice, or play the same game that anyone else ever has, or ever will.
 
 ### Any hints and tips?
 
@@ -222,17 +218,17 @@ that anyone else ever has, or ever will.
 
 ## History
 
-First, there was a Javascript version that used SVG graphics and ran in web browsers. Game variants were configured using static lookup tables, which I thought was a good idea at the time.
+First, there was a Javascript version that used SVG graphics and ran in web browsers. Game variants were configured using static lookup tables, which I thought was a good idea at the time. It's still available via the https://oddstream.games website, but I don't recommend it.
 
 Second, there was a version in Lua, using the Solar2d game engine, that made it to the Google Play store.  Game variants were configured using static lookup tables, which I still thought was a good idea.
 
-Third, there was a version in Go, using the Ebiten game engine, with help from gg/fogleman. The design was internally a mess, and the cards didn't scale, so this was abandoned. Game variants were configured using static lookup tables, which was starting to become a source of clumsiness and code smells.
+Third, there was a version in Go, using the Ebiten game engine, with help from gg/fogleman. The design was internally a mess (you can't write Java in Go!), and the cards didn't scale, so this was abandoned. Game variants were configured using static lookup tables, which was starting to become a source of clumsiness and code smells.
 
 Fourth, there is a version in C that uses the Raylib game engine and uses Lua to script the game variants. The design was good, but has problems with scaling cards.
 
 Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
 
-Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store.
+Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store. It has some problems with fuzzy card graphics.
 
 ## Acknowledgements
 
