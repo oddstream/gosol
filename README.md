@@ -48,7 +48,7 @@ Some will never make it here because they are just poor games:
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty.
 * Bookmarking positions (really good for puzzle-style games like Freecell or Simple Simon).
 * Scalable or fixed-size cards.
-* One-tap interface. Tapping on a card or cards tries to move them to a foundation, or to a suitable tableau pile. An empty tableau with a constraint is not considered suitable, as empty tableau are precious.
+* One-tap interface. Tapping on a card or cards tries to move them to a foundation, or to a suitable tableau pile.
 * Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider).
 * Every game has a link to it's Wikipedia page.
 * Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are).
@@ -60,13 +60,6 @@ Some will never make it here because they are just poor games:
 ## Deliberate minimalism
 
 A lot a features have been tried and discarded, in order to keep the game (and player) focused. Weniger aber besser, as [Dieter Rams](https://en.wikipedia.org/wiki/Dieter_Rams) taught us. Design is all about saying "no", as Steve Jobs preached. Just because a feature *can* be implemented, does not mean it *should* be.
-
-So taken out were:
-
-* Reporting if there were no more available moves (that's for you to puzzle over, just like in real life).
-* Reporting the number of moves made (which is arbitary - does turning a card from stock to waste count as one move, or moving a group of cards with  power moves turned on count as one move or several?).
-* Movable card highlighting (I used to think this was a good thing, but now I realise that it sucks the essence out of solitaire).
-* Choice of card sets or card backs.
 
 Configurability is the root of all evil, someone said. Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
 
@@ -80,7 +73,7 @@ This solitaire is all about [Flow](https://en.wikipedia.org/wiki/Flow_(psycholog
 
 Anything that distracts from your interaction with the flow of the game has been either been tried and removed or not included.
 
-Crucially, the games can be played by single-clicking the card you wish to move, and the software figures out where you want the card to go (mostly to the foundation if possible, and if not, the biggest tableau). If you don't like where the card goes, just try clicking it again or dragging it.
+Crucially, the games can be played by single-clicking the card you wish to move, and the software figures out where you want the card to go (mostly to the foundation if possible, and if not, the biggest tableau, or an empty cell). If you don't like where the card goes, just try clicking it again or dragging it.
 
 Also, I'm trying to make games authentic, by taking the rules from reputable sources and implementing them exactly.
 
@@ -180,7 +173,7 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 * For games that start with face down cards (like Klondike or Yukon) the priority is to get the face down cards turned over.
 * For games that start with a block of cards in the tableau and only allow single cards to be moved (like Forty Thieves), the priority is usually to open up some space (create empty tableaux piles) to allow you to juggle cards around.
 * For Forty Thieves-style games, the *other* priority is to minimize the number of cards in the waste pile.
-* For puzzle-type games (like Baker's Dozen, Freecell, Simple Simon), take your time and think ahead.
+* For puzzle-type games (like Baker's Dozen, Freecell, Penguin, Simple Simon), take your time and think ahead.
 * For games with reshuffles (like Cruel and Perseverance) you need to anticipate the effects of the reshuffle.
 * Use undo and bookmark. Undo isn't cheating; it's improvising, adapting and overcoming.
 
@@ -210,11 +203,12 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 ## TODO
 
+* The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.
 * Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua).
-* Get it working on Android (agggh! help!).
+* ~~Get it working on Android (agggh! help!).~~
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
 * I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
-* Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Kotlin+Korge, or something else.
+* Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
 
 ## History
 
@@ -226,9 +220,9 @@ Third, there was a version in Go, using the Ebiten game engine, with help from g
 
 Fourth, there is a version in C that uses the Raylib game engine and uses Lua to script the game variants. The design was good, but has problems with scaling cards.
 
-Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, and allows the option for scripting games.
+Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, allows the option for scripting games, and has sharp graphics.
 
-Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store. It has some problems with fuzzy card graphics.
+Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store. LÖVE is really good, but my implementation has some problems with fuzzy card graphics.
 
 ## Acknowledgements
 
