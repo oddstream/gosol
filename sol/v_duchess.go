@@ -4,7 +4,6 @@ package sol
 
 import (
 	"errors"
-	"fmt"
 	"image"
 
 	"oddstream.games/gosol/util"
@@ -61,6 +60,26 @@ func (du *Duchess) StartGame() {
 }
 
 func (du *Duchess) AfterMove() {
+	if du.foundations[0].label == "" {
+		// To start the game, the player will choose among the top cards of the reserve fans which will start the first foundation pile.
+		// Once he/she makes that decision and picks a card, the three other cards with the same rank,
+		// whenever they become available, will start the other three foundations.
+		var ord int = 0
+		for _, f := range du.foundations {
+			// find where the first card landed
+			if len(f.cards) > 0 {
+				ord = f.Peek().ID.Ordinal()
+				break
+			}
+		}
+		if ord == 0 {
+			TheUI.Toast("Move a Reserve card to a Foundation")
+		} else {
+			for _, f := range du.foundations {
+				f.SetLabel(util.OrdinalToShortString(ord))
+			}
+		}
+	}
 }
 
 func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
@@ -81,24 +100,18 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 
 func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
+	card := tail[0]
 	switch (dst).category {
 	case "Foundation":
 		if dst.Empty() {
-			c := tail[0]
-			ord := util.OrdinalToShortString(c.Ordinal())
 			if dst.Label() == "" {
-				if c.owner.category != "Reserve" {
+				if card.owner.category != "Reserve" {
 					return false, errors.New("The first Foundation card must come from a Reserve")
 				}
-				for _, pile := range du.foundations {
-					pile.SetLabel(ord)
-				}
 			}
-			if ord != dst.Label() {
-				return false, fmt.Errorf("Foundations can only accept an %s, not a %s", dst.Label(), ord)
-			}
+			return Compare_Empty(dst, card)
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
+			return CardPair{dst.Peek(), card}.Compare_UpSuitWrap()
 		}
 	case "Tableau":
 		if dst.Empty() {
@@ -108,14 +121,13 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 			}
 			if rescards > 0 {
 				// Spaces that occur on the tableau are filled with any top card in the reserve
-				c := tail[0]
-				if c.owner.category != "Reserve" {
+				if card.owner.category != "Reserve" {
 					return false, errors.New("An empty Tableau must be filled from a Reserve")
 				}
 			}
 			return true, nil
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColorWrap()
+			return CardPair{dst.Peek(), card}.Compare_DownAltColorWrap()
 		}
 	}
 	return true, nil

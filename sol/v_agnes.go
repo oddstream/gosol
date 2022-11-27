@@ -96,7 +96,7 @@ func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
+			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
 	case "Tableau":
 		if dst.Empty() {

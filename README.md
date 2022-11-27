@@ -170,7 +170,7 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 ### Any hints and tips?
 
-* For games that start with face down cards (like Klondike or Yukon) the priority is to get the face down cards turned over.
+* For games that start with face down cards (like Klondike or Yukon) the priority is to get the face down cards turned over. This is more important than moving cards to the foundations.
 * For games that start with a block of cards in the tableau and only allow single cards to be moved (like Forty Thieves), the priority is usually to open up some space (create empty tableaux piles) to allow you to juggle cards around.
 * For Forty Thieves-style games, the *other* priority is to minimize the number of cards in the waste pile.
 * For puzzle-type games (like Baker's Dozen, Freecell, Penguin, Simple Simon), take your time and think ahead.
