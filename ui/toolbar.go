@@ -15,13 +15,13 @@ func NewToolbar() *Toolbar {
 	// img will created first time it's drawn if width == 0
 	tb := &Toolbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 48}}
 
-	tb.widgets = []Widget{
+	tb.widgets = []Widgety{
 		// button's x will be set by LayoutWidgets() (y will always be 0 in a toolbar)
-		NewIconButton(tb, 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
-		NewLabel(tb, 0, "title", schriftbank.RobotoMedium24, ""),
-		NewIconButton(tb, 0, 0, 48, 48, 1, "undo", ebiten.KeyU),      // U for Undo
-		NewIconButton(tb, 0, 0, 48, 48, 1, "done", ebiten.KeyC),      // C for Collect
-		NewIconButton(tb, 0, 0, 48, 48, 1, "lightbulb", ebiten.KeyH), // H for Hint
+		NewIconButton(tb, "openMenu", 0, 0, 48, 48, -1, "menu", ebiten.KeyMenu),
+		NewLabel(tb, "toolbarTitle", 0, "title", schriftbank.RobotoMedium24, ""),
+		NewIconButton(tb, "toolbarUndo", 0, 0, 48, 48, 1, "undo", ebiten.KeyU),      // U for Undo
+		NewIconButton(tb, "toolbarCollect", 0, 0, 48, 48, 1, "done", ebiten.KeyC),   // C for Collect
+		NewIconButton(tb, "toolbarHint", 0, 0, 48, 48, 1, "lightbulb", ebiten.KeyH), // H for Hint
 	}
 	return tb
 }

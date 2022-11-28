@@ -6,8 +6,9 @@ import (
 )
 
 // Widget is an interface for widget objects
-type Widget interface {
-	Parent() Container
+type Widgety interface {
+	Parent() Containery
+	ID() string
 	Size() (int, int)
 	Position() (int, int)
 	Rect() (int, int, int, int)

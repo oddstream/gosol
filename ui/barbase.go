@@ -10,7 +10,7 @@ import (
 type BarBase struct {
 	img           *ebiten.Image
 	stroke        *input.Stroke
-	widgets       []Widget
+	widgets       []Widgety
 	x, y          int
 	width, height int
 }
@@ -50,8 +50,13 @@ func (bb *BarBase) Rect() (x0, y0, x1, y1 int) {
 	return // using named parameters
 }
 
+// Widgets returns a list of Widgets
+func (bb *BarBase) Widgets() []Widgety {
+	return bb.widgets
+}
+
 // FindWidgetAt given screen coordinates
-func (bb *BarBase) FindWidgetAt(x, y int) Widget {
+func (bb *BarBase) FindWidgetAt(x, y int) Widgety {
 	for _, w := range bb.widgets {
 		if util.InRect(x, y, w.OffsetRect) {
 			return w

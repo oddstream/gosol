@@ -425,8 +425,8 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		p.SetTarget(false)
 	}
 	switch v.Stroke.DraggedObject().(type) {
-	case ui.Container:
-		con := v.Stroke.DraggedObject().(ui.Container)
+	case ui.Containery:
+		con := v.Stroke.DraggedObject().(ui.Containery)
 		con.DragBy(v.Stroke.PositionDiff())
 	case *Card:
 		b.DragTailBy(v.Stroke.PositionDiff())
@@ -452,8 +452,8 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 		p.SetTarget(false)
 	}
 	switch v.Stroke.DraggedObject().(type) {
-	case ui.Container:
-		con := v.Stroke.DraggedObject().(ui.Container)
+	case ui.Containery:
+		con := v.Stroke.DraggedObject().(ui.Containery)
 		con.StopDrag()
 	case *Card:
 		c := v.Stroke.DraggedObject().(*Card)
@@ -516,8 +516,8 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 		log.Panic("*** cancel stroke with nil dragged object ***")
 	}
 	switch v.Stroke.DraggedObject().(type) { // type switch
-	case ui.Container:
-		con := v.Stroke.DraggedObject().(ui.Container)
+	case ui.Containery:
+		con := v.Stroke.DraggedObject().(ui.Containery)
 		con.StopDrag()
 	case *Card:
 		b.CancelTailDrag()
@@ -735,6 +735,8 @@ func (b *Baize) SetRecycles(recycles int) {
 }
 
 func (b *Baize) UpdateStatusbar() {
+	TheUI.EnableWidget("toolbarUndo", len(b.undoStack) > 1)
+	TheUI.EnableWidget("restartDeal", len(b.undoStack) > 1) // TODO
 	if b.script.Stock().Hidden() {
 		TheUI.SetStock(-1)
 	} else {
@@ -745,7 +747,7 @@ func (b *Baize) UpdateStatusbar() {
 	} else {
 		TheUI.SetWaste(-1) // previous variant may have had a waste, and this one does not
 	}
-	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
+	// TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
 	TheUI.SetPercent(b.PercentComplete())
 }
 

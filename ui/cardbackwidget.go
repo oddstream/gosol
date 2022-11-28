@@ -38,11 +38,11 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 }
 
 // NewCardBackWidget creates a new cardBack widget for the CardBackPicker
-func NewCardBackWidget(parent Container, name string, backImg *ebiten.Image) *CardBackWidget {
+func NewCardBackWidget(parent Containery, id string, name string, backImg *ebiten.Image) *CardBackWidget {
 	_, h := backImg.Size()
 	w, _ := parent.Size()
 	// widget x, y will be set by LayoutWidgets
-	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, width: w, height: h},
+	cb := &CardBackWidget{WidgetBase: WidgetBase{parent: parent, id: id, width: w, height: h},
 		name: name, backImg: backImg}
 	return cb
 }

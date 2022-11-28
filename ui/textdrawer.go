@@ -26,9 +26,9 @@ func (u *UI) ShowTextDrawer(content []string) {
 	u.textDrawer.widgets = nil
 	for _, c := range content { // content may be nil
 		if strings.HasPrefix(c, "https://") {
-			u.textDrawer.widgets = append(u.textDrawer.widgets, NewTextUrl(u.textDrawer, c))
+			u.textDrawer.widgets = append(u.textDrawer.widgets, NewTextUrl(u.textDrawer, "", c))
 		} else {
-			u.textDrawer.widgets = append(u.textDrawer.widgets, NewText(u.textDrawer, c))
+			u.textDrawer.widgets = append(u.textDrawer.widgets, NewText(u.textDrawer, "", c))
 		}
 	}
 	u.textDrawer.LayoutWidgets()

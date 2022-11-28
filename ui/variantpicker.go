@@ -26,7 +26,7 @@ func (u *UI) ShowVariantPicker(content []string) {
 	}
 	u.variantPicker.widgets = nil
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "Variant"))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, "", 0, c, schriftbank.RobotoMedium24, "Variant"))
 	}
 	u.variantPicker.LayoutWidgets()
 	u.variantPicker.Show()
@@ -43,7 +43,7 @@ func (u *UI) ShowVariantGroupPicker(content []string) {
 	}
 	u.variantPicker.widgets = u.variantPicker.widgets[:0]
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, 0, c, schriftbank.RobotoMedium24, "VariantGroup"))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, "", 0, c, schriftbank.RobotoMedium24, "VariantGroup"))
 	}
 	u.variantPicker.ResetScroll()
 	u.variantPicker.LayoutWidgets()

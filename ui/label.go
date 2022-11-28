@@ -44,13 +44,13 @@ func measureText(text string, fontFace font.Face) (int, int) {
 }
 
 // NewLabel creates a new Label
-func NewLabel(parent Container, align int, text string, fontFace font.Face, requestType string) *Label {
+func NewLabel(parent Containery, id string, align int, text string, fontFace font.Face, requestType string) *Label {
 
 	width, height := measureText(text, fontFace)
 
 	l := &Label{
 		// widget x, y will be set by LayoutWidgets
-		WidgetBase: WidgetBase{parent: parent, img: nil, width: int(width), height: int(height), align: align},
+		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, width: int(width), height: int(height), align: align},
 		text:       text, fontFace: fontFace, requestType: requestType}
 	l.Activate()
 	return l

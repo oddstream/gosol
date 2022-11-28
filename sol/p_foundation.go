@@ -34,7 +34,8 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
 	}
-	return TheBaize.script.TailAppendError(self.parent, tail)
+	// return TheBaize.script.TailAppendError(self.parent, tail)	BUG
+	return self.CanAcceptCard(tail[0])
 }
 
 func (*Foundation) TailTapped([]*Card) {

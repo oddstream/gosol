@@ -35,7 +35,7 @@ func (u *UI) Toast(message string) {
 	// otherwise you can fill the screen with "Nothing to undo"
 	for _, t := range u.toastManager.toasts {
 		if t.message == message {
-			t.ticksLeft = int(ebiten.CurrentTPS()) * 6
+			t.ticksLeft = int(ebiten.ActualTPS()) * 6
 			return
 		}
 	}

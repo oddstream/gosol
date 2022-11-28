@@ -5,25 +5,30 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// WidgetBase is a button that displays a single rune
+// WidgetBase is a button that displays a single icon
 type WidgetBase struct {
-	parent        Container
+	parent        Containery
+	id            string
 	img           *ebiten.Image
-	align         int
-	disabled      bool
-	x, y          int // position relative to parent
+	align         int  // -1 left, 0 center, +1 right
+	disabled      bool // show greyed out and don't honor clicks/taps
+	x, y          int  // position relative to parent
 	width, height int
 }
 
 // NewWidgetBase creates a new WidgetBase
-func NewWidgetBase(parent Container, width, height, x, y, align int) *WidgetBase {
-	wb := &WidgetBase{parent: parent, width: width, height: height, x: x, y: y, align: align}
-	return wb
-}
+// func NewWidgetBase(parent Container, id string, width, height, x, y, align int) *WidgetBase {
+// 	wb := &WidgetBase{parent: parent, id: id, width: width, height: height, x: x, y: y, align: align}
+// 	return wb
+// }
 
 // Parent of this widget
-func (wb *WidgetBase) Parent() Container {
+func (wb *WidgetBase) Parent() Containery {
 	return wb.parent
+}
+
+func (wb *WidgetBase) ID() string {
+	return wb.id
 }
 
 // Size of the widget

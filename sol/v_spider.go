@@ -61,9 +61,6 @@ func (sp *Spider) StartGame() {
 		c.FlipUp()
 	}
 	TheBaize.SetRecycles(0)
-	if DebugMode {
-		println(sp.stock.Len(), "cards in stock")
-	}
 }
 
 func (*Spider) AfterMove() {}

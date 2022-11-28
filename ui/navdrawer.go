@@ -13,16 +13,16 @@ type NavDrawer struct {
 func NewNavDrawer() *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
 	n := &NavDrawer{DrawerBase: DrawerBase{width: 256, height: 0, x: -256, y: 48}}
-	n.widgets = []Widget{
+	n.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
-		NewNavItem(n, "star", "New deal", ebiten.KeyN),
-		NewNavItem(n, "restore", "Restart deal", ebiten.KeyR),
-		NewNavItem(n, "search", "Find game...", ebiten.KeyF),
-		NewNavItem(n, "bookmark_add", "Bookmark", ebiten.KeyS),
-		NewNavItem(n, "bookmark", "Goto bookmark", ebiten.KeyL),
-		NewNavItem(n, "info", "Wikipedia...", ebiten.KeyF1),
-		NewNavItem(n, "list", "Statistics", ebiten.KeyF2),
-		NewNavItem(n, "settings", "Settings...", ebiten.KeyF3),
+		NewNavItem(n, "newDeal", "star", "New deal", ebiten.KeyN),
+		NewNavItem(n, "restartDeal", "restore", "Restart deal", ebiten.KeyR),
+		NewNavItem(n, "findGame", "search", "Find game...", ebiten.KeyF),
+		NewNavItem(n, "bookmark", "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(n, "gotoBookmark", "bookmark", "Goto bookmark", ebiten.KeyL),
+		NewNavItem(n, "wikipedia", "info", "Wikipedia...", ebiten.KeyF1),
+		NewNavItem(n, "statistics", "list", "Statistics", ebiten.KeyF2),
+		NewNavItem(n, "settings", "settings", "Settings...", ebiten.KeyF3),
 	}
 	// don't know how to ask a browser window to close
 	// if runtime.GOARCH != "wasm" {

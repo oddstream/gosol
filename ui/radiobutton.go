@@ -48,10 +48,10 @@ func (w *RadioButton) createImg() *ebiten.Image {
 }
 
 // NewRadioButton creates a new RadioButton
-func NewRadioButton(parent Container, text string, checked bool) *RadioButton {
+func NewRadioButton(parent Containery, id string, text string, checked bool) *RadioButton {
 	width, _ := parent.Size()
 	w := &RadioButton{
-		WidgetBase: WidgetBase{parent: parent, img: nil, x: 0, y: 0, width: width, height: 48},
+		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, x: 0, y: 0, width: width, height: 48},
 		text:       text, checked: checked}
 	w.Activate()
 	return w

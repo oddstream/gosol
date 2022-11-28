@@ -28,8 +28,8 @@ func (b *IconButton) createImg() *ebiten.Image {
 }
 
 // NewIconButton creates a new IconButton
-func NewIconButton(parent Container, x, y, width, height, align int, iconName string, key ebiten.Key) *IconButton {
-	b := &IconButton{WidgetBase: WidgetBase{parent: parent, img: nil, x: x, y: y, width: width, height: height, align: align},
+func NewIconButton(parent Containery, id string, x, y, width, height, align int, iconName string, key ebiten.Key) *IconButton {
+	b := &IconButton{WidgetBase: WidgetBase{parent: parent, id: id, img: nil, x: x, y: y, width: width, height: height, align: align},
 		iconName: iconName, key: key}
 	b.Activate()
 	return b

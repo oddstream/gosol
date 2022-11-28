@@ -27,8 +27,8 @@ func (f *FAB) createImg() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func NewFAB(parent Container, iconName string, key ebiten.Key) *FAB {
-	f := &FAB{WidgetBase: WidgetBase{parent: parent, x: 0, y: 0, width: 72, height: 72}, iconName: iconName, key: key}
+func NewFAB(parent Containery, id string, iconName string, key ebiten.Key) *FAB {
+	f := &FAB{WidgetBase: WidgetBase{parent: parent, id: id, x: 0, y: 0, width: 72, height: 72}, iconName: iconName, key: key}
 	f.Activate()
 	return f
 }
@@ -91,7 +91,7 @@ func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func (u *UI) ShowFAB(iconName string, key ebiten.Key) {
 	u.fabbar.widgets = nil
-	u.fabbar.widgets = append(u.fabbar.widgets, NewFAB(u.fabbar, iconName, key))
+	u.fabbar.widgets = append(u.fabbar.widgets, NewFAB(u.fabbar, "", iconName, key))
 }
 
 func (u *UI) HideFAB() {

@@ -68,7 +68,7 @@ type MovableTail struct {
 	tail []*Card
 }
 
-type PileVtable interface {
+type PileVtabler interface {
 	CanAcceptCard(*Card) (bool, error)
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
@@ -82,7 +82,7 @@ type PileVtable interface {
 // Pile is a generic container for cards
 type Pile struct {
 	magic     uint32
-	vtable    PileVtable
+	vtable    PileVtabler
 	category  string
 	slot      image.Point
 	fanType   FanType

@@ -36,12 +36,12 @@ func (w *TextUrl) calcHeights() {
 }
 
 // NewTextUrl creates a new TextUrl widget
-func NewTextUrl(parent Container, text string) *TextUrl {
+func NewTextUrl(parent Containery, id string, text string) *TextUrl {
 	width, _ := parent.Size()
 	// widget x, y will be set by LayoutWidgets
 	// widget height will be set when wordwrapping in createImg
 	w := &TextUrl{
-		WidgetBase: WidgetBase{parent: parent, img: nil, width: width},
+		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, width: width},
 		text:       "Wikipedia",
 		url:        text}
 	w.calcHeights()

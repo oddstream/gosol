@@ -17,7 +17,7 @@ const (
 type DrawerBase struct {
 	img              *ebiten.Image
 	stroke           *input.Stroke
-	widgets          []Widget
+	widgets          []Widgety
 	x, y             int
 	width, height    int
 	aniState         int
@@ -57,7 +57,11 @@ func (db *DrawerBase) Rect() (x0, y0, x1, y1 int) {
 	return // using named parameters
 }
 
-func (db *DrawerBase) FindWidgetAt(x, y int) Widget {
+func (db DrawerBase) Widgets() []Widgety {
+	return db.widgets
+}
+
+func (db *DrawerBase) FindWidgetAt(x, y int) Widgety {
 	for _, w := range db.widgets {
 		if util.InRect(x, y, w.OffsetRect) {
 			return w

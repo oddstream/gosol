@@ -6,11 +6,12 @@ import (
 )
 
 // Container is an interface for a UI widget
-type Container interface {
+type Containery interface {
 	Position() (int, int)
 	Size() (int, int)
 	Rect() (int, int, int, int)
-	FindWidgetAt(int, int) Widget
+	Widgets() []Widgety
+	FindWidgetAt(int, int) Widgety
 	LayoutWidgets()
 	StartDrag(*input.Stroke) bool
 	DragBy(int, int)

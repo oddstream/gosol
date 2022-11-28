@@ -22,13 +22,13 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 		con.Hide()
 	}
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
-	u.settingsDrawer.widgets = []Widget{
+	u.settingsDrawer.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
-		NewCheckbox(u.settingsDrawer, "Fixed cards", booleanSettings["FixedCards"]),
-		NewCheckbox(u.settingsDrawer, "Power moves", booleanSettings["PowerMoves"]),
-		NewCheckbox(u.settingsDrawer, "Four colors", booleanSettings["FourColors"]),
-		NewCheckbox(u.settingsDrawer, "Mirror baize", booleanSettings["MirrorBaize"]),
-		NewCheckbox(u.settingsDrawer, "Mute sounds", booleanSettings["Mute"]),
+		NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
+		NewCheckbox(u.settingsDrawer, "", "Power moves", booleanSettings["PowerMoves"]),
+		NewCheckbox(u.settingsDrawer, "", "Four colors", booleanSettings["FourColors"]),
+		NewCheckbox(u.settingsDrawer, "", "Mirror baize", booleanSettings["MirrorBaize"]),
+		NewCheckbox(u.settingsDrawer, "", "Mute sounds", booleanSettings["Mute"]),
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()

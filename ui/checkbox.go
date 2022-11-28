@@ -48,10 +48,10 @@ func (w *Checkbox) createImg() *ebiten.Image {
 }
 
 // NewCheckbox creates a new Checkbox
-func NewCheckbox(parent Container, text string, checked bool) *Checkbox {
+func NewCheckbox(parent Containery, id string, text string, checked bool) *Checkbox {
 	width, _ := parent.Size()
 	w := &Checkbox{
-		WidgetBase: WidgetBase{parent: parent, img: nil, x: 0, y: 0, width: width, height: 48},
+		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, x: 0, y: 0, width: width, height: 48},
 		text:       text, checked: checked}
 	w.Activate()
 	return w

@@ -48,12 +48,12 @@ func (w *Text) calcHeights() {
 }
 
 // NewText creates a new Text
-func NewText(parent Container, text string) *Text {
+func NewText(parent Containery, id string, text string) *Text {
 	width, _ := parent.Size()
 	// widget x, y will be set by LayoutWidgets
 	// widget height will be set when wordwrapping in createImg
 	w := &Text{
-		WidgetBase: WidgetBase{parent: parent, img: nil, width: width},
+		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, width: width},
 		text:       text}
 	w.calcHeights()
 	return w

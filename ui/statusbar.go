@@ -16,12 +16,12 @@ func NewStatusbar() *Statusbar {
 	// img will created first time it's drawn if width == 0
 	sb := &Statusbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 24}}
 
-	sb.widgets = []Widget{
+	sb.widgets = []Widgety{
 		// button's x will be set by LayoutWidgets()
-		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 0 stock
-		NewLabel(sb, -1, "", schriftbank.RobotoRegular14, ""), // 1 waste
-		NewLabel(sb, 0, "", schriftbank.RobotoRegular14, ""),  // 2 middle (debug)
-		NewLabel(sb, 1, "", schriftbank.RobotoRegular14, ""),  // 3 percent
+		NewLabel(sb, "statusbarStock", -1, "", schriftbank.RobotoRegular14, ""),  // 0 stock
+		NewLabel(sb, "statusbarWaste", -1, "", schriftbank.RobotoRegular14, ""),  // 1 waste
+		NewLabel(sb, "statusbarMiddle", 0, "", schriftbank.RobotoRegular14, ""),  // 2 middle (debug)
+		NewLabel(sb, "statusbarPercent", 1, "", schriftbank.RobotoRegular14, ""), // 3 percent
 	}
 	return sb
 }

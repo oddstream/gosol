@@ -23,9 +23,9 @@ type UI struct {
 	settingsDrawer *SettingsDrawer
 	variantPicker  *Picker
 	textDrawer     *TextDrawer
-	containers     []Container
-	bars           []Container
-	drawers        []Container
+	containers     []Containery // all the containers
+	bars           []Containery // just the status, toolbars
+	drawers        []Containery // just the drawers
 	toastManager   *ToastManager
 }
 
@@ -47,9 +47,9 @@ func New(fn func(interface{})) *UI {
 	ui.variantPicker = NewVariantPicker()
 	ui.textDrawer = NewTextDrawer() // contents are added when shown
 
-	ui.bars = []Container{ui.toolbar, ui.statusbar, ui.fabbar}
-	ui.drawers = []Container{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
-	ui.containers = []Container{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
+	ui.bars = []Containery{ui.toolbar, ui.statusbar, ui.fabbar}
+	ui.drawers = []Containery{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
+	ui.containers = []Containery{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
 
 	return ui
 }
@@ -69,7 +69,7 @@ func New(fn func(interface{})) *UI {
 // 	return nil
 // }
 
-func (u *UI) FindContainerAt(x, y int) Container {
+func (u *UI) FindContainerAt(x, y int) Containery {
 	for _, con := range u.containers {
 		if util.InRect(x, y, con.Rect) {
 			return con
@@ -79,7 +79,7 @@ func (u *UI) FindContainerAt(x, y int) Container {
 }
 
 // VisibleDrawer returns the drawer that is currently open
-func (u *UI) VisibleDrawer() Container {
+func (u *UI) VisibleDrawer() Containery {
 	for _, con := range u.drawers {
 		if con.Visible() {
 			return con
@@ -89,7 +89,7 @@ func (u *UI) VisibleDrawer() Container {
 }
 
 // VisibleContainer returns the drawer that is currently open
-func (u *UI) VisibleContainer() Container {
+func (u *UI) VisibleContainer() Containery {
 	for _, con := range u.containers {
 		if con.Visible() {
 			return con
@@ -102,6 +102,21 @@ func (u *UI) VisibleContainer() Container {
 func (u *UI) HideActiveDrawer() {
 	if con := u.VisibleDrawer(); con != nil {
 		con.Hide()
+	}
+}
+
+func (u *UI) EnableWidget(id string, enabled bool) {
+	for _, con := range u.containers {
+		for _, wgt := range con.Widgets() {
+			if wgt.ID() == id {
+				if enabled {
+					wgt.Activate()
+				} else {
+					wgt.Deactivate()
+				}
+				// println("EnableWidget", id, enabled)
+			}
+		}
 	}
 }
 
