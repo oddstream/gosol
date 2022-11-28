@@ -8,15 +8,9 @@ import (
 
 type Klondike struct {
 	ScriptBase
+	wikipedia      string
 	draw, recycles int
 	thoughtful     bool
-}
-
-func (*Klondike) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
-	}
 }
 
 func (kl *Klondike) BuildPiles() {
@@ -122,4 +116,12 @@ func (kl *Klondike) PileTapped(pile *Pile) {
 	if pile == kl.stock {
 		RecycleWasteToStock(kl.waste, kl.stock)
 	}
+}
+
+func (kl *Klondike) Wikipedia() string {
+	return kl.wikipedia
+}
+
+func (kl *Klondike) CardColors() int {
+	return 2
 }

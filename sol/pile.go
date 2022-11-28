@@ -662,10 +662,10 @@ func (self *Pile) CreateBackgroundImage() {
 		if self.symbol != 0 {
 			// usually the recycle symbol
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 		} else if self.label != "" {
 			dc.SetFontFace(schriftbank.CardOrdinalLarge)
-			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 		}
 	}
 	dc.Stroke()

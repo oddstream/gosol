@@ -11,13 +11,7 @@ import (
 
 type Duchess struct {
 	ScriptBase
-}
-
-func (*Duchess) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (du *Duchess) BuildPiles() {
@@ -150,4 +144,12 @@ func (du *Duchess) PileTapped(pile *Pile) {
 	if pile == du.stock {
 		RecycleWasteToStock(du.waste, du.stock)
 	}
+}
+
+func (du *Duchess) Wikipedia() string {
+	return du.wikipedia
+}
+
+func (du *Duchess) CardColors() int {
+	return 2
 }

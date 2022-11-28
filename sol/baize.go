@@ -5,7 +5,6 @@ import (
 	"hash/crc32"
 	"image"
 	"log"
-	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -32,7 +31,7 @@ const (
 // Baize object describes the baize
 type Baize struct {
 	magic            uint32
-	script           ScriptInterface
+	script           Scripter
 	piles            []*Pile
 	tail             []*Card // array of cards currently being dragged
 	bookmark         int     // index into undo stack
@@ -128,6 +127,7 @@ func (b *Baize) NewDeal() {
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 
 	sound.Play("Fan")
@@ -209,20 +209,6 @@ func (b *Baize) StartFreshGame() {
 		NoGameLoad = true
 	}
 	b.script.BuildPiles()
-	if !(runtime.GOARCH == "wasm" || runtime.GOOS == "android") {
-		if ThePreferences.PreferredWindow {
-			w := (b.MaxSlotX() + 4) * ThePreferences.FixedCardWidth
-			switch b.script.Info().windowShape {
-			case "square":
-				ebiten.SetWindowSize(w, w)
-			case "portrait":
-				ebiten.SetWindowSize(w, w*16/9)
-			case "landscape":
-				ebiten.SetWindowSize(w, w*9/16)
-			}
-		}
-	}
-
 	if ThePreferences.MirrorBaize {
 		b.MirrorSlots()
 	}
@@ -238,6 +224,7 @@ func (b *Baize) StartFreshGame() {
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 
 	TheStatistics.WelcomeToast(b.LongVariantName())
@@ -269,6 +256,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	} else {
 		TheUI.HideFAB()
 	}
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 }
 
@@ -366,6 +354,7 @@ func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 
 	if b.Complete() {
@@ -734,20 +723,25 @@ func (b *Baize) SetRecycles(recycles int) {
 	}
 }
 
-func (b *Baize) UpdateStatusbar() {
+func (b *Baize) UpdateToolbar() {
 	TheUI.EnableWidget("toolbarUndo", len(b.undoStack) > 1)
-	TheUI.EnableWidget("restartDeal", len(b.undoStack) > 1) // TODO
+	TheUI.EnableWidget("toolbarCollect", b.fmoves > 0)
+}
+
+func (b *Baize) UpdateStatusbar() {
 	if b.script.Stock().Hidden() {
 		TheUI.SetStock(-1)
 	} else {
 		TheUI.SetStock(b.script.Stock().Len())
 	}
-	if b.script.Waste() != nil {
-		TheUI.SetWaste(b.script.Waste().Len())
-	} else {
+	if b.script.Waste() == nil {
 		TheUI.SetWaste(-1) // previous variant may have had a waste, and this one does not
+	} else {
+		TheUI.SetWaste(b.script.Waste().Len())
 	}
-	// TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
+	if DebugMode {
+		TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
+	}
 	TheUI.SetPercent(b.PercentComplete())
 }
 

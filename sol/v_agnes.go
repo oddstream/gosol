@@ -10,13 +10,7 @@ import (
 
 type Agnes struct {
 	ScriptBase
-}
-
-func (*Agnes) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (ag *Agnes) BuildPiles() {
@@ -71,8 +65,7 @@ func (ag *Agnes) StartGame() {
 	}
 }
 
-func (*Agnes) AfterMove() {
-}
+func (*Agnes) AfterMove() {}
 
 func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
@@ -124,3 +117,11 @@ func (ag *Agnes) TailTapped(tail []*Card) {
 }
 
 func (ag *Agnes) PileTapped(*Pile) {}
+
+func (ag *Agnes) Wikipedia() string {
+	return ag.wikipedia
+}
+
+func (ag *Agnes) CardColors() int {
+	return 2
+}

@@ -6,7 +6,7 @@ import (
 )
 
 func (b *Baize) Wikipedia() {
-	var cmd *exec.Cmd = exec.Command("xdg-open", b.script.Info().wikipedia)
+	var cmd *exec.Cmd = exec.Command("xdg-open", b.script.Wikipedia())
 	if cmd != nil {
 		err := cmd.Start()
 		if err != nil {

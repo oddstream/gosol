@@ -11,8 +11,6 @@ import (
 )
 
 var CommandTable = map[ebiten.Key]func(){
-	ebiten.Key2: func() { ThePreferences.FourColors = false; TheBaize.setFlag(dirtyCardImages) },
-	ebiten.Key4: func() { ThePreferences.FourColors = true; TheBaize.setFlag(dirtyCardImages) },
 	ebiten.KeyN: func() { TheBaize.NewDeal() },
 	ebiten.KeyR: func() { TheBaize.RestartDeal() },
 	ebiten.KeyU: func() { TheBaize.Undo() },
@@ -69,8 +67,8 @@ func Execute(cmd interface{}) {
 			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
-		case "Four colors":
-			ThePreferences.FourColors, _ = strconv.ParseBool(v.Data)
+		case "Colorful cards":
+			ThePreferences.ColorfulCards, _ = strconv.ParseBool(v.Data)
 			TheBaize.setFlag(dirtyCardImages)
 		case "Mirror baize":
 			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)

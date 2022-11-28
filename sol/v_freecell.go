@@ -8,13 +8,7 @@ import (
 
 type Freecell struct {
 	ScriptBase
-}
-
-func (*Freecell) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/FreeCell",
-	}
+	wikipedia string
 }
 
 func (fc *Freecell) BuildPiles() {
@@ -106,3 +100,11 @@ func (*Freecell) TailTapped(tail []*Card) {
 }
 
 func (*Freecell) PileTapped(*Pile) {}
+
+func (fc *Freecell) Wikipedia() string {
+	return fc.wikipedia
+}
+
+func (*Freecell) CardColors() int {
+	return 2
+}

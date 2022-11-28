@@ -20,6 +20,14 @@ type ScriptBase struct {
 	waste       *Pile
 }
 
+func (sb ScriptBase) Wikipedia() string {
+	return "https://en.wikipedia.org/wiki/Patience_(game)"
+}
+
+func (sb ScriptBase) CardColors() int {
+	return 2
+}
+
 func (sb ScriptBase) Cells() []*Pile {
 	return sb.cells
 }
@@ -48,18 +56,11 @@ func (sb ScriptBase) Waste() *Pile {
 	return sb.waste
 }
 
-type VariantInfo struct {
-	windowShape string
-	wikipedia   string
-}
-
 // You can't use functions as keys in maps : the key type must be comparable
 // so you can't do: var ExtendedColorMap = map[CardPairCompareFunc]bool{}
 // type CardPairCompareFunc func(CardPair) (bool, error)
 
-type ScriptInterface interface {
-	Info() *VariantInfo
-
+type Scripter interface {
 	BuildPiles()
 	StartGame()
 	AfterMove()
@@ -78,34 +79,83 @@ type ScriptInterface interface {
 	Stock() *Pile
 	Tableaux() []*Pile
 	Waste() *Pile
+
+	Wikipedia() string
+	CardColors() int
 }
 
-var Variants = map[string]ScriptInterface{
-	"Agnes Bernauer":      &Agnes{},
-	"American Toad":       &Toad{},
-	"Australian":          &Australian{},
-	"Baker's Dozen":       &BakersDozen{},
-	"Canfield":            &Canfield{draw: 3, recycles: 32767, tabCompareFunc: CardPair.Compare_DownAltColorWrap},
-	"Storehouse":          &Canfield{draw: 1, recycles: 2, tabCompareFunc: CardPair.Compare_DownSuitWrap, variant: "storehouse"},
-	"Duchess":             &Duchess{},
-	"Klondike":            &Klondike{draw: 1, recycles: 2},
-	"Klondike Draw Three": &Klondike{draw: 3, recycles: 9},
-	"Thoughtful":          &Klondike{draw: 1, recycles: 32767, thoughtful: true},
-	"Easy":                &Easy{},
-	"Eight Off":           &EightOff{},
-	"Freecell":            &Freecell{},
+var Variants = map[string]Scripter{
+	"Agnes Bernauer": &Agnes{
+		wikipedia: "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
+	},
+	"American Toad": &Toad{
+		wikipedia: "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
+	},
+	"Australian": &Australian{
+		wikipedia: "https://en.wikipedia.org/wiki/Australian_Patience",
+	},
+	"Baker's Dozen": &BakersDozen{
+		wikipedia: "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
+	},
+	"Canfield": &Canfield{
+		wikipedia:      "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
+		cardColors:     2,
+		draw:           3,
+		recycles:       32767,
+		tabCompareFunc: CardPair.Compare_DownAltColorWrap,
+	},
+	"Storehouse": &Canfield{
+		wikipedia:      "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
+		cardColors:     4,
+		draw:           1,
+		recycles:       2,
+		tabCompareFunc: CardPair.Compare_DownSuitWrap,
+		variant:        "storehouse",
+	},
+	"Duchess": &Duchess{
+		wikipedia: "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
+	},
+	"Klondike": &Klondike{
+		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
+		draw:      1,
+		recycles:  2,
+	},
+	"Klondike Draw Three": &Klondike{
+		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
+		draw:      3,
+		recycles:  9,
+	},
+	"Thoughtful": &Klondike{
+		wikipedia:  "https://en.wikipedia.org/wiki/Solitaire",
+		draw:       1,
+		recycles:   32767,
+		thoughtful: true,
+	},
+	"Easy": &Easy{},
+	"Eight Off": &EightOff{
+		wikipedia: "https://en.wikipedia.org/wiki/Eight_Off",
+	},
+	"Freecell": &Freecell{
+		wikipedia: "https://en.wikipedia.org/wiki/FreeCell",
+	},
 	"Forty Thieves": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab: 4,
 	},
 	"Josephine": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab: 4,
 		moveType:    MOVE_ANY,
 	},
 	"Rank and File": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     2,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    4,
@@ -114,6 +164,8 @@ var Variants = map[string]ScriptInterface{
 		moveType:       MOVE_ANY,
 	},
 	"Indian": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     4,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    3,
@@ -121,12 +173,16 @@ var Variants = map[string]ScriptInterface{
 		tabCompareFunc: CardPair.Compare_DownOtherSuit,
 	},
 	"Streets": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     2,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    4,
 		tabCompareFunc: CardPair.Compare_DownAltColor,
 	},
 	"Number Ten": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     2,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    4,
@@ -135,56 +191,96 @@ var Variants = map[string]ScriptInterface{
 		moveType:       MOVE_ANY,
 	},
 	"Limited": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
 		cardsPerTab: 3,
 	},
 	"Forty and Eight": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab: 5,
 		recycles:    1,
 	},
 	"Red and Black": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     2,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    4,
 		tabCompareFunc: CardPair.Compare_DownAltColor,
 	},
 	"Lucas": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
 		cardsPerTab: 3,
 		dealAces:    true,
 	},
 	"Busy Aces": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
 		cardsPerTab: 1,
 	},
 	"Maria": &FortyThieves{
+		wikipedia:      "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:     2,
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{2, 3, 4, 5, 6, 7, 8, 9, 10},
 		cardsPerTab:    4,
 		tabCompareFunc: CardPair.Compare_DownAltColor,
 	},
 	"Sixty Thieves": &FortyThieves{
+		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+		cardColors:  4,
 		packs:       3,
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 		cardsPerTab: 5,
 	},
-	"Penguin":           &Penguin{},
-	"Scorpion":          &Scorpion{},
-	"Simple Simon":      &SimpleSimon{},
-	"Spider One Suit":   &Spider{packs: 8, suits: 1},
-	"Spider Two Suits":  &Spider{packs: 4, suits: 2},
-	"Spider Four Suits": &Spider{packs: 2, suits: 4},
-	"Whitehead":         &Whitehead{},
-	"Yukon":             &Yukon{},
-	"Yukon Cells":       &Yukon{extraCells: 2},
-	"Crimean":           &Crimean{},
-	"Ukranian":          &Crimean{ukranian: true},
+	"Penguin": &Penguin{
+		wikipedia: "https://www.parlettgames.uk/patience/penguin.html",
+	},
+	"Scorpion": &Scorpion{
+		wikipedia: "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
+	},
+	"Simple Simon": &SimpleSimon{
+		wikipedia: "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
+	},
+	"Spider One Suit": &Spider{
+		wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		cardColors: 1,
+		packs:      8,
+		suits:      1,
+	},
+	"Spider Two Suits": &Spider{
+		wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		cardColors: 2,
+		packs:      4,
+		suits:      2,
+	},
+	"Spider Four Suits": &Spider{
+		wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+		cardColors: 4,
+		packs:      2,
+		suits:      4,
+	},
+	"Whitehead": &Whitehead{
+		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
+	},
+	"Yukon": &Yukon{
+		wikipedia: "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
+	},
+	"Yukon Cells": &Yukon{
+		wikipedia:  "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
+		extraCells: 2,
+	},
 }
 
 var VariantGroups = map[string][]string{
@@ -198,7 +294,7 @@ var VariantGroups = map[string][]string{
 	"> Freecell":      {"Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
-	"> Places":        {"Australian", "Yukon", "Klondike", "Crimean", "Ukranian"},
+	"> Places":        {"Australian", "Yukon", "Klondike"},
 }
 
 func init() {

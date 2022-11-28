@@ -10,14 +10,9 @@ import (
 
 type Spider struct {
 	ScriptBase
+	wikipedia    string
+	cardColors   int
 	packs, suits int
-}
-
-func (*Spider) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Spider_(solitaire)",
-	}
 }
 
 func (sp *Spider) BuildPiles() {
@@ -130,3 +125,11 @@ func (sp *Spider) TailTapped(tail []*Card) {
 }
 
 func (*Spider) PileTapped(*Pile) {}
+
+func (sp *Spider) Wikipedia() string {
+	return sp.wikipedia
+}
+
+func (sp *Spider) CardColors() int {
+	return sp.cardColors
+}

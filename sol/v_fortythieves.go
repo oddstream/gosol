@@ -8,6 +8,8 @@ import (
 
 type FortyThieves struct {
 	ScriptBase
+	wikipedia      string
+	cardColors     int
 	packs          int
 	founds         []int
 	tabs           []int
@@ -17,13 +19,6 @@ type FortyThieves struct {
 	dealAces       bool
 	moveType       MoveType
 	tabCompareFunc func(CardPair) (bool, error)
-}
-
-func (*FortyThieves) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "landscape",
-		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
-	}
 }
 
 func (ft *FortyThieves) BuildPiles() {
@@ -139,4 +134,12 @@ func (ft *FortyThieves) PileTapped(pile *Pile) {
 	if pile == ft.stock {
 		RecycleWasteToStock(ft.waste, ft.stock)
 	}
+}
+
+func (ft *FortyThieves) Wikipedia() string {
+	return ft.wikipedia
+}
+
+func (ft *FortyThieves) CardColors() int {
+	return ft.cardColors
 }

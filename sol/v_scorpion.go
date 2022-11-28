@@ -9,13 +9,7 @@ import (
 
 type Scorpion struct {
 	ScriptBase
-}
-
-func (*Scorpion) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "portrait",
-		wikipedia:   "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (sp *Scorpion) BuildPiles() {
@@ -106,3 +100,11 @@ func (sp *Scorpion) TailTapped(tail []*Card) {
 }
 
 func (*Scorpion) PileTapped(*Pile) {}
+
+func (sp *Scorpion) Wikipedia() string {
+	return sp.wikipedia
+}
+
+func (*Scorpion) CardColors() int {
+	return 4
+}

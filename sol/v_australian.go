@@ -8,13 +8,7 @@ import (
 
 type Australian struct {
 	ScriptBase
-}
-
-func (*Australian) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Australian_Patience",
-	}
+	wikipedia string
 }
 
 func (aus *Australian) BuildPiles() {
@@ -89,3 +83,11 @@ func (aus *Australian) TailTapped(tail []*Card) {
 }
 
 func (*Australian) PileTapped(*Pile) {}
+
+func (aus *Australian) Wikipedia() string {
+	return aus.wikipedia
+}
+
+func (*Australian) CardColors() int {
+	return 4
+}

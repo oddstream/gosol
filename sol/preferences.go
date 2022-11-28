@@ -14,7 +14,7 @@ type Preferences struct {
 	DiamondColor                    string
 	HeartColor                      string
 	SpadeColor                      string
-	FourColors                      bool
+	ColorfulCards                   bool
 	FixedCards                      bool
 	PowerMoves                      bool
 	Mute                            bool
@@ -34,7 +34,7 @@ var ThePreferences = &Preferences{
 	PowerMoves:      true,
 	CardFaceColor:   "Ivory",
 	CardBackColor:   "CornflowerBlue",
-	FourColors:      false,
+	ColorfulCards:   false,
 	RedColor:        "Crimson",
 	BlackColor:      "Black",
 	ClubColor:       "DarkGreen",

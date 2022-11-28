@@ -11,13 +11,7 @@ import (
 
 type Toad struct {
 	ScriptBase
-}
-
-func (*Toad) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (t *Toad) BuildPiles() {
@@ -114,4 +108,12 @@ func (t *Toad) PileTapped(pile *Pile) {
 	if pile == t.stock {
 		RecycleWasteToStock(t.waste, t.stock)
 	}
+}
+
+func (t *Toad) Wikipedia() string {
+	return t.wikipedia
+}
+
+func (t *Toad) CardColors() int {
+	return 4
 }

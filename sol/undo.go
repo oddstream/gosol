@@ -123,6 +123,7 @@ func (b *Baize) Undo() {
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 }
 
@@ -140,6 +141,7 @@ func (b *Baize) RestartDeal() {
 
 	b.UndoPush() // replace current state
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 }
 
@@ -176,5 +178,6 @@ func (b *Baize) LoadPosition() {
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
+	b.UpdateToolbar()
 	b.UpdateStatusbar()
 }

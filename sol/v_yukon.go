@@ -8,14 +8,8 @@ import (
 
 type Yukon struct {
 	ScriptBase
+	wikipedia  string
 	extraCells int
-}
-
-func (*Yukon) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "portrait",
-		wikipedia:   "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
-	}
 }
 
 func (yuk *Yukon) BuildPiles() {
@@ -103,3 +97,11 @@ func (*Yukon) TailTapped(tail []*Card) {
 }
 
 func (*Yukon) PileTapped(*Pile) {}
+
+func (yuk *Yukon) Wikipedia() string {
+	return yuk.wikipedia
+}
+
+func (*Yukon) CardColors() int {
+	return 2
+}

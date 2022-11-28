@@ -9,13 +9,7 @@ import (
 
 type SimpleSimon struct {
 	ScriptBase
-}
-
-func (*SimpleSimon) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (ss *SimpleSimon) BuildPiles() {
@@ -104,3 +98,11 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 }
 
 func (*SimpleSimon) PileTapped(*Pile) {}
+
+func (ss *SimpleSimon) Wikipedia() string {
+	return ss.wikipedia
+}
+
+func (*SimpleSimon) CardColors() int {
+	return 4
+}

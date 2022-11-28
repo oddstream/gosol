@@ -12,6 +12,7 @@ import (
 )
 
 // assets/RobotoSlab-Bold.ttf
+//
 //go:embed assets/Acme-Regular.ttf
 var acmeFontBytes []byte
 
@@ -80,7 +81,7 @@ func MakeCardFonts(cardWidth int) {
 	}
 
 	CardOrdinalSmall = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(cardWidth) * 0.225,
+		Size:    float64(cardWidth) * 0.233,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})

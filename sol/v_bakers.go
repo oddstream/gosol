@@ -9,13 +9,7 @@ import (
 
 type BakersDozen struct {
 	ScriptBase
-}
-
-func (*BakersDozen) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (bd *BakersDozen) BuildPiles() {
@@ -58,8 +52,7 @@ func (bd *BakersDozen) StartGame() {
 
 }
 
-func (*BakersDozen) AfterMove() {
-}
+func (*BakersDozen) AfterMove() {}
 
 func (*BakersDozen) TailMoveError(tail []*Card) (bool, error) {
 	// attempt to move more than one card will be caught before this
@@ -93,3 +86,11 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 }
 
 func (*BakersDozen) PileTapped(*Pile) {}
+
+func (bd *BakersDozen) Wikipedia() string {
+	return bd.wikipedia
+}
+
+func (*BakersDozen) CardColors() int {
+	return 1
+}

@@ -10,13 +10,6 @@ type Easy struct {
 	ScriptBase
 }
 
-func (*Easy) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "landscape",
-		wikipedia:   "https://en.wikipedia.org/wiki/Solitaire",
-	}
-}
-
 func (ez *Easy) BuildPiles() {
 
 	ez.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)

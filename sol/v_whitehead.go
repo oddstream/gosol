@@ -8,13 +8,7 @@ import (
 
 type Whitehead struct {
 	ScriptBase
-}
-
-func (*Whitehead) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
-	}
+	wikipedia string
 }
 
 func (wh *Whitehead) BuildPiles() {
@@ -105,4 +99,12 @@ func (wh *Whitehead) TailTapped(tail []*Card) {
 func (wh *Whitehead) PileTapped(*Pile) {
 	// https://politaire.com/help/whitehead
 	// Only one pass through the Stock is permitted
+}
+
+func (wh *Whitehead) Wikipedia() string {
+	return wh.wikipedia
+}
+
+func (*Whitehead) CardColors() int {
+	return 2
 }

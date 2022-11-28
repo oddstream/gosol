@@ -8,13 +8,7 @@ import (
 
 type EightOff struct {
 	ScriptBase
-}
-
-func (*EightOff) Info() *VariantInfo {
-	return &VariantInfo{
-		windowShape: "square",
-		wikipedia:   "https://en.wikipedia.org/wiki/Eight_Off",
-	}
+	wikipedia string
 }
 
 func (eo *EightOff) BuildPiles() {
@@ -98,3 +92,11 @@ func (*EightOff) TailTapped(tail []*Card) {
 }
 
 func (*EightOff) PileTapped(*Pile) {}
+
+func (eo *EightOff) Wikipedia() string {
+	return eo.wikipedia
+}
+
+func (*EightOff) CardColors() int {
+	return 4
+}
