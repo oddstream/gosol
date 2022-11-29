@@ -102,10 +102,6 @@ func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilte
 	return &stock
 }
 
-func (*Stock) CanAcceptCard(*Card) (bool, error) {
-	return false, errors.New("Cannot move cards to the Stock")
-}
-
 func (*Stock) CanAcceptTail([]*Card) (bool, error) {
 	return false, errors.New("Cannot move cards to the Stock")
 }

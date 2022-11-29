@@ -69,7 +69,6 @@ type MovableTail struct {
 }
 
 type PileVtabler interface {
-	CanAcceptCard(*Card) (bool, error)
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
 	Collect()
@@ -545,7 +544,6 @@ func (self *Pile) BuryCards(ordinal int) {
 
 // default behaviours for all pile types, that can be over-ridden by providing (eg) *Stock.Collect
 
-//func (self *Pile) DefaultCanAcceptCard(*Card) (bool, error)   { return false, nil }
 //func (self *Pile) DefaultCanAcceptTail([]*Card) (bool, error) { return false, nil }
 
 func (self *Pile) DefaultTailTapped(tail []*Card) {
@@ -584,7 +582,7 @@ func (self *Pile) DefaultCollect() {
 			if self.Empty() {
 				return
 			}
-			if ok, _ := fp.vtable.CanAcceptCard(self.Peek()); !ok {
+			if ok, _ := fp.vtable.CanAcceptTail([]*Card{self.Peek()}); !ok {
 				// this foundation doesn't want this card; onto the next one
 				break
 			}
@@ -662,7 +660,7 @@ func (self *Pile) CreateBackgroundImage() {
 		if self.symbol != 0 {
 			// usually the recycle symbol
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
+			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 		} else if self.label != "" {
 			dc.SetFontFace(schriftbank.CardOrdinalLarge)
 			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)

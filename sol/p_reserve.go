@@ -19,10 +19,6 @@ func NewReserve(slot image.Point, fanType FanType) *Pile {
 	return &reserve
 }
 
-func (*Reserve) CanAcceptCard(card *Card) (bool, error) {
-	return false, errors.New("Cannot add a card to a Reserve")
-}
-
 func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {
 	return false, errors.New("Cannot add a card to a Reserve")
 }

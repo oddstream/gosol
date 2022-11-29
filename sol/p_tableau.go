@@ -22,14 +22,6 @@ func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
 	return &tableau
 }
 
-func (self *Tableau) CanAcceptCard(card *Card) (bool, error) {
-	if card.Prone() {
-		return false, errors.New("Cannot add a face down card")
-	}
-	var tail []*Card = []*Card{card}
-	return TheBaize.script.TailAppendError(self.parent, tail)
-}
-
 func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
 	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608

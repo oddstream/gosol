@@ -739,9 +739,9 @@ func (b *Baize) UpdateStatusbar() {
 	} else {
 		TheUI.SetWaste(b.script.Waste().Len())
 	}
-	if DebugMode {
-		TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
-	}
+	// if DebugMode {
+	// 	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
+	// }
 	TheUI.SetPercent(b.PercentComplete())
 }
 

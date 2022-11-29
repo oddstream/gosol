@@ -19,16 +19,6 @@ func NewCell(slot image.Point) *Pile {
 	return &cell
 }
 
-func (self *Cell) CanAcceptCard(card *Card) (bool, error) {
-	if card.Prone() {
-		return false, errors.New("Cannot add a face down card")
-	}
-	if !self.parent.Empty() {
-		return false, errors.New("A Cell can only contain one card")
-	}
-	return true, nil
-}
-
 func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 	if !self.parent.Empty() {
 		return false, errors.New("A Cell can only contain one card")

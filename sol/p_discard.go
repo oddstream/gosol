@@ -19,10 +19,6 @@ func NewDiscard(slot image.Point, fanType FanType) *Pile {
 	return &discard
 }
 
-func (*Discard) CanAcceptCard(card *Card) (bool, error) {
-	return false, errors.New("Cannot move a single card to a Discard")
-}
-
 func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if !self.parent.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")

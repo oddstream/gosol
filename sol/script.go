@@ -97,6 +97,9 @@ var Variants = map[string]Scripter{
 	"Baker's Dozen": &BakersDozen{
 		wikipedia: "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 	},
+	"Blockade": &Blockade{
+		wikipedia: "https://en.wikipedia.org/wiki/Blockade_(solitaire)",
+	},
 	"Canfield": &Canfield{
 		wikipedia:      "https://en.wikipedia.org/wiki/Canfield_(solitaire)",
 		cardColors:     2,
