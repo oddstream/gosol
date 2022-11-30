@@ -28,12 +28,12 @@ var CommandTable = map[ebiten.Key]func(){
 			ThePreferences.Save()
 		}
 	},
-	ebiten.KeyF1:     func() { TheBaize.Wikipedia() },
-	ebiten.KeyF2:     func() { TheStatistics.WelcomeToast(TheBaize.LongVariantName()) },
-	ebiten.KeyF3:     func() { ShowSettingsDrawer() },
-	ebiten.KeyF5:     func() { TheBaize.StartSpinning() },
-	ebiten.KeyF6:     func() { TheBaize.StopSpinning() },
-	ebiten.KeyF8:     func() { TheUI.HideFAB() },
+	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
+	// ebiten.KeyF2:     func() { TheStatistics.WelcomeToast(TheBaize.LongVariantName()) },
+	// ebiten.KeyF3:     func() { ShowSettingsDrawer() },
+	// ebiten.KeyF5:     func() { TheBaize.StartSpinning() },
+	// ebiten.KeyF6:     func() { TheBaize.StopSpinning() },
+	// ebiten.KeyF8:     func() { TheUI.HideFAB() },
 	ebiten.KeyMenu:   func() { TheUI.ToggleNavDrawer() },
 	ebiten.KeyEscape: func() { TheUI.HideActiveDrawer() },
 }

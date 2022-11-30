@@ -8,7 +8,7 @@ import (
 
 func FindCardOwner(card *Card) *Pile {
 	for _, pile := range TheBaize.piles {
-		for _, c := range pile.Cards() {
+		for _, c := range pile.cards {
 			if c == card {
 				return pile
 			}
@@ -52,7 +52,7 @@ func MoveNamedCard(src *Pile, suit, ordinal int, dst *Pile) {
 	// 1. find the card in the src Pile
 	var ID CardID = NewCardID(0, suit, ordinal)
 	var card *Card
-	for _, c := range src.Cards() {
+	for _, c := range src.cards {
 		if SameCard(ID, c.ID) {
 			card = c
 			break

@@ -131,11 +131,6 @@ func (self *Pile) IsStock() bool {
 }
 
 // Deprecated: not needed in new model
-func (self *Pile) Cards() []*Card { // TODO RETIRE
-	return self.cards
-}
-
-// Deprecated: not needed in new model
 func (self *Pile) FanType() FanType { // TODO RETIRE
 	return self.fanType
 }
@@ -184,15 +179,13 @@ func (self *Pile) SetTarget(target bool) {
 	self.target = target
 }
 
-// Empty returns true if this pile is empty.
-// for use outside this chunk
+// Empty returns true if this pile is empty (has no cards).
 func (self *Pile) Empty() bool {
 	return len(self.cards) == 0
 }
 
 // Len returns the number of cards in this pile.
 // Len satisfies the sort.Interface interface.
-// for use outside this chunk
 func (self *Pile) Len() int {
 	return len(self.cards)
 }
@@ -547,14 +540,6 @@ func (self *Pile) BuryCards(ordinal int) {
 //func (self *Pile) DefaultCanAcceptTail([]*Card) (bool, error) { return false, nil }
 
 func (self *Pile) DefaultTailTapped(tail []*Card) {
-	// var homes []*Pile = TheBaize.FindHomesForTail(tail)
-	// if len(homes) > 0 {
-	// 	card := tail[0]
-	// 	if len(tail) == 1 {
-	// 		MoveCard(card.owner, homes[0])
-	// 	} else {
-	// 		MoveTail(card, homes[0])
-	// 	}
 	card := tail[0]
 	if len(card.destinations) > 0 {
 		var dst *Pile

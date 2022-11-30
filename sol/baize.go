@@ -577,16 +577,16 @@ func (b *Baize) ApplyToTail(fn func(*Card)) {
 	// https://golang.org/ref/spec#Method_expressions
 	// (*Card).CancelDrag yields a function with the signature func(*Card)
 	// fn passed as a method expression so add the receiver explicitly
-	for _, tc := range b.tail {
-		fn(tc)
+	for _, c := range b.tail {
+		fn(c)
 	}
 }
 
 // DragTailBy repositions all the cards in the tail: dx, dy is the position difference from the start of the drag
 func (b *Baize) DragTailBy(dx, dy int) {
 	// println("Baize.DragTailBy(", dx, dy, ")")
-	for _, tc := range b.tail {
-		tc.DragBy(dx, dy)
+	for _, c := range b.tail {
+		c.DragBy(dx, dy)
 	}
 }
 
@@ -613,6 +613,7 @@ func (b *Baize) CancelTailDrag() {
 
 func (b *Baize) Collect() {
 	outerCRC := b.CRC()
+	// repeatedly run Collect across all piles until nothing is collected
 	for {
 		innerCRC := b.CRC()
 		for _, p := range b.piles {
@@ -742,6 +743,7 @@ func (b *Baize) UpdateStatusbar() {
 	// if DebugMode {
 	// 	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
 	// }
+	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d", len(b.undoStack)-1))
 	TheUI.SetPercent(b.PercentComplete())
 }
 

@@ -366,7 +366,7 @@ func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
 		return 0
 	}
 	var unsorted int
-	for _, pair := range NewCardPairs(pile.Cards()) {
+	for _, pair := range NewCardPairs(pile.cards) {
 		if pair.EitherProne() {
 			unsorted++
 		} else {
