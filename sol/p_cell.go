@@ -36,10 +36,6 @@ func (self *Cell) TailTapped(tail []*Card) {
 	self.parent.DefaultTailTapped(tail)
 }
 
-func (self *Cell) Collect() {
-	self.parent.DefaultCollect()
-}
-
 func (*Cell) Conformant() bool {
 	return true
 }

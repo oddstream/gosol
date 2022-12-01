@@ -36,10 +36,6 @@ func (*Discard) TailTapped([]*Card) {
 	// do nothing
 }
 
-func (*Discard) Collect() {
-	// do nothing
-}
-
 func (*Discard) Conformant() bool {
 	// no Baize that contains any discard piles should be Conformant,
 	// because there is no use showing the collect all FAB

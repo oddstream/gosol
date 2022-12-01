@@ -120,6 +120,7 @@ func (b *Baize) Undo() {
 	if !ok {
 		log.Panic("error popping second state from undo stack")
 	}
+	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
@@ -136,10 +137,10 @@ func (b *Baize) RestartDeal() {
 			log.Panic("error popping from undo stack")
 		}
 	}
+	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.bookmark = 0 // do this AFTER UpdateFromSavable
-
-	b.UndoPush() // replace current state
+	b.UndoPush()   // replace current state
 	b.FindDestinations()
 	b.UpdateToolbar()
 	b.UpdateStatusbar()
@@ -175,6 +176,7 @@ func (b *Baize) LoadPosition() {
 			log.Panic("error popping from undo stack")
 		}
 	}
+	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()

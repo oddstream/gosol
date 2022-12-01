@@ -121,7 +121,7 @@ func (b *Baize) NewDeal() {
 
 	stockPile := b.script.Stock()
 	FillFromLibrary(stockPile)
-	Shuffle(stockPile)
+	stockPile.Shuffle()
 
 	b.showMovableCards = false
 	b.script.StartGame()
@@ -611,22 +611,49 @@ func (b *Baize) CancelTailDrag() {
 	b.tail = nil
 }
 
-func (b *Baize) Collect() {
-	outerCRC := b.CRC()
-	// repeatedly run Collect across all piles until nothing is collected
-	for {
-		innerCRC := b.CRC()
-		for _, p := range b.piles {
-			p.vtable.Collect()
-		}
-		if b.CRC() == innerCRC {
-			break
+// collectFromPile is a helper function for Collect2()
+func (b *Baize) collectFromPile(pile *Pile) int {
+	if pile == nil {
+		return 0
+	}
+	var cardsMoved int = 0
+	for _, fp := range b.script.Foundations() {
+		for {
+			var card *Card = pile.Peek()
+			if card == nil {
+				return cardsMoved
+			}
+			ok, _ := fp.vtable.CanAcceptTail([]*Card{card})
+			if !ok {
+				break // done with this foundation, try another
+			}
+			MoveCard(pile, fp)
+			b.AfterUserMove() // does an undoPush()
+			cardsMoved += 1
 		}
 	}
-	if b.CRC() != outerCRC {
-		b.AfterUserMove()
-	} else {
-		sound.Play("Blip")
+	return cardsMoved
+}
+
+// Collect2 should be exactly the same as the user tapping repeatedly on the
+// waste, cell, reserve and tableau piles
+// nb there is no collecting to discard piles, they are optional and presence of
+// cards in them does not signify a complete game
+func (b *Baize) Collect2() {
+	for {
+		var totalCardsMoved int = b.collectFromPile(b.script.Waste())
+		for _, pile := range b.script.Cells() {
+			totalCardsMoved += b.collectFromPile(pile)
+		}
+		for _, pile := range b.script.Reserves() {
+			totalCardsMoved += b.collectFromPile(pile)
+		}
+		for _, pile := range b.script.Tableaux() {
+			totalCardsMoved += b.collectFromPile(pile)
+		}
+		if totalCardsMoved == 0 {
+			break
+		}
 	}
 }
 

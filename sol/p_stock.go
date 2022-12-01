@@ -7,8 +7,6 @@ import (
 	"errors"
 	"image"
 	"log"
-	"math/rand"
-	"time"
 )
 
 func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
@@ -75,29 +73,12 @@ func FillFromLibrary(pile *Pile) {
 	}
 }
 
-func Shuffle(pile *Pile) {
-
-	if !pile.Valid() {
-		log.Fatal("invalid stock")
-	}
-	if NoShuffle {
-		log.Println("not shuffling cards")
-		return
-	}
-	seed := time.Now().UnixNano() & 0xFFFFFFFF
-	if DebugMode {
-		log.Println("shuffle with seed", seed)
-	}
-	rand.Seed(seed)
-	rand.Shuffle(pile.Len(), pile.Swap)
-}
-
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
 	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
 	stock.vtable = &Stock{parent: &stock}
 	FillFromLibrary(&stock)
-	Shuffle(&stock)
+	stock.Shuffle()
 	TheBaize.AddPile(&stock)
 	return &stock
 }
@@ -108,10 +89,6 @@ func (*Stock) CanAcceptTail([]*Card) (bool, error) {
 
 func (*Stock) TailTapped([]*Card) {
 	// do nothing, handled by script, which had first dibs
-}
-
-func (*Stock) Collect() {
-	// never collect from the stock
 }
 
 func (self *Stock) Conformant() bool {

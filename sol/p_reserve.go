@@ -27,10 +27,6 @@ func (self *Reserve) TailTapped(tail []*Card) {
 	self.parent.DefaultTailTapped(tail)
 }
 
-func (self *Reserve) Collect() {
-	self.parent.DefaultCollect()
-}
-
 func (self *Reserve) Conformant() bool {
 	return self.parent.Len() < 2
 }

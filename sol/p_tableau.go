@@ -78,10 +78,6 @@ func (self *Tableau) TailTapped(tail []*Card) {
 	self.parent.DefaultTailTapped(tail)
 }
 
-func (self *Tableau) Collect() {
-	self.parent.DefaultCollect()
-}
-
 func (self *Tableau) Conformant() bool {
 	return TheBaize.script.UnsortedPairs(self.parent) == 0
 }

@@ -34,10 +34,6 @@ func (self *Waste) TailTapped(tail []*Card) {
 	self.parent.DefaultTailTapped(tail)
 }
 
-func (self *Waste) Collect() {
-	self.parent.DefaultCollect()
-}
-
 func (self *Waste) Conformant() bool {
 	// zero or one cards would be conformant
 	return self.parent.Len() < 2

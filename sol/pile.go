@@ -9,6 +9,8 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -71,7 +73,6 @@ type MovableTail struct {
 type PileVtabler interface {
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
-	Collect()
 	Conformant() bool
 	Complete() bool
 	UnsortedPairs() int
@@ -128,6 +129,22 @@ func (self *Pile) Hidden() bool {
 
 func (self *Pile) IsStock() bool {
 	return self.category == "Stock"
+}
+
+func (self *Pile) Shuffle() {
+	if !self.Valid() {
+		log.Fatal("invalid stock")
+	}
+	if NoShuffle {
+		log.Println("not shuffling cards")
+		return
+	}
+	seed := time.Now().UnixNano() & 0xFFFFFFFF
+	if DebugMode {
+		log.Println("shuffle with seed", seed)
+	}
+	rand.Seed(seed)
+	rand.Shuffle(self.Len(), self.Swap)
 }
 
 // Deprecated: not needed in new model
@@ -557,22 +574,6 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 		}
 	} else {
 		sound.Play("Blip")
-	}
-}
-
-func (self *Pile) DefaultCollect() {
-	for _, fp := range TheBaize.script.Foundations() {
-		for {
-			// loop to get as many cards as possible from this pile
-			if self.Empty() {
-				return
-			}
-			if ok, _ := fp.vtable.CanAcceptTail([]*Card{self.Peek()}); !ok {
-				// this foundation doesn't want this card; onto the next one
-				break
-			}
-			MoveCard(self, fp)
-		}
 	}
 }
 

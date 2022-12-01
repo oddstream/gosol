@@ -34,8 +34,6 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 
 func (*Foundation) TailTapped([]*Card) {}
 
-func (*Foundation) Collect() {}
-
 func (*Foundation) Conformant() bool {
 	return true
 }

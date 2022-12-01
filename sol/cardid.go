@@ -122,12 +122,12 @@ func (c *Card) SetProne(prone bool) {
 	}
 }
 
-// Prone returns the joker flag buried in the card id
+// Joker returns the joker flag buried in the card id
 func (cid CardID) Joker() bool {
 	return cid&jokerFlag == jokerFlag
 }
 
-// Prone returns true if the card is face down, false if it is face up
+// Joker returns the joker flag buried in the card id
 func (c *Card) Joker() bool {
 	return c.ID.Joker()
 }
