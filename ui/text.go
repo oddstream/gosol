@@ -25,10 +25,10 @@ func (w *Text) createImg() *ebiten.Image {
 
 	dc.SetRGBA(1, 1, 1, 1)
 	// nota bene - text is drawn with y as a baseline
-	dc.SetFontFace(schriftbank.RobotoRegular14)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	y := w.lineHeight
 	for _, str := range w.lines {
-		dc.DrawString(str, 0, float64(y-8)) // move up a little to stop descenders being clipped on last line
+		dc.DrawString(str, 0, float64(y-4)) // move up a little to stop descenders being clipped on last line
 		y += w.lineHeight
 	}
 	// uncomment this line to visualize text box

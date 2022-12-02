@@ -29,8 +29,8 @@ var CommandTable = map[ebiten.Key]func(){
 		}
 	},
 	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
-	// ebiten.KeyF2:     func() { TheStatistics.WelcomeToast(TheBaize.LongVariantName()) },
-	// ebiten.KeyF3:     func() { ShowSettingsDrawer() },
+	ebiten.KeyF2: func() { ShowStatisticsDrawer() },
+	ebiten.KeyF3: func() { ShowSettingsDrawer() },
 	// ebiten.KeyF5:     func() { TheBaize.StartSpinning() },
 	// ebiten.KeyF6:     func() { TheBaize.StopSpinning() },
 	// ebiten.KeyF8:     func() { TheUI.HideFAB() },

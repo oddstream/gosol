@@ -3,6 +3,7 @@ package sol
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/sound"
@@ -14,6 +15,12 @@ type Game struct {
 }
 
 var (
+	// CsolVersionMajor is the integer version number
+	CsolVersionMajor int = 3
+	// CsolVersionMinor is the integer version number
+	CsolVersionMinor int = 1
+	// CSolVersionDate is the ISO 8601 date of bumping the version number
+	CsolVersionDate string = "2022-12-01"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -80,6 +87,13 @@ func NewGame() (*Game, error) {
 	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
 	TheBaize.StartFreshGame()
+	if ThePreferences.LastVersionMajor != CsolVersionMajor || ThePreferences.LastVersionMinor != CsolVersionMinor {
+		TheUI.Toast(fmt.Sprintf("Upgraded from %d.%d to %d.%d",
+			ThePreferences.LastVersionMajor,
+			ThePreferences.LastVersionMinor,
+			CsolVersionMajor,
+			CsolVersionMajor))
+	}
 	return &Game{}, nil
 }
 

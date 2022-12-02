@@ -133,8 +133,6 @@ func (b *Baize) NewDeal() {
 	sound.Play("Fan")
 
 	b.setFlag(dirtyCardPositions)
-
-	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
 func (b *Baize) ShowVariantGroupPicker() {
@@ -226,8 +224,6 @@ func (b *Baize) StartFreshGame() {
 	b.FindDestinations()
 	b.UpdateToolbar()
 	b.UpdateStatusbar()
-
-	TheStatistics.WelcomeToast(b.LongVariantName())
 }
 
 func (b *Baize) ChangeVariant(newVariant string) {

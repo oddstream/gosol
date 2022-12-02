@@ -133,6 +133,8 @@ func (prefs *Preferences) Save() {
 	if DebugMode {
 		defer util.Duration(time.Now(), "Preferences.Save")
 	}
+	prefs.LastVersionMajor = CsolVersionMajor
+	prefs.LastVersionMinor = CsolVersionMinor
 	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
 	bytes, err := json.MarshalIndent(prefs, "", "\t")
 	if err != nil {

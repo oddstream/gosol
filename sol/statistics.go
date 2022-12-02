@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"oddstream.games/gosol/sound"
-	"oddstream.games/gosol/util"
 )
 
 // Statistics is a container for the statistics for all variants
@@ -32,31 +31,43 @@ func (stats *VariantStatistics) averagePercent() int {
 	return 0
 }
 
-func (stats *VariantStatistics) generalToasts() []string {
+func (stats *VariantStatistics) strings(v string) []string {
+	strs := []string{}
+	if stats.Won+stats.Lost == 0 {
+		strs = append(strs, fmt.Sprintf("You have not played %s before", v))
+	} else {
+		strs = append(strs, fmt.Sprintf("Played: %d", stats.Won+stats.Lost))
+		strs = append(strs, fmt.Sprintf("Won: %d", stats.Won))
+		strs = append(strs, fmt.Sprintf("Lost: %d", stats.Lost))
+		winRate := (stats.Won * 100) / (stats.Won + stats.Lost)
+		strs = append(strs, fmt.Sprintf("Win rate: %d%%", winRate))
 
-	v := TheBaize.LongVariantName()
+		avpc := stats.averagePercent()
+		if avpc < 100 {
+			strs = append(strs, fmt.Sprintf("Average complete: %d%%", avpc))
+		}
+		if stats.BestPercent < 100 {
+			// not yet won a game
+			strs = append(strs, "You have yet to win a game")
+			strs = append(strs, fmt.Sprintf("Best percent: %d%%", stats.BestPercent))
+		} else {
+			// won at least one game
+			strs = append(strs, fmt.Sprintf("Best number of moves: %d", stats.BestMoves))
+			strs = append(strs, fmt.Sprintf("Worst number of moves: %d", stats.WorstMoves))
+			strs = append(strs, fmt.Sprintf("Average number of moves: %d", stats.SumMoves/stats.Won))
+		}
 
-	toasts := []string{}
-	toasts = append(toasts,
-		fmt.Sprintf("You have played %s %s (won %d, lost %d)", v, util.Pluralize("time", stats.Won+stats.Lost), stats.Won, stats.Lost))
-	// fmt.Sprintf("You have won %s, and lost %s (%d%%)",
-	// 	util.Pluralize("game", stats.Won),
-	// 	util.Pluralize("game", stats.Lost),
-	// 	((stats.Won*100)/(stats.Won+stats.Lost))))
-
-	avpc := stats.averagePercent()
-	if avpc > 0 && avpc < 100 {
-		toasts = append(toasts, fmt.Sprintf("Your average score is %d%%", avpc))
+		if stats.CurrStreak != 0 {
+			strs = append(strs, fmt.Sprintf("Current streak: %d", stats.CurrStreak))
+		}
+		if stats.BestStreak != 0 {
+			strs = append(strs, fmt.Sprintf("Best streak: %d", stats.BestStreak))
+		}
+		if stats.WorstStreak != 0 {
+			strs = append(strs, fmt.Sprintf("Worst streak: %d", stats.WorstStreak))
+		}
 	}
-
-	if stats.CurrStreak > 1 {
-		toasts = append(toasts, fmt.Sprintf("You are on a winning streak of %s", util.Pluralize("game", stats.CurrStreak)))
-	}
-	if stats.CurrStreak < 1 {
-		toasts = append(toasts, fmt.Sprintf("You are on a losing streak of %s", util.Pluralize("game", util.Abs(stats.CurrStreak))))
-	}
-
-	return toasts
+	return strs
 }
 
 // NewStatistics creates a new Statistics object
@@ -104,11 +115,6 @@ func (s *Statistics) RecordWonGame(v string, moves int) {
 	}
 	stats.SumMoves += moves
 
-	toasts := stats.generalToasts()
-	for _, t := range toasts {
-		TheUI.Toast(t)
-	}
-
 	s.Save()
 }
 
@@ -142,27 +148,8 @@ func (s *Statistics) RecordLostGame(v string) {
 	s.Save()
 }
 
-func (s *Statistics) WelcomeToast(v string) {
-
-	toasts := []string{}
-
-	stats, ok := s.StatsMap[v]
-	if !ok || stats.Won+stats.Lost == 0 {
-		toasts = append(toasts, fmt.Sprintf("You have not played %s before", v))
-	} else {
-		avpc := stats.averagePercent()
-
-		if stats.Won == 0 {
-			toasts = append(toasts, fmt.Sprintf("You have yet to win a game of %s in %s", v, util.Pluralize("attempt", stats.Lost)))
-			if stats.BestPercent > 0 && stats.BestPercent != avpc {
-				toasts = append(toasts, fmt.Sprintf("Your best score is %d%%, your average score is %d%%", stats.BestPercent, avpc))
-			}
-		} else {
-			toasts = stats.generalToasts()
-		}
-	}
-
-	for _, t := range toasts {
-		TheUI.Toast(t)
-	}
+func ShowStatisticsDrawer() {
+	stats := TheStatistics.findVariant(TheBaize.LongVariantName())
+	var strs []string = stats.strings(TheBaize.LongVariantName())
+	TheUI.ShowTextDrawer(strs)
 }

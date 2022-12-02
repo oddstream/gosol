@@ -265,8 +265,7 @@ func (self *Pile) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.SetOwner(FindCardOwner(c))
-	// c.SetOwner(self)
+	c.SetOwner(FindCardOwner(c)) // TODO why do this and not just c.SetOwner(self)? there was a bug...
 	c.TransitionTo(pos)
 
 	if self.IsStock() {

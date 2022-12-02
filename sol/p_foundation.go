@@ -19,14 +19,15 @@ func NewFoundation(slot image.Point) *Pile {
 	return &foundation
 }
 
+// CanAcceptTail does some obvious check on the tail before passing it to the script
 func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
 	}
 	if AnyCardsProne(tail) {
-		return false, errors.New("Cannot add a face down card")
+		return false, errors.New("Cannot add a face down card to a Foundation")
 	}
-	if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Foundations()) {
+	if self.Complete() {
 		return false, errors.New("The Foundation is full")
 	}
 	return TheBaize.script.TailAppendError(self.parent, tail)
