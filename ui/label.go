@@ -22,7 +22,7 @@ func (l *Label) createImg() *ebiten.Image {
 		return nil // prevent ebiten.NewImageFromImage panic
 	}
 	dc := gg.NewContext(l.width, l.height)
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	dc.SetFontFace(l.fontFace)
 	// nota bene - text is drawn with y as a baseline, descenders may be clipped
 	dc.DrawString(l.text, 0, float64(l.height)*0.8)

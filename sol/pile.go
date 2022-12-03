@@ -94,7 +94,6 @@ type Pile struct {
 	fanFactor float64
 	// buddyPos    image.Point
 	label  string
-	symbol rune
 	img    *ebiten.Image
 	target bool // experimental, might delete later, IDK
 }
@@ -175,26 +174,27 @@ func (self *Pile) SetLabel(label string) {
 }
 
 // Deprecated: not needed in new model
-func (self *Pile) Rune() rune {
-	return self.symbol
-}
+// func (self *Pile) Rune() rune {
+// 	return self.symbol
+// }
 
-func (self *Pile) SetRune(symbol rune) {
-	if self.symbol != symbol {
-		self.symbol = symbol
-		TheBaize.setFlag(dirtyPileBackgrounds)
-	}
-}
-
-// Deprecated: not needed in new model
-func (self *Pile) Target() bool {
-	return self.target
-}
+// Deprecated: use SetLabel()
+// func (self *Pile) SetRune(symbol rune) {
+// 	if self.symbol != symbol {
+// 		self.symbol = symbol
+// 		TheBaize.setFlag(dirtyPileBackgrounds)
+// 	}
+// }
 
 // Deprecated: not needed in new model
-func (self *Pile) SetTarget(target bool) {
-	self.target = target
-}
+// func (self *Pile) Target() bool {
+// 	return self.target
+// }
+
+// Deprecated: not needed in new model
+// func (self *Pile) SetTarget(target bool) {
+// 	self.target = target
+// }
 
 // Empty returns true if this pile is empty (has no cards).
 func (self *Pile) Empty() bool {
@@ -642,13 +642,9 @@ func (self *Pile) CreateBackgroundImage() {
 	case "Discard":
 		dc.Fill()
 	default:
-		if self.symbol != 0 {
-			// usually the recycle symbol
+		if self.label != "" {
 			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(string(self.symbol), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
-		} else if self.label != "" {
-			dc.SetFontFace(schriftbank.CardOrdinalLarge)
-			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
+			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 		}
 	}
 	dc.Stroke()
@@ -663,9 +659,10 @@ func (self *Pile) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
 	if self.target && len(self.cards) == 0 {
 		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
+		// op.GeoM.Translate(2, 2)
 	}
 
-	if self.symbol != 0 {
+	if self.IsStock() && TheBaize.Recycles() > 0 {
 		if pt := image.Pt(ebiten.CursorPosition()); pt.In(self.ScreenRect()) {
 			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 				op.GeoM.Translate(2, 2)

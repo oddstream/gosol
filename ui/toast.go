@@ -54,7 +54,7 @@ func (u *UI) Toast(message string) {
 	dc.Stroke()
 
 	dc.SetFontFace(schriftbank.RobotoRegular14)
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	dc.DrawStringAnchored(message, w/2, h/2, 0.5, 0.4)
 	dc.Stroke()
 

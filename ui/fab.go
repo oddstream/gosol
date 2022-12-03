@@ -16,12 +16,11 @@ type FAB struct {
 func (f *FAB) createImg() *ebiten.Image {
 	// WidgetBase doesn't have a default createImg
 	dc := gg.NewContext(f.width, f.height)
-	// dc.SetColor(color.RGBA{R: 0x64, G: 0x95, B: 0xed, A: 0xff}) // CornflowerBlue
 	dc.SetColor(BackgroundColor)
 	dc.DrawCircle(float64(f.width/2), float64(f.height/2), float64(f.height/2))
 	dc.Fill()
 	dc.Stroke()
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	dc.DrawImageAnchored(IconMap[f.iconName], f.width/2, f.height/2, 0.5, 0.5)
 	return ebiten.NewImageFromImage(dc.Image())
 }

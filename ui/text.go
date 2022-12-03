@@ -23,7 +23,7 @@ func (w *Text) createImg() *ebiten.Image {
 	}
 	dc := gg.NewContext(w.width, w.height)
 
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	// nota bene - text is drawn with y as a baseline
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	y := w.lineHeight

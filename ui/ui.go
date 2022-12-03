@@ -11,6 +11,7 @@ import (
 
 var (
 	GenerateIcons   bool        = false
+	ForegroundColor color.Color = color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xee}
 	BackgroundColor color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xee}
 )
 

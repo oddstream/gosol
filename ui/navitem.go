@@ -31,7 +31,7 @@ func (n *NavItem) createImg() *ebiten.Image {
 		}
 		dc.DrawImage(img, 0, n.height/4)
 	}
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(n.text, float64(48), float64(n.height)*0.8)
 

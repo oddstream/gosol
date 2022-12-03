@@ -410,8 +410,9 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
 	}
 
-	if c.Owner().Target() && c == c.Owner().Peek() {
-		op.ColorM.Scale(0.9, 1.0, 0.9, 1)
+	if c.owner.target && c == c.owner.Peek() {
+		// op.GeoM.Translate(2, 2)
+		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
 	}
 
 	if TheBaize.showMovableCards && len(c.destinations) > 0 {

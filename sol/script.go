@@ -305,9 +305,10 @@ var VariantGroups = map[string][]string{
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 	"> Places":        {"Australian", "Yukon", "Klondike"},
-	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon"},
+	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 }
 
+// init is used to assemble the "> All" alpha-sorted group of variants for the picker menu
 func init() {
 	var vnames []string
 	for k := range Variants {
@@ -317,6 +318,7 @@ func init() {
 	VariantGroups["> All"] = vnames
 }
 
+// VariantGroupNames returns an alpha-sorted []string of the variant group names
 func VariantGroupNames() []string {
 	var vnames []string = make([]string, 0, len(VariantGroups))
 	for k := range VariantGroups {
@@ -326,8 +328,8 @@ func VariantGroupNames() []string {
 	return vnames
 }
 
+// VariantNames returns an alpha-sorted []string of the varaints in a group
 func VariantNames(group string) []string {
-
 	var vnames []string = make([]string, 0, len(VariantGroups[group]))
 	vnames = append(vnames, VariantGroups[group]...)
 	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })

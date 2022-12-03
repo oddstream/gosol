@@ -11,12 +11,10 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-// assets/RobotoSlab-Bold.ttf
-//
 //go:embed assets/Acme-Regular.ttf
 var acmeFontBytes []byte
 
-//go:embed assets/DejaVuSans-Bold.ttf
+//go:embed assets/DejaVuSansCondensed-Bold.ttf
 var symbolFontBytes []byte
 
 //go:embed assets/Roboto-Regular.ttf

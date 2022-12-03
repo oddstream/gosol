@@ -24,7 +24,7 @@ func (cb *CardBackWidget) createImg() *ebiten.Image {
 
 	// nota bene - text is drawn with y as a baseline
 
-	dc.SetRGBA(1, 1, 1, 1)
+	dc.SetColor(ForegroundColor)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(cb.name, float64(24+w+24), float64(cb.height)*0.6)
 

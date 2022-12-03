@@ -24,7 +24,7 @@ type SavableBaize struct {
 }
 
 func (self *Pile) Savable() *SavablePile {
-	sp := &SavablePile{Category: self.category, Label: self.label, Symbol: self.symbol}
+	sp := &SavablePile{Category: self.category, Label: self.label}
 	for _, c := range self.cards {
 		sp.Cards = append(sp.Cards, c.ID)
 	}
@@ -55,7 +55,6 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 		log.Panic("cards rebuilt incorrectly")
 	}
 	self.SetLabel(sp.Label)
-	self.SetRune(sp.Symbol)
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {

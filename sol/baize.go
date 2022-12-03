@@ -407,7 +407,7 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		log.Panic("*** move stroke with nil dragged object ***")
 	}
 	for _, p := range b.piles {
-		p.SetTarget(false)
+		p.target = false
 	}
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
@@ -417,7 +417,7 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 		b.DragTailBy(v.Stroke.PositionDiff())
 		if c, ok := v.Stroke.DraggedObject().(*Card); ok {
 			if p := b.LargestIntersection(c); p != nil {
-				p.SetTarget(true)
+				p.target = true
 			}
 		}
 	case *Pile:
@@ -433,9 +433,9 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
 		log.Panic("*** stop stroke with nil dragged object ***")
 	}
-	for _, p := range b.piles {
-		p.SetTarget(false)
-	}
+	// for _, p := range b.piles {
+	// 	p.SetTarget(false)
+	// }
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
 		con := v.Stroke.DraggedObject().(ui.Containery)
@@ -741,9 +741,9 @@ func (b *Baize) Recycles() int {
 func (b *Baize) SetRecycles(recycles int) {
 	b.recycles = recycles
 	if TheBaize.recycles == 0 {
-		b.script.Stock().SetRune(NORECYCLE_RUNE)
+		b.script.Stock().SetLabel(string(NORECYCLE_RUNE))
 	} else {
-		b.script.Stock().SetRune(RECYCLE_RUNE)
+		b.script.Stock().SetLabel(string(RECYCLE_RUNE))
 	}
 }
 
