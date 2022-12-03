@@ -8,10 +8,19 @@ import (
 
 type Freecell struct {
 	ScriptBase
-	wikipedia string
+	wikipedia      string
+	cardColors     int
+	tabCompareFunc func(CardPair) (bool, error)
 }
 
 func (fc *Freecell) BuildPiles() {
+
+	if fc.cardColors == 0 {
+		fc.cardColors = 2
+	}
+	if fc.tabCompareFunc == nil {
+		fc.tabCompareFunc = CardPair.Compare_DownAltColor
+	}
 
 	fc.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
@@ -59,12 +68,12 @@ func (fc *Freecell) StartGame() {
 func (*Freecell) AfterMove() {
 }
 
-func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
+func (fc *Freecell) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch (pile).category {
 	case "Tableau":
 		for _, pair := range NewCardPairs(tail) {
-			if ok, err := pair.Compare_DownAltColor(); !ok {
+			if ok, err := fc.tabCompareFunc(pair); !ok {
 				return false, err
 			}
 		}
@@ -72,7 +81,7 @@ func (*Freecell) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (*Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (fc *Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch (dst).category {
 	case "Foundation":
@@ -85,14 +94,14 @@ func (*Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_DownAltColor()
+			return fc.tabCompareFunc(CardPair{dst.Peek(), tail[0]})
 		}
 	}
 	return true, nil
 }
 
-func (*Freecell) UnsortedPairs(pile *Pile) int {
-	return UnsortedPairs(pile, CardPair.Compare_DownAltColor)
+func (fc *Freecell) UnsortedPairs(pile *Pile) int {
+	return UnsortedPairs(pile, fc.tabCompareFunc)
 }
 
 func (*Freecell) TailTapped(tail []*Card) {
@@ -105,6 +114,6 @@ func (fc *Freecell) Wikipedia() string {
 	return fc.wikipedia
 }
 
-func (*Freecell) CardColors() int {
-	return 2
+func (fc *Freecell) CardColors() int {
+	return fc.cardColors
 }

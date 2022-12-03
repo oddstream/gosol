@@ -9,7 +9,7 @@ type TextDrawer struct {
 
 // NewTextDrawer creates a new container
 func NewTextDrawer() *TextDrawer {
-	r := &TextDrawer{DrawerBase: DrawerBase{x: -360, y: 48, width: 360}} // height will be set when drawn
+	r := &TextDrawer{DrawerBase: DrawerBase{x: -400, y: 48, width: 400}} // height will be set when drawn
 	return r
 }
 

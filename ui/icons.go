@@ -97,7 +97,7 @@ func LoadIconMapFromZipFiles() {
 	gofile.WriteString("\t_ \"embed\" // go:embed only allowed in Go files that import \"embed\"\n")
 	gofile.WriteString(")\n\n")
 
-	iconNames := []string{"bookmark", "bookmark_add", "check_box", "check_box_outline_blank", "close", "done", "done_all", "info", "list", "menu", "radio_button_checked", "radio_button_unchecked", "restore", "search", "settings", "star", "undo"}
+	iconNames := []string{"bookmark", "bookmark_add", "check_box", "check_box_outline_blank", "close", "done", "done_all", "info", "lightbulb", "list", "menu", "poll", "radio_button_checked", "radio_button_unchecked", "restore", "search", "settings", "star", "undo"}
 	for _, iconName := range iconNames {
 		zipFname := fmt.Sprintf("/home/gilbert/Downloads/%s-white-android.zip", iconName)
 		zf, err := zip.OpenReader(zipFname)

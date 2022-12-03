@@ -29,6 +29,9 @@ func (ft *FortyThieves) BuildPiles() {
 	if ft.moveType == MOVE_NONE /* 0 */ {
 		ft.moveType = MOVE_ONE_PLUS
 	}
+	if ft.cardColors == 0 {
+		ft.cardColors = 2
+	}
 	if ft.tabCompareFunc == nil {
 		ft.tabCompareFunc = CardPair.Compare_DownSuit
 	}

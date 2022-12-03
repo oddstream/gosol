@@ -97,6 +97,11 @@ var Variants = map[string]Scripter{
 	"Baker's Dozen": &BakersDozen{
 		wikipedia: "https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)",
 	},
+	"Baker's Game": &Freecell{
+		wikipedia:      "https://en.wikipedia.org/wiki/Baker%27s_Game",
+		cardColors:     4,
+		tabCompareFunc: CardPair.Compare_DownSuit,
+	},
 	"Blockade": &Blockade{
 		wikipedia: "https://en.wikipedia.org/wiki/Blockade_(solitaire)",
 	},
@@ -139,7 +144,9 @@ var Variants = map[string]Scripter{
 		wikipedia: "https://en.wikipedia.org/wiki/Eight_Off",
 	},
 	"Freecell": &Freecell{
-		wikipedia: "https://en.wikipedia.org/wiki/FreeCell",
+		wikipedia:      "https://en.wikipedia.org/wiki/FreeCell",
+		cardColors:     2,
+		tabCompareFunc: CardPair.Compare_DownAltColor,
 	},
 	"Forty Thieves": &FortyThieves{
 		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
@@ -294,7 +301,7 @@ var VariantGroups = map[string][]string{
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
-	"> Freecell":      {"Freecell", "Eight Off"},
+	"> Freecell":      {"Baker's Game", "Freecell", "Eight Off"},
 	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 	"> Places":        {"Australian", "Yukon", "Klondike"},

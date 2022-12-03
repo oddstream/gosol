@@ -40,7 +40,7 @@ func (w *Text) createImg() *ebiten.Image {
 
 func (w *Text) calcHeights() {
 	dc := gg.NewContext(w.width, 48)
-	dc.SetFontFace(schriftbank.RobotoRegular14)
+	dc.SetFontFace(schriftbank.RobotoMedium24)
 	// MeasureString says this text, requested to be 48 high, is 14 high
 	w.lines = dc.WordWrap(w.text, float64(w.width-48)) // 24 padding left and right
 	w.lineHeight = 24

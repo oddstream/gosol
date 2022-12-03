@@ -61,6 +61,9 @@ var undoIconBytes []byte
 //go:embed icons/lightbulb.png
 var lightbulbIconBytes []byte
 
+//go:embed icons/poll.png
+var pollIconBytes []byte
+
 // LoadIconMapFromEmbedded loads icons from go:embed vars
 func LoadIconMapFromEmbedded() {
 	decode("bookmark", bookmarkIconBytes)
@@ -81,4 +84,5 @@ func LoadIconMapFromEmbedded() {
 	decode("star", starIconBytes)
 	decode("undo", undoIconBytes)
 	decode("lightbulb", lightbulbIconBytes)
+	decode("poll", pollIconBytes)
 }
