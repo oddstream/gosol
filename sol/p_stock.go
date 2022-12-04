@@ -14,6 +14,12 @@ import (
 	"oddstream.games/gosol/schriftbank"
 )
 
+const (
+	// https://en.wikipedia.org/wiki/Miscellaneous_Symbols
+	RECYCLE_RUNE   = rune(0x267B)
+	NORECYCLE_RUNE = rune(0x2613)
+)
+
 func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
 
 	var numberOfCardsInSuit int = 0
@@ -132,14 +138,18 @@ func (self *Stock) Placeholder() *ebiten.Image {
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
 
+	// farted around trying to use icons for this
+	// but they were 48x48 and got fuzzy when scaled
+	// and were stubbornly white
+
 	var label rune
 	if TheBaize.recycles == 0 {
 		label = NORECYCLE_RUNE
 	} else {
 		label = RECYCLE_RUNE
 	}
-	dc.SetFontFace(schriftbank.CardSymbolLarge)
-	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+	dc.SetFontFace(schriftbank.CardSymbolHuge)
+	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())

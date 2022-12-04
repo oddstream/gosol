@@ -62,16 +62,18 @@ func (b *Baize) FindDestinations() {
 
 	MarkAllCardsImmovable()
 
-	if b.script.Stock().Empty() {
-		if b.Recycles() > 0 {
-			b.moves++
+	if !b.script.Stock().Hidden() {
+		if b.script.Stock().Empty() {
+			if b.Recycles() > 0 {
+				b.moves++
+			}
+		} else {
+			// games like Agnes B (with a Spiker-like stock) need to report an available move
+			b.moves += 1
+			// card := b.script.Stock().Peek()
+			// card.destinations = b.FindHomesForTail([]*Card{card})
+			// b.moves += len(card.destinations)
 		}
-	} else {
-		// games like Agnes B (with a Spiker-like stock) need to report an available move
-		b.moves += 1
-		// card := b.script.Stock().Peek()
-		// card.destinations = b.FindHomesForTail([]*Card{card})
-		// b.moves += len(card.destinations)
 	}
 
 	for _, mc := range b.findAllMovableTails() {

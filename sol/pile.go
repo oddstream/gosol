@@ -57,11 +57,6 @@ var DefaultFanFactor [7]float64 = [7]float64{
 	CARD_FACE_FAN_FACTOR_H, // FAN_RIGHT3,
 }
 
-const (
-	RECYCLE_RUNE   = rune(0x2672)
-	NORECYCLE_RUNE = rune(0x2613)
-)
-
 type MovableTail struct {
 	dst  *Pile
 	tail []*Card
@@ -91,9 +86,9 @@ type Pile struct {
 	pos2      image.Point // waste pos #1
 	fanFactor float64
 	// buddyPos    image.Point
-	label  string
-	img    *ebiten.Image
-	target bool // experimental, might delete later, IDK
+	label string
+	img   *ebiten.Image
+	// target bool // experimental, might delete later, IDK
 }
 
 func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
@@ -609,10 +604,10 @@ func (self *Pile) Draw(screen *ebiten.Image) {
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
-	if self.target && len(self.cards) == 0 {
-		op.ColorM.Scale(0.75, 0.75, 0.75, 1)
-		// op.GeoM.Translate(2, 2)
-	}
+	// if self.target && len(self.cards) == 0 {
+	// 	op.ColorM.Scale(0.75, 0.75, 0.75, 1)
+	// 	// op.GeoM.Translate(2, 2)
+	// }
 
 	if self.IsStock() && TheBaize.Recycles() > 0 {
 		if pt := image.Pt(ebiten.CursorPosition()); pt.In(self.ScreenRect()) {

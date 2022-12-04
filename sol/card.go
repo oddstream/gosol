@@ -58,7 +58,7 @@ type Card struct {
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
 	// be nice to start the cards in the middle of the screen, but the screen will be 0,0 when app starts
-	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: image.Point{CardWidth, CardHeight}}
+	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: image.Point{0, 0}}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
@@ -208,13 +208,13 @@ func (c *Card) FlipDown() {
 }
 
 // Flip turns the card over
-// func (c *Card) Flip() {
-// 	if c.Prone() {
-// 		c.FlipUp()
-// 	} else {
-// 		c.FlipDown()
-// 	}
-// }
+func (c *Card) Flip() {
+	if c.Prone() {
+		c.FlipUp()
+	} else {
+		c.FlipDown()
+	}
+}
 
 // SetFlip turns the card over
 func (c *Card) SetFlip(prone bool) {
@@ -228,6 +228,13 @@ func (c *Card) SetFlip(prone bool) {
 // StartSpinning tells the card to start spinning
 // favor falling downwards
 func (c *Card) StartSpinning() {
+	// kludge alert
+	// problem with cards staying bunched at 0,0 when loaded a complete game
+	// be careful not to allow lerp AND spin at the same time
+	// WindowWidth, WindowHeight not yet set
+	// if c.pos.X == 0 || c.pos.Y == 0 {
+	// 	c.SetBaizePos(image.Point{1, 1})
+	// }
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 3
 	c.directionZ = (rand.Float64() - 0.5) / 100
@@ -282,14 +289,6 @@ func (c *Card) Flipping() bool {
 
 // Update the card state (transitions)
 func (c *Card) Update() error {
-	if c.pos != c.dst && c.lerpStep < 1.0 {
-		c.pos.X = int(util.Smootherstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
-		c.pos.Y = int(util.Smootherstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
-		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
-			c.pos = c.dst
-			c.src = image.Point{0, 0}
-		}
-	}
 	if c.Flipping() {
 		c.flipWidth += c.flipStep
 		if c.flipWidth <= 0 {
@@ -299,11 +298,13 @@ func (c *Card) Update() error {
 			c.flipStep = 0.0
 		}
 	}
+	// cannot lerp AND spin at same time
 	if c.Spinning() {
 		c.pos.X += c.directionX
 		c.pos.Y += c.directionY
 		c.scaleZ += c.directionZ
 		if c.scaleZ < 0.5 || c.scaleZ > 1.5 {
+			c.Flip()
 			c.directionZ = -c.directionZ
 		}
 		c.angle += c.spin
@@ -311,6 +312,13 @@ func (c *Card) Update() error {
 			c.angle -= 360
 		} else if c.angle < 0 {
 			c.angle += 360
+		}
+	} else if c.pos != c.dst && c.lerpStep < 1.0 {
+		c.pos.X = int(util.Smootherstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
+		c.pos.Y = int(util.Smootherstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
+		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
+			c.pos = c.dst
+			c.src = image.Point{0, 0}
 		}
 	}
 	return nil
@@ -404,10 +412,10 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
 	}
 
-	if c.owner.target && c == c.owner.Peek() {
-		// op.GeoM.Translate(2, 2)
-		op.ColorM.Scale(0.95, 0.95, 0.95, 1)
-	}
+	// if c.owner.target && c == c.owner.Peek() {
+	// 	// op.GeoM.Translate(2, 2)
+	// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+	// }
 
 	if TheBaize.showMovableCards && len(c.destinations) > 0 {
 		op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible

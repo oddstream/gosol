@@ -406,20 +406,20 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
 		log.Panic("*** move stroke with nil dragged object ***")
 	}
-	for _, p := range b.piles {
-		p.target = false
-	}
+	// for _, p := range b.piles {
+	// 	p.target = false
+	// }
 	switch v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
 		con := v.Stroke.DraggedObject().(ui.Containery)
 		con.DragBy(v.Stroke.PositionDiff())
 	case *Card:
 		b.DragTailBy(v.Stroke.PositionDiff())
-		if c, ok := v.Stroke.DraggedObject().(*Card); ok {
-			if p := b.LargestIntersection(c); p != nil {
-				p.target = true
-			}
-		}
+		// if c, ok := v.Stroke.DraggedObject().(*Card); ok {
+		// 	if p := b.LargestIntersection(c); p != nil {
+		// 		p.target = true
+		// 	}
+		// }
 	case *Pile:
 		// do nothing
 	case *Baize:

@@ -141,7 +141,7 @@ func (self *Tableau) Placeholder() *ebiten.Image {
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
 	if self.parent.label != "" {
 		dc.SetFontFace(schriftbank.CardOrdinalLarge)
-		dc.DrawStringAnchored(self.parent.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+		dc.DrawStringAnchored(self.parent.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 	}
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())

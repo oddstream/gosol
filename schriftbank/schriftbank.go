@@ -34,6 +34,8 @@ var (
 	CardSymbolRegular font.Face
 	// CardSymbolLarge is used to draw the large suit symbol
 	CardSymbolLarge font.Face
+	// CardSymbolHuge is used to draw the recycle symbol
+	CardSymbolHuge font.Face
 	// CardOrdinalSmall is used to draw the card ordinal (A to K)
 	CardOrdinalSmall font.Face
 	// CardOrdinal is used to draw the card ordinal (A to K)
@@ -113,6 +115,11 @@ func MakeCardFonts(cardWidth int) {
 	})
 	CardSymbolLarge = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(cardWidth) * 0.5,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+	CardSymbolHuge = truetype.NewFace(tt, &truetype.Options{
+		Size:    float64(cardWidth),
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
