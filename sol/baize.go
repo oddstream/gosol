@@ -740,11 +740,7 @@ func (b *Baize) Recycles() int {
 
 func (b *Baize) SetRecycles(recycles int) {
 	b.recycles = recycles
-	if TheBaize.recycles == 0 {
-		b.script.Stock().SetLabel(string(NORECYCLE_RUNE))
-	} else {
-		b.script.Stock().SetLabel(string(RECYCLE_RUNE))
-	}
+	b.setFlag(dirtyPileBackgrounds) // recreate Stock placeholder
 }
 
 func (b *Baize) UpdateToolbar() {

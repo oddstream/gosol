@@ -4,8 +4,6 @@ package sol
 //lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
-	"bytes"
-	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"errors"
 	"image"
 	"image/color"
@@ -13,32 +11,8 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
 )
-
-//go:embed assets/icons/restart.png
-var recycleIconBytes []byte
-
-//go:embed assets/icons/restart-off.png
-var norecycleIconBytes []byte
-
-var (
-	recycleIcon   image.Image
-	norecycleIcon image.Image
-)
-
-func init() {
-	img, _, err := image.Decode(bytes.NewReader(recycleIconBytes))
-	if err != nil {
-		log.Panic(err)
-	}
-	recycleIcon = img
-
-	img, _, err = image.Decode(bytes.NewReader(norecycleIconBytes))
-	if err != nil {
-		log.Panic(err)
-	}
-	norecycleIcon = img
-}
 
 func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
 
@@ -158,13 +132,14 @@ func (self *Stock) Placeholder() *ebiten.Image {
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
 
-	var iconImg image.Image
-	if TheBaize.Recycles() == 0 {
-		iconImg = norecycleIcon
+	var label rune
+	if TheBaize.recycles == 0 {
+		label = NORECYCLE_RUNE
 	} else {
-		iconImg = recycleIcon
+		label = RECYCLE_RUNE
 	}
-	dc.DrawImageAnchored(iconImg, CardWidth/2, CardHeight/2, 0.5, 0.5)
+	dc.SetFontFace(schriftbank.CardSymbolLarge)
+	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
