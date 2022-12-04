@@ -4,10 +4,41 @@ package sol
 //lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
+	"bytes"
+	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"errors"
 	"image"
+	"image/color"
 	"log"
+
+	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
 )
+
+//go:embed assets/icons/restart.png
+var recycleIconBytes []byte
+
+//go:embed assets/icons/restart-off.png
+var norecycleIconBytes []byte
+
+var (
+	recycleIcon   image.Image
+	norecycleIcon image.Image
+)
+
+func init() {
+	img, _, err := image.Decode(bytes.NewReader(recycleIconBytes))
+	if err != nil {
+		log.Panic(err)
+	}
+	recycleIcon = img
+
+	img, _, err = image.Decode(bytes.NewReader(norecycleIconBytes))
+	if err != nil {
+		log.Panic(err)
+	}
+	norecycleIcon = img
+}
 
 func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
 
@@ -118,4 +149,23 @@ func (self *Stock) MovableTails() []*MovableTail {
 		}
 	}
 	return tails
+}
+
+func (self *Stock) Placeholder() *ebiten.Image {
+	dc := gg.NewContext(CardWidth, CardHeight)
+	dc.SetColor(color.NRGBA{255, 255, 255, 31})
+	dc.SetLineWidth(2)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
+
+	var iconImg image.Image
+	if TheBaize.Recycles() == 0 {
+		iconImg = norecycleIcon
+	} else {
+		iconImg = recycleIcon
+	}
+	dc.DrawImageAnchored(iconImg, CardWidth/2, CardHeight/2, 0.5, 0.5)
+
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
 }

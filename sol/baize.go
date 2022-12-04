@@ -831,13 +831,16 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			b.clearFlag(dirtyPilePositions)
 		}
 		if b.flagSet(dirtyPileBackgrounds) {
-			for _, p := range b.piles {
-				p.CreateBackgroundImage()
+			if !(CardWidth == 0 || CardHeight == 0) {
+				for _, p := range b.piles {
+					if !p.Hidden() {
+						p.img = p.vtable.Placeholder()
+					}
+				}
 			}
 			b.clearFlag(dirtyPileBackgrounds)
 		}
 		if b.flagSet(dirtyWindowSize) {
-			CardStartPoint.X = (outsideWidth / 2) - (CardWidth / 2)
 			TheUI.Layout(outsideWidth, outsideHeight)
 			b.clearFlag(dirtyWindowSize)
 		}

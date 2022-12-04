@@ -52,6 +52,7 @@ func (t *Toad) StartGame() {
 	for _, pile := range t.foundations {
 		pile.SetLabel(util.OrdinalToShortString(c.Ordinal()))
 	}
+	MoveCard(t.stock, t.waste)
 }
 
 func (t *Toad) AfterMove() {
@@ -61,6 +62,10 @@ func (t *Toad) AfterMove() {
 			MoveCard(t.reserves[0], p)
 		}
 	}
+	if t.waste.Len() == 0 && t.stock.Len() != 0 {
+		MoveCard(t.stock, t.waste)
+	}
+
 }
 
 func (*Toad) TailMoveError(tail []*Card) (bool, error) {

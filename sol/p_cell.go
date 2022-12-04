@@ -6,6 +6,10 @@ package sol
 import (
 	"errors"
 	"image"
+	"image/color"
+
+	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Cell struct {
@@ -60,4 +64,15 @@ func (self *Cell) MovableTails() []*MovableTail {
 		}
 	}
 	return tails
+}
+
+// Placeholder creates a basic outline
+func (self *Cell) Placeholder() *ebiten.Image {
+	dc := gg.NewContext(CardWidth, CardHeight)
+	dc.SetColor(color.NRGBA{255, 255, 255, 31})
+	dc.SetLineWidth(2)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
 }

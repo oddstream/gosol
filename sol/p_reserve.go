@@ -6,6 +6,8 @@ package sol
 import (
 	"errors"
 	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Reserve struct {
@@ -55,4 +57,8 @@ func (self *Reserve) MovableTails() []*MovableTail {
 		}
 	}
 	return tails
+}
+
+func (self *Reserve) Placeholder() *ebiten.Image {
+	return nil
 }

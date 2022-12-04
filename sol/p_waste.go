@@ -6,6 +6,8 @@ package sol
 import (
 	"errors"
 	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Waste struct {
@@ -63,4 +65,8 @@ func (self *Waste) MovableTails() []*MovableTail {
 		}
 	}
 	return tails
+}
+
+func (self *Waste) Placeholder() *ebiten.Image {
+	return nil
 }

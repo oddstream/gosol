@@ -23,8 +23,6 @@ const (
 	flipStepAmount = 0.075 // flipStepAmount is the amount we shrink/grow the flipping card width every tick
 )
 
-var CardStartPoint image.Point = image.Point{400, -100}
-
 /*
 	Cards have several states: idle, being dragged, transitioning, shaking, spinning, flipping
 	You'd think that cards should have a 'state' enum, but the states can overlap (eg a card
@@ -59,7 +57,8 @@ type Card struct {
 
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
-	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: CardStartPoint}
+	// be nice to start the cards in the middle of the screen, but the screen will be 0,0 when app starts
+	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: image.Point{CardWidth, CardHeight}}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
@@ -111,7 +110,7 @@ func (c *Card) ScreenRect() image.Rectangle {
 	return r
 }
 
-// TransitionTo starts the transition of this Card
+// TransitionTo starts the transition of this Card to pos
 func (c *Card) TransitionTo(pos image.Point) {
 	// if c.lerpStep < 1.0 {
 	// 	println(c.ID.String(), "already lerping")
@@ -132,22 +131,16 @@ func (c *Card) TransitionTo(pos image.Point) {
 
 	c.src = c.pos
 	c.dst = pos
-	// the further the card has to travel, the smaller the lerp step amount
-	// eg when dropping a card onto a pile
-	// or moving a card from stock to waste
-	if c.src.X < 0 || c.src.Y < 0 {
-		c.lerpStep = lerpStartNormal
-		c.lerpStepAmount = slowSpeed
+	// tried calculating distance from s.src to c.dst
+	// and dynamically making the card move faster
+	// but it wasn't really worth it
+	dist := util.Distance(c.src, c.dst)
+	if dist < float64(CardWidth) {
+		c.lerpStep = lerpStartClose
+		c.lerpStepAmount = fastSpeed
 	} else {
-		dist := util.Distance(c.src, c.dst)
-		if int(dist) < CardWidth {
-			c.lerpStep = lerpStartClose
-			c.lerpStepAmount = normalSpeed
-			// println("fast", dist, c.String())
-		} else {
-			c.lerpStep = lerpStartNormal
-			c.lerpStepAmount = normalSpeed
-		}
+		c.lerpStep = lerpStartNormal
+		c.lerpStepAmount = normalSpeed
 	}
 }
 
@@ -215,13 +208,13 @@ func (c *Card) FlipDown() {
 }
 
 // Flip turns the card over
-func (c *Card) Flip() {
-	if c.Prone() {
-		c.FlipUp()
-	} else {
-		c.FlipDown()
-	}
-}
+// func (c *Card) Flip() {
+// 	if c.Prone() {
+// 		c.FlipUp()
+// 	} else {
+// 		c.FlipDown()
+// 	}
+// }
 
 // SetFlip turns the card over
 func (c *Card) SetFlip(prone bool) {
@@ -233,9 +226,10 @@ func (c *Card) SetFlip(prone bool) {
 }
 
 // StartSpinning tells the card to start spinning
+// favor falling downwards
 func (c *Card) StartSpinning() {
 	c.directionX = rand.Intn(9) - 4
-	c.directionY = rand.Intn(9) - 4
+	c.directionY = rand.Intn(9) - 3
 	c.directionZ = (rand.Float64() - 0.5) / 100
 	c.scaleZ = 1.0
 	c.spin = rand.Float64() - 0.5
@@ -359,7 +353,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		op.GeoM.Scale(c.scaleZ, c.scaleZ)
 		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
 
-		// naughty to do this here, but Draw knows the screen dimensions and Update doesn't
+		// naughty to do this here instead of Update(), but Draw() knows the screen dimensions and Update() doesn't
 		w, h := screen.Size()
 		w -= TheBaize.dragOffset.X
 		h -= TheBaize.dragOffset.Y
@@ -370,12 +364,12 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		case c.pos.X < 0:
 			c.directionX = rand.Intn(5)
 			c.spin = rand.Float64() - 0.5
-		case c.pos.Y+CardHeight > h:
-			c.directionY = -rand.Intn(5)
-			c.spin = rand.Float64() - 0.5
-		case c.pos.Y < 0:
-			c.directionY = rand.Intn(5)
-			c.spin = rand.Float64() - 0.5
+		case c.pos.Y > h+CardHeight:
+			c.directionX = rand.Intn(5) // go downwards
+			c.pos.Y = -CardHeight       // start from off screen at top
+			c.scaleZ = 0.5              // start small
+		case c.pos.Y < -CardHeight:
+			c.directionY = rand.Intn(5) // go downwards
 		}
 	}
 

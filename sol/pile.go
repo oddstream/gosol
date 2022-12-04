@@ -7,14 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"image/color"
 	"log"
 	"math/rand"
 	"time"
 
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/sound"
 )
 
@@ -77,6 +74,7 @@ type PileVtabler interface {
 	Complete() bool
 	UnsortedPairs() int
 	MovableTails() []*MovableTail
+	Placeholder() *ebiten.Image
 }
 
 // Pile is a generic container for cards
@@ -172,19 +170,6 @@ func (self *Pile) SetLabel(label string) {
 		TheBaize.setFlag(dirtyPileBackgrounds)
 	}
 }
-
-// Deprecated: not needed in new model
-// func (self *Pile) Rune() rune {
-// 	return self.symbol
-// }
-
-// Deprecated: use SetLabel()
-// func (self *Pile) SetRune(symbol rune) {
-// 	if self.symbol != symbol {
-// 		self.symbol = symbol
-// 		TheBaize.setFlag(dirtyPileBackgrounds)
-// 	}
-// }
 
 // Deprecated: not needed in new model
 // func (self *Pile) Target() bool {
@@ -616,39 +601,6 @@ func (self *Pile) Update() {
 	for _, card := range self.cards {
 		card.Update()
 	}
-}
-
-func (self *Pile) CreateBackgroundImage() {
-	self.img = nil
-	if CardWidth == 0 || CardHeight == 0 {
-		println("zero dimension in CreateCardShadowImage, unliked in wasm")
-		return
-		// log.Panic("zero dimension in CreateCardShadowImage, unliked in wasm")
-	}
-	if self.Hidden() {
-		// off-screen? don't bother
-		return
-	}
-	if self.category == "Reserve" {
-		// don't draw anything for reserve piles
-		return
-	}
-	dc := gg.NewContext(CardWidth, CardHeight)
-	dc.SetColor(color.NRGBA{255, 255, 255, 31})
-	dc.SetLineWidth(2)
-	// draw the RoundedRect entirely INSIDE the context
-	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	switch self.category {
-	case "Discard":
-		dc.Fill()
-	default:
-		if self.label != "" {
-			dc.SetFontFace(schriftbank.CardSymbolLarge)
-			dc.DrawStringAnchored(self.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
-		}
-	}
-	dc.Stroke()
-	self.img = ebiten.NewImageFromImage(dc.Image())
 }
 
 func (self *Pile) Draw(screen *ebiten.Image) {

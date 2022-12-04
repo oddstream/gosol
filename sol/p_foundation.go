@@ -6,6 +6,11 @@ package sol
 import (
 	"errors"
 	"image"
+	"image/color"
+
+	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/schriftbank"
 )
 
 type Foundation struct {
@@ -50,4 +55,18 @@ func (*Foundation) UnsortedPairs() int {
 
 func (self *Foundation) MovableTails() []*MovableTail {
 	return nil
+}
+
+func (self *Foundation) Placeholder() *ebiten.Image {
+	dc := gg.NewContext(CardWidth, CardHeight)
+	dc.SetColor(color.NRGBA{255, 255, 255, 31})
+	dc.SetLineWidth(2)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
+	if self.parent.label != "" {
+		dc.SetFontFace(schriftbank.CardOrdinalLarge)
+		dc.DrawStringAnchored(self.parent.label, float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+	}
+	dc.Stroke()
+	return ebiten.NewImageFromImage(dc.Image())
 }
