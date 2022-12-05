@@ -256,7 +256,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.UpdateStatusbar()
 }
 
-// findPileAt finds the Pile under the mouse click or touch
+// findPileAt finds the Pile under the mouse position
 func (b *Baize) FindPileAt(pt image.Point) *Pile {
 	for _, p := range b.piles {
 		if pt.In(p.ScreenRect()) {
@@ -266,11 +266,23 @@ func (b *Baize) FindPileAt(pt image.Point) *Pile {
 	return nil
 }
 
-// FindCardAt finds the Card under the mouse click or touch
-func (b *Baize) FindCardAt(pt image.Point) *Card {
+// FindLowestCardAt finds the bottom-most Card under the mouse position
+func (b *Baize) FindLowestCardAt(pt image.Point) *Card {
 	for _, p := range b.piles {
 		for i := p.Len() - 1; i >= 0; i-- {
 			c := p.Get(i)
+			if pt.In(c.ScreenRect()) {
+				return c
+			}
+		}
+	}
+	return nil
+}
+
+// FindHighestCardAt finds the top-most Card under the mouse position
+func (b *Baize) FindHighestCardAt(pt image.Point) *Card {
+	for _, p := range b.piles {
+		for _, c := range p.cards {
 			if pt.In(c.ScreenRect()) {
 				return c
 			}
@@ -385,9 +397,16 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 		}
 	} else {
 		pt := image.Pt(v.X, v.Y)
-		if c := b.FindCardAt(pt); c != nil {
-			b.StartTailDrag(c)
-			b.stroke.SetDraggedObject(c)
+		if c := b.FindLowestCardAt(pt); c != nil {
+			// currently don't allow transitioning cards to be dragged
+			// see Card.StartDrag()
+			if c.Transitioning() {
+				TheUI.Toast("Cannot drag a moving card")
+				sound.Play("Blip")
+			} else {
+				b.StartTailDrag(c)
+				b.stroke.SetDraggedObject(c)
+			}
 		} else {
 			if p := b.FindPileAt(pt); p != nil {
 				b.stroke.SetDraggedObject(p)
@@ -404,7 +423,8 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 
 func (b *Baize) InputMove(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
-		log.Panic("*** move stroke with nil dragged object ***")
+		return
+		// log.Panic("*** move stroke with nil dragged object ***")
 	}
 	// for _, p := range b.piles {
 	// 	p.target = false
@@ -431,7 +451,8 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 
 func (b *Baize) InputStop(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
-		log.Panic("*** stop stroke with nil dragged object ***")
+		return
+		// log.Panic("*** stop stroke with nil dragged object ***")
 	}
 	// for _, p := range b.piles {
 	// 	p.SetTarget(false)
@@ -498,7 +519,8 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 
 func (b *Baize) InputCancel(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
-		log.Panic("*** cancel stroke with nil dragged object ***")
+		return
+		// log.Panic("*** cancel stroke with nil dragged object ***")
 	}
 	switch v.Stroke.DraggedObject().(type) { // type switch
 	case ui.Containery:
@@ -914,7 +936,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	if DebugMode {
 		if ebiten.IsMouseButtonPressed(1) {
-			if c := b.FindCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
+			if c := b.FindLowestCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
 				p := c.Owner()
 				index := p.IndexOf(c)
 				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, index=%d",
