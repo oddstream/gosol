@@ -102,6 +102,12 @@ var Variants = map[string]Scripter{
 		cardColors:     4,
 		tabCompareFunc: CardPair.Compare_DownSuit,
 	},
+	"Blind Freecell": &Freecell{
+		wikipedia:      "https://en.wikipedia.org/wiki/FreeCell",
+		cardColors:     2,
+		tabCompareFunc: CardPair.Compare_DownAltColor,
+		blind:          true,
+	},
 	"Blockade": &Blockade{
 		wikipedia: "https://en.wikipedia.org/wiki/Blockade_(solitaire)",
 	},
@@ -281,6 +287,18 @@ var Variants = map[string]Scripter{
 		packs:      2,
 		suits:      4,
 	},
+	"Classic Westcliff": &Westcliff{
+		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
+		variant:   "Classic",
+	},
+	"American Westcliff": &Westcliff{
+		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
+		variant:   "American",
+	},
+	"Easthaven": &Westcliff{
+		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
+		variant:   "Easthaven",
+	},
 	"Whitehead": &Whitehead{
 		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 	},
@@ -297,15 +315,17 @@ var VariantGroups = map[string][]string{
 	// "All" added dynamically by func init()
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
-	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
-	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
-	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
-	"> Freecell":      {"Baker's Game", "Freecell", "Eight Off"},
-	"> Yukon":         {"Yukon", "Yukon Cells", "Alaska"},
-	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
-	"> Places":        {"Australian", "Yukon", "Klondike"},
+	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit"},
+	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits"},
+	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
+	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
+	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
+	"> Places":        {"Australian", "Yukon", "Klondike"},
+	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
+	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
+	"> Yukon":         {"Yukon", "Yukon Cells"},
 }
 
 // init is used to assemble the "> All" alpha-sorted group of variants for the picker menu

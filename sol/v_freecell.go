@@ -11,6 +11,7 @@ type Freecell struct {
 	wikipedia      string
 	cardColors     int
 	tabCompareFunc func(CardPair) (bool, error)
+	blind          bool
 }
 
 func (fc *Freecell) BuildPiles() {
@@ -48,6 +49,8 @@ func (fc *Freecell) BuildPiles() {
 }
 
 func (fc *Freecell) StartGame() {
+	// 4 piles of 7 cards
+	// 4 piles of 6 cards
 	for i := 0; i < 4; i++ {
 		pile := fc.tableaux[i]
 		for j := 0; j < 7; j++ {
@@ -60,13 +63,22 @@ func (fc *Freecell) StartGame() {
 			MoveCard(fc.stock, pile)
 		}
 	}
+	if fc.blind {
+		for _, pile := range fc.tableaux {
+			topCard := pile.Peek()
+			for _, card := range pile.cards {
+				if card != topCard {
+					card.FlipDown()
+				}
+			}
+		}
+	}
 	if fc.stock.Len() > 0 {
 		println("*** still", fc.stock.Len(), "cards in Stock")
 	}
 }
 
-func (*Freecell) AfterMove() {
-}
+func (*Freecell) AfterMove() {}
 
 func (fc *Freecell) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()

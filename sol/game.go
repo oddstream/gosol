@@ -18,9 +18,9 @@ var (
 	// CsolVersionMajor is the integer version number
 	CsolVersionMajor int = 3
 	// CsolVersionMinor is the integer version number
-	CsolVersionMinor int = 1
+	CsolVersionMinor int = 2
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	CsolVersionDate string = "2022-12-01"
+	CsolVersionDate string = "2022-12-06"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -92,7 +92,7 @@ func NewGame() (*Game, error) {
 			ThePreferences.LastVersionMajor,
 			ThePreferences.LastVersionMinor,
 			CsolVersionMajor,
-			CsolVersionMajor))
+			CsolVersionMinor))
 	}
 	return &Game{}, nil
 }

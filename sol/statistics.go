@@ -70,7 +70,8 @@ func (stats *VariantStatistics) strings(v string) []string {
 	return strs
 }
 
-// NewStatistics creates a new Statistics object
+// NewStatistics creates a new Statistics object (a map)
+// and loads the saved statistics into it from file
 func NewStatistics() *Statistics {
 	s := &Statistics{StatsMap: make(map[string]*VariantStatistics)}
 	s.Load()
