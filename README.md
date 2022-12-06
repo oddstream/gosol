@@ -16,13 +16,14 @@ It currently knows how to play:
 * Canfield (also Storehouse, American Toad, Duchess)
 * Easy (an easy to win game, for debugging)
 * Forty Thieves (also Sixty Thieves, Busy Aces, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black, Rank and File, Number Ten)
-* Freecell (also Eight Off)
+* Freecell (also Blind Freecell, Eight Off)
 * Klondike (also Klondike Draw Three, Thoughtful)
 * Penguin
 * Scorpion (also Wasp)
 * Simple Simon
 * Spider (also Spider One Suit, Spider Two Suits)
 * Whitehead
+* Westcliff (Classic, American and Easthaven)
 * Yukon (also Yukon Cells)
 
 Variants are added when the whim takes me, or when some aspect of the engine needs testing/extending, or when someone asks.
@@ -111,8 +112,6 @@ So, rather than just making this stuff up, I've tried to find a well researched 
 * L - load/return to a previously saved position
 * H - hint/help - show movable cards
 * C - collect cards to the foundations
-* 2 - switch to two colors of cards (black and red)
-* 4 - switch to four colors of cards (black, red, dark blue and dark green)
 
 ### What about scores?
 
@@ -149,14 +148,13 @@ Some variants (eg Freecell or Forty Thieves) only allow you to move one card at 
 you to move them, one at a time, via an empty pile or cell. Enabling power moves automates this, allowing multi-card moves between piles.
 The number of cards you can move is calculated from the number of empty piles and cells (if any).
 
-#### Extra colors
+#### Colorful cards
 
-Draws the cards in four colors, rather than the usual black and red. Can be useful when scanning cards in variants that sort cards into suit order (like Australian or Spider), but is annoying for variants that sort cards into alternate colors (like Klondike, Freecell or Yukon).
+Depending on the variant, enabling this draws the cards in four colors, rather than the usual black and red.
 
 #### Mirror baize
 
-Mirrors the card piles on the baize from right to left, because not everyone is right handed, or likes the stock to be on the left of
-the screen when they are right handed.
+Mirrors the card piles on the baize from right to left, because not everyone is right handed, or likes the stock to be on the left of the screen when they are right handed.
 
 #### Mute sounds
 
@@ -205,9 +203,9 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 * The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.
 * Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua).
-* ~~Get it working on Android (agggh! help!).~~
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
-* I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.
+* ~~Get it working on Android (agggh! help!).~~
+* ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
 * Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
 
 ## History

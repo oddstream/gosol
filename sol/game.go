@@ -15,12 +15,12 @@ type Game struct {
 }
 
 var (
-	// CsolVersionMajor is the integer version number
-	CsolVersionMajor int = 3
+	// GosolVersionMajor is the integer version number
+	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	CsolVersionMinor int = 2
+	GosolVersionMinor int = 2
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	CsolVersionDate string = "2022-12-06"
+	GosolVersionDate string = "2022-12-06"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -87,12 +87,12 @@ func NewGame() (*Game, error) {
 	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
 	TheBaize.StartFreshGame()
-	if ThePreferences.LastVersionMajor != CsolVersionMajor || ThePreferences.LastVersionMinor != CsolVersionMinor {
+	if ThePreferences.LastVersionMajor != GosolVersionMajor || ThePreferences.LastVersionMinor != GosolVersionMinor {
 		TheUI.Toast(fmt.Sprintf("Upgraded from %d.%d to %d.%d",
 			ThePreferences.LastVersionMajor,
 			ThePreferences.LastVersionMinor,
-			CsolVersionMajor,
-			CsolVersionMinor))
+			GosolVersionMajor,
+			GosolVersionMinor))
 	}
 	return &Game{}, nil
 }
