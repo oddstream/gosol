@@ -14,6 +14,8 @@ type Westcliff struct {
 }
 
 func (self *Westcliff) BuildPiles() {
+	self.wikipedia = "https://en.wikipedia.org/wiki/Westcliff_(card_game)"
+
 	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	switch self.variant {
 	case "Classic":
@@ -94,7 +96,7 @@ func (self *Westcliff) AfterMove() {
 
 func (*Westcliff) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch (pile).category {
+	switch pile.category {
 	case "Tableau":
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
@@ -109,7 +111,7 @@ func (*Westcliff) TailMoveError(tail []*Card) (bool, error) {
 
 func (*Westcliff) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).category {
+	switch dst.category {
 	case "Foundation":
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])

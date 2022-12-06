@@ -288,16 +288,13 @@ var Variants = map[string]Scripter{
 		suits:      4,
 	},
 	"Classic Westcliff": &Westcliff{
-		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
-		variant:   "Classic",
+		variant: "Classic",
 	},
 	"American Westcliff": &Westcliff{
-		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
-		variant:   "American",
+		variant: "American",
 	},
 	"Easthaven": &Westcliff{
-		wikipedia: "https://en.wikipedia.org/wiki/Westcliff_(card_game)",
-		variant:   "Easthaven",
+		variant: "Easthaven",
 	},
 	"Whitehead": &Whitehead{
 		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
@@ -316,7 +313,7 @@ var VariantGroups = map[string][]string{
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
-	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit"},
+	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Lucas", "Spider One Suit"},
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
