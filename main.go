@@ -4,7 +4,7 @@
 // $ go mod init oddstream.games/gosol
 // $ go mod tidy
 
-// the package defining a command (an excutable Go program) always has the name main
+// the package defining a command (an executable Go program) always has the name main
 // this is a signal to go build that it must invoke the linker to make an executable file
 package main
 

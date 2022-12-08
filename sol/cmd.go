@@ -19,7 +19,7 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyC: func() { TheBaize.Collect2() },
 	ebiten.KeyH: func() {
 		TheBaize.showMovableCards = !TheBaize.showMovableCards
-		sound.Play("Blip")
+		sound.Play("Bong")
 	},
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
 	ebiten.KeyX: func() { ExitRequested = true },

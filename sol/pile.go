@@ -552,7 +552,7 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 			MoveTail(card, dst)
 		}
 	} else {
-		sound.Play("Blip")
+		sound.Play("Error")
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"sort"
 
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
 
@@ -299,6 +300,9 @@ var Variants = map[string]Scripter{
 	"Whitehead": &Whitehead{
 		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 	},
+	"Usk": &Usk{
+		wikipedia: "https://politaire.com/help/usk",
+	},
 	"Yukon": &Yukon{
 		wikipedia: "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
 	},
@@ -313,13 +317,13 @@ var VariantGroups = map[string][]string{
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
-	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Lucas", "Spider One Suit"},
-	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits"},
+	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit"},
+	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
-	"> Places":        {"Australian", "Yukon", "Klondike"},
+	"> Places":        {"Australian", "Yukon", "Klondike", "Usk"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Yukon":         {"Yukon", "Yukon Cells"},
@@ -377,13 +381,17 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 		TheBaize.SetRecycles(TheBaize.Recycles() - 1)
 		switch {
 		case TheBaize.recycles == 0:
+			sound.Play("Error")
 			TheUI.Toast("No more recycles")
 		case TheBaize.recycles == 1:
+			sound.Play("Bong")
 			TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.Recycles()))
 		case TheBaize.recycles < 10:
+			sound.Play("Bong")
 			TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.Recycles()))
 		}
 	} else {
+		sound.Play("Error")
 		TheUI.Toast("No more recycles")
 	}
 }

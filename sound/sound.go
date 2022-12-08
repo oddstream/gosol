@@ -49,9 +49,6 @@ var cardShove3Bytes []byte
 //go:embed assets/cardShove4.wav
 var cardShove4Bytes []byte
 
-//go:embed assets/cardShuffle.wav
-var cardShuffleBytes []byte
-
 //go:embed assets/cardSlide1.wav
 var cardSlide1Bytes []byte
 
@@ -85,9 +82,14 @@ var cardTakeOutPackage2Bytes []byte
 //go:embed assets/complete.wav
 var completeBytes []byte
 
-// https://freesound.org/people/AlienXXX/sounds/249895/
-//go:embed assets/249895__alienxxx__blip2.wav
-var blipBytes []byte
+//go:embed assets/bong_001.wav
+var bongBytes []byte
+
+//go:embed assets/error_005.wav
+var error5Bytes []byte
+
+//go:embed assets/error_006.wav
+var error6Bytes []byte
 
 var audioContext *audio.Context
 
@@ -128,7 +130,6 @@ func init() {
 	decode("Shove2", cardShove2Bytes)
 	decode("Shove3", cardShove3Bytes)
 	decode("Shove4", cardShove4Bytes)
-	decode("Shuffle", cardShuffleBytes)
 	decode("Slide1", cardSlide1Bytes)
 	decode("Slide2", cardSlide2Bytes)
 	decode("Slide3", cardSlide3Bytes)
@@ -139,8 +140,12 @@ func init() {
 	decode("Slide8", cardSlide8Bytes)
 	decode("TakeOutPackage1", cardTakeOutPackage1Bytes)
 	decode("TakeOutPackage2", cardTakeOutPackage2Bytes)
+
+	decode("Bong", bongBytes)
 	decode("Complete", completeBytes)
-	decode("Blip", blipBytes)
+
+	decode("Error1", error5Bytes)
+	decode("Error2", error6Bytes)
 }
 
 var soundRandomizer = map[string]int{
@@ -148,11 +153,11 @@ var soundRandomizer = map[string]int{
 	"OpenPackage":    2,
 	"Place":          4,
 	"Shove":          4,
-	"Shuffle":        0,
 	"Slide":          8,
 	"TakeOutPackage": 2,
 	"Complete":       0,
-	"Blip":           0,
+	"Bong":           0,
+	"Error":          2,
 }
 
 func SetVolume(vol float64) {

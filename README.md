@@ -133,6 +133,12 @@ You can when playing with actual cards, too. Cheat if you like; I'm not your mot
 Nope, there isn't one of those. Too stressful.
 Solitaire is also called *patience*; it's hard to feel patient when you're pressured by a clock.
 
+## You can't move cards off a foundation pile
+
+Nope. Reading the "original" rules for a lot of the games seem to explicitly forbid this, so there's a complete ban on moving cards off a foundation pile.
+
+You can always use undo if you get stuck or change you mind about a move.
+
 ### What's with the settings?
 
 #### Fixed cards

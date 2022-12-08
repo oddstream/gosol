@@ -124,6 +124,12 @@ func MoveAllCards(src *Pile, dst *Pile) {
 	TheBaize.setFlag(dirtyCardPositions)
 }
 
+func ReverseCards(pile *Pile) {
+	for i, j := 0, len(pile.cards)-1; i < j; i, j = i+1, j-1 {
+		pile.cards[i], pile.cards[j] = pile.cards[j], pile.cards[i]
+	}
+}
+
 func MarkAllCardsImmovable() {
 	// Go uses a copy of the value instead of the value itself within a range clause.
 	// for _, c := range CardLibrary {

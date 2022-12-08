@@ -402,7 +402,7 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 			// see Card.StartDrag()
 			if c.Transitioning() {
 				TheUI.Toast("Cannot drag a moving card")
-				sound.Play("Blip")
+				sound.Play("Error")
 			} else {
 				b.StartTailDrag(c)
 				b.stroke.SetDraggedObject(c)
@@ -475,12 +475,12 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				var err error
 				// generically speaking, can this tail be moved?
 				if ok, err = src.CanMoveTail(b.tail); !ok {
-					sound.Play("Blip")
+					sound.Play("Error")
 					TheUI.Toast(err.Error())
 					b.CancelTailDrag()
 				} else {
 					if ok, err = dst.vtable.CanAcceptTail(b.tail); !ok {
-						sound.Play("Blip")
+						sound.Play("Error")
 						TheUI.Toast(err.Error())
 						b.CancelTailDrag()
 					} else {
@@ -488,7 +488,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 						if src == dst {
 							b.CancelTailDrag()
 						} else if ok, err = b.script.TailMoveError(b.tail); !ok {
-							sound.Play("Blip")
+							sound.Play("Error")
 							TheUI.Toast(err.Error())
 							b.CancelTailDrag()
 						} else {
@@ -560,7 +560,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		crc := b.CRC()
 		b.script.PileTapped(obj)
 		if crc != b.CRC() {
-			sound.Play("Slide")
+			sound.Play("Shove")
 			b.AfterUserMove()
 		}
 	case *Baize:

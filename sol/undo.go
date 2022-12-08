@@ -102,7 +102,7 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.undoStack) < 2 {
-		sound.Play("Blip")
+		sound.Play("Error")
 		TheUI.Toast("Nothing to undo")
 		return
 	}
@@ -149,7 +149,7 @@ func (b *Baize) RestartDeal() {
 func (b *Baize) SavePosition() {
 	if b.Complete() {
 		TheUI.Toast("Cannot bookmark a completed game") // otherwise the stats can be cooked
-		sound.Play("Blip")
+		sound.Play("Error")
 		return
 	}
 	b.bookmark = len(b.undoStack)
@@ -164,7 +164,7 @@ func (b *Baize) LoadPosition() {
 	if b.bookmark == 0 || b.bookmark > len(b.undoStack) || b.Complete() {
 		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
 		TheUI.Toast("No bookmark")
-		sound.Play("Blip")
+		sound.Play("Error")
 		return
 	}
 	var sav *SavableBaize
