@@ -57,11 +57,9 @@ func (yuk *Yukon) StartGame() {
 			MoveCard(yuk.stock, yuk.tableaux[x])
 		}
 	}
-
-	if yuk.stock.Len() > 0 {
-		println("*** still", yuk.stock.Len(), "cards in Stock")
+	if DebugMode && yuk.stock.Len() > 0 {
+		println("*** still", yuk.stock.Len(), "cards in Stock ***")
 	}
-
 }
 
 func (*Yukon) AfterMove() {}

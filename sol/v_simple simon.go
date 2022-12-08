@@ -45,9 +45,8 @@ func (ss *SimpleSimon) StartGame() {
 		}
 		deal--
 	}
-
-	if ss.stock.Len() > 0 {
-		println("*** still", ss.stock.Len(), "cards in Stock")
+	if DebugMode && ss.stock.Len() > 0 {
+		println("*** still", ss.stock.Len(), "cards in Stock ***")
 	}
 }
 

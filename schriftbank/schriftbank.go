@@ -119,7 +119,7 @@ func MakeCardFonts(cardWidth int) {
 		Hinting: font.HintingFull,
 	})
 	CardSymbolHuge = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(cardWidth),
+		Size:    float64(cardWidth) * 0.75,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})

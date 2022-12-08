@@ -149,7 +149,7 @@ func (self *Stock) Placeholder() *ebiten.Image {
 		label = RECYCLE_RUNE
 	}
 	dc.SetFontFace(schriftbank.CardSymbolHuge)
-	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
+	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
 
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())

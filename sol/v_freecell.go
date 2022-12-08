@@ -73,8 +73,8 @@ func (fc *Freecell) StartGame() {
 			}
 		}
 	}
-	if fc.stock.Len() > 0 {
-		println("*** still", fc.stock.Len(), "cards in Stock")
+	if DebugMode && fc.stock.Len() > 0 {
+		println("*** still", fc.stock.Len(), "cards in Stock ***")
 	}
 }
 

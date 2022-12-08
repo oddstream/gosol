@@ -44,8 +44,8 @@ func (eo *EightOff) StartGame() {
 			MoveCard(eo.stock, pile)
 		}
 	}
-	if eo.stock.Len() > 0 {
-		println("*** still", eo.stock.Len(), "cards in Stock")
+	if DebugMode && eo.stock.Len() > 0 {
+		println("*** still", eo.stock.Len(), "cards in Stock ***")
 	}
 }
 

@@ -16,8 +16,9 @@ type UskPileInfo struct {
 
 type Usk struct {
 	ScriptBase
-	wikipedia string
-	layout    []UskPileInfo
+	wikipedia    string
+	tableauLabel string
+	layout       []UskPileInfo
 }
 
 func (self *Usk) BuildPiles() {
@@ -47,7 +48,7 @@ func (self *Usk) BuildPiles() {
 	self.tableaux = nil
 	for _, li := range self.layout {
 		t := NewTableau(image.Point{li.x, 1}, FAN_DOWN, MOVE_ANY)
-		t.SetLabel("K")
+		t.SetLabel(self.tableauLabel)
 		self.tableaux = append(self.tableaux, t)
 	}
 }
@@ -64,9 +65,11 @@ func (self *Usk) dealCards() {
 func (self *Usk) StartGame() {
 	self.dealCards()
 	TheBaize.SetRecycles(1)
-
-	if self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock")
+	if self.tableauLabel == "" {
+		TheUI.Toast("Relaxed version - any card may be placed in an empty tableaux pile")
+	}
+	if DebugMode && self.stock.Len() > 0 {
+		println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 

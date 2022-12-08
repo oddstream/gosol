@@ -46,10 +46,9 @@ func (bd *BakersDozen) StartGame() {
 		tab.BuryCards(13)
 	}
 
-	if bd.stock.Len() > 0 {
-		println("*** still", bd.stock.Len(), "cards in Stock")
+	if DebugMode && bd.stock.Len() > 0 {
+		println("*** still", bd.stock.Len(), "cards in Stock ***")
 	}
-
 }
 
 func (*BakersDozen) AfterMove() {}

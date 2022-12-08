@@ -301,6 +301,10 @@ var Variants = map[string]Scripter{
 		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 	},
 	"Usk": &Usk{
+		wikipedia:    "https://politaire.com/help/usk",
+		tableauLabel: "K",
+	},
+	"Usk Relaxed": &Usk{
 		wikipedia: "https://politaire.com/help/usk",
 	},
 	"Yukon": &Yukon{
@@ -317,13 +321,13 @@ var VariantGroups = map[string][]string{
 	// don't have Agnes here (as a group) because it would come before All
 	// and Agnes Sorel is retired because it's just too hard
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
-	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit"},
+	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit", "Usk Relaxed"},
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
-	"> Places":        {"Australian", "Yukon", "Klondike", "Usk"},
+	"> Places":        {"Australian", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Yukon":         {"Yukon", "Yukon Cells"},

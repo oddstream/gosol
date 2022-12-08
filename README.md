@@ -22,6 +22,7 @@ It currently knows how to play:
 * Scorpion (also Wasp)
 * Simple Simon
 * Spider (also Spider One Suit, Spider Two Suits)
+* Usk
 * Whitehead
 * Westcliff (Classic, American and Easthaven)
 * Yukon (also Yukon Cells)
