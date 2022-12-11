@@ -55,6 +55,7 @@ func (self *Discard) Complete() bool {
 		return true
 	}
 	if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
+		// eg 13 == 52/4 or 13 == 104/8
 		return true
 	}
 	return false

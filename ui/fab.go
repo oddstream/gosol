@@ -81,7 +81,7 @@ func (fb *FABBar) Layout(outsideWidth, outsideHeight int) (int, int) {
 	// override BarBase.Layout to get position near bottom right of screen
 	fb.x = outsideWidth - fb.width - (fb.width / 2)
 	fb.y = outsideHeight - fb.height - (fb.height / 2) - 24 // statusbar is 24 high
-	println("FABBar.Layout() Window=", outsideWidth, outsideHeight, "FAB=", fb.x, fb.y)
+	// println("FABBar.Layout() Window=", outsideWidth, outsideHeight, "FAB=", fb.x, fb.y)
 	return outsideWidth, outsideHeight
 }
 

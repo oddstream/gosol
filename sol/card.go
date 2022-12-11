@@ -304,7 +304,11 @@ func (c *Card) Update() error {
 		c.pos.Y += c.directionY
 		c.scaleZ += c.directionZ
 		if c.scaleZ < 0.5 || c.scaleZ > 1.5 {
-			c.Flip()
+			// pearl from the mudbank:
+			// cannot flip card here (or anytime while spinning)
+			// because Baize.Complete() will fail (and record a lost game)
+			// because UnsortedPairs will "fail" because some cards will be face down
+			// c.Flip()
 			c.directionZ = -c.directionZ
 		}
 		c.angle += c.spin

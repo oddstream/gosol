@@ -29,6 +29,7 @@ func (self *Reserve) TailTapped(tail []*Card) {
 	self.parent.DefaultTailTapped(tail)
 }
 
+// Conformant when contains zero or one card(s), same as Waste
 func (self *Reserve) Conformant() bool {
 	return self.parent.Len() < 2
 }
