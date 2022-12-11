@@ -90,7 +90,8 @@ func (b *Baize) FindDestinations() {
 		if movable {
 			b.moves++
 			card.destinations = append(card.destinations, mc.dst)
-			if dst.category == "Foundation" {
+			if _, ok := dst.vtable.(*Foundation); ok {
+				// if dst.category == "Foundation" {
 				b.fmoves++
 			}
 		}

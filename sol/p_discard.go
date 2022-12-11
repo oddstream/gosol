@@ -48,6 +48,8 @@ func (*Discard) Conformant() bool {
 	return false
 }
 
+// Complete - a discard pile is complete when it is empty or when
+// it contains a complete run of cards
 func (self *Discard) Complete() bool {
 	if self.parent.Empty() {
 		return true
@@ -73,7 +75,7 @@ func (self *Discard) Placeholder() *ebiten.Image {
 	dc.SetLineWidth(2)
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	dc.Fill()
+	dc.Fill() // difference for this subpile
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
 }

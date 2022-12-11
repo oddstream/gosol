@@ -13,6 +13,21 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+//go:embed assets/click_001.wav
+var click1Bytes []byte
+
+//go:embed assets/click_002.wav
+var click2Bytes []byte
+
+//go:embed assets/click_003.wav
+var click3Bytes []byte
+
+//go:embed assets/click_004.wav
+var click4Bytes []byte
+
+//go:embed assets/click_005.wav
+var click5Bytes []byte
+
 //go:embed assets/cardFan1.wav
 var cardFan1Bytes []byte
 
@@ -82,8 +97,17 @@ var cardTakeOutPackage2Bytes []byte
 //go:embed assets/complete.wav
 var completeBytes []byte
 
-//go:embed assets/bong_001.wav
-var bongBytes []byte
+//go:embed assets/question_004.wav
+var failBytes []byte
+
+//go:embed assets/glass_004.wav
+var glass4Bytes []byte
+
+//go:embed assets/glass_005.wav
+var glass5Bytes []byte
+
+//go:embed assets/glass_006.wav
+var glass6Bytes []byte
 
 //go:embed assets/error_005.wav
 var error5Bytes []byte
@@ -118,6 +142,12 @@ func init() {
 	audioContext = audio.NewContext(44100)
 	soundMap = make(map[string]*audio.Player)
 
+	decode("Click1", click1Bytes)
+	decode("Click2", click2Bytes)
+	decode("Click3", click3Bytes)
+	decode("Click4", click4Bytes)
+	decode("Click5", click5Bytes)
+
 	decode("Fan1", cardFan1Bytes)
 	decode("Fan2", cardFan2Bytes)
 	decode("OpenPackage1", cardOpenPackage1Bytes)
@@ -141,14 +171,19 @@ func init() {
 	decode("TakeOutPackage1", cardTakeOutPackage1Bytes)
 	decode("TakeOutPackage2", cardTakeOutPackage2Bytes)
 
-	decode("Bong", bongBytes)
 	decode("Complete", completeBytes)
+	decode("Fail", failBytes)
 
 	decode("Error1", error5Bytes)
 	decode("Error2", error6Bytes)
+
+	decode("Glass1", glass4Bytes)
+	decode("Glass2", glass5Bytes)
+	decode("Glass3", glass6Bytes)
 }
 
 var soundRandomizer = map[string]int{
+	"Click":          5,
 	"Fan":            2,
 	"OpenPackage":    2,
 	"Place":          4,
@@ -156,8 +191,9 @@ var soundRandomizer = map[string]int{
 	"Slide":          8,
 	"TakeOutPackage": 2,
 	"Complete":       0,
-	"Bong":           0,
+	"Fail":           0,
 	"Error":          2,
+	"Glass":          3,
 }
 
 func SetVolume(vol float64) {

@@ -106,12 +106,13 @@ func (self *Stock) Conformant() bool {
 	return self.parent.Empty()
 }
 
+// Complete - a stock pile is complete when it is empty
 func (self *Stock) Complete() bool {
 	return self.parent.Empty()
 }
 
+// UnsortedPairs - cards in a stock pile are always considered to be unsorted
 func (self *Stock) UnsortedPairs() int {
-	// Stock is always considered unsorted
 	if self.parent.Empty() {
 		return 0
 	}

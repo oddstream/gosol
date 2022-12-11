@@ -44,6 +44,7 @@ func (*Foundation) Conformant() bool {
 	return true
 }
 
+// Complete - a foundation pile is complete when it contains a complete run of cards
 func (self *Foundation) Complete() bool {
 	return self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
 }

@@ -62,6 +62,8 @@ type MovableTail struct {
 	tail []*Card
 }
 
+// PileVtabler interface for each subpile type, implements the behaviours
+// specific to each subtype
 type PileVtabler interface {
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
@@ -120,7 +122,10 @@ func (self *Pile) Hidden() bool {
 }
 
 func (self *Pile) IsStock() bool {
-	return self.category == "Stock"
+	// using a type assertion seems more idiomatic than a string comparison
+	_, ok := self.vtable.(*Stock)
+	return ok
+	// return self.category == "Stock"
 }
 
 func (self *Pile) Shuffle() {

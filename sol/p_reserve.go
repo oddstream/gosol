@@ -33,12 +33,13 @@ func (self *Reserve) Conformant() bool {
 	return self.parent.Len() < 2
 }
 
+// Complete - a reserve pile is complete when it is empty
 func (self *Reserve) Complete() bool {
 	return self.parent.Empty()
 }
 
+// UnsortedPairs - cards in a reserve pile are always considered to be unsorted
 func (self *Reserve) UnsortedPairs() int {
-	// Reserve (like Stock) is always considered unsorted
 	if self.parent.Empty() {
 		return 0
 	}

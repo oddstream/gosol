@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -40,7 +40,8 @@ func readAll(file *zip.File) []byte {
 	check(err)
 	defer closeFile(fc)
 
-	content, err := ioutil.ReadAll(fc)
+	// content, err := ioutil.ReadAll(fc)
+	content, err := io.ReadAll(fc)
 	check(err)
 
 	return content

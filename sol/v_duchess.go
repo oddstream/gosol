@@ -50,7 +50,7 @@ func (du *Duchess) StartGame() {
 	for _, pile := range du.tableaux {
 		MoveCard(du.stock, pile)
 	}
-	TheUI.Toast("Move a Reserve card to a Foundation")
+	TheUI.ToastInfo("Move a Reserve card to a Foundation")
 }
 
 func (du *Duchess) AfterMove() {
@@ -67,7 +67,7 @@ func (du *Duchess) AfterMove() {
 			}
 		}
 		if ord == 0 {
-			TheUI.Toast("Move a Reserve card to a Foundation")
+			TheUI.ToastInfo("Move a Reserve card to a Foundation")
 		} else {
 			for _, f := range du.foundations {
 				f.SetLabel(util.OrdinalToShortString(ord))

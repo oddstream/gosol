@@ -241,13 +241,13 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.UpdateFromSavable(sav)
 	b.FindDestinations()
 	if b.Complete() {
-		TheUI.Toast("Complete")
+		TheUI.Toast("Complete", "Complete")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
-		TheUI.Toast("No movable cards")
+		TheUI.Toast("", "No movable cards")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
 		TheUI.HideFAB()
@@ -372,7 +372,7 @@ func (b *Baize) AfterUserMove() {
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
-		TheUI.Toast("No movable cards")
+		TheUI.ToastError("No movable cards")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
 		TheUI.HideFAB()
@@ -401,7 +401,7 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 			// currently don't allow transitioning cards to be dragged
 			// see Card.StartDrag()
 			if c.Transitioning() {
-				TheUI.Toast("Cannot drag a moving card")
+				// TheUI.ToastError("Cannot drag a moving card")
 				sound.Play("Error")
 			} else {
 				b.StartTailDrag(c)
@@ -475,21 +475,18 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				var err error
 				// generically speaking, can this tail be moved?
 				if ok, err = src.CanMoveTail(b.tail); !ok {
-					sound.Play("Error")
-					TheUI.Toast(err.Error())
+					TheUI.ToastError(err.Error())
 					b.CancelTailDrag()
 				} else {
 					if ok, err = dst.vtable.CanAcceptTail(b.tail); !ok {
-						sound.Play("Error")
-						TheUI.Toast(err.Error())
+						TheUI.ToastError(err.Error())
 						b.CancelTailDrag()
 					} else {
 						// it's ok to move this tail
 						if src == dst {
 							b.CancelTailDrag()
 						} else if ok, err = b.script.TailMoveError(b.tail); !ok {
-							sound.Play("Error")
-							TheUI.Toast(err.Error())
+							TheUI.ToastError(err.Error())
 							b.CancelTailDrag()
 						} else {
 							crc := b.CRC()

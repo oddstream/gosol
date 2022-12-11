@@ -86,17 +86,18 @@ func (self *Tableau) Conformant() bool {
 	return TheBaize.script.UnsortedPairs(self.parent) == 0
 }
 
+/*
+Complete means
+
+	(a) empty
+	(b) if discard piles exist, then there are no unsorted card pairs
+		and pile len == baize->numberOfCardsInLibrary / ndiscards
+		there will always be one discard pile for each suit
+		(number of discard piles is packs * suits)
+		(Simple Simon has 10 tableau piles and 4 discard piles)
+		(Spider has 10 tableau piles and 8 discard piles)
+*/
 func (self *Tableau) Complete() bool {
-	/*
-	   'complete' means
-	       (a) empty
-	       (b) if discard piles exist, then there are no unsorted card pairs
-	           and pile len == baize->numberOfCardsInLibrary / ndiscards
-	           there will always be one discard pile for each suit
-	           (number of discard piles is packs * suits)
-	           (Simple Simon has 10 tableau piles and 4 discard piles)
-	           (Spider has 10 tableau piles and 8 discard piles)
-	*/
 	if self.parent.Empty() {
 		return true
 	}

@@ -88,7 +88,7 @@ func NewGame() (*Game, error) {
 	TheBaize = NewBaize()
 	TheBaize.StartFreshGame()
 	if ThePreferences.LastVersionMajor != GosolVersionMajor || ThePreferences.LastVersionMinor != GosolVersionMinor {
-		TheUI.Toast(fmt.Sprintf("Upgraded from %d.%d to %d.%d",
+		TheUI.Toast("Glass", fmt.Sprintf("Upgraded from %d.%d to %d.%d",
 			ThePreferences.LastVersionMajor,
 			ThePreferences.LastVersionMinor,
 			GosolVersionMajor,

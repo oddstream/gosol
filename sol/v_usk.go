@@ -5,8 +5,6 @@ package sol
 
 import (
 	"image"
-
-	"oddstream.games/gosol/sound"
 )
 
 type UskPileInfo struct {
@@ -66,7 +64,7 @@ func (self *Usk) StartGame() {
 	self.dealCards()
 	TheBaize.SetRecycles(1)
 	if self.tableauLabel == "" {
-		TheUI.Toast("Relaxed version - any card may be placed in an empty tableaux pile")
+		TheUI.ToastInfo("Relaxed version - any card may be placed in an empty tableaux pile")
 	}
 	if DebugMode && self.stock.Len() > 0 {
 		println("*** still", self.stock.Len(), "cards in Stock ***")
@@ -119,8 +117,7 @@ func (self *Usk) PileTapped(pile *Pile) {
 		return
 	}
 	if TheBaize.Recycles() == 0 {
-		sound.Play("Error")
-		TheUI.Toast("No more recycles")
+		TheUI.ToastError("No more recycles")
 		return
 	}
 	/*
@@ -136,6 +133,7 @@ func (self *Usk) PileTapped(pile *Pile) {
 	*/
 	// collect cards to stock
 	for _, t := range self.tableaux {
+		// MoveCards keeps the order of the cards
 		MoveCards(t, 0, self.stock)
 	}
 	// reverse order so we can pop

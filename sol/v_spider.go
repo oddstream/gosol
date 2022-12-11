@@ -112,7 +112,7 @@ func (sp *Spider) TailTapped(tail []*Card) {
 			}
 		}
 		if emptyTabs > 0 && tabCards >= len(sp.tableaux) {
-			TheUI.Toast("All empty tableaux must be filled before dealing a new row")
+			TheUI.ToastError("All empty tableaux must be filled before dealing a new row")
 		} else {
 			for _, tab := range sp.tableaux {
 				MoveCard(sp.stock, tab)

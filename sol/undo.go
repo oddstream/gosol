@@ -4,8 +4,6 @@ package sol
 
 import (
 	"log"
-
-	"oddstream.games/gosol/sound"
 )
 
 // The CardID contains everything we need to serialize the card: pack, ordinal, suit and prone flag
@@ -13,7 +11,6 @@ import (
 type SavablePile struct {
 	Category string   // for readability and sanity checks
 	Label    string   `json:",omitempty"`
-	Symbol   rune     `json:",omitempty"`
 	Cards    []CardID `json:",omitempty"`
 }
 
@@ -90,7 +87,6 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
 		log.Panic("Baize piles and SavableBaize piles are different")
 	}
-	sound.Play("OpenPackage")
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])
 	}
@@ -102,12 +98,11 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.undoStack) < 2 {
-		sound.Play("Error")
-		TheUI.Toast("Nothing to undo")
+		TheUI.ToastError("Nothing to undo")
 		return
 	}
 	if b.Complete() {
-		TheUI.Toast("Cannot undo a completed game") // otherwise the stats can be cooked
+		TheUI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
 		return
 	}
 	_, ok := b.UndoPop() // removes current state
@@ -148,23 +143,21 @@ func (b *Baize) RestartDeal() {
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	if b.Complete() {
-		TheUI.Toast("Cannot bookmark a completed game") // otherwise the stats can be cooked
-		sound.Play("Error")
+		TheUI.ToastError("Cannot bookmark a completed game") // otherwise the stats can be cooked
 		return
 	}
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark
 	sb.Recycles = b.recycles
-	TheUI.Toast("Position bookmarked")
+	TheUI.ToastInfo("Position bookmarked")
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.bookmark == 0 || b.bookmark > len(b.undoStack) || b.Complete() {
 		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
-		TheUI.Toast("No bookmark")
-		sound.Play("Error")
+		TheUI.ToastError("No bookmark")
 		return
 	}
 	var sav *SavableBaize

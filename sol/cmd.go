@@ -19,7 +19,13 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyC: func() { TheBaize.Collect2() },
 	ebiten.KeyH: func() {
 		TheBaize.showMovableCards = !TheBaize.showMovableCards
-		sound.Play("Bong")
+		if TheBaize.showMovableCards {
+			if TheBaize.moves+TheBaize.fmoves > 0 {
+				TheUI.ToastInfo("Movable cards highlighted")
+			} else {
+				TheUI.ToastError("There are no movable cards")
+			}
+		}
 	},
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
 	ebiten.KeyX: func() { ExitRequested = true },
@@ -57,7 +63,7 @@ func Execute(cmd interface{}) {
 		switch v.ChangeRequested {
 		case "Variant":
 			if _, ok := Variants[v.Data]; !ok {
-				TheUI.Toast(fmt.Sprintf("Don't know how to play '%s'", v.Data))
+				TheUI.ToastError(fmt.Sprintf("Don't know how to play '%s'", v.Data))
 			} else {
 				if v.Data != ThePreferences.Variant {
 					TheBaize.ChangeVariant(v.Data)

@@ -90,7 +90,7 @@ func (db *DrawerBase) Show() {
 		w.Activate()
 	}
 	db.aniState = aniRight
-	sound.Play("Slide1")
+	sound.Play("Click")
 }
 
 // Hide starts to animate the drawer off screen to the left
@@ -103,7 +103,6 @@ func (db *DrawerBase) Hide() {
 	} else {
 		db.aniState = aniLeft
 	}
-	sound.Play("Slide2")
 }
 
 // Visible returns true if the NavDrawer is showing

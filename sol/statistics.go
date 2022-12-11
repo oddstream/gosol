@@ -2,8 +2,6 @@ package sol
 
 import (
 	"fmt"
-
-	"oddstream.games/gosol/sound"
 )
 
 // Statistics is a container for the statistics for all variants
@@ -90,8 +88,7 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 
 func (s *Statistics) RecordWonGame(v string, moves int) {
 
-	sound.Play("Complete")
-	TheUI.Toast(fmt.Sprintf("Recording completed game of %s", v))
+	TheUI.Toast("Complete", fmt.Sprintf("Recording completed game of %s", v))
 
 	stats := s.findVariant(v)
 
@@ -126,7 +123,7 @@ func (s *Statistics) RecordLostGame(v string) {
 		println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
 
-	TheUI.Toast(fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
+	TheUI.Toast("Fail", fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
 
 	stats := s.findVariant(v)
 

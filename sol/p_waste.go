@@ -41,12 +41,13 @@ func (self *Waste) Conformant() bool {
 	return self.parent.Len() < 2
 }
 
+// Complete - a waste pile is complete when it is empty
 func (self *Waste) Complete() bool {
 	return self.parent.Empty()
 }
 
+// UnsortedPairs - cards in a waste pile are always considered to be unsorted
 func (self *Waste) UnsortedPairs() int {
-	// Waste (like Stock, Reserve) is always considered unsorted
 	if self.parent.Empty() {
 		return 0
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/schriftbank"
+	"oddstream.games/gosol/sound"
 )
 
 /*
@@ -29,7 +30,7 @@ type ToastManager struct {
 }
 
 // Toast creates a new toast message an adds it to the list of messages
-func (u *UI) Toast(message string) {
+func (u *UI) Toast(soundEffect string, message string) {
 
 	// if we are already displaying this message, reset ticksLeft and quit
 	// otherwise you can fill the screen with "Nothing to undo"
@@ -38,6 +39,10 @@ func (u *UI) Toast(message string) {
 			t.ticksLeft = int(ebiten.ActualTPS()) * 6
 			return
 		}
+	}
+
+	if soundEffect != "" {
+		sound.Play(soundEffect)
 	}
 
 	dc := gg.NewContext(8, 8)
@@ -67,6 +72,14 @@ func (u *UI) Toast(message string) {
 	t.ticksLeft = 60 * (8 + len(u.toastManager.toasts))
 
 	u.toastManager.Add(t)
+}
+
+func (u *UI) ToastError(message string) {
+	u.Toast("Error", message)
+}
+
+func (u *UI) ToastInfo(message string) {
+	u.Toast("Glass", message)
 }
 
 // Add a new toast to the list

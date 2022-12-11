@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"sort"
 
-	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
 
@@ -385,18 +384,14 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 		TheBaize.SetRecycles(TheBaize.Recycles() - 1)
 		switch {
 		case TheBaize.recycles == 0:
-			sound.Play("Error")
-			TheUI.Toast("No more recycles")
+			TheUI.ToastError("No more recycles")
 		case TheBaize.recycles == 1:
-			sound.Play("Bong")
-			TheUI.Toast(fmt.Sprintf("%d recycle remaining", TheBaize.Recycles()))
+			TheUI.ToastInfo(fmt.Sprintf("%d recycle remaining", TheBaize.Recycles()))
 		case TheBaize.recycles < 10:
-			sound.Play("Bong")
-			TheUI.Toast(fmt.Sprintf("%d recycles remaining", TheBaize.Recycles()))
+			TheUI.ToastInfo(fmt.Sprintf("%d recycles remaining", TheBaize.Recycles()))
 		}
 	} else {
-		sound.Play("Error")
-		TheUI.Toast("No more recycles")
+		TheUI.ToastError("No more recycles")
 	}
 }
 
