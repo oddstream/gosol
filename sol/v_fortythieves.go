@@ -55,15 +55,30 @@ func (ft *FortyThieves) BuildPiles() {
 
 func (ft *FortyThieves) StartGame() {
 	if ft.dealAces {
-		MoveNamedCard(ft.stock, CLUB, 1, ft.foundations[0])
-		MoveNamedCard(ft.stock, DIAMOND, 1, ft.foundations[1])
-		MoveNamedCard(ft.stock, HEART, 1, ft.foundations[2])
-		MoveNamedCard(ft.stock, SPADE, 1, ft.foundations[3])
-
-		MoveNamedCard(ft.stock, CLUB, 1, ft.foundations[4])
-		MoveNamedCard(ft.stock, DIAMOND, 1, ft.foundations[5])
-		MoveNamedCard(ft.stock, HEART, 1, ft.foundations[6])
-		MoveNamedCard(ft.stock, SPADE, 1, ft.foundations[7])
+		if c := ft.stock.Extract(1, CLUB); c != nil {
+			ft.foundations[0].Push(c)
+		}
+		if c := ft.stock.Extract(1, DIAMOND); c != nil {
+			ft.foundations[1].Push(c)
+		}
+		if c := ft.stock.Extract(1, HEART); c != nil {
+			ft.foundations[2].Push(c)
+		}
+		if c := ft.stock.Extract(1, SPADE); c != nil {
+			ft.foundations[3].Push(c)
+		}
+		if c := ft.stock.Extract(1, CLUB); c != nil {
+			ft.foundations[4].Push(c)
+		}
+		if c := ft.stock.Extract(1, DIAMOND); c != nil {
+			ft.foundations[5].Push(c)
+		}
+		if c := ft.stock.Extract(1, HEART); c != nil {
+			ft.foundations[6].Push(c)
+		}
+		if c := ft.stock.Extract(1, SPADE); c != nil {
+			ft.foundations[7].Push(c)
+		}
 	}
 	for _, pile := range ft.tableaux {
 		for i := 0; i < ft.cardsPerTab; i++ {

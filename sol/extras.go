@@ -6,18 +6,6 @@ import (
 	"oddstream.games/gosol/sound"
 )
 
-func FindCardOwner(card *Card) *Pile {
-	for _, pile := range TheBaize.piles {
-		for _, c := range pile.cards {
-			if c == card {
-				return pile
-			}
-		}
-	}
-	// log.Panic("Cannot find card")
-	return nil
-}
-
 func AnyCardsProne(cards []*Card) bool {
 	for _, c := range cards {
 		if c.Prone() {
@@ -41,94 +29,97 @@ func MoveCard(src *Pile, dst *Pile) *Card {
 		sound.Play("Place")
 		dst.Push(c)
 		FlipUpExposedCard(src)
-		TheBaize.setFlag(dirtyCardPositions)
 		return c
 	}
 	return nil
 }
 
-func MoveNamedCard(src *Pile, suit, ordinal int, dst *Pile) {
-
-	// 1. find the card in the src Pile
-	var ID CardID = NewCardID(0, suit, ordinal)
-	var card *Card
-	for _, c := range src.cards {
-		if SameCard(ID, c.ID) {
-			card = c
+// MoveTail moves all the cards from card downwards onto dst
+func MoveTail(card *Card, dst *Pile) {
+	var src *Pile = card.owner
+	tmp := make([]*Card, 0, len(src.cards))
+	// pop cards from src upto and including the head of the tail
+	for {
+		var c *Card = src.Pop()
+		if c == nil {
+			log.Panicf("MoveTail could not find %s", card)
+		}
+		tmp = append(tmp, c)
+		if c == card {
 			break
 		}
 	}
-	if card == nil {
-		println("Could not find card in src Pile")
-		return
-	}
-
-	// 2.find the card in it's owning pile
-	var index int = src.IndexOf(card)
-	if index == -1 {
-		println("Could not find card", card.String(), "in pile")
-		return
-	}
-
-	// 3. extract the card from it's owning pile
-	src.Delete(index)
-
-	// 4. push the card onto the dst pile
-	sound.Play("Place")
-	card.FlipUp()
-	dst.Push(card)
-	FlipUpExposedCard(src)
-	TheBaize.setFlag(dirtyCardPositions)
-}
-
-// MoveCards is used when dragging a tail from ome pile to another
-func MoveCards(src *Pile, moveFromIndex int, dst *Pile) {
-
-	oldSrcLen := src.Len()
-
-	tmp := make([]*Card, 0, oldSrcLen)
-
-	// pop the tail off the source and push onto temp stack
-	for i := oldSrcLen - 1; i >= moveFromIndex; i-- {
-		tmp = append(tmp, src.Pop())
-	}
-
-	sound.Play("Slide")
-
-	// pop all cards off the temp stack and onto the destination
-	for i := len(tmp) - 1; i >= 0; i-- {
-		dst.Push(tmp[i])
-	}
-
-	FlipUpExposedCard(src)
-
-	if oldSrcLen == src.Len() {
-		log.Println("nothing happened in MoveCards")
-	}
-
-	TheBaize.setFlag(dirtyCardPositions)
-}
-
-func MoveTail(card *Card, dst *Pile) {
-	MoveCards(card.owner, card.owner.IndexOf(card), dst)
-}
-
-func MoveAllCards(src *Pile, dst *Pile) {
-	if src.Empty() {
-		return
-	}
-	for i := 0; i < src.Len(); i++ {
-		dst.Push(src.Get(i))
-	}
-	src.Reset()
-	TheBaize.setFlag(dirtyCardPositions)
-}
-
-func ReverseCards(pile *Pile) {
-	for i, j := 0, len(pile.cards)-1; i < j; i, j = i+1, j-1 {
-		pile.cards[i], pile.cards[j] = pile.cards[j], pile.cards[i]
+	// pop cards from the tmp stack and push onto dst
+	if len(tmp) > 0 {
+		sound.Play("Place")
+		for len(tmp) > 0 {
+			var c *Card = tmp[len(tmp)-1]
+			tmp = tmp[:len(tmp)-1]
+			dst.Push(c)
+		}
+		FlipUpExposedCard(src)
 	}
 }
+
+/*
+MoveTail2 - too low-level to be of any use
+
+var src []int = []int{1, 2, 3, 4, 5}
+var dst []int = []int{7, 8, 9}
+
+	func main() {
+		fmt.Println(src)
+		fmt.Println(dst)
+
+		var idx int = 4
+
+		if idx == 0 {
+			dst = append(dst, src...)
+			src = []int{}
+		} else {
+			var tail []int = src[len(src)-(idx-1):]
+			fmt.Println(tail)
+			src = src[:idx]
+			dst = append(dst, tail...)
+		}
+		fmt.Println(src)
+		fmt.Println(dst)
+	}
+*/
+// func MoveTail2(card *Card, dst *Pile) {
+// 	var src *Pile = card.owner
+// 	if src.Peek() == card {
+// 		MoveCard(src, dst)
+// 		return
+// 	}
+// 	var idx int
+// 	if idx = src.IndexOf(card); idx == -1 {
+// 		log.Panicf("Card %s not found", card.String())
+// 	}
+// 	if idx == 0 {
+// 		dst.cards = append(dst.cards, src.cards...)
+// 		src.cards = src.cards[:0] //[]*Card{}
+// 	} else {
+// 		var tail []*Card = src.cards[len(src.cards)-(idx-1):]
+// 		src.cards = src.cards[:idx]
+// 		dst.cards = append(dst.cards, tail...)
+// 	}
+// 	for _, c := range dst.cards {
+// 		c.owner = dst
+// 	}
+// 	TheBaize.setFlag(dirtyCardPositions)
+// }
+
+// func MoveAllCards(src *Pile, dst *Pile) {
+// 	if src.Empty() {
+// 		return
+// 	}
+// 	for i := 0; i < src.Len(); i++ {
+// 		dst.Push(src.Get(i))
+// 	}
+// 	src.Reset()
+// 	TheBaize.setFlag(dirtyCardPositions)
+// }
 
 func MarkAllCardsImmovable() {
 	// Golang gotcha:

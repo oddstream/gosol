@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/sound"
@@ -930,22 +929,4 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	// bounds := screen.Bounds()
 	// ebitenutil.DebugPrint(screen, bounds.String())
 	// }
-
-	if DebugMode {
-		if ebiten.IsMouseButtonPressed(1) {
-			if c := b.FindLowestCardAt(image.Pt(ebiten.CursorPosition())); c != nil {
-				p := c.Owner()
-				index := p.IndexOf(c)
-				ebitenutil.DebugPrint(screen, fmt.Sprintf("card=%s drag=%t pos=%s src=%s, dst=%s step=%0.f, index=%d",
-					c.String(),
-					c.Dragging(),
-					c.pos.String(),
-					c.src.String(),
-					c.dst.String(),
-					c.lerpStep,
-					index))
-			}
-		}
-	}
-
 }

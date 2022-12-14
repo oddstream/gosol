@@ -316,9 +316,8 @@ var Variants = map[string]Scripter{
 }
 
 var VariantGroups = map[string][]string{
-	// "All" added dynamically by func init()
-	// don't have Agnes here (as a group) because it would come before All
-	// and Agnes Sorel is retired because it's just too hard
+	// "> All" added dynamically by func init()
+	// don't have any group that comes alphabetically before "> All"
 	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
 	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit", "Usk Relaxed"},
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},

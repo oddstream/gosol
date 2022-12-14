@@ -204,19 +204,33 @@ func (self *Pile) Swap(i, j int) {
 	self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
 }
 
-// Get a *Card from this collection
+// Get a *Card from this pile
 func (self *Pile) Get(i int) *Card {
 	return self.cards[i]
 }
 
-// Append a *Card to this collection
+// Append a *Card to this pile
 func (self *Pile) Append(c *Card) {
 	self.cards = append(self.cards, c)
 }
 
-// Delete a *Card from this collection
+// Delete a *Card from this pile
 func (self *Pile) Delete(index int) {
 	self.cards = append(self.cards[:index], self.cards[index+1:]...)
+}
+
+// Extract a specific *Card from this pile
+func (self *Pile) Extract(ordinal, suit int) *Card {
+	var ID CardID = NewCardID(0, suit, ordinal)
+	for i, c := range self.cards {
+		if SameCard(ID, c.ID) {
+			self.Delete(i)
+			c.FlipUp()
+			return c
+		}
+	}
+	println(fmt.Sprintf("Could not find card %d %d in %s", suit, ordinal, self.category))
+	return nil
 }
 
 // Peek topmost Card of this Pile (a stack)
@@ -250,13 +264,19 @@ func (self *Pile) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.SetOwner(FindCardOwner(c)) // TODO why do this and not just c.SetOwner(self)? there was a bug...
+	c.owner = self
 	c.TransitionTo(pos)
 
 	if self.IsStock() {
 		c.FlipDown()
 	}
 	TheBaize.setFlag(dirtyCardPositions)
+}
+
+func (self *Pile) ReverseCards() {
+	for i, j := 0, len(self.cards)-1; i < j; i, j = i+1, j-1 {
+		self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
+	}
 }
 
 // Slot returns the virtual slot this pile is positioned at
@@ -450,15 +470,6 @@ func (self *Pile) Refan() {
 			c.TransitionTo(self.pos1)
 		}
 	}
-}
-
-func (self *Pile) IndexOf(card *Card) int {
-	for i, c := range self.cards {
-		if c == card {
-			return i
-		}
-	}
-	return -1
 }
 
 func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {

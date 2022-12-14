@@ -69,14 +69,14 @@ func (*Yukon) TailMoveError([]*Card) (bool, error) {
 }
 
 func (*Yukon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch (dst).category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {

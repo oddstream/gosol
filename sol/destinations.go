@@ -108,10 +108,10 @@ func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
 	for _, dst := range destinations {
 		var tmp PileAndWeight = PileAndWeight{pile: dst, weight: len(dst.cards)}
 
-		switch dst.category {
-		case "Foundation":
+		switch dst.vtable.(type) {
+		case *Foundation:
 			tmp.weight += 52 // magic number, sorry
-		case "Tableau":
+		case *Tableau:
 			if len(dst.cards) > 0 {
 				if card.Suit() == dst.Peek().Suit() {
 					tmp.weight += 26 // magic number, sorry

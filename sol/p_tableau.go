@@ -33,10 +33,10 @@ func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
 	var emptyCells, emptyCols int
 	for _, p := range piles {
 		if p.Empty() {
-			switch p.category {
-			case "Cell":
+			switch p.vtable.(type) {
+			case *Cell:
 				emptyCells++
-			case "Tableau":
+			case *Tableau:
 				if p.Label() == "" && p != pDraggingTo {
 					// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
 					emptyCols++

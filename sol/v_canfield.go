@@ -43,10 +43,18 @@ func (self *Canfield) BuildPiles() {
 func (self *Canfield) StartGame() {
 
 	if self.variant == "storehouse" {
-		MoveNamedCard(self.stock, CLUB, 2, self.foundations[0])
-		MoveNamedCard(self.stock, DIAMOND, 2, self.foundations[1])
-		MoveNamedCard(self.stock, HEART, 2, self.foundations[2])
-		MoveNamedCard(self.stock, SPADE, 2, self.foundations[3])
+		if c := self.stock.Extract(2, CLUB); c != nil {
+			self.foundations[0].Push(c)
+		}
+		if c := self.stock.Extract(2, DIAMOND); c != nil {
+			self.foundations[1].Push(c)
+		}
+		if c := self.stock.Extract(2, HEART); c != nil {
+			self.foundations[2].Push(c)
+		}
+		if c := self.stock.Extract(2, SPADE); c != nil {
+			self.foundations[3].Push(c)
+		}
 	} else {
 		card := MoveCard(self.stock, self.foundations[0])
 		for _, pile := range self.foundations {

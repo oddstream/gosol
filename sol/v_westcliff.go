@@ -64,10 +64,18 @@ func (self *Westcliff) BuildPiles() {
 func (self *Westcliff) StartGame() {
 	switch self.variant {
 	case "Classic":
-		MoveNamedCard(self.stock, CLUB, 1, self.foundations[0])
-		MoveNamedCard(self.stock, DIAMOND, 1, self.foundations[1])
-		MoveNamedCard(self.stock, HEART, 1, self.foundations[2])
-		MoveNamedCard(self.stock, SPADE, 1, self.foundations[3])
+		if c := self.stock.Extract(1, CLUB); c != nil {
+			self.foundations[0].Push(c)
+		}
+		if c := self.stock.Extract(1, DIAMOND); c != nil {
+			self.foundations[1].Push(c)
+		}
+		if c := self.stock.Extract(1, HEART); c != nil {
+			self.foundations[2].Push(c)
+		}
+		if c := self.stock.Extract(1, SPADE); c != nil {
+			self.foundations[3].Push(c)
+		}
 		fallthrough
 	case "American", "Easthaven":
 		for _, pile := range self.tableaux {

@@ -32,21 +32,6 @@ func (ez *Easy) BuildPiles() {
 
 func (ez *Easy) StartGame() {
 
-	MoveNamedCard(ez.stock, CLUB, 1, ez.foundations[0])
-	MoveNamedCard(ez.stock, DIAMOND, 1, ez.foundations[1])
-	MoveNamedCard(ez.stock, HEART, 1, ez.foundations[2])
-	MoveNamedCard(ez.stock, SPADE, 1, ez.foundations[3])
-
-	MoveNamedCard(ez.stock, CLUB, 2, ez.foundations[0])
-	MoveNamedCard(ez.stock, DIAMOND, 2, ez.foundations[1])
-	MoveNamedCard(ez.stock, HEART, 2, ez.foundations[2])
-	MoveNamedCard(ez.stock, SPADE, 2, ez.foundations[3])
-
-	MoveNamedCard(ez.stock, CLUB, 3, ez.foundations[0])
-	MoveNamedCard(ez.stock, DIAMOND, 3, ez.foundations[1])
-	MoveNamedCard(ez.stock, HEART, 3, ez.foundations[2])
-	MoveNamedCard(ez.stock, SPADE, 3, ez.foundations[3])
-
 	for _, pile := range ez.tableaux {
 		for i := 0; i < 1; i++ {
 			MoveCard(ez.stock, pile).FlipDown()

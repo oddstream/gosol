@@ -75,8 +75,8 @@ func (*Usk) AfterMove() {}
 
 func (*Usk) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch (pile).category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownAltColor(); !ok {
 				return false, err
@@ -87,14 +87,14 @@ func (*Usk) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*Usk) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch (dst).category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -134,10 +134,12 @@ func (self *Usk) PileTapped(pile *Pile) {
 	// collect cards to stock
 	for _, t := range self.tableaux {
 		// MoveCards keeps the order of the cards
-		MoveCards(t, 0, self.stock)
+		if !t.Empty() {
+			MoveTail(t.cards[0], self.stock)
+		}
 	}
 	// reverse order so we can pop
-	ReverseCards(self.stock)
+	self.stock.ReverseCards()
 	// redeal cards
 	self.dealCards()
 	TheBaize.SetRecycles(0)
