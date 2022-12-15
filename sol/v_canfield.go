@@ -87,8 +87,8 @@ func (self *Canfield) AfterMove() {
 
 func (self *Canfield) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch pile.category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
@@ -103,8 +103,8 @@ func (self *Canfield) TailMoveError(tail []*Card) (bool, error) {
 func (self *Canfield) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// The top cards are available for play on foundations, BUT NEVER INTO SPACES
 	// One card can be moved at a time, but sequences can also be moved as one unit.
-	switch dst.category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			c := tail[0]
 			ord := util.OrdinalToShortString(c.Ordinal())
@@ -122,7 +122,7 @@ func (self *Canfield) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			// Spaces that occur on the tableau are filled only from reserve or waste
 			if tail[0].owner.category == "Tableau" {

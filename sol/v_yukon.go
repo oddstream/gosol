@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"image"
@@ -12,41 +13,41 @@ type Yukon struct {
 	extraCells int
 }
 
-func (yuk *Yukon) BuildPiles() {
+func (self *Yukon) BuildPiles() {
 
-	yuk.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
-	yuk.foundations = nil
+	self.foundations = nil
 	for y := 0; y < 4; y++ {
 		f := NewFoundation(image.Point{8, y})
-		yuk.foundations = append(yuk.foundations, f)
+		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
-	yuk.cells = nil
+	self.cells = nil
 	y := 4
-	for i := 0; i < yuk.extraCells; i++ {
+	for i := 0; i < self.extraCells; i++ {
 		c := NewCell(image.Point{8, y})
-		yuk.cells = append(yuk.cells, c)
+		self.cells = append(self.cells, c)
 		y += 1
 	}
 
-	yuk.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 0}, FAN_DOWN, MOVE_ANY)
-		yuk.tableaux = append(yuk.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 		t.SetLabel("K")
 	}
 }
 
-func (yuk *Yukon) StartGame() {
+func (self *Yukon) StartGame() {
 
-	MoveCard(yuk.stock, yuk.tableaux[0])
+	MoveCard(self.stock, self.tableaux[0])
 	var dealDown int = 1
 	for x := 1; x < 7; x++ {
 		for i := 0; i < dealDown; i++ {
-			MoveCard(yuk.stock, yuk.tableaux[x])
-			if c := yuk.tableaux[x].Peek(); c == nil {
+			MoveCard(self.stock, self.tableaux[x])
+			if c := self.tableaux[x].Peek(); c == nil {
 				break
 			} else {
 				c.FlipDown()
@@ -54,11 +55,11 @@ func (yuk *Yukon) StartGame() {
 		}
 		dealDown++
 		for i := 0; i < 5; i++ {
-			MoveCard(yuk.stock, yuk.tableaux[x])
+			MoveCard(self.stock, self.tableaux[x])
 		}
 	}
-	if DebugMode && yuk.stock.Len() > 0 {
-		println("*** still", yuk.stock.Len(), "cards in Stock ***")
+	if DebugMode && self.stock.Len() > 0 {
+		println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 
@@ -96,8 +97,8 @@ func (*Yukon) TailTapped(tail []*Card) {
 
 func (*Yukon) PileTapped(*Pile) {}
 
-func (yuk *Yukon) Wikipedia() string {
-	return yuk.wikipedia
+func (self *Yukon) Wikipedia() string {
+	return self.wikipedia
 }
 
 func (*Yukon) CardColors() int {

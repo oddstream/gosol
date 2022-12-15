@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"image"
@@ -11,38 +12,38 @@ type Australian struct {
 	wikipedia string
 }
 
-func (aus *Australian) BuildPiles() {
-	aus.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
-	aus.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+func (self *Australian) BuildPiles() {
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
+	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
-	aus.foundations = nil
+	self.foundations = nil
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0})
-		aus.foundations = append(aus.foundations, f)
+		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
-	aus.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 8; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		aus.tableaux = append(aus.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 		t.SetLabel("K")
 	}
 }
 
-func (aus *Australian) StartGame() {
-	TheBaize.SetRecycles(0)
-	for _, pile := range aus.tableaux {
+func (self *Australian) StartGame() {
+	for _, pile := range self.tableaux {
 		for i := 0; i < 4; i++ {
-			MoveCard(aus.stock, pile)
+			MoveCard(self.stock, pile)
 		}
 	}
-	MoveCard(aus.stock, aus.waste)
+	MoveCard(self.stock, self.waste)
+	TheBaize.SetRecycles(0)
 }
 
-func (aus *Australian) AfterMove() {
-	if aus.waste.Len() == 0 && aus.stock.Len() != 0 {
-		MoveCard(aus.stock, aus.waste)
+func (self *Australian) AfterMove() {
+	if self.waste.Len() == 0 && self.stock.Len() != 0 {
+		MoveCard(self.stock, self.waste)
 	}
 }
 
@@ -51,14 +52,14 @@ func (*Australian) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*Australian) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch dst.category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -72,11 +73,11 @@ func (*Australian) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
-func (aus *Australian) TailTapped(tail []*Card) {
+func (self *Australian) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if pile == aus.stock && len(tail) == 1 {
+	if pile == self.stock && len(tail) == 1 {
 		c := pile.Pop()
-		aus.waste.Push(c)
+		self.waste.Push(c)
 	} else {
 		pile.vtable.TailTapped(tail)
 	}
@@ -84,8 +85,8 @@ func (aus *Australian) TailTapped(tail []*Card) {
 
 func (*Australian) PileTapped(*Pile) {}
 
-func (aus *Australian) Wikipedia() string {
-	return aus.wikipedia
+func (self *Australian) Wikipedia() string {
+	return self.wikipedia
 }
 
 func (*Australian) CardColors() int {

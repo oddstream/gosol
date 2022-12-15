@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"image"
@@ -13,66 +14,61 @@ type Agnes struct {
 	wikipedia string
 }
 
-func (ag *Agnes) BuildPiles() {
+func (self *Agnes) BuildPiles() {
 
-	ag.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
-	ag.waste = nil
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
+	self.waste = nil
 
-	ag.foundations = nil
+	self.foundations = nil
 	for x := 3; x < 7; x++ {
 		f := NewFoundation(image.Point{x, 0})
-		ag.foundations = append(ag.foundations, f)
+		self.foundations = append(self.foundations, f)
 	}
 
-	ag.reserves = nil
+	self.reserves = nil
 	for x := 0; x < 7; x++ {
 		r := NewReserve(image.Point{x, 1}, FAN_NONE)
-		ag.reserves = append(ag.reserves, r)
+		self.reserves = append(self.reserves, r)
 	}
 
-	ag.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY)
-		ag.tableaux = append(ag.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 	}
 }
 
-func (ag *Agnes) StartGame() {
+func (self *Agnes) StartGame() {
 
-	for _, pile := range ag.reserves {
-		MoveCard(ag.stock, pile)
+	for _, pile := range self.reserves {
+		MoveCard(self.stock, pile)
 	}
 
-	var deal = 1
-	for _, pile := range ag.tableaux {
-		for i := 0; i < deal; i++ {
-			MoveCard(ag.stock, pile)
-		}
-		deal++
+	for _, pile := range self.tableaux {
+		MoveCard(self.stock, pile)
 	}
 
-	c := MoveCard(ag.stock, ag.foundations[0])
+	c := MoveCard(self.stock, self.foundations[0])
 	ord := c.Ordinal()
-	for _, pile := range ag.foundations {
+	for _, pile := range self.foundations {
 		pile.SetLabel(util.OrdinalToShortString(ord))
 	}
 	ord -= 1
 	if ord == 0 {
 		ord = 13
 	}
-	for _, pile := range ag.tableaux {
+	for _, pile := range self.tableaux {
 		pile.SetLabel(util.OrdinalToShortString(ord))
 	}
 }
 
 func (*Agnes) AfterMove() {}
 
-func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
+func (self *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		// cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownAltColorWrap(); !ok {
 				return false, err
@@ -82,8 +78,7 @@ func (ag *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
+func (self *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	switch dst.vtable.(type) {
 	case *Foundation:
 		if dst.Empty() {
@@ -101,27 +96,27 @@ func (ag *Agnes) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (ag *Agnes) UnsortedPairs(pile *Pile) int {
+func (*Agnes) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
-func (ag *Agnes) TailTapped(tail []*Card) {
+func (self *Agnes) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if pile == ag.stock && len(tail) == 1 {
-		for _, pile := range ag.reserves {
-			MoveCard(ag.stock, pile)
+	if pile == self.stock && len(tail) == 1 {
+		for _, pile := range self.reserves {
+			MoveCard(self.stock, pile)
 		}
 	} else {
 		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (ag *Agnes) PileTapped(*Pile) {}
+func (*Agnes) PileTapped(*Pile) {}
 
-func (ag *Agnes) Wikipedia() string {
-	return ag.wikipedia
+func (self *Agnes) Wikipedia() string {
+	return self.wikipedia
 }
 
-func (ag *Agnes) CardColors() int {
+func (*Agnes) CardColors() int {
 	return 2
 }

@@ -397,15 +397,8 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 	} else {
 		pt := image.Pt(v.X, v.Y)
 		if c := b.FindLowestCardAt(pt); c != nil {
-			// currently don't allow transitioning cards to be dragged
-			// see Card.StartDrag()
-			if c.Transitioning() {
-				// TheUI.ToastError("Cannot drag a moving card")
-				sound.Play("Error")
-			} else {
-				b.StartTailDrag(c)
-				b.stroke.SetDraggedObject(c)
-			}
+			b.StartTailDrag(c)
+			b.stroke.SetDraggedObject(c)
 		} else {
 			if p := b.FindPileAt(pt); p != nil {
 				b.stroke.SetDraggedObject(p)

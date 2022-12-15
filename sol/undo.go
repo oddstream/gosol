@@ -4,6 +4,8 @@ package sol
 
 import (
 	"log"
+
+	"oddstream.games/gosol/sound"
 )
 
 // The CardID contains everything we need to serialize the card: pack, ordinal, suit and prone flag
@@ -90,6 +92,7 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])
 	}
+	sound.Play("TakeOutPackage")
 	b.bookmark = sb.Bookmark
 	b.recycles = sb.Recycles
 	b.setFlag(dirtyCardPositions)

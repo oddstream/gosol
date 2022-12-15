@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"image"
 	"log"
 	"math"
 	"time"
@@ -111,11 +110,11 @@ func Pow(x, y int) int {
 }
 
 // Distance finds the length of the hypotenuse between two points.
-func Distance(p1, p2 image.Point) float64 {
-	first := math.Pow(float64(p2.X-p1.X), 2)
-	second := math.Pow(float64(p2.Y-p1.Y), 2)
-	return math.Sqrt(first + second)
-}
+// func Distance(p1, p2 image.Point) float64 {
+// 	first := math.Pow(float64(p2.X-p1.X), 2)
+// 	second := math.Pow(float64(p2.Y-p1.Y), 2)
+// 	return math.Sqrt(first + second)
+// }
 
 // DistanceFloat64 finds the length of the hypotenuse between two points.
 // Formula is the square root of (x2 - x1)^2 + (y2 - y1)^2

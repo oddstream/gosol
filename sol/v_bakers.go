@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
 	"errors"
@@ -12,42 +13,42 @@ type BakersDozen struct {
 	wikipedia string
 }
 
-func (bd *BakersDozen) BuildPiles() {
+func (self *BakersDozen) BuildPiles() {
 
-	bd.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
-	bd.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 0}, FAN_DOWN, MOVE_ONE)
-		bd.tableaux = append(bd.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 		t.SetLabel("X")
 	}
 	for x := 0; x < 6; x++ {
 		t := NewTableau(image.Point{x, 3}, FAN_DOWN, MOVE_ONE)
-		bd.tableaux = append(bd.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 		t.SetLabel("X")
 	}
 
-	bd.foundations = nil
+	self.foundations = nil
 	for y := 0; y < 4; y++ {
 		f := NewFoundation(image.Point{9, y})
-		bd.foundations = append(bd.foundations, f)
+		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 }
 
-func (bd *BakersDozen) StartGame() {
+func (self *BakersDozen) StartGame() {
 
-	for _, tab := range bd.tableaux {
+	for _, tab := range self.tableaux {
 		for x := 0; x < 4; x++ {
-			MoveCard(bd.stock, tab)
+			MoveCard(self.stock, tab)
 		}
 		// demote kings
 		tab.BuryCards(13)
 	}
 
-	if DebugMode && bd.stock.Len() > 0 {
-		println("*** still", bd.stock.Len(), "cards in Stock ***")
+	if DebugMode && self.stock.Len() > 0 {
+		println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 
@@ -59,14 +60,14 @@ func (*BakersDozen) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*BakersDozen) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	switch dst.category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return false, errors.New("Cannot move a card to an empty Tableau")
 		} else {
@@ -86,8 +87,8 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 
 func (*BakersDozen) PileTapped(*Pile) {}
 
-func (bd *BakersDozen) Wikipedia() string {
-	return bd.wikipedia
+func (self *BakersDozen) Wikipedia() string {
+	return self.wikipedia
 }
 
 func (*BakersDozen) CardColors() int {

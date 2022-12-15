@@ -12,15 +12,22 @@ import (
 const (
 	cardmagic = 0x29041962
 
-	lerpStartNormal = 0.1
-	lerpStartClose  = 0.25
+	// debugSpeed  = 0.005
+	// slowSpeed   = 0.01
+	// normalSpeed = 0.025
+	// fastSpeed   = 0.04
 
-	debugSpeed  = 0.005
-	slowSpeed   = 0.01
-	normalSpeed = 0.025
-	fastSpeed   = 0.04
+	// transitionStepAmount is the distance the card travels every tick
+	transitionStepAmount = 0.025
 
-	flipStepAmount = 0.075 // flipStepAmount is the amount we shrink/grow the flipping card width every tick
+	// cards have to flip faster than they transition
+	// remember that flipping happens in two steps
+	// so three times faster would do, but four times faster seems snappier
+	// with cardTransitionStep at 0.02, and flipStepAmount at 0.08,
+	// average transitions take 0.64ms, flips take 0.39ms
+
+	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
+	flipStepAmount = transitionStepAmount * 4
 )
 
 /*
@@ -134,14 +141,14 @@ func (c *Card) TransitionTo(pos image.Point) {
 	// tried calculating distance from s.src to c.dst
 	// and dynamically making the card move faster
 	// but it wasn't really worth it
-	dist := util.Distance(c.src, c.dst)
-	if dist < float64(CardWidth) {
-		c.lerpStep = lerpStartClose
-		c.lerpStepAmount = fastSpeed
-	} else {
-		c.lerpStep = lerpStartNormal
-		c.lerpStepAmount = normalSpeed
-	}
+	// dist := util.Distance(c.src, c.dst)
+	// if dist < float64(CardWidth) {
+	// 	c.lerpStep = 0.25
+	// } else {
+	// 	c.lerpStep = 0.1
+	// }
+	c.lerpStep = 0.1 // kickstart the lerp by starting from 0.1 instead of 0.0
+	c.lerpStepAmount = transitionStepAmount
 }
 
 // StartDrag informs card that it is being dragged

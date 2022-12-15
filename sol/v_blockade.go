@@ -48,8 +48,8 @@ func (self *Blockade) AfterMove() {
 
 func (*Blockade) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch (pile).category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownSuit(); !ok {
@@ -61,15 +61,14 @@ func (*Blockade) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*Blockade) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -94,12 +93,12 @@ func (self *Blockade) TailTapped(tail []*Card) {
 	}
 }
 
-func (self *Blockade) PileTapped(pile *Pile) {}
+func (*Blockade) PileTapped(*Pile) {}
 
 func (self *Blockade) Wikipedia() string {
 	return self.wikipedia
 }
 
-func (kl *Blockade) CardColors() int {
+func (*Blockade) CardColors() int {
 	return 4
 }

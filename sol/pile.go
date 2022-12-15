@@ -136,12 +136,15 @@ func (self *Pile) Shuffle() {
 		log.Println("not shuffling cards")
 		return
 	}
-	seed := time.Now().UnixNano() & 0xFFFFFFFF
-	if DebugMode {
-		log.Println("shuffle with seed", seed)
+	rand.Seed(time.Now().UnixNano())
+	// I don't understand why, but testing has shown that a single
+	// shuffle doesn't produce an even distribution, and that six
+	// shuffles are required
+	// bourne out anecdotally, with a single shuffle Freecell kept
+	// having three Aces at or near the top of the dealt piles
+	for i := 0; i < 6; i++ {
+		rand.Shuffle(self.Len(), self.Swap)
 	}
-	rand.Seed(seed)
-	rand.Shuffle(self.Len(), self.Swap)
 }
 
 // Deprecated: not needed in new model
