@@ -102,6 +102,9 @@ var Variants = map[string]Scripter{
 		cardColors:     4,
 		tabCompareFunc: CardPair.Compare_DownSuit,
 	},
+	"Bisley": &Bisley{
+		wikipedia: "https://en.wikipedia.org/wiki/Bisley_(card_game)",
+	},
 	"Blind Freecell": &Freecell{
 		wikipedia:      "https://en.wikipedia.org/wiki/FreeCell",
 		cardColors:     2,
@@ -325,7 +328,7 @@ var VariantGroups = map[string][]string{
 	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
 	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
-	"> Places":        {"Australian", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
+	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
 	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
 	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Yukon":         {"Yukon", "Yukon Cells"},
@@ -514,6 +517,17 @@ func (cp CardPair) Compare_DownSuit() (bool, error) {
 		return false, errors.New("Cards must be the same suit")
 	}
 	return cp.Compare_Down()
+}
+
+func (cp CardPair) Compare_UpOrDownSuit() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
+		return false, errors.New("Cards must be the same suit")
+	}
+	if (cp.c1.Ordinal()+1 == cp.c2.Ordinal()) || (cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
+		return true, nil
+	} else {
+		return false, errors.New("Cards must be in ascending or descending sequence")
+	}
 }
 
 func (cp CardPair) Compare_DownOtherSuit() (bool, error) {

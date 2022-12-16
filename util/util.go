@@ -224,18 +224,6 @@ func Pluralize(word string, n int) string {
 	return fmt.Sprintf("%d %ss", n, word)
 }
 
-// Contains tells whether a contains x.
-// func SearchStrings(a []string, x string) int
-// assumes the input slice is sorted; func Contains does not
-func Contains(a []string, x string) bool {
-	for _, n := range a {
-		if x == n {
-			return true
-		}
-	}
-	return false
-}
-
 // Duration of a func call
 // Arguments to a defer statement are immediately evaluated and stored.
 // The deferred function receives the pre-evaluated values when its invoked.
@@ -266,4 +254,13 @@ func Clone(dst, src interface{}) {
 	if err := dec.Decode(dst); err != nil {
 		log.Panic("Clone Decode error")
 	}
+}
+
+func Contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
 }

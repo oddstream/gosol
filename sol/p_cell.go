@@ -44,11 +44,6 @@ func (*Cell) Conformant() bool {
 	return true
 }
 
-// Complete - a cell is complete when it is empty
-func (self *Cell) Complete() bool {
-	return self.parent.Empty()
-}
-
 func (*Cell) UnsortedPairs() int {
 	return 0
 }

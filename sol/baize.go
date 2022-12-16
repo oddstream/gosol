@@ -787,9 +787,60 @@ func (b *Baize) Conformant() bool {
 }
 
 func (b *Baize) Complete() bool {
-	for _, p := range b.piles {
-		if !p.vtable.Complete() {
-			return false
+	/*
+		Bisley rule - game is complete when all piles except foundations are empty
+		would normally have 52 / 13 == 4 foundations
+		Bisley has 8 foundations
+		1 pack 52 cards, 13 cards per suit, 4 foundations
+		2 packs 104 cards, 13 cards per suit, 8 foundations
+
+		Spider rule (when game has discard piles)
+		discards should either be empty or contain 13 conformant cards
+		tableaux should either be empty or contain 13 conformant cards
+		any other pile type must be empty
+
+		Normal rule - all piles except foundations are empty
+	*/
+	if len(b.script.Discards()) > 0 {
+		for _, pile := range b.piles {
+			switch pile.vtable.(type) {
+			case *Discard:
+				if pile.Empty() {
+					// that's ok
+				} else if pile.Len() == len(CardLibrary)/len(b.script.Discards()) {
+					// eg 13 == 52 / 4
+					// we know that cards will be conformant, otherwise they
+					// couldn't have been moved here
+					// that's ok
+				} else {
+					return false
+				}
+			case *Tableau:
+				if pile.Empty() {
+					// that's ok
+				} else if pile.Len() == len(CardLibrary)/len(b.script.Discards()) {
+					// eg 13 == 52 / 4
+					if pile.vtable.Conformant() {
+						// that's ok
+					} else {
+						return false
+					}
+				} else {
+					return false
+				}
+			default:
+				if !pile.Empty() {
+					return false
+				}
+			}
+		}
+	} else {
+		for _, pile := range b.piles {
+			if !pile.IsFoundation() {
+				if !pile.Empty() {
+					return false
+				}
+			}
 		}
 	}
 	return true

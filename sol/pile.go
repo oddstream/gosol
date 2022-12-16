@@ -68,7 +68,6 @@ type PileVtabler interface {
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
 	Conformant() bool
-	Complete() bool
 	UnsortedPairs() int
 	MovableTails() []*MovableTail
 	Placeholder() *ebiten.Image
@@ -121,6 +120,13 @@ func (self *Pile) Hidden() bool {
 	return self.slot.X < 0 || self.slot.Y < 0
 }
 
+func (self *Pile) IsFoundation() bool {
+	// using a type assertion seems more idiomatic than a string comparison
+	_, ok := self.vtable.(*Foundation)
+	return ok
+	// return self.category == "Foundation"
+}
+
 func (self *Pile) IsStock() bool {
 	// using a type assertion seems more idiomatic than a string comparison
 	_, ok := self.vtable.(*Stock)
@@ -136,15 +142,14 @@ func (self *Pile) Shuffle() {
 		log.Println("not shuffling cards")
 		return
 	}
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UTC().UnixNano())
 	// I don't understand why, but testing has shown that a single
 	// shuffle doesn't produce an even distribution, and that six
-	// shuffles are required
-	// bourne out anecdotally, with a single shuffle Freecell kept
-	// having three Aces at or near the top of the dealt piles
-	for i := 0; i < 6; i++ {
-		rand.Shuffle(self.Len(), self.Swap)
-	}
+	// shuffles are required.
+	// Anecdotally, with a single shuffle Freecell kept
+	// having three Aces at or near the top of the dealt piles.
+	// Or, this could all be voodoo
+	rand.Shuffle(self.Len(), self.Swap)
 }
 
 // Deprecated: not needed in new model
@@ -576,7 +581,6 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 }
 
 //func (self *Pile) DefaultConformant() bool   { return false }
-//func (self *Pile) DefaultComplete() bool     { return false }
 //func (self *Pile) DefaultUnsortedPairs() int { return 0 }
 
 func (self *Pile) DrawStaticCards(screen *ebiten.Image) {

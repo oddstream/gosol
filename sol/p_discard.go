@@ -48,19 +48,6 @@ func (*Discard) Conformant() bool {
 	return false
 }
 
-// Complete - a discard pile is complete when it is empty or when
-// it contains a complete run of cards
-func (self *Discard) Complete() bool {
-	if self.parent.Empty() {
-		return true
-	}
-	if self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Discards()) {
-		// eg 13 == 52/4 or 13 == 104/8
-		return true
-	}
-	return false
-}
-
 func (*Discard) UnsortedPairs() int {
 	// you can only put a sorted sequence into a Discard, so this will always be zero
 	return 0

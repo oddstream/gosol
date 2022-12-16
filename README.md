@@ -182,6 +182,10 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 * For games with reshuffles (like Cruel and Perseverance) you need to anticipate the effects of the reshuffle.
 * Use undo and bookmark. Undo isn't cheating; it's improvising, adapting and overcoming.
 
+## Where are the preferences, statistics and saved games stored?
+
+On Linux, you'll find them as `.json` files in a folder called `~/.config/oddstream.games/gosol`.
+
 ## Terminology and conventions
 
 * A PILE of cards
@@ -192,7 +196,7 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 * Suits are listed in alphabetic order: Club, Diamond, Heart, Spade
 
-* Cards changing between face down and face up is called FLIPPING.
+* Cards changing between face down and face up is called FLIPPING
 
 * The user never moves or flips a face down card, only the dealer can
 
@@ -202,18 +206,20 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 * Stock only has face down cards
 
-* A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux.
+* A game is EASY when the deal has been 'fixed', usually by moving Aces to the foundations, or shuffling Kings or Aces in the tableaux
+
+* A game is RELAXED when any restriction on what card can be moved to an empty tableaux pile has been removed
 
 ![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Klondike.png)
 
 ## TODO
 
 * The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.
-* Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua).
+* Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua), or a Tcl-style little language.
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
 * ~~Get it working on Android (agggh! help!).~~
 * ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
-* Give up and rewrite the whole thing in [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
+* Give up and rewrite the whole thing in [Godot](https://godotengine.org/) or [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
 
 ## History
 

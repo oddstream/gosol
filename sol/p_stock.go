@@ -39,8 +39,8 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 	CardLibrary = make([]Card, 0, cardsRequired)
 
 	for pack := 0; pack < packs; pack++ {
-		for ord := 1; ord < 14; ord++ {
-			for suit := 0; suit < suits; suit++ {
+		for suit := 0; suit < suits; suit++ {
+			for ord := 1; ord < 14; ord++ {
 				if cardFilter[ord] {
 					/*
 						suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
@@ -103,11 +103,6 @@ func (*Stock) TailTapped([]*Card) {
 }
 
 func (self *Stock) Conformant() bool {
-	return self.parent.Empty()
-}
-
-// Complete - a stock pile is complete when it is empty
-func (self *Stock) Complete() bool {
 	return self.parent.Empty()
 }
 

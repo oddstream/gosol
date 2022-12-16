@@ -32,9 +32,7 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card to a Foundation")
 	}
-	if self.Complete() {
-		return false, errors.New("The Foundation is full")
-	}
+	// TODO Bisley
 	return TheBaize.script.TailAppendError(self.parent, tail)
 }
 
@@ -42,11 +40,6 @@ func (*Foundation) TailTapped([]*Card) {}
 
 func (*Foundation) Conformant() bool {
 	return true
-}
-
-// Complete - a foundation pile is complete when it contains a complete run of cards
-func (self *Foundation) Complete() bool {
-	return self.parent.Len() == len(CardLibrary)/len(TheBaize.script.Foundations())
 }
 
 func (*Foundation) UnsortedPairs() int {
