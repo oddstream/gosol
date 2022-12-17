@@ -27,7 +27,7 @@ const (
 	// average transitions take 0.64ms, flips take 0.39ms
 
 	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
-	flipStepAmount = transitionStepAmount * 4
+	flipStepAmount = transitionStepAmount * 3
 )
 
 /*

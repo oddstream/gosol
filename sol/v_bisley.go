@@ -6,15 +6,11 @@ package sol
 import (
 	"errors"
 	"image"
-
-	"oddstream.games/gosol/util"
 )
 
 type Bisley struct {
 	ScriptBase
-	downFoundations []*Pile
-	upFoundations   []*Pile
-	wikipedia       string
+	wikipedia string
 }
 
 func (self *Bisley) BuildPiles() {
@@ -23,19 +19,15 @@ func (self *Bisley) BuildPiles() {
 
 	self.foundations = nil
 
-	self.downFoundations = nil
 	for x := 0; x < 4; x++ {
 		f := NewFoundation(image.Point{x, 0})
 		self.foundations = append(self.foundations, f)
-		self.downFoundations = append(self.downFoundations, f)
 		f.SetLabel("K")
 	}
 
-	self.upFoundations = nil
 	for x := 0; x < 4; x++ {
 		f := NewFoundation(image.Point{x, 1})
 		self.foundations = append(self.foundations, f)
-		self.upFoundations = append(self.upFoundations, f)
 		f.SetLabel("A")
 	}
 
@@ -51,10 +43,10 @@ func (self *Bisley) BuildPiles() {
 
 func (self *Bisley) StartGame() {
 
-	self.upFoundations[0].Push(self.stock.Extract(1, CLUB))
-	self.upFoundations[1].Push(self.stock.Extract(1, DIAMOND))
-	self.upFoundations[2].Push(self.stock.Extract(1, HEART))
-	self.upFoundations[3].Push(self.stock.Extract(1, SPADE))
+	self.foundations[4].Push(self.stock.Extract(1, CLUB))
+	self.foundations[5].Push(self.stock.Extract(1, DIAMOND))
+	self.foundations[6].Push(self.stock.Extract(1, HEART))
+	self.foundations[7].Push(self.stock.Extract(1, SPADE))
 
 	// the first 4 tableaux have 3 cards
 	for i := 0; i < 4; i++ {
@@ -84,7 +76,7 @@ func (self *Bisley) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			if util.Contains(self.upFoundations, dst) {
+			if dst.Label() == "A" {
 				return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 			} else {
 				return CardPair{dst.Peek(), tail[0]}.Compare_DownSuit()
@@ -124,5 +116,5 @@ func (self *Bisley) Wikipedia() string {
 }
 
 func (*Bisley) CardColors() int {
-	return 2
+	return 4
 }

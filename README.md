@@ -186,6 +186,8 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 
 On Linux, you'll find them as `.json` files in a folder called `~/.config/oddstream.games/gosol`.
 
+On Windows, you'll find them as `.json` files in a folder called `C:\Users\<username>\AppData\Roaming\oddstream.games\gosol`.
+
 ## Terminology and conventions
 
 * A PILE of cards

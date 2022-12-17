@@ -11,17 +11,17 @@ import (
 )
 
 type Waste struct {
-	parent *Pile
+	pile *Pile
 }
 
 func NewWaste(slot image.Point, fanType FanType) *Pile {
 	waste := NewPile("Waste", slot, fanType, MOVE_ONE)
-	waste.vtable = &Waste{parent: &waste}
+	waste.vtable = &Waste{pile: &waste}
 	TheBaize.AddPile(&waste)
 	return &waste
 }
 
-func (self *Waste) CanAcceptTail(tail []*Card) (bool, error) {
+func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Can only move a single card to Waste")
 	}
@@ -33,27 +33,27 @@ func (self *Waste) CanAcceptTail(tail []*Card) (bool, error) {
 }
 
 func (self *Waste) TailTapped(tail []*Card) {
-	self.parent.DefaultTailTapped(tail)
+	self.pile.DefaultTailTapped(tail)
 }
 
 // Conformant when contains zero or one card(s), same as Reserve
 func (self *Waste) Conformant() bool {
-	return self.parent.Len() < 2
+	return self.pile.Len() < 2
 }
 
 // UnsortedPairs - cards in a waste pile are always considered to be unsorted
 func (self *Waste) UnsortedPairs() int {
-	if self.parent.Empty() {
+	if self.pile.Empty() {
 		return 0
 	}
-	return self.parent.Len() - 1
+	return self.pile.Len() - 1
 }
 
 func (self *Waste) MovableTails() []*MovableTail {
 	// nb same as Reserve.MovableTails
 	var tails []*MovableTail = []*MovableTail{}
-	if self.parent.Len() > 0 {
-		var card *Card = self.parent.Peek()
+	if self.pile.Len() > 0 {
+		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
 		var homes []*Pile = TheBaize.FindHomesForTail(tail)
 		for _, home := range homes {
@@ -63,6 +63,6 @@ func (self *Waste) MovableTails() []*MovableTail {
 	return tails
 }
 
-func (self *Waste) Placeholder() *ebiten.Image {
+func (*Waste) Placeholder() *ebiten.Image {
 	return nil
 }

@@ -41,7 +41,7 @@ func (sb ScriptBase) SpiderComplete() bool {
 		switch len(t.cards) {
 		case 0:
 			// that's fine
-		case 13: // TODO
+		case 13: // TODO 104 cards, 8 tabs = 13 cards/tab
 			if !t.vtable.Conformant() {
 				return false
 			}
@@ -120,6 +120,9 @@ type Scripter interface {
 var Variants = map[string]Scripter{
 	"Agnes Bernauer": &Agnes{
 		wikipedia: "https://en.wikipedia.org/wiki/Agnes_(solitaire)",
+	},
+	"Alhambra": &Alhambra{
+		wikipedia: "https://en.wikipedia.org/wiki/Alhambra_(solitaire)",
 	},
 	"American Toad": &Toad{
 		wikipedia: "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
@@ -558,6 +561,21 @@ func (cp CardPair) Compare_UpOrDownSuit() (bool, error) {
 	}
 	if (cp.c1.Ordinal()+1 == cp.c2.Ordinal()) || (cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
 		return true, nil
+	} else {
+		return false, errors.New("Cards must be in ascending or descending sequence")
+	}
+}
+
+func (cp CardPair) Compare_UpOrDownSuitWrap() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
+		return false, errors.New("Cards must be the same suit")
+	}
+	if (cp.c1.Ordinal()+1 == cp.c2.Ordinal()) || (cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
+		return true, nil
+	} else if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
+		return true, nil // Ace On King
+	} else if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
+		return true, nil // King on Ace
 	} else {
 		return false, errors.New("Cards must be in ascending or descending sequence")
 	}

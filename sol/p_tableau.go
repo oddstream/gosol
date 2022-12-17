@@ -16,12 +16,12 @@ import (
 )
 
 type Tableau struct {
-	parent *Pile
+	pile *Pile
 }
 
 func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
 	tableau := NewPile("Tableau", slot, fanType, moveType)
-	tableau.vtable = &Tableau{parent: &tableau}
+	tableau.vtable = &Tableau{pile: &tableau}
 	TheBaize.AddPile(&tableau)
 	return &tableau
 }
@@ -61,9 +61,9 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	// we couldn't check MOVE_PLUS_ONE in pile.CanMoveTail
 	// because we didn't then know the destination pile
 	// which we need to know to calculate power moves
-	if self.parent.moveType == MOVE_ONE_PLUS {
+	if self.pile.moveType == MOVE_ONE_PLUS {
 		if ThePreferences.PowerMoves {
-			moves := powerMoves(TheBaize.piles, self.parent)
+			moves := powerMoves(TheBaize.piles, self.pile)
 			if len(tail) > moves {
 				if moves == 1 {
 					return false, fmt.Errorf("Space to move 1 card, not %d", len(tail))
@@ -77,27 +77,27 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 			}
 		}
 	}
-	return TheBaize.script.TailAppendError(self.parent, tail)
+	return TheBaize.script.TailAppendError(self.pile, tail)
 }
 
 func (self *Tableau) TailTapped(tail []*Card) {
-	self.parent.DefaultTailTapped(tail)
+	self.pile.DefaultTailTapped(tail)
 }
 
 func (self *Tableau) Conformant() bool {
-	return TheBaize.script.UnsortedPairs(self.parent) == 0
+	return TheBaize.script.UnsortedPairs(self.pile) == 0
 }
 
 func (self *Tableau) UnsortedPairs() int {
-	return TheBaize.script.UnsortedPairs(self.parent)
+	return TheBaize.script.UnsortedPairs(self.pile)
 }
 
 func (self *Tableau) MovableTails() []*MovableTail {
 	var tails []*MovableTail = []*MovableTail{}
-	if self.parent.Len() > 0 {
-		for _, card := range self.parent.cards {
-			var tail = self.parent.MakeTail(card)
-			if ok, _ := self.parent.CanMoveTail(tail); ok {
+	if self.pile.Len() > 0 {
+		for _, card := range self.pile.cards {
+			var tail = self.pile.MakeTail(card)
+			if ok, _ := self.pile.CanMoveTail(tail); ok {
 				if ok, _ := TheBaize.script.TailMoveError(tail); ok {
 					var homes []*Pile = TheBaize.FindHomesForTail(tail)
 					for _, home := range homes {
@@ -116,9 +116,9 @@ func (self *Tableau) Placeholder() *ebiten.Image {
 	dc.SetLineWidth(2)
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	if self.parent.label != "" {
+	if self.pile.label != "" {
 		dc.SetFontFace(schriftbank.CardOrdinalLarge)
-		dc.DrawStringAnchored(self.parent.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
+		dc.DrawStringAnchored(self.pile.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 	}
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())

@@ -13,18 +13,18 @@ import (
 )
 
 type Cell struct {
-	parent *Pile
+	pile *Pile
 }
 
 func NewCell(slot image.Point) *Pile {
 	cell := NewPile("Cell", slot, FAN_NONE, MOVE_ONE)
-	cell.vtable = &Cell{parent: &cell}
+	cell.vtable = &Cell{pile: &cell}
 	TheBaize.AddPile(&cell)
 	return &cell
 }
 
 func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
-	if !self.parent.Empty() {
+	if !self.pile.Empty() {
 		return false, errors.New("A Cell can only contain one card")
 	}
 	if len(tail) > 1 {
@@ -37,7 +37,7 @@ func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {
 }
 
 func (self *Cell) TailTapped(tail []*Card) {
-	self.parent.DefaultTailTapped(tail)
+	self.pile.DefaultTailTapped(tail)
 }
 
 func (*Cell) Conformant() bool {
@@ -51,8 +51,8 @@ func (*Cell) UnsortedPairs() int {
 func (self *Cell) MovableTails() []*MovableTail {
 	// nb same as Reserve.MovableTails
 	var tails []*MovableTail = []*MovableTail{}
-	if self.parent.Len() > 0 {
-		var card *Card = self.parent.Peek()
+	if self.pile.Len() > 0 {
+		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
 		var homes []*Pile = TheBaize.FindHomesForTail(tail)
 		for _, home := range homes {

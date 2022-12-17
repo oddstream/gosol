@@ -62,7 +62,7 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 }
 
 type Stock struct {
-	parent *Pile
+	pile *Pile
 }
 
 func FillFromLibrary(pile *Pile) {
@@ -87,7 +87,7 @@ func FillFromLibrary(pile *Pile) {
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
 	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
-	stock.vtable = &Stock{parent: &stock}
+	stock.vtable = &Stock{pile: &stock}
 	FillFromLibrary(&stock)
 	stock.Shuffle()
 	TheBaize.AddPile(&stock)
@@ -103,21 +103,21 @@ func (*Stock) TailTapped([]*Card) {
 }
 
 func (self *Stock) Conformant() bool {
-	return self.parent.Empty()
+	return self.pile.Empty()
 }
 
 // UnsortedPairs - cards in a stock pile are always considered to be unsorted
 func (self *Stock) UnsortedPairs() int {
-	if self.parent.Empty() {
+	if self.pile.Empty() {
 		return 0
 	}
-	return self.parent.Len() - 1
+	return self.pile.Len() - 1
 }
 
 func (self *Stock) MovableTails() []*MovableTail {
 	var tails []*MovableTail = []*MovableTail{}
-	if self.parent.Len() > 0 {
-		var card *Card = self.parent.Peek()
+	if self.pile.Len() > 0 {
+		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
 		var homes []*Pile = TheBaize.FindHomesForTail(tail)
 		for _, home := range homes {
@@ -127,7 +127,7 @@ func (self *Stock) MovableTails() []*MovableTail {
 	return tails
 }
 
-func (self *Stock) Placeholder() *ebiten.Image {
+func (*Stock) Placeholder() *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(color.NRGBA{255, 255, 255, 31})
 	dc.SetLineWidth(2)

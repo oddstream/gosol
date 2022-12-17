@@ -13,18 +13,18 @@ import (
 )
 
 type Discard struct {
-	parent *Pile
+	pile *Pile
 }
 
 func NewDiscard(slot image.Point, fanType FanType) *Pile {
 	discard := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
-	discard.vtable = &Discard{parent: &discard}
+	discard.vtable = &Discard{pile: &discard}
 	TheBaize.AddPile(&discard)
 	return &discard
 }
 
 func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
-	if !self.parent.Empty() {
+	if !self.pile.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")
 	}
 	if AnyCardsProne(tail) {
@@ -53,11 +53,11 @@ func (*Discard) UnsortedPairs() int {
 	return 0
 }
 
-func (self *Discard) MovableTails() []*MovableTail {
+func (*Discard) MovableTails() []*MovableTail {
 	return nil
 }
 
-func (self *Discard) Placeholder() *ebiten.Image {
+func (*Discard) Placeholder() *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 	dc.SetColor(color.NRGBA{255, 255, 255, 31})
 	dc.SetLineWidth(2)

@@ -14,12 +14,12 @@ import (
 )
 
 type Foundation struct {
-	parent *Pile
+	pile *Pile
 }
 
 func NewFoundation(slot image.Point) *Pile {
 	foundation := NewPile("Foundation", slot, FAN_NONE, MOVE_NONE)
-	foundation.vtable = &Foundation{parent: &foundation}
+	foundation.vtable = &Foundation{pile: &foundation}
 	TheBaize.AddPile(&foundation)
 	return &foundation
 }
@@ -33,7 +33,7 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 		return false, errors.New("Cannot add a face down card to a Foundation")
 	}
 	// TODO Bisley
-	return TheBaize.script.TailAppendError(self.parent, tail)
+	return TheBaize.script.TailAppendError(self.pile, tail)
 }
 
 func (*Foundation) TailTapped([]*Card) {}
@@ -47,7 +47,7 @@ func (*Foundation) UnsortedPairs() int {
 	return 0
 }
 
-func (self *Foundation) MovableTails() []*MovableTail {
+func (*Foundation) MovableTails() []*MovableTail {
 	return nil
 }
 
@@ -57,9 +57,9 @@ func (self *Foundation) Placeholder() *ebiten.Image {
 	dc.SetLineWidth(2)
 	// draw the RoundedRect entirely INSIDE the context
 	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	if self.parent.label != "" {
+	if self.pile.label != "" {
 		dc.SetFontFace(schriftbank.CardOrdinalLarge)
-		dc.DrawStringAnchored(self.parent.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
+		dc.DrawStringAnchored(self.pile.label, float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 	}
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
