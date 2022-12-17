@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 I'll call the receiver anything I like, thank you
 
 import (
 	"image"
@@ -13,51 +14,51 @@ type Klondike struct {
 	thoughtful     bool
 }
 
-func (kl *Klondike) BuildPiles() {
+func (self *Klondike) BuildPiles() {
 
-	if kl.draw == 0 {
-		kl.draw = 1
+	if self.draw == 0 {
+		self.draw = 1
 	}
-	kl.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
-	kl.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
+	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
-	kl.foundations = nil
+	self.foundations = nil
 	for x := 3; x < 7; x++ {
 		f := NewFoundation(image.Point{x, 0})
-		kl.foundations = append(kl.foundations, f)
+		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
-	kl.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 7; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")
-		kl.tableaux = append(kl.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 	}
 }
 
-func (kl *Klondike) StartGame() {
+func (self *Klondike) StartGame() {
 	var dealDown = 0
-	for _, pile := range kl.tableaux {
+	for _, pile := range self.tableaux {
 		for i := 0; i < dealDown; i++ {
-			card := MoveCard(kl.stock, pile)
-			if !kl.thoughtful {
+			card := MoveCard(self.stock, pile)
+			if !self.thoughtful {
 				card.FlipDown()
 			}
 		}
 		dealDown++
-		MoveCard(kl.stock, pile)
+		MoveCard(self.stock, pile)
 	}
-	TheBaize.SetRecycles(kl.recycles)
-	for i := 0; i < kl.draw; i++ {
-		MoveCard(kl.stock, kl.waste)
+	TheBaize.SetRecycles(self.recycles)
+	for i := 0; i < self.draw; i++ {
+		MoveCard(self.stock, self.waste)
 	}
 }
 
-func (kl *Klondike) AfterMove() {
-	if kl.waste.Len() == 0 && kl.stock.Len() != 0 {
-		for i := 0; i < kl.draw; i++ {
-			MoveCard(kl.stock, kl.waste)
+func (self *Klondike) AfterMove() {
+	if self.waste.Len() == 0 && self.stock.Len() != 0 {
+		for i := 0; i < self.draw; i++ {
+			MoveCard(self.stock, self.waste)
 		}
 	}
 }
@@ -101,27 +102,27 @@ func (*Klondike) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColor)
 }
 
-func (kl *Klondike) TailTapped(tail []*Card) {
+func (self *Klondike) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if pile == kl.stock && len(tail) == 1 {
-		for i := 0; i < kl.draw; i++ {
-			MoveCard(kl.stock, kl.waste)
+	if pile == self.stock && len(tail) == 1 {
+		for i := 0; i < self.draw; i++ {
+			MoveCard(self.stock, self.waste)
 		}
 	} else {
 		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (kl *Klondike) PileTapped(pile *Pile) {
-	if pile == kl.stock {
-		RecycleWasteToStock(kl.waste, kl.stock)
+func (self *Klondike) PileTapped(pile *Pile) {
+	if pile == self.stock {
+		RecycleWasteToStock(self.waste, self.stock)
 	}
 }
 
-func (kl *Klondike) Wikipedia() string {
-	return kl.wikipedia
+func (self *Klondike) Wikipedia() string {
+	return self.wikipedia
 }
 
-func (kl *Klondike) CardColors() int {
+func (self *Klondike) CardColors() int {
 	return 2
 }

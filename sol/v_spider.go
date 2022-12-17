@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 I'll call the receiver anything I like, thank you
 
 import (
 	"errors"
@@ -15,40 +16,40 @@ type Spider struct {
 	packs, suits int
 }
 
-func (sp *Spider) BuildPiles() {
+func (self *Spider) BuildPiles() {
 
-	sp.stock = NewStock(image.Point{0, 0}, FAN_NONE, sp.packs, sp.suits, nil, 0)
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, self.packs, self.suits, nil, 0)
 
-	sp.discards = nil
+	self.discards = nil
 	for x := 2; x < 10; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
-		sp.discards = append(sp.discards, d)
+		self.discards = append(self.discards, d)
 	}
 
-	sp.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		sp.tableaux = append(sp.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 	}
 }
 
-func (sp *Spider) StartGame() {
+func (self *Spider) StartGame() {
 	// The Tableau consists of 10 stacks with 6 cards in the first 4 stacks, with the 6th card face up,
 	// and 5 cards in the remaining 6 stacks, with the 5th card face up.
 
 	for i := 0; i < 4; i++ {
-		pile := sp.tableaux[i]
+		pile := self.tableaux[i]
 		for j := 0; j < 6; j++ {
-			MoveCard(sp.stock, pile).FlipDown()
+			MoveCard(self.stock, pile).FlipDown()
 		}
 	}
 	for i := 4; i < 10; i++ {
-		pile := sp.tableaux[i]
+		pile := self.tableaux[i]
 		for j := 0; j < 5; j++ {
-			MoveCard(sp.stock, pile).FlipDown()
+			MoveCard(self.stock, pile).FlipDown()
 		}
 	}
-	for _, pile := range sp.tableaux {
+	for _, pile := range self.tableaux {
 		c := pile.Peek()
 		if c == nil {
 			log.Panic("empty tableau")
@@ -99,23 +100,23 @@ func (*Spider) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownSuit)
 }
 
-func (sp *Spider) TailTapped(tail []*Card) {
+func (self *Spider) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Stock:
 		var tabCards, emptyTabs int
-		for _, tab := range sp.tableaux {
+		for _, tab := range self.tableaux {
 			if tab.Len() == 0 {
 				emptyTabs++
 			} else {
 				tabCards += tab.Len()
 			}
 		}
-		if emptyTabs > 0 && tabCards >= len(sp.tableaux) {
+		if emptyTabs > 0 && tabCards >= len(self.tableaux) {
 			TheUI.ToastError("All empty tableaux must be filled before dealing a new row")
 		} else {
-			for _, tab := range sp.tableaux {
-				MoveCard(sp.stock, tab)
+			for _, tab := range self.tableaux {
+				MoveCard(self.stock, tab)
 			}
 		}
 	default:
@@ -126,10 +127,14 @@ func (sp *Spider) TailTapped(tail []*Card) {
 
 func (*Spider) PileTapped(*Pile) {}
 
-func (sp *Spider) Wikipedia() string {
-	return sp.wikipedia
+func (self *Spider) Wikipedia() string {
+	return self.wikipedia
 }
 
-func (sp *Spider) CardColors() int {
-	return sp.cardColors
+func (self *Spider) CardColors() int {
+	return self.cardColors
+}
+
+func (self *Spider) Complete() bool {
+	return self.SpiderComplete()
 }

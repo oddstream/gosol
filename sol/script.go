@@ -20,6 +20,38 @@ type ScriptBase struct {
 	waste       *Pile
 }
 
+// Complete - default is number of cards in Foundations == number of cards in CardLibrary.
+// In Bisley, there may be <13 cards in a Foundation.
+// This will need overriding for any variants with Discard piles.
+// Could also do this by checking if any pile other than a Foundation is not empty.
+func (sb ScriptBase) Complete() bool {
+	var n = 0
+	for _, f := range sb.foundations {
+		n += len(f.cards)
+	}
+	return n == len(CardLibrary)
+}
+
+// SpiderComplete
+// Each tableau must be either empty or contain a sequence.
+// Discard contents must be sequences, otherwise they wouldn't be there.
+// There aren't any foundations.
+func (sb ScriptBase) SpiderComplete() bool {
+	for _, t := range sb.tableaux {
+		switch len(t.cards) {
+		case 0:
+			// that's fine
+		case 13: // TODO
+			if !t.vtable.Conformant() {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+	return true
+}
+
 func (sb ScriptBase) Wikipedia() string {
 	return "https://en.wikipedia.org/wiki/Patience_(game)"
 }
@@ -80,6 +112,7 @@ type Scripter interface {
 	Tableaux() []*Pile
 	Waste() *Pile
 
+	Complete() bool
 	Wikipedia() string
 	CardColors() int
 }

@@ -49,7 +49,7 @@ func (*Discard) Conformant() bool {
 }
 
 func (*Discard) UnsortedPairs() int {
-	// you can only put a sorted sequence into a Discard, so this will always be zero
+	// you can only put a sequence into a Discard, so this will always be zero
 	return 0
 }
 

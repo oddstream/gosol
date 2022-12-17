@@ -104,8 +104,8 @@ func (self *Westcliff) AfterMove() {
 
 func (*Westcliff) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch pile.category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		// cpairs.Print()
 		for _, pair := range cpairs {
@@ -119,14 +119,14 @@ func (*Westcliff) TailMoveError(tail []*Card) (bool, error) {
 
 func (*Westcliff) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch dst.category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuit()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -156,12 +156,12 @@ func (self *Westcliff) TailTapped(tail []*Card) {
 	}
 }
 
-func (self *Westcliff) PileTapped(pile *Pile) {}
+func (*Westcliff) PileTapped(pile *Pile) {}
 
 func (self *Westcliff) Wikipedia() string {
 	return self.wikipedia
 }
 
-func (self *Westcliff) CardColors() int {
+func (*Westcliff) CardColors() int {
 	return 2
 }

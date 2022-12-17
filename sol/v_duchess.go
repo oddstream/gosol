@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 I'll call the receiver anything I like, thank you
 
 import (
 	"errors"
@@ -14,52 +15,52 @@ type Duchess struct {
 	wikipedia string
 }
 
-func (du *Duchess) BuildPiles() {
+func (self *Duchess) BuildPiles() {
 
-	du.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil, 0)
 
-	du.reserves = nil
+	self.reserves = nil
 	for i := 0; i < 4; i++ {
-		du.reserves = append(du.reserves, NewReserve(image.Point{i * 2, 0}, FAN_RIGHT))
+		self.reserves = append(self.reserves, NewReserve(image.Point{i * 2, 0}, FAN_RIGHT))
 	}
 
-	du.waste = NewWaste(image.Point{1, 2}, FAN_DOWN3)
+	self.waste = NewWaste(image.Point{1, 2}, FAN_DOWN3)
 
-	du.foundations = nil
+	self.foundations = nil
 	for x := 3; x < 7; x++ {
-		du.foundations = append(du.foundations, NewFoundation(image.Point{x, 1}))
+		self.foundations = append(self.foundations, NewFoundation(image.Point{x, 1}))
 	}
 
-	du.tableaux = nil
+	self.tableaux = nil
 	for x := 3; x < 7; x++ {
-		du.tableaux = append(du.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
+		self.tableaux = append(self.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
 	}
 }
 
-func (du *Duchess) StartGame() {
+func (self *Duchess) StartGame() {
 	TheBaize.SetRecycles(1)
-	for _, pile := range du.foundations {
+	for _, pile := range self.foundations {
 		pile.SetLabel("")
 	}
-	for _, pile := range du.reserves {
-		MoveCard(du.stock, pile)
-		MoveCard(du.stock, pile)
-		MoveCard(du.stock, pile)
+	for _, pile := range self.reserves {
+		MoveCard(self.stock, pile)
+		MoveCard(self.stock, pile)
+		MoveCard(self.stock, pile)
 	}
 
-	for _, pile := range du.tableaux {
-		MoveCard(du.stock, pile)
+	for _, pile := range self.tableaux {
+		MoveCard(self.stock, pile)
 	}
 	TheUI.ToastInfo("Move a Reserve card to a Foundation")
 }
 
-func (du *Duchess) AfterMove() {
-	if du.foundations[0].label == "" {
+func (self *Duchess) AfterMove() {
+	if self.foundations[0].label == "" {
 		// To start the game, the player will choose among the top cards of the reserve fans which will start the first foundation pile.
 		// Once he/she makes that decision and picks a card, the three other cards with the same rank,
 		// whenever they become available, will start the other three foundations.
 		var ord int = 0
-		for _, f := range du.foundations {
+		for _, f := range self.foundations {
 			// find where the first card landed
 			if len(f.cards) > 0 {
 				ord = f.Peek().ID.Ordinal()
@@ -69,7 +70,7 @@ func (du *Duchess) AfterMove() {
 		if ord == 0 {
 			TheUI.ToastInfo("Move a Reserve card to a Foundation")
 		} else {
-			for _, f := range du.foundations {
+			for _, f := range self.foundations {
 				f.SetLabel(util.OrdinalToShortString(ord))
 			}
 		}
@@ -92,7 +93,7 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }
 
-func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
+func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	card := tail[0]
 	switch (dst).category {
@@ -110,7 +111,7 @@ func (du *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	case "Tableau":
 		if dst.Empty() {
 			var rescards int = 0
-			for _, p := range du.reserves {
+			for _, p := range self.reserves {
 				rescards += p.Len()
 			}
 			if rescards > 0 {
@@ -131,25 +132,25 @@ func (*Duchess) UnsortedPairs(pile *Pile) int {
 	return UnsortedPairs(pile, CardPair.Compare_DownAltColorWrap)
 }
 
-func (du *Duchess) TailTapped(tail []*Card) {
+func (self *Duchess) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	if pile == du.stock && len(tail) == 1 {
-		MoveCard(du.stock, du.waste)
+	if pile == self.stock && len(tail) == 1 {
+		MoveCard(self.stock, self.waste)
 	} else {
 		pile.vtable.TailTapped(tail)
 	}
 }
 
-func (du *Duchess) PileTapped(pile *Pile) {
-	if pile == du.stock {
-		RecycleWasteToStock(du.waste, du.stock)
+func (self *Duchess) PileTapped(pile *Pile) {
+	if pile == self.stock {
+		RecycleWasteToStock(self.waste, self.stock)
 	}
 }
 
-func (du *Duchess) Wikipedia() string {
-	return du.wikipedia
+func (self *Duchess) Wikipedia() string {
+	return self.wikipedia
 }
 
-func (du *Duchess) CardColors() int {
+func (self *Duchess) CardColors() int {
 	return 2
 }

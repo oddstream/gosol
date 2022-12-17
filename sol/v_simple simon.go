@@ -1,6 +1,7 @@
 package sol
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
+//lint:file-ignore ST1006 I'll call the receiver anything I like, thank you
 
 import (
 	"errors"
@@ -12,41 +13,41 @@ type SimpleSimon struct {
 	wikipedia string
 }
 
-func (ss *SimpleSimon) BuildPiles() {
+func (self *SimpleSimon) BuildPiles() {
 
-	ss.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
-	ss.discards = nil
+	self.discards = nil
 	for x := 3; x < 7; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
-		ss.discards = append(ss.discards, d)
+		self.discards = append(self.discards, d)
 	}
 
-	ss.tableaux = nil
+	self.tableaux = nil
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
-		ss.tableaux = append(ss.tableaux, t)
+		self.tableaux = append(self.tableaux, t)
 	}
 }
 
-func (ss *SimpleSimon) StartGame() {
+func (self *SimpleSimon) StartGame() {
 	// 3 piles of 8 cards each
 	for i := 0; i < 3; i++ {
-		pile := ss.tableaux[i]
+		pile := self.tableaux[i]
 		for j := 0; j < 8; j++ {
-			MoveCard(ss.stock, pile)
+			MoveCard(self.stock, pile)
 		}
 	}
 	var deal int = 7
 	for i := 3; i < 10; i++ {
-		pile := ss.tableaux[i]
+		pile := self.tableaux[i]
 		for j := 0; j < deal; j++ {
-			MoveCard(ss.stock, pile)
+			MoveCard(self.stock, pile)
 		}
 		deal--
 	}
-	if DebugMode && ss.stock.Len() > 0 {
-		println("*** still", ss.stock.Len(), "cards in Stock ***")
+	if DebugMode && self.stock.Len() > 0 {
+		println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 
@@ -98,10 +99,14 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 
 func (*SimpleSimon) PileTapped(*Pile) {}
 
-func (ss *SimpleSimon) Wikipedia() string {
-	return ss.wikipedia
+func (self *SimpleSimon) Wikipedia() string {
+	return self.wikipedia
 }
 
 func (*SimpleSimon) CardColors() int {
 	return 4
+}
+
+func (self *SimpleSimon) Complete() bool {
+	return self.SpiderComplete()
 }
