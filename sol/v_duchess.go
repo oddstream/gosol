@@ -80,10 +80,9 @@ func (self *Duchess) AfterMove() {
 func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	// One card can be moved at a time, but sequences can also be moved as one unit.
 	var pile *Pile = tail[0].Owner()
-	switch pile.category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		// cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownAltColorWrap(); !ok {
 				return false, err

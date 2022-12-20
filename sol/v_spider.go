@@ -63,7 +63,6 @@ func (*Spider) AfterMove() {}
 
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch pile.vtable.(type) {
 	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {

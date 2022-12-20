@@ -90,7 +90,6 @@ func (self *Canfield) TailMoveError(tail []*Card) (bool, error) {
 	switch pile.vtable.(type) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		// cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := self.tabCompareFunc(pair); !ok {
 				return false, err

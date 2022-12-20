@@ -4,7 +4,6 @@ package sol
 //lint:file-ignore ST1006 I'll call the receiver anything I like, thank you
 
 import (
-	"errors"
 	"image"
 )
 
@@ -35,9 +34,7 @@ func (self *Bisley) BuildPiles() {
 	for x := 0; x < 13; x++ {
 		t := NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ONE)
 		self.tableaux = append(self.tableaux, t)
-		if !DebugMode {
-			t.SetLabel("X")
-		}
+		t.SetLabel("X")
 	}
 }
 
@@ -84,11 +81,7 @@ func (self *Bisley) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		}
 	case *Tableau:
 		if dst.Empty() {
-			if DebugMode {
-				return Compare_Empty(dst, tail[0])
-			} else {
-				return false, errors.New("Cannot move a card to an empty Tableaux")
-			}
+			return Compare_Empty(dst, tail[0])
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_UpOrDownSuit()
 		}

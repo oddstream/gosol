@@ -88,8 +88,8 @@ func (pen *Penguin) AfterMove() {}
 
 func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	switch (pile).category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownSuitWrap(); !ok {

@@ -107,7 +107,6 @@ func (self *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
 		for _, pair := range cpairs {
-			// if ok, err := pair.Compare_DownSuit(); !ok {
 			if ok, err := self.tabCompareFunc(pair); !ok {
 				return false, err
 			}

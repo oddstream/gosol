@@ -56,9 +56,8 @@ func (*SimpleSimon) AfterMove() {
 
 func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (pile).category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		for _, pair := range NewCardPairs(tail) {
 			if ok, err := pair.Compare_DownSuit(); !ok {
 				return false, err
@@ -70,8 +69,12 @@ func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 
 func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).category {
-	case "Discard":
+	switch dst.vtable.(type) {
+	case *Discard:
+		// Discard.CanAcceptTail() has already checked
+		// (1) pile is empty
+		// (2) no prone cards in tail
+		// (3) tail is the length of a complete set (eg 13)
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
 		}
@@ -80,7 +83,7 @@ func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 				return false, err
 			}
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 		} else {
 			return CardPair{dst.Peek(), tail[0]}.Compare_Down()

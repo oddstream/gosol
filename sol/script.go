@@ -305,6 +305,9 @@ var Variants = map[string]Scripter{
 	"Scorpion": &Scorpion{
 		wikipedia: "https://en.wikipedia.org/wiki/Scorpion_(solitaire)",
 	},
+	"Seahaven Towers": &Seahaven{
+		wikipedia: "https://en.wikipedia.org/wiki/Seahaven_Towers",
+	},
 	"Simple Simon": &SimpleSimon{
 		wikipedia: "https://en.wikipedia.org/wiki/Simple_Simon_(solitaire)",
 	},
@@ -357,17 +360,17 @@ var Variants = map[string]Scripter{
 var VariantGroups = map[string][]string{
 	// "> All" added dynamically by func init()
 	// don't have any group that comes alphabetically before "> All"
-	"> Canfield":      {"Canfield", "Storehouse", "Duchess", "American Toad"},
+	"> Canfields":     {"Canfield", "Storehouse", "Duchess", "American Toad"},
 	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit", "Usk Relaxed"},
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
-	"> Freecell":      {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off"},
-	"> Klondike":      {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
+	"> Freecells":     {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off", "Seahaven Towers"},
+	"> Klondikes":     {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
-	"> Puzzlers":      {"Penguin", "Simple Simon", "Baker's Dozen", "Freecell"},
-	"> Spider":        {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
-	"> Yukon":         {"Yukon", "Yukon Cells"},
+	"> Puzzlers":      {"Bisley", "Usk", "Penguin", "Simple Simon", "Baker's Dozen"},
+	"> Spiders":       {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
+	"> Yukons":        {"Yukon", "Yukon Cells"},
 }
 
 // init is used to assemble the "> All" alpha-sorted group of variants for the picker menu
@@ -400,20 +403,6 @@ func VariantNames(group string) []string {
 
 // useful generic game library of functions
 
-func Compare_Empty(p *Pile, c *Card) (bool, error) {
-
-	if p.Label() != "" {
-		if p.Label() == "x" {
-			return false, errors.New("Cannot move cards there")
-		}
-		ord := util.OrdinalToShortString(c.Ordinal())
-		if ord != p.Label() {
-			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.Label()), util.ShortOrdinalToLongOrdinal(ord))
-		}
-	}
-	return true, nil
-}
-
 func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	if TheBaize.Recycles() > 0 {
 		for waste.Len() > 0 {
@@ -431,6 +420,20 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	} else {
 		TheUI.ToastError("No more recycles")
 	}
+}
+
+func Compare_Empty(p *Pile, c *Card) (bool, error) {
+
+	if p.Label() != "" {
+		if p.Label() == "x" {
+			return false, errors.New("Cannot move cards there")
+		}
+		ord := util.OrdinalToShortString(c.Ordinal())
+		if ord != p.Label() {
+			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.Label()), util.ShortOrdinalToLongOrdinal(ord))
+		}
+	}
+	return true, nil
 }
 
 func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
@@ -480,38 +483,33 @@ func (cpairs CardPairs) Print() {
 	}
 }
 
+// little library of simple compares
+
 func (cp CardPair) Compare_Up() (bool, error) {
-	if cp.c1.Ordinal()+1 != cp.c2.Ordinal() {
+	if !(cp.c1.Ordinal()+1 == cp.c2.Ordinal()) {
 		return false, errors.New("Cards must be in ascending sequence")
 	}
 	return true, nil
 }
 
+func (cp CardPair) Compare_UpWrap() (bool, error) {
+	if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
+		return true, nil // Ace on King
+	}
+	if cp.c1.Ordinal() == cp.c2.Ordinal()-1 {
+		return true, nil
+	}
+	return false, errors.New("Cards must go up in rank (Aces on Kings allowed)")
+}
+
 func (cp CardPair) Compare_Down() (bool, error) {
-	if cp.c1.Ordinal() != cp.c2.Ordinal()+1 {
+	if !(cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
 		return false, errors.New("Cards must be in descending sequence")
 	}
 	return true, nil
 }
 
-func (cp CardPair) Compare_DownColor() (bool, error) {
-	if cp.c1.Black() != cp.c2.Black() {
-		return false, errors.New("Cards must be the same color")
-	}
-	return cp.Compare_Down()
-}
-
-func (cp CardPair) Compare_DownAltColor() (bool, error) {
-	if cp.c1.Black() == cp.c2.Black() {
-		return false, errors.New("Cards must be in alternating colors")
-	}
-	return cp.Compare_Down()
-}
-
-func (cp CardPair) Compare_DownColorWrap() (bool, error) {
-	if cp.c1.Black() != cp.c2.Black() {
-		return false, errors.New("Cards must be the same color")
-	}
+func (cp CardPair) Compare_DownWrap() (bool, error) {
 	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
 		return true, nil // King on Ace
 	}
@@ -521,55 +519,14 @@ func (cp CardPair) Compare_DownColorWrap() (bool, error) {
 	return true, nil
 }
 
-func (cp CardPair) Compare_DownAltColorWrap() (bool, error) {
-	if cp.c1.Black() == cp.c2.Black() {
-		return false, errors.New("Cards must be in alternating colors")
-	}
-	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
-		return true, nil // King on Ace
-	}
-	if cp.c1.Ordinal() != cp.c2.Ordinal()+1 {
-		return false, errors.New("Cards must be in descending sequence (Kings on Aces allowed)")
+func (cp CardPair) Compare_UpOrDown() (bool, error) {
+	if !(cp.c1.Ordinal()+1 == cp.c2.Ordinal() || cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
+		return false, errors.New("Cards must be in ascending or descding sequence")
 	}
 	return true, nil
 }
 
-func (cp CardPair) Compare_UpAltColor() (bool, error) {
-	if cp.c1.Black() == cp.c2.Black() {
-		return false, errors.New("Cards must be in alternating colors")
-	}
-	return cp.Compare_Up()
-}
-
-func (cp CardPair) Compare_UpSuit() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
-	}
-	return cp.Compare_Up()
-}
-
-func (cp CardPair) Compare_DownSuit() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
-	}
-	return cp.Compare_Down()
-}
-
-func (cp CardPair) Compare_UpOrDownSuit() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
-	}
-	if (cp.c1.Ordinal()+1 == cp.c2.Ordinal()) || (cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
-		return true, nil
-	} else {
-		return false, errors.New("Cards must be in ascending or descending sequence")
-	}
-}
-
-func (cp CardPair) Compare_UpOrDownSuitWrap() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
-	}
+func (cp CardPair) Compare_UpOrDownWrap() (bool, error) {
 	if (cp.c1.Ordinal()+1 == cp.c2.Ordinal()) || (cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
 		return true, nil
 	} else if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
@@ -581,35 +538,131 @@ func (cp CardPair) Compare_UpOrDownSuitWrap() (bool, error) {
 	}
 }
 
-func (cp CardPair) Compare_DownOtherSuit() (bool, error) {
+func (cp CardPair) Compare_Color() (bool, error) {
+	if cp.c1.Black() != cp.c2.Black() {
+		return false, errors.New("Cards must be the same color")
+	}
+	return true, nil
+}
+
+func (cp CardPair) Compare_AltColor() (bool, error) {
+	if cp.c1.Black() == cp.c2.Black() {
+		return false, errors.New("Cards must be in alternating colors")
+	}
+	return true, nil
+}
+
+func (cp CardPair) Compare_Suit() (bool, error) {
+	if cp.c1.Suit() != cp.c2.Suit() {
+		return false, errors.New("Cards must be the same suit")
+	}
+	return true, nil
+}
+
+func (cp CardPair) Compare_OtherSuit() (bool, error) {
 	if cp.c1.Suit() == cp.c2.Suit() {
 		return false, errors.New("Cards must not be the same suit")
+	}
+	return true, nil
+}
+
+// library of compare functions made from simple compares
+
+func (cp CardPair) Compare_DownColor() (bool, error) {
+	ok, err := cp.Compare_Color()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_Down()
+}
+
+func (cp CardPair) Compare_DownAltColor() (bool, error) {
+	ok, err := cp.Compare_AltColor()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_Down()
+}
+
+// Compare_DownColorWrap not used
+func (cp CardPair) Compare_DownColorWrap() (bool, error) {
+	ok, err := cp.Compare_Color()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_DownWrap()
+}
+
+func (cp CardPair) Compare_DownAltColorWrap() (bool, error) {
+	ok, err := cp.Compare_AltColor()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_DownWrap()
+}
+
+// Compare_UpAltColor not used
+func (cp CardPair) Compare_UpAltColor() (bool, error) {
+	ok, err := cp.Compare_AltColor()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_Up()
+}
+
+func (cp CardPair) Compare_UpSuit() (bool, error) {
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_Up()
+}
+
+func (cp CardPair) Compare_DownSuit() (bool, error) {
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_Down()
+}
+
+func (cp CardPair) Compare_UpOrDownSuit() (bool, error) {
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_UpOrDown()
+}
+
+func (cp CardPair) Compare_UpOrDownSuitWrap() (bool, error) {
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
+	}
+	return cp.Compare_UpOrDownWrap()
+}
+
+// Compare_DownOtherSuit not used
+func (cp CardPair) Compare_DownOtherSuit() (bool, error) {
+	ok, err := cp.Compare_OtherSuit()
+	if !ok {
+		return ok, err
 	}
 	return cp.Compare_Down()
 }
 
 func (cp CardPair) Compare_UpSuitWrap() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
 	}
-	if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
-		return true, nil // Ace on King
-	}
-	if cp.c1.Ordinal() == cp.c2.Ordinal()-1 {
-		return true, nil
-	}
-	return false, errors.New("Cards must go up in rank (Aces on Kings allowed)")
+	return cp.Compare_UpWrap()
 }
 
 func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
-	if cp.c1.Suit() != cp.c2.Suit() {
-		return false, errors.New("Cards must be the same suit")
+	ok, err := cp.Compare_Suit()
+	if !ok {
+		return ok, err
 	}
-	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
-		return true, nil // King on Ace
-	}
-	if cp.c1.Ordinal()-1 == cp.c2.Ordinal() {
-		return true, nil
-	}
-	return false, errors.New("Cards must go down in rank (Kings on Aces allowed)")
+	return cp.Compare_DownWrap()
 }

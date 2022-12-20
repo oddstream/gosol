@@ -66,10 +66,9 @@ func (self *Klondike) AfterMove() {
 func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (pile).category {
-	case "Tableau":
+	switch pile.vtable.(type) {
+	case *Tableau:
 		var cpairs CardPairs = NewCardPairs(tail)
-		// cpairs.Print()
 		for _, pair := range cpairs {
 			if ok, err := pair.Compare_DownAltColor(); !ok {
 				return false, err
