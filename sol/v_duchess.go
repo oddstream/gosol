@@ -82,11 +82,9 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
-		var cpairs CardPairs = NewCardPairs(tail)
-		for _, pair := range cpairs {
-			if ok, err := pair.Compare_DownAltColorWrap(); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, CardPair.Compare_DownAltColorWrap)
+		if !ok {
+			return ok, err
 		}
 	}
 	return true, nil
@@ -95,8 +93,8 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	card := tail[0]
-	switch (dst).category {
-	case "Foundation":
+	switch dst.vtable.(type) {
+	case *Foundation:
 		if dst.Empty() {
 			if dst.Label() == "" {
 				if card.owner.category != "Reserve" {
@@ -107,7 +105,7 @@ func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		} else {
 			return CardPair{dst.Peek(), card}.Compare_UpSuitWrap()
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			var rescards int = 0
 			for _, p := range self.reserves {

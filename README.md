@@ -16,7 +16,7 @@ It currently knows how to play:
 * Canfield (also Storehouse, American Toad, Duchess)
 * Easy (an easy to win game, for debugging)
 * Forty Thieves (also Sixty Thieves, Busy Aces, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black, Rank and File, Number Ten)
-* Freecell (also Blind Freecell, Eight Off)
+* Freecell (also Freecell Easy, Blind Freecell, Eight Off, Seahaven Towers)
 * Klondike (also Klondike Draw Three, Thoughtful)
 * Penguin
 * Scorpion (also Wasp)

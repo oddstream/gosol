@@ -184,7 +184,6 @@ var Variants = map[string]Scripter{
 		recycles:   32767,
 		thoughtful: true,
 	},
-	"Easy": &Easy{},
 	"Eight Off": &EightOff{
 		wikipedia: "https://en.wikipedia.org/wiki/Eight_Off",
 	},
@@ -192,6 +191,12 @@ var Variants = map[string]Scripter{
 		wikipedia:      "https://en.wikipedia.org/wiki/FreeCell",
 		cardColors:     2,
 		tabCompareFunc: CardPair.Compare_DownAltColor,
+	},
+	"Freecell Easy": &Freecell{
+		wikipedia:      "https://en.wikipedia.org/wiki/FreeCell",
+		cardColors:     2,
+		tabCompareFunc: CardPair.Compare_DownAltColor,
+		easy:           true,
 	},
 	"Forty Thieves": &FortyThieves{
 		wikipedia:   "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
@@ -364,7 +369,7 @@ var VariantGroups = map[string][]string{
 	"> Easier":        {"American Toad", "American Westcliff", "Blockade", "Classic Westcliff", "Lucas", "Spider One Suit", "Usk Relaxed"},
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
-	"> Freecells":     {"Baker's Game", "Blind Freecell", "Freecell", "Eight Off", "Seahaven Towers"},
+	"> Freecells":     {"Baker's Game", "Blind Freecell", "Freecell", "Freecell Easy", "Eight Off", "Seahaven Towers"},
 	"> Klondikes":     {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
@@ -425,8 +430,8 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 func Compare_Empty(p *Pile, c *Card) (bool, error) {
 
 	if p.Label() != "" {
-		if p.Label() == "x" {
-			return false, errors.New("Cannot move cards there")
+		if p.Label() == "x" || p.Label() == "X" {
+			return false, errors.New("Cannot move cards to that empty pile")
 		}
 		ord := util.OrdinalToShortString(c.Ordinal())
 		if ord != p.Label() {
@@ -436,13 +441,17 @@ func Compare_Empty(p *Pile, c *Card) (bool, error) {
 	return true, nil
 }
 
-func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
+// UnsortedPairs
+//
+// A generic way of calculating the number of unsorted card pairs in a pile.
+// Called by *Pile.vtable.UnsortedPairs()
+func UnsortedPairs(pile *Pile, fn CardPairCompareFunc) int {
 	if pile.Len() < 2 {
 		return 0
 	}
 	var unsorted int
 	for _, pair := range NewCardPairs(pile.cards) {
-		if pair.EitherProne() {
+		if pair.c1.Prone() || pair.c2.Prone() {
 			unsorted++
 		} else {
 			if ok, _ := fn(pair); !ok {
@@ -453,19 +462,17 @@ func UnsortedPairs(pile *Pile, fn func(CardPair) (bool, error)) int {
 	return unsorted
 }
 
+type CardPairCompareFunc func(CardPair) (bool, error)
+
 type CardPair struct {
 	c1, c2 *Card
 }
 
-func (cp CardPair) EitherProne() bool {
-	return cp.c1.Prone() || cp.c2.Prone()
-}
-
 type CardPairs []CardPair
 
-func NewCardPairs(cards []*Card) []CardPair {
+func NewCardPairs(cards []*Card) CardPairs {
 	if len(cards) < 2 {
-		return []CardPair{}
+		return []CardPair{} // always return a list, not nil
 	}
 	var cpairs []CardPair
 	c1 := cards[0]
@@ -477,11 +484,11 @@ func NewCardPairs(cards []*Card) []CardPair {
 	return cpairs
 }
 
-func (cpairs CardPairs) Print() {
-	for _, pair := range cpairs {
-		println(pair.c1.String(), pair.c2.String())
-	}
-}
+// func (cpairs CardPairs) Print() {
+// 	for _, pair := range cpairs {
+// 		println(pair.c1.String(), pair.c2.String())
+// 	}
+// }
 
 // little library of simple compares
 
@@ -521,7 +528,7 @@ func (cp CardPair) Compare_DownWrap() (bool, error) {
 
 func (cp CardPair) Compare_UpOrDown() (bool, error) {
 	if !(cp.c1.Ordinal()+1 == cp.c2.Ordinal() || cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
-		return false, errors.New("Cards must be in ascending or descding sequence")
+		return false, errors.New("Cards must be in ascending or descending sequence")
 	}
 	return true, nil
 }
@@ -665,4 +672,28 @@ func (cp CardPair) Compare_DownSuitWrap() (bool, error) {
 		return ok, err
 	}
 	return cp.Compare_DownWrap()
+}
+
+// ChainCall
+//
+// Call using CardPair method expressions
+// eg ChainCall(CardPair.Compare_UpOrDown, CardPair.Compare_Suit)
+//
+// TODO think of something else for UnsortedPairs(*Pile)
+func (cp CardPair) ChainCall(fns ...func(CardPair) (bool, error)) (ok bool, err error) {
+	for _, fn := range fns {
+		if ok, err = fn(cp); err != nil {
+			break
+		}
+	}
+	return
+}
+
+func TailConformant(tail []*Card, fn CardPairCompareFunc) (bool, error) {
+	for _, pair := range NewCardPairs(tail) {
+		if ok, err := fn(pair); !ok {
+			return false, err
+		}
+	}
+	return true, nil
 }

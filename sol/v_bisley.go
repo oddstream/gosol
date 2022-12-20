@@ -83,7 +83,8 @@ func (self *Bisley) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_UpOrDownSuit()
+			// return CardPair{dst.Peek(), tail[0]}.Compare_UpOrDownSuit()
+			return CardPair{dst.Peek(), tail[0]}.ChainCall(CardPair.Compare_UpOrDown, CardPair.Compare_Suit)
 		}
 	}
 	return true, nil

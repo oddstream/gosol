@@ -56,10 +56,9 @@ func (*EightOff) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
-		for _, pair := range NewCardPairs(tail) {
-			if ok, err := pair.Compare_DownSuit(); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, CardPair.Compare_DownSuit)
+		if !ok {
+			return ok, err
 		}
 	}
 	return true, nil

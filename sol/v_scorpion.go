@@ -62,17 +62,16 @@ func (*Scorpion) TailMoveError(tail []*Card) (bool, error) {
 
 func (*Scorpion) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
-	switch (dst).category {
-	case "Discard":
+	switch dst.vtable.(type) {
+	case *Discard:
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
 		}
-		for _, pair := range NewCardPairs(tail) {
-			if ok, err := pair.Compare_DownSuit(); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, CardPair.Compare_DownSuit)
+		if !ok {
+			return ok, err
 		}
-	case "Tableau":
+	case *Tableau:
 		if dst.Empty() {
 			return Compare_Empty(dst, tail[0])
 		} else {
@@ -88,8 +87,8 @@ func (*Scorpion) UnsortedPairs(pile *Pile) int {
 
 func (self *Scorpion) TailTapped(tail []*Card) {
 	var pile *Pile = tail[0].Owner()
-	switch (pile).category {
-	case "Stock":
+	switch pile.vtable.(type) {
+	case *Stock:
 		if !self.stock.Empty() {
 			for _, tab := range self.tableaux {
 				MoveCard(self.stock, tab)

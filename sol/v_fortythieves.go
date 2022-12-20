@@ -19,7 +19,7 @@ type FortyThieves struct {
 	recycles       int
 	dealAces       bool
 	moveType       MoveType
-	tabCompareFunc func(CardPair) (bool, error)
+	tabCompareFunc CardPairCompareFunc
 }
 
 func (self *FortyThieves) BuildPiles() {
@@ -105,11 +105,9 @@ func (self *FortyThieves) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
-		var cpairs CardPairs = NewCardPairs(tail)
-		for _, pair := range cpairs {
-			if ok, err := self.tabCompareFunc(pair); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, self.tabCompareFunc)
+		if !ok {
+			return ok, err
 		}
 	}
 	return true, nil

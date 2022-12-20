@@ -58,10 +58,9 @@ func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
-		for _, pair := range NewCardPairs(tail) {
-			if ok, err := pair.Compare_DownSuit(); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, CardPair.Compare_DownSuit)
+		if !ok {
+			return ok, err
 		}
 	}
 	return true, nil
@@ -78,10 +77,9 @@ func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if tail[0].Ordinal() != 13 {
 			return false, errors.New("Can only discard starting from a King")
 		}
-		for _, pair := range NewCardPairs(tail) {
-			if ok, err := pair.Compare_DownSuit(); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, CardPair.Compare_DownSuit)
+		if !ok {
+			return ok, err
 		}
 	case *Tableau:
 		if dst.Empty() {

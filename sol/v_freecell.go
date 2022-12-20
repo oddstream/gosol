@@ -11,8 +11,9 @@ type Freecell struct {
 	ScriptBase
 	wikipedia      string
 	cardColors     int
-	tabCompareFunc func(CardPair) (bool, error)
+	tabCompareFunc CardPairCompareFunc
 	blind          bool
+	easy           bool
 }
 
 func (self *Freecell) BuildPiles() {
@@ -50,24 +51,36 @@ func (self *Freecell) BuildPiles() {
 }
 
 func (self *Freecell) StartGame() {
-	// 4 piles of 7 cards
-	// 4 piles of 6 cards
-	for i := 0; i < 4; i++ {
-		pile := self.tableaux[i]
-		for j := 0; j < 7; j++ {
-			MoveCard(self.stock, pile)
+	if self.easy {
+		self.foundations[0].Push(self.stock.Extract(1, CLUB))
+		self.foundations[1].Push(self.stock.Extract(1, DIAMOND))
+		self.foundations[2].Push(self.stock.Extract(1, HEART))
+		self.foundations[3].Push(self.stock.Extract(1, SPADE))
+		for _, t := range self.tableaux {
+			for i := 0; i < 6; i++ {
+				MoveCard(self.stock, t)
+			}
 		}
-	}
-	for i := 4; i < 8; i++ {
-		pile := self.tableaux[i]
-		for j := 0; j < 6; j++ {
-			MoveCard(self.stock, pile)
+	} else {
+		// 4 piles of 7 cards
+		// 4 piles of 6 cards
+		for i := 0; i < 4; i++ {
+			t := self.tableaux[i]
+			for j := 0; j < 7; j++ {
+				MoveCard(self.stock, t)
+			}
+		}
+		for i := 4; i < 8; i++ {
+			t := self.tableaux[i]
+			for j := 0; j < 6; j++ {
+				MoveCard(self.stock, t)
+			}
 		}
 	}
 	if self.blind {
-		for _, pile := range self.tableaux {
-			topCard := pile.Peek()
-			for _, card := range pile.cards {
+		for _, t := range self.tableaux {
+			topCard := t.Peek()
+			for _, card := range t.cards {
 				if card != topCard {
 					card.FlipDown()
 				}
@@ -85,10 +98,9 @@ func (self *Freecell) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
 	case *Tableau:
-		for _, pair := range NewCardPairs(tail) {
-			if ok, err := self.tabCompareFunc(pair); !ok {
-				return false, err
-			}
+		ok, err := TailConformant(tail, self.tabCompareFunc)
+		if !ok {
+			return ok, err
 		}
 	}
 	return true, nil

@@ -85,7 +85,8 @@ func (self *Tableau) TailTapped(tail []*Card) {
 }
 
 func (self *Tableau) Conformant() bool {
-	return TheBaize.script.UnsortedPairs(self.pile) == 0
+	// return TheBaize.script.UnsortedPairs(self.pile) == 0
+	return self.UnsortedPairs() == 0
 }
 
 func (self *Tableau) UnsortedPairs() int {
