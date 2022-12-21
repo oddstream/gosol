@@ -74,23 +74,23 @@ func (*Toad) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (self *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
+	card := tail[0]
 	switch dst.vtable.(type) {
 	case *Foundation:
 		if dst.Empty() {
-			return Compare_Empty(dst, tail[0])
+			return Compare_Empty(dst, card)
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_UpSuitWrap()
+			return CardPair{dst.Peek(), card}.Compare_UpSuitWrap()
 		}
 	case *Tableau:
 		if dst.Empty() {
 			// Once the reserve is empty, spaces in the tableau can be filled with a card from the Deck [Stock/Waste], but NOT from another tableau pile.
 			// pointless rule, since tableuax move rule is MOVE_ONE_OR_ALL
-			if tail[0].owner != self.waste {
+			if card.owner != self.waste {
 				return false, errors.New("Empty tableaux must be filled with cards from the waste")
 			}
 		} else {
-			return CardPair{dst.Peek(), tail[0]}.Compare_DownSuitWrap()
+			return CardPair{dst.Peek(), card}.Compare_DownSuitWrap()
 		}
 	}
 	return true, nil

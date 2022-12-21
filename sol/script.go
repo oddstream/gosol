@@ -21,6 +21,7 @@ type ScriptBase struct {
 }
 
 // Complete - default is number of cards in Foundations == number of cards in CardLibrary.
+//
 // In Bisley, there may be <13 cards in a Foundation.
 // This will need overriding for any variants with Discard piles.
 // Could also do this by checking if any pile other than a Foundation is not empty.
@@ -32,7 +33,8 @@ func (sb ScriptBase) Complete() bool {
 	return n == len(CardLibrary)
 }
 
-// SpiderComplete
+// SpiderComplete - used to override default Complete() in Spider varaints.
+//
 // Each tableau must be either empty or contain a sequence.
 // Discard contents must be sequences, otherwise they wouldn't be there.
 // There aren't any foundations.
@@ -168,6 +170,7 @@ var Variants = map[string]Scripter{
 	"Duchess": &Duchess{
 		wikipedia: "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
 	},
+	"Demons and Thieves": &CanThieves{},
 	"Klondike": &Klondike{
 		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
 		draw:      1,

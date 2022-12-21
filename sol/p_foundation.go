@@ -29,10 +29,12 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Cannot move more than one card to a Foundation")
 	}
+	if self.pile.Len() == 13 {
+		return false, errors.New("That Foundation already contains 13 cards")
+	}
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card to a Foundation")
 	}
-	// TODO Bisley
 	return TheBaize.script.TailAppendError(self.pile, tail)
 }
 
