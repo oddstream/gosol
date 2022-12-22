@@ -429,7 +429,11 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	// }
 
 	if TheBaize.showMovableCards && len(c.destinations) > 0 {
-		op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
+		if c.Prone() {
+			op.ColorM.Scale(0.8, 0.8, 0.7, 1)
+		} else {
+			op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
+		}
 	}
 
 	screen.DrawImage(img, op)

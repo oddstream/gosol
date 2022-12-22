@@ -18,7 +18,7 @@ func fullPath(jsonFname string) (string, error) {
 	// could use something like errors.New("math: square root of negative number")
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
-		println(err)
+		log.Println(err)
 		return "", err
 	}
 	// println("UserConfigDir", userConfigDir) // /home/gilbert/.config
@@ -71,7 +71,7 @@ func loadBytesFromFile(jsonFname string, leaveNoTrace bool) ([]byte, int, error)
 		if err != nil {
 			log.Fatal(err, " closing ", path)
 		}
-		println("loaded", path)
+		log.Println("loaded", path)
 		if leaveNoTrace {
 			os.Remove(path)
 		}
@@ -108,7 +108,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 		log.Fatal(err)
 	}
 
-	println("saved", path)
+	log.Println("saved", path)
 }
 
 // Load an already existing Preferences object from file

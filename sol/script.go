@@ -129,6 +129,9 @@ var Variants = map[string]Scripter{
 	"American Toad": &Toad{
 		wikipedia: "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
 	},
+	"Antares": &Antares{
+		// nothing
+	},
 	"Australian": &Australian{
 		wikipedia: "https://en.wikipedia.org/wiki/Australian_Patience",
 	},
@@ -170,7 +173,9 @@ var Variants = map[string]Scripter{
 	"Duchess": &Duchess{
 		wikipedia: "https://en.wikipedia.org/wiki/Duchess_(solitaire)",
 	},
-	"Demons and Thieves": &CanThieves{},
+	"Demons and Thieves": &CanThieves{
+		// nothing
+	},
 	"Klondike": &Klondike{
 		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
 		draw:      1,

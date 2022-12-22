@@ -5,6 +5,7 @@ package sol
 
 import (
 	"image"
+	"log"
 )
 
 type EightOff struct {
@@ -46,7 +47,7 @@ func (self *EightOff) StartGame() {
 		}
 	}
 	if DebugMode && self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock ***")
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 

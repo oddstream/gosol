@@ -44,7 +44,7 @@ var ThePreferences = &Preferences{
 	SpadeColor:       "Black",
 	FixedCards:       false,
 	Mute:             false,
-	Volume:           1.0,
+	Volume:           0.75,
 	FixedCardWidth:   90,
 	FixedCardHeight:  122,
 	CardRatio:        1.357,

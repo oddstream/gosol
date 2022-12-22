@@ -6,6 +6,7 @@ package sol
 import (
 	"errors"
 	"image"
+	"log"
 )
 
 type BakersDozen struct {
@@ -48,7 +49,7 @@ func (self *BakersDozen) StartGame() {
 	}
 
 	if DebugMode && self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock ***")
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 

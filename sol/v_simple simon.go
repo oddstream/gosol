@@ -6,6 +6,7 @@ package sol
 import (
 	"errors"
 	"image"
+	"log"
 )
 
 type SimpleSimon struct {
@@ -47,7 +48,7 @@ func (self *SimpleSimon) StartGame() {
 		deal--
 	}
 	if DebugMode && self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock ***")
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 

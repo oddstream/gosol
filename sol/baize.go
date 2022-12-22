@@ -602,7 +602,7 @@ func (b *Baize) StartTailDrag(c *Card) {
 		b.ApplyToTail((*Card).StartDrag)
 		ebiten.SetCursorMode(ebiten.CursorModeHidden)
 	} else {
-		println("failed to make a tail")
+		log.Println("failed to make a tail")
 	}
 }
 
@@ -724,9 +724,9 @@ func (b *Baize) ScaleCards() bool {
 
 	if DebugMode {
 		if CardWidth != OldWidth || CardHeight != OldHeight {
-			println("ScaleCards did something")
+			log.Println("ScaleCards did something")
 		} else {
-			println("ScaleCards did nothing")
+			log.Println("ScaleCards did nothing")
 		}
 	}
 	return CardWidth != OldWidth || CardHeight != OldHeight
@@ -794,12 +794,12 @@ func (b *Baize) Complete() bool {
 func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 	if outsideWidth == 0 || outsideHeight == 0 {
-		println("Baize.Layout called with zero dimension")
+		log.Println("Baize.Layout called with zero dimension")
 		return outsideWidth, outsideHeight
 	}
 
 	if DebugMode && (outsideWidth != b.WindowWidth || outsideHeight != b.WindowHeight) {
-		println("Window resize to", outsideWidth, outsideHeight)
+		log.Println("Window resize to", outsideWidth, outsideHeight)
 	}
 
 	if outsideWidth != b.WindowWidth {

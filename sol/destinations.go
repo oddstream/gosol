@@ -1,6 +1,9 @@
 package sol
 
-import "sort"
+import (
+	"log"
+	"sort"
+)
 
 func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	var homes []*Pile
@@ -29,7 +32,7 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 
 	for _, dst := range pilesToCheck {
 		if !dst.Valid() {
-			println("Destination pile not valid", dst)
+			log.Println("Destination pile not valid", dst)
 		}
 		if dst != src {
 			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {

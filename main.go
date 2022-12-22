@@ -42,7 +42,7 @@ func main() {
 
 	if sol.DebugMode {
 		for i, a := range os.Args {
-			println(i, a)
+			log.Println(i, a)
 		}
 	}
 

@@ -23,7 +23,7 @@ func main() {
 	}
 
 	defer func() {
-		println("main defer cleanup")
+		log.Println("main defer cleanup")
 		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}

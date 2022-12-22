@@ -5,13 +5,13 @@ package sol
 
 import (
 	"image"
+	"log"
 
 	"oddstream.games/gosol/util"
 )
 
 type CanThieves struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *CanThieves) BuildPiles() {
@@ -20,7 +20,7 @@ func (self *CanThieves) BuildPiles() {
 	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	if self.reserves != nil {
-		println("*** reserves is not nil ***")
+		log.Println("*** reserves is not nil ***")
 	}
 	self.reserves = nil
 	self.reserves = append(self.reserves, NewReserve(image.Point{0, 1}, FAN_DOWN))
@@ -156,7 +156,7 @@ func (self *CanThieves) UnsortedPairs(pile *Pile) int {
 			return UnsortedPairs(pile, CardPair.Compare_DownSuitWrap)
 		}
 	default:
-		println("*** eh?", pile.category)
+		log.Println("*** eh?", pile.category)
 	}
 	return 0
 }

@@ -6,6 +6,7 @@ package sol
 import (
 	"errors"
 	"image"
+	"log"
 )
 
 type Scorpion struct {
@@ -48,13 +49,12 @@ func (self *Scorpion) StartGame() {
 		}
 	}
 	TheBaize.SetRecycles(0)
-	if DebugMode {
-		println(self.stock.Len(), "cards in stock")
+	if DebugMode && self.stock.Len() > 0 {
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 
-func (*Scorpion) AfterMove() {
-}
+func (*Scorpion) AfterMove() {}
 
 func (*Scorpion) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil

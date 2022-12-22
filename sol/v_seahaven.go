@@ -5,6 +5,7 @@ package sol
 
 import (
 	"image"
+	"log"
 )
 
 type Seahaven struct {
@@ -45,7 +46,7 @@ func (self *Seahaven) StartGame() {
 	MoveCard(self.stock, self.cells[1])
 	MoveCard(self.stock, self.cells[2])
 	if DebugMode && self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock ***")
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 	TheBaize.SetRecycles(0)
 }

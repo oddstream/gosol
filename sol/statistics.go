@@ -2,6 +2,7 @@ package sol
 
 import (
 	"fmt"
+	"log"
 )
 
 // Statistics is a container for the statistics for all variants
@@ -81,7 +82,7 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 	if !ok {
 		stats = &VariantStatistics{} // everything 0
 		s.StatsMap[v] = stats
-		println("statistics has encountered a new variant", v)
+		// println("statistics has encountered a new variant", v)
 	}
 	return stats
 }
@@ -120,7 +121,7 @@ func (s *Statistics) RecordLostGame(v string) {
 
 	percent := TheBaize.PercentComplete()
 	if percent == 100 {
-		println("*** That's odd, here is a lost game that is 100% complete ***")
+		log.Println("*** That's odd, here is a lost game that is 100% complete ***")
 	}
 
 	TheUI.Toast("Fail", fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))

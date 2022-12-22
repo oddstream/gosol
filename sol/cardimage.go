@@ -2,6 +2,7 @@ package sol
 
 import (
 	"image/color"
+	"log"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -246,7 +247,7 @@ func CreateCardFaceImageLibrary() {
 
 func CreateCardImages() {
 	if CardWidth == 0 || CardHeight == 0 {
-		println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
+		log.Println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
 		return
 	}
 	// TODO MAYBE turn off drawing globally while this runs

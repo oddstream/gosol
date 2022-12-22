@@ -120,12 +120,10 @@ func (self *Pile) Hidden() bool {
 	return self.slot.X < 0 || self.slot.Y < 0
 }
 
-func (self *Pile) IsFoundation() bool {
-	// using a type assertion seems more idiomatic than a string comparison
-	_, ok := self.vtable.(*Foundation)
-	return ok
-	// return self.category == "Foundation"
-}
+// func (self *Pile) IsFoundation() bool {
+// 	_, ok := self.vtable.(*Foundation)
+// 	return ok
+// }
 
 func (self *Pile) IsStock() bool {
 	// using a type assertion seems more idiomatic than a string comparison
@@ -135,9 +133,6 @@ func (self *Pile) IsStock() bool {
 }
 
 func (self *Pile) Shuffle() {
-	if !self.Valid() {
-		log.Fatal("invalid stock")
-	}
 	if NoShuffle {
 		log.Println("not shuffling cards")
 		return
@@ -237,7 +232,7 @@ func (self *Pile) Extract(ordinal, suit int) *Card {
 			return c
 		}
 	}
-	println(fmt.Sprintf("Could not find card %d %d in %s", suit, ordinal, self.category))
+	log.Printf("Could not find card %d %d in %s", suit, ordinal, self.category)
 	return nil
 }
 

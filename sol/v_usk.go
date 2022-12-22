@@ -5,6 +5,7 @@ package sol
 
 import (
 	"image"
+	"log"
 )
 
 type UskPileInfo struct {
@@ -67,7 +68,7 @@ func (self *Usk) StartGame() {
 		TheUI.ToastInfo("Relaxed version - any card may be placed in an empty tableaux pile")
 	}
 	if DebugMode && self.stock.Len() > 0 {
-		println("*** still", self.stock.Len(), "cards in Stock ***")
+		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
 }
 
