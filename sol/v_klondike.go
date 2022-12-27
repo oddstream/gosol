@@ -9,28 +9,38 @@ import (
 
 type Klondike struct {
 	ScriptBase
-	wikipedia      string
-	draw, recycles int
-	thoughtful     bool
+	wikipedia             string
+	founds, tabs          []int
+	packs, draw, recycles int
+	thoughtful            bool
 }
 
 func (self *Klondike) BuildPiles() {
 
+	if self.packs == 0 {
+		self.packs = 1
+	}
+	if len(self.founds) == 0 {
+		self.founds = []int{3, 4, 5, 6}
+	}
+	if len(self.tabs) == 0 {
+		self.tabs = []int{0, 1, 2, 3, 4, 5, 6}
+	}
 	if self.draw == 0 {
 		self.draw = 1
 	}
-	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, self.packs, 4, nil, 0)
 	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	self.foundations = nil
-	for x := 3; x < 7; x++ {
+	for _, x := range self.founds {
 		f := NewFoundation(image.Point{x, 0})
 		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
 	self.tableaux = nil
-	for x := 0; x < 7; x++ {
+	for _, x := range self.tabs {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")
 		self.tableaux = append(self.tableaux, t)

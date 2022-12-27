@@ -18,7 +18,7 @@ var (
 	// GosolVersionMajor is the integer version number
 	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	GosolVersionMinor int = 5
+	GosolVersionMinor int = 6
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
 	GosolVersionDate string = "2022-12-06"
 	// DebugMode is a boolean set by command line flag -debug

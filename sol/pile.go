@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/sound"
 )
 
 const (
@@ -570,9 +569,8 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 		} else {
 			MoveTail(card, dst)
 		}
-	} else {
-		sound.Play("Error")
 	}
+	// don't play an error sound here, leave it up to higher level (Baize.InputTap)
 }
 
 //func (self *Pile) DefaultConformant() bool   { return false }

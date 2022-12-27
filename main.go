@@ -75,7 +75,7 @@ func main() {
 	}
 
 	if !sol.NoGameLoad {
-		if undoStack := sol.LoadUndoStack(); undoStack != nil {
+		if undoStack := sol.LoadUndoStack(); sol.TheBaize.IsSavableStackOk(undoStack) {
 			sol.TheBaize.SetUndoStack(undoStack) // TODO doing this before Baize.Layout sets WindowWidth,Height
 		}
 	}

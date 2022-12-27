@@ -71,9 +71,9 @@ func Execute(cmd interface{}) {
 			}
 		case "VariantGroup":
 			TheBaize.ShowVariantPicker(v.Data)
-		case "Fixed cards":
-			ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
-			TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
+		// case "Fixed cards":
+		// 	ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
+		// 	TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
 		case "Power moves":
 			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
 		case "Colorful cards":

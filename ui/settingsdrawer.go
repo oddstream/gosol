@@ -24,7 +24,7 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.settingsDrawer.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
-		NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
+		// NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Power moves", booleanSettings["PowerMoves"]),
 		NewCheckbox(u.settingsDrawer, "", "Colorful cards", booleanSettings["ColorfulCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Mirror baize", booleanSettings["MirrorBaize"]),

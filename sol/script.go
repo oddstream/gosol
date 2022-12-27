@@ -177,20 +177,28 @@ var Variants = map[string]Scripter{
 		// nothing
 	},
 	"Klondike": &Klondike{
-		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
+		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		draw:      1,
 		recycles:  2,
 	},
 	"Klondike Draw Three": &Klondike{
-		wikipedia: "https://en.wikipedia.org/wiki/Solitaire",
+		wikipedia: "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		draw:      3,
-		recycles:  9,
+		recycles:  2,
 	},
 	"Thoughtful": &Klondike{
-		wikipedia:  "https://en.wikipedia.org/wiki/Solitaire",
+		wikipedia:  "https://en.wikipedia.org/wiki/Klondike_(solitaire)",
 		draw:       1,
-		recycles:   32767,
+		recycles:   2,
 		thoughtful: true,
+	},
+	"Gargantua": &Klondike{
+		wikipedia: "https://en.wikipedia.org/wiki/Gargantua_(card_game)",
+		packs:     2,
+		draw:      1,
+		recycles:  2,
+		founds:    []int{3, 4, 5, 6, 7, 8, 9, 10},
+		tabs:      []int{2, 3, 4, 5, 6, 7, 8, 9, 10},
 	},
 	"Eight Off": &EightOff{
 		wikipedia: "https://en.wikipedia.org/wiki/Eight_Off",
@@ -378,17 +386,17 @@ var VariantGroups = map[string][]string{
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Freecells":     {"Baker's Game", "Blind Freecell", "Freecell", "Freecell Easy", "Eight Off", "Seahaven Towers"},
-	"> Klondikes":     {"Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
+	"> Klondikes":     {"Gargantua", "Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
-	"> Puzzlers":      {"Bisley", "Usk", "Penguin", "Simple Simon", "Baker's Dozen"},
+	"> Puzzlers":      {"Antares", "Demons and Thieves", "Bisley", "Usk", "Penguin", "Simple Simon", "Baker's Dozen"},
 	"> Spiders":       {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Yukons":        {"Yukon", "Yukon Cells"},
 }
 
 // init is used to assemble the "> All" alpha-sorted group of variants for the picker menu
 func init() {
-	var vnames []string
+	var vnames []string = make([]string, 0, len(Variants))
 	for k := range Variants {
 		vnames = append(vnames, k)
 	}

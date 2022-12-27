@@ -32,7 +32,7 @@ func (self *Pile) Savable() *SavablePile {
 
 func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 	if self.category != sp.Category {
-		log.Panic("Baize pile and SavablePile are different")
+		log.Panicf("Baize pile (%s) and SavablePile (%s) are different", self.category, sp.Category)
 	}
 	self.Reset()
 	for _, cid := range sp.Cards {
@@ -51,7 +51,7 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 		}
 	}
 	if len(self.cards) != len(sp.Cards) {
-		log.Panic("cards rebuilt incorrectly")
+		log.Panicf("%s cards rebuilt incorrectly", self.category)
 	}
 	self.SetLabel(sp.Label)
 }
@@ -85,9 +85,36 @@ func (b *Baize) UndoPop() (*SavableBaize, bool) {
 	return &SavableBaize{}, false
 }
 
+func (b *Baize) IsSavableOk(sb *SavableBaize) bool {
+	if len(b.piles) != len(sb.Piles) {
+		log.Printf("Baize piles (%d) and SavableBaize piles (%d) are different", len(b.piles), len(sb.Piles))
+		return false
+	}
+	for i := 0; i < len(sb.Piles); i++ {
+		if b.piles[i].category != sb.Piles[i].Category {
+			log.Printf("Baize pile (%s) and SavablePile (%s) are different", b.piles[i].category, sb.Piles[i].Category)
+			return false
+		}
+	}
+	return true
+}
+
+func (b *Baize) IsSavableStackOk(stack []*SavableBaize) bool {
+	if stack == nil {
+		log.Print("No savable stack")
+		return false
+	}
+	for i := 0; i < len(stack); i++ {
+		if !b.IsSavableOk(stack[i]) {
+			return false
+		}
+	}
+	return true
+}
+
 func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
-		log.Panic("Baize piles and SavableBaize piles are different")
+		log.Panicf("Baize piles (%d) and SavableBaize piles (%d) are different", len(b.piles), len(sb.Piles))
 	}
 	for i := 0; i < len(sb.Piles); i++ {
 		b.piles[i].UpdateFromSavable(sb.Piles[i])

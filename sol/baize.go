@@ -246,7 +246,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
-		TheUI.Toast("", "No movable cards")
+		TheUI.Toast("Error", "No movable cards")
 		TheUI.ShowFAB("star", ebiten.KeyN)
 	} else {
 		TheUI.HideFAB()
@@ -543,6 +543,8 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
+		} else {
+			TheUI.Toast("Error", "Attention!")
 		}
 		b.StopTailDrag()
 	case *Pile:
@@ -703,22 +705,22 @@ func (b *Baize) ScaleCards() bool {
 
 	// Card padding is 10% of card height/width
 
-	if ThePreferences.FixedCards {
-		CardWidth = ThePreferences.FixedCardWidth
-		PilePaddingX = CardWidth / 10
-		CardHeight = ThePreferences.FixedCardHeight
-		PilePaddingY = CardHeight / 10
-		cardsWidth := PilePaddingX + CardWidth*(maxX+2)
-		LeftMargin = (b.WindowWidth - cardsWidth) / 2
-	} else {
-		slotWidth := float64(b.WindowWidth) / float64(maxX+2)
-		PilePaddingX = int(slotWidth / 10)
-		CardWidth = int(slotWidth) - PilePaddingX
-		slotHeight := slotWidth * ThePreferences.CardRatio
-		PilePaddingY = int(slotHeight / 10)
-		CardHeight = int(slotHeight) - PilePaddingY
-		LeftMargin = (CardWidth / 2) + PilePaddingX
-	}
+	// if ThePreferences.FixedCards {
+	// 	CardWidth = ThePreferences.FixedCardWidth
+	// 	PilePaddingX = CardWidth / 10
+	// 	CardHeight = ThePreferences.FixedCardHeight
+	// 	PilePaddingY = CardHeight / 10
+	// 	cardsWidth := PilePaddingX + CardWidth*(maxX+2)
+	// 	LeftMargin = (b.WindowWidth - cardsWidth) / 2
+	// } else {
+	slotWidth := float64(b.WindowWidth) / float64(maxX+2)
+	PilePaddingX = int(slotWidth / 10)
+	CardWidth = int(slotWidth) - PilePaddingX
+	slotHeight := slotWidth * ThePreferences.CardRatio
+	PilePaddingY = int(slotHeight / 10)
+	CardHeight = int(slotHeight) - PilePaddingY
+	LeftMargin = (CardWidth / 2) + PilePaddingX
+	// }
 	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
 	TopMargin = 48 + CardHeight/3
 

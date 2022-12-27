@@ -45,10 +45,6 @@ func (self *Freecell) BuildPiles() {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		self.tableaux = append(self.tableaux, t)
 	}
-
-	self.discards = nil
-	self.reserves = nil
-	self.waste = nil
 }
 
 func (self *Freecell) StartGame() {
@@ -108,7 +104,6 @@ func (self *Freecell) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (self *Freecell) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch dst.vtable.(type) {
 	case *Foundation:
 		if dst.Empty() {
