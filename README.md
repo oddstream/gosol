@@ -17,7 +17,7 @@ It currently knows how to play:
 * Easy (an easy to win game, for debugging)
 * Forty Thieves (also Sixty Thieves, Busy Aces, Forty and Eight, Josephine, Maria, Limited, Lucas, Red and Black, Rank and File, Number Ten)
 * Freecell (also Freecell Easy, Blind Freecell, Eight Off, Seahaven Towers)
-* Klondike (also Klondike Draw Three, Thoughtful)
+* Klondike (also Gargantua, Klondike Draw Three, Triple Klondike, Thoughtful)
 * Penguin
 * Scorpion (also Wasp)
 * Simple Simon

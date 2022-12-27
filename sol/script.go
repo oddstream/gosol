@@ -197,8 +197,16 @@ var Variants = map[string]Scripter{
 		packs:     2,
 		draw:      1,
 		recycles:  2,
-		founds:    []int{3, 4, 5, 6, 7, 8, 9, 10},
-		tabs:      []int{2, 3, 4, 5, 6, 7, 8, 9, 10},
+		founds:    []int{3, 4, 5, 6, 7, 8, 9, 10},    // 8
+		tabs:      []int{2, 3, 4, 5, 6, 7, 8, 9, 10}, // 9
+	},
+	"Triple Klondike": &Klondike{
+		wikipedia: "https://en.wikipedia.org/wiki/Gargantua_(card_game)",
+		packs:     3,
+		draw:      1,
+		recycles:  2,
+		founds:    []int{4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},             // 12
+		tabs:      []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 16
 	},
 	"Eight Off": &EightOff{
 		wikipedia: "https://en.wikipedia.org/wiki/Eight_Off",
@@ -386,7 +394,7 @@ var VariantGroups = map[string][]string{
 	"> Harder":        {"Baker's Dozen", "Easthaven", "Forty Thieves", "Spider Four Suits", "Usk"},
 	"> Forty Thieves": {"Forty Thieves", "Number Ten", "Red and Black", "Indian", "Rank and File", "Sixty Thieves", "Josephine", "Limited", "Forty and Eight", "Lucas", "Busy Aces", "Maria", "Streets"},
 	"> Freecells":     {"Baker's Game", "Blind Freecell", "Freecell", "Freecell Easy", "Eight Off", "Seahaven Towers"},
-	"> Klondikes":     {"Gargantua", "Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
+	"> Klondikes":     {"Gargantua", "Triple Klondike", "Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
 	"> Puzzlers":      {"Antares", "Demons and Thieves", "Bisley", "Usk", "Penguin", "Simple Simon", "Baker's Dozen"},
