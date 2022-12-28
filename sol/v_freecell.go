@@ -28,19 +28,19 @@ func (self *Freecell) BuildPiles() {
 
 	self.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil, 0)
 
-	self.cells = nil
+	self.cells = []*Pile{}
 	for x := 0; x < 4; x++ {
 		self.cells = append(self.cells, NewCell(image.Point{x, 0}))
 	}
 
-	self.foundations = nil
+	self.foundations = []*Pile{}
 	for x := 4; x < 8; x++ {
 		f := NewFoundation(image.Point{x, 0})
 		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
-	self.tableaux = nil
+	self.tableaux = []*Pile{}
 	for x := 0; x < 8; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ONE_PLUS)
 		self.tableaux = append(self.tableaux, t)

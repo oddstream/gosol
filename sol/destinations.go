@@ -100,6 +100,9 @@ func (b *Baize) FindDestinations() {
 			}
 		}
 	}
+
+	b.UpdateToolbar()
+	b.UpdateStatusbar()
 }
 
 type PileAndWeight struct {

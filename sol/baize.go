@@ -126,8 +126,6 @@ func (b *Baize) NewDeal() {
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 
 	sound.Play("Fan")
 
@@ -221,8 +219,6 @@ func (b *Baize) StartFreshGame() {
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 }
 
 func (b *Baize) ChangeVariant(newVariant string) {
@@ -251,8 +247,6 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	} else {
 		TheUI.HideFAB()
 	}
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 }
 
 // findPileAt finds the Pile under the mouse position
@@ -361,8 +355,6 @@ func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 
 	if b.Complete() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
@@ -724,13 +716,13 @@ func (b *Baize) ScaleCards() bool {
 	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
 	TopMargin = 48 + CardHeight/3
 
-	if DebugMode {
-		if CardWidth != OldWidth || CardHeight != OldHeight {
-			log.Println("ScaleCards did something")
-		} else {
-			log.Println("ScaleCards did nothing")
-		}
-	}
+	// if DebugMode {
+	// 	if CardWidth != OldWidth || CardHeight != OldHeight {
+	// 		log.Println("ScaleCards did something")
+	// 	} else {
+	// 		log.Println("ScaleCards did nothing")
+	// 	}
+	// }
 	return CardWidth != OldWidth || CardHeight != OldHeight
 }
 
@@ -816,8 +808,10 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if b.dirtyFlags != 0 {
 		if b.flagSet(dirtyCardSizes) {
 			if b.ScaleCards() {
-				CreateCardImages()
-				b.setFlag(dirtyPilePositions | dirtyPileBackgrounds)
+				if DebugMode {
+					log.Printf("ScaleCards %dx%d", CardWidth, CardHeight)
+				}
+				b.setFlag(dirtyCardImages | dirtyPilePositions | dirtyPileBackgrounds)
 			}
 			b.clearFlag(dirtyCardSizes)
 		}

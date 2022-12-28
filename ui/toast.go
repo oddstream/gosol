@@ -32,6 +32,9 @@ type ToastManager struct {
 // Toast creates a new toast message an adds it to the list of messages
 func (u *UI) Toast(soundEffect string, message string) {
 
+	// play the sound even if the toast is already displayed
+	sound.Play(soundEffect)
+
 	// if we are already displaying this message, reset ticksLeft and quit
 	// otherwise you can fill the screen with "Nothing to undo"
 	for _, t := range u.toastManager.toasts {
@@ -41,10 +44,7 @@ func (u *UI) Toast(soundEffect string, message string) {
 		}
 	}
 
-	if soundEffect != "" {
-		sound.Play(soundEffect)
-	}
-
+	// make a dummy context just to measure the width of thr message str9ing
 	dc := gg.NewContext(8, 8)
 	dc.SetFontFace(schriftbank.RobotoRegular14)
 	w, _ := dc.MeasureString(message)
@@ -52,6 +52,7 @@ func (u *UI) Toast(soundEffect string, message string) {
 	w += 48
 	h := float64(48) // ignore measured height, force height to be 48
 
+	// now reuse the dummy context, making it the correct size
 	dc = gg.NewContext(int(w), int(h))
 	dc.SetColor(BackgroundColor)
 	dc.DrawRectangle(0, 0, w, h)

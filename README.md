@@ -4,7 +4,7 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 ![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
-It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download, I'm working on that).
+It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
 
 ## Variants
 
@@ -134,7 +134,7 @@ You can when playing with actual cards, too. Cheat if you like; I'm not your mot
 Nope, there isn't one of those. Too stressful.
 Solitaire is also called *patience*; it's hard to feel patient when you're pressured by a clock.
 
-## You can't move cards off a foundation pile
+### You can't move cards off a foundation pile
 
 Nope. Reading the "original" rules for a lot of the games seem to explicitly forbid this, so there's a complete ban on moving cards off a foundation pile.
 
@@ -216,12 +216,12 @@ On Windows, you'll find them as `.json` files in a folder called `C:\Users\<user
 
 ## TODO
 
-* The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.
-* Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua), or a Tcl-style little language.
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM.
+* Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua), or a Tcl-style little language.
+* ~~The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.~~
 * ~~Get it working on Android (agggh! help!).~~
 * ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
-* Give up and rewrite the whole thing in [Godot](https://godotengine.org/) or [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
+* Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/) or [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
 
 ## History
 

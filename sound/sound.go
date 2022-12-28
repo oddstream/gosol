@@ -201,7 +201,7 @@ func SetVolume(vol float64) {
 }
 
 func Play(name string) {
-	if Volume == 0.0 {
+	if Volume == 0.0 || name == "" {
 		return
 	}
 	n := soundRandomizer[name]

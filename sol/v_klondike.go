@@ -32,14 +32,14 @@ func (self *Klondike) BuildPiles() {
 	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, self.packs, 4, nil, 0)
 	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
-	self.foundations = nil
+	self.foundations = []*Pile{}
 	for _, x := range self.founds {
 		f := NewFoundation(image.Point{x, 0})
 		self.foundations = append(self.foundations, f)
 		f.SetLabel("A")
 	}
 
-	self.tableaux = nil
+	self.tableaux = []*Pile{}
 	for _, x := range self.tabs {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		t.SetLabel("K")

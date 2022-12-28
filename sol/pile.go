@@ -133,7 +133,7 @@ func (self *Pile) IsStock() bool {
 
 func (self *Pile) Shuffle() {
 	if NoShuffle {
-		log.Println("not shuffling cards")
+		log.Println("Not shuffling cards")
 		return
 	}
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -143,7 +143,10 @@ func (self *Pile) Shuffle() {
 	// Anecdotally, with a single shuffle Freecell kept
 	// having three Aces at or near the top of the dealt piles.
 	// Or, this could all be voodoo
+	// for i := 0; i < 6; i++ {
 	rand.Shuffle(self.Len(), self.Swap)
+	// }
+	log.Printf("Shuffled %d cards", self.Len())
 }
 
 // Deprecated: not needed in new model

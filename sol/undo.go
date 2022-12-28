@@ -148,8 +148,6 @@ func (b *Baize) Undo() {
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 }
 
 func (b *Baize) RestartDeal() {
@@ -166,8 +164,6 @@ func (b *Baize) RestartDeal() {
 	b.bookmark = 0 // do this AFTER UpdateFromSavable
 	b.UndoPush()   // replace current state
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 }
 
 // SavePosition saves the current Baize state
@@ -202,6 +198,4 @@ func (b *Baize) LoadPosition() {
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
-	b.UpdateToolbar()
-	b.UpdateStatusbar()
 }

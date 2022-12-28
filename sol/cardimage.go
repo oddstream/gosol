@@ -246,11 +246,11 @@ func CreateCardFaceImageLibrary() {
 }
 
 func CreateCardImages() {
+	defer util.Duration(time.Now(), "CreateCardImages")
 	if CardWidth == 0 || CardHeight == 0 {
 		log.Println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
 		return
 	}
-	// TODO MAYBE turn off drawing globally while this runs
 	schriftbank.MakeCardFonts(CardWidth)
 	CreateCardFaceImageLibrary()
 	CardBackImage = CreateCardBackImage()
