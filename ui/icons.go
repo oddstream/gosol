@@ -8,9 +8,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
-
-	"oddstream.games/gosol/util"
 )
 
 var IconMap = map[string]image.Image{}
@@ -144,7 +141,7 @@ func decode(name string, variable []byte) {
 }
 
 func LoadIconMap() {
-	defer util.Duration(time.Now(), "LoadIconMap")
+	// defer util.Duration(time.Now(), "LoadIconMap")
 	if GenerateIcons {
 		LoadIconMapFromZipFiles()
 	} else {

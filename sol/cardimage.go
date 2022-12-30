@@ -3,7 +3,6 @@ package sol
 import (
 	"image/color"
 	"log"
-	"time"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -235,7 +234,7 @@ func CreateCardShadowImage() *ebiten.Image {
 }
 
 func CreateCardFaceImageLibrary() {
-	defer util.Duration(time.Now(), "CreateCardFaceImageLibrary")
+	// defer util.Duration(time.Now(), "CreateCardFaceImageLibrary")
 
 	for _, suit := range []int{NOSUIT, CLUB, DIAMOND, HEART, SPADE} {
 		for ord := 1; ord < 14; ord++ {
@@ -246,7 +245,7 @@ func CreateCardFaceImageLibrary() {
 }
 
 func CreateCardImages() {
-	defer util.Duration(time.Now(), "CreateCardImages")
+	// defer util.Duration(time.Now(), "CreateCardImages")
 	if CardWidth == 0 || CardHeight == 0 {
 		log.Println("CreateCardImages called with zero card dimensions") // seen to happen in WASM
 		return

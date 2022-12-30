@@ -18,13 +18,13 @@ func (self *SimpleSimon) BuildPiles() {
 
 	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
-	self.discards = nil
+	self.discards = []*Pile{}
 	for x := 3; x < 7; x++ {
 		d := NewDiscard(image.Point{x, 0}, FAN_NONE)
 		self.discards = append(self.discards, d)
 	}
 
-	self.tableaux = nil
+	self.tableaux = []*Pile{}
 	for x := 0; x < 10; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		self.tableaux = append(self.tableaux, t)
@@ -68,7 +68,6 @@ func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*SimpleSimon) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch dst.vtable.(type) {
 	case *Discard:
 		// Discard.CanAcceptTail() has already checked

@@ -19,19 +19,19 @@ func (self *Duchess) BuildPiles() {
 
 	self.stock = NewStock(image.Point{1, 1}, FAN_NONE, 1, 4, nil, 0)
 
-	self.reserves = nil
+	self.reserves = []*Pile{}
 	for i := 0; i < 4; i++ {
 		self.reserves = append(self.reserves, NewReserve(image.Point{i * 2, 0}, FAN_RIGHT))
 	}
 
 	self.waste = NewWaste(image.Point{1, 2}, FAN_DOWN3)
 
-	self.foundations = nil
+	self.foundations = []*Pile{}
 	for x := 3; x < 7; x++ {
 		self.foundations = append(self.foundations, NewFoundation(image.Point{x, 1}))
 	}
 
-	self.tableaux = nil
+	self.tableaux = []*Pile{}
 	for x := 3; x < 7; x++ {
 		self.tableaux = append(self.tableaux, NewTableau(image.Point{x, 2}, FAN_DOWN, MOVE_ANY))
 	}
@@ -91,7 +91,6 @@ func (*Duchess) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	card := tail[0]
 	switch dst.vtable.(type) {
 	case *Foundation:

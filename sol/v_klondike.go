@@ -86,7 +86,6 @@ func (*Klondike) TailMoveError(tail []*Card) (bool, error) {
 }
 
 func (*Klondike) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
-	// why the pretty asterisks? google method pointer receivers in interfaces; *Tableau is a different type to Tableau
 	switch dst.vtable.(type) {
 	case *Foundation:
 		if dst.Empty() {

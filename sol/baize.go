@@ -195,7 +195,7 @@ func (b *Baize) StartFreshGame() {
 
 	var ok bool
 	if b.script, ok = Variants[ThePreferences.Variant]; !ok {
-		log.Println("no interface for variant", ThePreferences.Variant)
+		log.Println("no interface for variant", ThePreferences.Variant, "reverting to Klondike")
 		ThePreferences.Variant = "Klondike"
 		ThePreferences.Save()
 		if b.script, ok = Variants[ThePreferences.Variant]; !ok {
@@ -360,6 +360,7 @@ func (b *Baize) AfterUserMove() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 		TheStatistics.RecordWonGame(b.LongVariantName(), len(b.undoStack)-1)
+		ShowStatisticsDrawer()
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {

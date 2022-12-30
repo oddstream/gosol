@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
-	"oddstream.games/gosol/util"
 )
 
 //go:embed assets/click_001.wav
@@ -137,7 +135,7 @@ func decode(name string, wavBytes []byte) {
 }
 
 func init() {
-	defer util.Duration(time.Now(), "sound.init")
+	// defer util.Duration(time.Now(), "sound.init")
 
 	audioContext = audio.NewContext(44100)
 	soundMap = make(map[string]*audio.Player)

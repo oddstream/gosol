@@ -8,9 +8,6 @@ import (
 	"os"
 	"path"
 	"runtime"
-	"time"
-
-	"oddstream.games/gosol/util"
 )
 
 func fullPath(jsonFname string) (string, error) {
@@ -113,9 +110,8 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 
 // Load an already existing Preferences object from file
 func (prefs *Preferences) Load() {
-	if DebugMode {
-		defer util.Duration(time.Now(), "Preferences.Load")
-	}
+	// defer util.Duration(time.Now(), "Preferences.Load")
+
 	bytes, count, err := loadBytesFromFile("preferences.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
@@ -130,9 +126,8 @@ func (prefs *Preferences) Load() {
 
 // Save writes the Preferences object to file
 func (prefs *Preferences) Save() {
-	if DebugMode {
-		defer util.Duration(time.Now(), "Preferences.Save")
-	}
+	// defer util.Duration(time.Now(), "Preferences.Save")
+
 	prefs.LastVersionMajor = GosolVersionMajor
 	prefs.LastVersionMinor = GosolVersionMinor
 	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
@@ -145,9 +140,8 @@ func (prefs *Preferences) Save() {
 
 // Load statistics for all variants from JSON to an already-created Statistics object
 func (s *Statistics) Load() {
-	if DebugMode {
-		defer util.Duration(time.Now(), "Statistics.Load")
-	}
+	// defer util.Duration(time.Now(), "Statistics.Load")
+
 	bytes, count, err := loadBytesFromFile("statistics.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
@@ -162,9 +156,8 @@ func (s *Statistics) Load() {
 
 // Save writes the Statistics object to file
 func (s *Statistics) Save() {
-	if DebugMode {
-		defer util.Duration(time.Now(), "Statistics.Save")
-	}
+	// defer util.Duration(time.Now(), "Statistics.Save")
+
 	bytes, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -175,9 +168,8 @@ func (s *Statistics) Save() {
 
 // Save the entire undo stack to file
 func (b *Baize) Save() {
-	if DebugMode {
-		defer util.Duration(time.Now(), "Baize.Save")
-	}
+	// defer util.Duration(time.Now(), "Baize.Save")
+
 	// do not bother to save virgin or completed games
 	// if len(b.undoStack) < 2 || b.Complete() {
 	// 	return
@@ -192,9 +184,8 @@ func (b *Baize) Save() {
 }
 
 func LoadUndoStack() []*SavableBaize {
-	if DebugMode {
-		defer util.Duration(time.Now(), "LoadUndoStack")
-	}
+	// defer util.Duration(time.Now(), "LoadUndoStack")
+
 	bytes, count, err := loadBytesFromFile("saved.json", true)
 	if err != nil || count == 0 || bytes == nil {
 		return nil

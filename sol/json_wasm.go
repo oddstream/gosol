@@ -133,9 +133,7 @@ func (b *Baize) Save() {
 // }
 
 func LoadUndoStack() []*SavableBaize {
-	if DebugMode {
-		defer util.Duration(time.Now(), "LoadUndoStack")
-	}
+	// defer util.Duration(time.Now(), "LoadUndoStack")
 
 	bytes, err := loadBytesFromLocalStorage("saved", true)
 	if err != nil {
