@@ -3,6 +3,7 @@ package sol
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 // Statistics is a container for the statistics for all variants
@@ -35,11 +36,13 @@ func (stats *VariantStatistics) strings(v string) []string {
 	if stats.Won+stats.Lost == 0 {
 		strs = append(strs, fmt.Sprintf("You have not played %s before", v))
 	} else {
+		strs = append(strs, strings.ToUpper(v))
 		strs = append(strs, fmt.Sprintf("Played: %d", stats.Won+stats.Lost))
 		strs = append(strs, fmt.Sprintf("Won: %d", stats.Won))
 		strs = append(strs, fmt.Sprintf("Lost: %d", stats.Lost))
 		winRate := (stats.Won * 100) / (stats.Won + stats.Lost)
 		strs = append(strs, fmt.Sprintf("Win rate: %d%%", winRate))
+		strs = append(strs, " ")
 
 		avpc := stats.averagePercent()
 		if avpc < 100 {
@@ -66,6 +69,23 @@ func (stats *VariantStatistics) strings(v string) []string {
 			strs = append(strs, fmt.Sprintf("Worst streak: %d", stats.WorstStreak))
 		}
 	}
+
+	return strs
+}
+
+func (s *Statistics) strings() []string {
+	var strs []string = []string{}
+	var numPlayed, numWon, numLost int
+	for _, vs := range TheStatistics.StatsMap {
+		numPlayed += vs.Won + vs.Lost
+		numWon += vs.Won
+		numLost += vs.Lost
+	}
+	strs = append(strs, fmt.Sprintf("Played: %d", numPlayed))
+	strs = append(strs, fmt.Sprintf("Won: %d", numWon))
+	strs = append(strs, fmt.Sprintf("Lost: %d", numLost))
+	winRate := (numWon * 100) / (numPlayed)
+	strs = append(strs, fmt.Sprintf("Win rate: %d%%", winRate))
 	return strs
 }
 
@@ -85,6 +105,11 @@ func (s *Statistics) findVariant(v string) *VariantStatistics {
 		// println("statistics has encountered a new variant", v)
 	}
 	return stats
+}
+
+func (s *Statistics) Played(v string) int {
+	stats := s.findVariant(v)
+	return stats.Won + stats.Lost
 }
 
 func (s *Statistics) RecordWonGame(v string, moves int) {
@@ -148,7 +173,10 @@ func (s *Statistics) RecordLostGame(v string) {
 }
 
 func ShowStatisticsDrawer() {
-	stats := TheStatistics.findVariant(TheBaize.LongVariantName())
-	var strs []string = stats.strings(TheBaize.LongVariantName())
+	stats := TheStatistics.findVariant(ThePreferences.Variant)
+	var strs []string = stats.strings(ThePreferences.Variant)
+	strs = append(strs, " ") // n.b. can't use empty string
+	strs = append(strs, "ALL VARIANTS")
+	strs = append(strs, TheStatistics.strings()...)
 	TheUI.ShowTextDrawer(strs)
 }

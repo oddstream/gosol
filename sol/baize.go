@@ -99,10 +99,6 @@ func (b *Baize) Refan() {
 	b.setFlag(dirtyCardPositions)
 }
 
-func (b *Baize) LongVariantName() string {
-	return ThePreferences.Variant
-}
-
 // NewGame restarts current variant (ie no pile building) with a new seed
 func (b *Baize) NewDeal() {
 
@@ -110,7 +106,7 @@ func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(b.LongVariantName())
+		TheStatistics.RecordLostGame(ThePreferences.Variant)
 	}
 
 	b.Reset()
@@ -209,7 +205,7 @@ func (b *Baize) StartFreshGame() {
 	}
 	// b.FindBuddyPiles()
 
-	TheUI.SetTitle(b.LongVariantName())
+	TheUI.SetTitle(ThePreferences.Variant)
 
 	sound.Play("Fan")
 
@@ -224,7 +220,7 @@ func (b *Baize) StartFreshGame() {
 func (b *Baize) ChangeVariant(newVariant string) {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(b.LongVariantName())
+		TheStatistics.RecordLostGame(ThePreferences.Variant)
 	}
 	ThePreferences.Variant = newVariant
 	b.StartFreshGame()
@@ -359,7 +355,7 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		TheUI.ShowFAB("star", ebiten.KeyN)
 		b.StartSpinning()
-		TheStatistics.RecordWonGame(b.LongVariantName(), len(b.undoStack)-1)
+		TheStatistics.RecordWonGame(ThePreferences.Variant, len(b.undoStack)-1)
 		ShowStatisticsDrawer()
 	} else if b.Conformant() {
 		TheUI.ShowFAB("done_all", ebiten.KeyC)

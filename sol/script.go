@@ -408,8 +408,9 @@ func init() {
 	for k := range Variants {
 		vnames = append(vnames, k)
 	}
-	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+	// no need to sort here, sort gets done by func VariantNames()
 	VariantGroups["> All"] = vnames
+	VariantGroups["> All by Played"] = vnames
 }
 
 // VariantGroupNames returns an alpha-sorted []string of the variant group names
@@ -422,11 +423,15 @@ func VariantGroupNames() []string {
 	return vnames
 }
 
-// VariantNames returns an alpha-sorted []string of the varaints in a group
+// VariantNames returns an alpha-sorted []string of the variants in a group
 func VariantNames(group string) []string {
 	var vnames []string = make([]string, 0, len(VariantGroups[group]))
 	vnames = append(vnames, VariantGroups[group]...)
-	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+	if group == "> All by Played" {
+		sort.Slice(vnames, func(i, j int) bool { return TheStatistics.Played(vnames[i]) > TheStatistics.Played(vnames[j]) })
+	} else {
+		sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+	}
 	return vnames
 }
 

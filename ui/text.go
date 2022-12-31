@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"log"
-
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/input"
@@ -18,9 +16,9 @@ type Text struct {
 }
 
 func (w *Text) createImg() *ebiten.Image {
-	if w.lines == nil {
-		log.Panic("widget Text.createImg with no lines")
-	}
+	// if w.lines == nil {
+	// 	log.Panic("widget Text.createImg with no lines")
+	// }
 	dc := gg.NewContext(w.width, w.height)
 
 	dc.SetColor(ForegroundColor)
@@ -42,6 +40,7 @@ func (w *Text) calcHeights() {
 	dc := gg.NewContext(w.width, 48)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	// MeasureString says this text, requested to be 48 high, is 14 high
+	// n.b. be wary of return from WordWrap("", ...), may be nil?
 	w.lines = dc.WordWrap(w.text, float64(w.width-48)) // 24 padding left and right
 	w.lineHeight = 24
 	w.height = w.lineHeight * len(w.lines) // + w.lineHeight
