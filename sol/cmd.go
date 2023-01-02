@@ -29,14 +29,14 @@ var CommandTable = map[ebiten.Key]func(){
 	},
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
 	ebiten.KeyX: func() { ExitRequested = true },
-	ebiten.KeyTab: func() {
-		if DebugMode {
-			for _, p := range TheBaize.piles {
-				p.Refan()
-			}
-			ThePreferences.Save()
-		}
-	},
+	// ebiten.KeyTab: func() {
+	// 	if DebugMode {
+	// 		for _, p := range TheBaize.piles {
+	// 			p.Refan()
+	// 		}
+	// 		ThePreferences.Save()
+	// 	}
+	// },
 	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
 	ebiten.KeyF2: func() { ShowStatisticsDrawer() },
 	ebiten.KeyF3: func() { ShowSettingsDrawer() },

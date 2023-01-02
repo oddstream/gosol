@@ -18,9 +18,9 @@ var (
 	// GosolVersionMajor is the integer version number
 	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	GosolVersionMinor int = 7
+	GosolVersionMinor int = 8
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	GosolVersionDate string = "2022-12-06"
+	GosolVersionDate string = "2023-01-02"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -57,6 +57,8 @@ var (
 	TheCardFaceImageLibrary [13 * 5]*ebiten.Image
 	// CardBackImage applies to all cards so is kept globally as an optimization
 	CardBackImage *ebiten.Image
+	// MovableCardBackImage applies to all cards so is kept globally as an optimization
+	MovableCardBackImage *ebiten.Image
 	// CardShadowImage applies to all cards so is kept globally as an optimization
 	CardShadowImage *ebiten.Image
 	// ExitRequested is set when user has had enough

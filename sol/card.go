@@ -358,6 +358,10 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
+	if img == nil {
+		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
+	}
+
 	if c.Flipping() {
 		// img = ebiten.NewImageFromImage(img)
 		op.GeoM.Translate(float64(-CardWidth/2), 0)
@@ -394,7 +398,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.pos.X+TheBaize.dragOffset.X), float64(c.pos.Y+TheBaize.dragOffset.Y))
 
-	if CardShadowImage != nil {
+	if CardShadowImage != nil { // why would this be nil?
 		if !c.Flipping() {
 			switch {
 			case c.Transitioning():
@@ -419,22 +423,35 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if img == nil {
-		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
-	}
-
 	// if c.owner.target && c == c.owner.Peek() {
 	// 	// op.GeoM.Translate(2, 2)
 	// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
 	// }
 
-	if TheBaize.showMovableCards && len(c.destinations) > 0 {
-		if c.Prone() {
-			op.ColorM.Scale(0.8, 0.8, 0.7, 1)
+	if TheBaize.showMovableCards {
+		if c.owner.IsStock() {
+			// card will be prone because Stock
+			img = MovableCardBackImage
 		} else {
-			op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
+			if len(c.destinations) > 0 {
+				// TODO nasty to do this every frame
+				var allCell bool = true
+				for _, p := range c.destinations {
+					if !p.IsCell() {
+						allCell = false
+						break
+					}
+				}
+				if allCell {
+					op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
+				} else {
+					op.ColorM.Scale(1.0, 1.0, 0.8, 1) // keep these numbers as high as possible
+				}
+			}
 		}
 	}
 
-	screen.DrawImage(img, op)
+	if img != nil {
+		screen.DrawImage(img, op)
+	}
 }

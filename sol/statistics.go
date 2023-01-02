@@ -46,7 +46,7 @@ func (stats *VariantStatistics) strings(v string) []string {
 
 		avpc := stats.averagePercent()
 		if avpc < 100 {
-			strs = append(strs, fmt.Sprintf("Average complete: %d%%", avpc))
+			strs = append(strs, fmt.Sprintf("Average incomplete: %d%%", avpc))
 		}
 		if stats.BestPercent < 100 {
 			// not yet won a game

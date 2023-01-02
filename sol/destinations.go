@@ -111,11 +111,16 @@ type PileAndWeight struct {
 }
 
 func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
+	if len(destinations) == 1 {
+		return destinations[0]
+	}
 	var paw []*PileAndWeight
 	for _, dst := range destinations {
 		var tmp PileAndWeight = PileAndWeight{pile: dst, weight: len(dst.cards)}
 
 		switch dst.vtable.(type) {
+		case *Cell:
+			tmp.weight -= 1
 		case *Foundation:
 			tmp.weight += 52 // magic number, sorry
 		case *Tableau:

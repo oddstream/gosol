@@ -119,6 +119,11 @@ func (self *Pile) Hidden() bool {
 	return self.slot.X < 0 || self.slot.Y < 0
 }
 
+func (self *Pile) IsCell() bool {
+	_, ok := self.vtable.(*Cell)
+	return ok
+}
+
 // func (self *Pile) IsFoundation() bool {
 // 	_, ok := self.vtable.(*Foundation)
 // 	return ok
@@ -559,13 +564,8 @@ func (self *Pile) BuryCards(ordinal int) {
 func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
 	if len(card.destinations) > 0 {
-		var dst *Pile
-		if len(card.destinations) == 1 {
-			dst = card.destinations[0]
-		} else {
-			dst = TheBaize.BestDestination(card, card.destinations)
-		}
 		src := card.owner
+		dst := TheBaize.BestDestination(card, card.destinations)
 		tail = src.MakeTail(card)
 		if len(tail) == 1 {
 			MoveCard(src, dst)
