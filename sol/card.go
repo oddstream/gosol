@@ -59,7 +59,7 @@ type Card struct {
 	directionZ, scaleZ     float64
 	angle, spin            float64 // current angle and spin when card is spinning
 
-	destinations []*Pile
+	destinations []CardDestination // -1 cell, 0 normal, 1 foundation
 }
 
 // NewCard is a factory for Card objects
@@ -434,18 +434,15 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			img = MovableCardBackImage
 		} else {
 			if len(c.destinations) > 0 {
-				// TODO nasty to do this every frame
-				var allCell bool = true
-				for _, p := range c.destinations {
-					if !p.IsCell() {
-						allCell = false
-						break
-					}
-				}
-				if allCell {
-					op.ColorM.Scale(1.0, 1.0, 0.9, 1) // keep these numbers as high as possible
-				} else {
-					op.ColorM.Scale(1.0, 1.0, 0.8, 1) // keep these numbers as high as possible
+				switch c.destinations[0].weight {
+				case -1:
+					op.ColorM.Scale(1.0, 1.0, 0.925, 1) // keep these numbers as high as possible
+				case 0:
+					op.ColorM.Scale(1.0, 1.0, 0.825, 1) // keep these numbers as high as possible
+				case 1:
+					op.ColorM.Scale(1.0, 1.0, 0.725, 1) // keep these numbers as high as possible
+				case 2:
+					op.ColorM.Scale(1.0, 1.0, 0.625, 1) // keep these numbers as high as possible
 				}
 			}
 		}

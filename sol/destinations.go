@@ -59,6 +59,11 @@ func (b *Baize) findAllMovableTails() []*MovableTail {
 // 	return false
 // }
 
+type CardDestination struct {
+	pile   *Pile
+	weight int
+}
+
 // FindDestinations sets Baize.moves, Baize.fmoves, Card.destinations
 func (b *Baize) FindDestinations() {
 	b.moves, b.fmoves = 0, 0
@@ -93,10 +98,38 @@ func (b *Baize) FindDestinations() {
 		}
 		if movable {
 			b.moves++
-			card.destinations = append(card.destinations, mc.dst)
 			if _, ok := dst.vtable.(*Foundation); ok {
 				// if dst.category == "Foundation" {
 				b.fmoves++
+			}
+			var paw CardDestination = CardDestination{pile: dst, weight: 0}
+			switch dst.vtable.(type) {
+			case *Cell:
+				paw.weight = -1
+			case *Foundation:
+				paw.weight = 2
+			case *Tableau:
+				if dst.Empty() {
+					if dst.Label() != "" {
+						paw.weight = 1
+					}
+				} else if dst.Peek().Suit() == card.Suit() {
+					// Spider
+					paw.weight = 1
+				}
+				// else weight will be 0
+			}
+			card.destinations = append(card.destinations, paw)
+			if len(card.destinations) > 1 {
+				cd := card.destinations
+				sort.Slice(cd,
+					func(i, j int) bool {
+						if cd[i].weight == cd[j].weight {
+							return cd[i].pile.Len() > cd[j].pile.Len()
+						} else {
+							return cd[i].weight > cd[j].weight
+						}
+					})
 			}
 		}
 	}
@@ -105,11 +138,7 @@ func (b *Baize) FindDestinations() {
 	b.UpdateStatusbar()
 }
 
-type PileAndWeight struct {
-	pile   *Pile
-	weight int
-}
-
+/*
 func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
 	if len(destinations) == 1 {
 		return destinations[0]
@@ -135,3 +164,4 @@ func (b *Baize) BestDestination(card *Card, destinations []*Pile) *Pile {
 	sort.Slice(paw, func(i, j int) bool { return paw[i].weight > paw[j].weight })
 	return paw[0].pile
 }
+*/

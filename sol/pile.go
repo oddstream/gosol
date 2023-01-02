@@ -565,7 +565,7 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
 	if len(card.destinations) > 0 {
 		src := card.owner
-		dst := TheBaize.BestDestination(card, card.destinations)
+		dst := card.destinations[0].pile // presorted so biggest weight is first
 		tail = src.MakeTail(card)
 		if len(tail) == 1 {
 			MoveCard(src, dst)
