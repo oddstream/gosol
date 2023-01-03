@@ -106,7 +106,7 @@ func (self *Canfield) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 			c := tail[0]
 			ord := util.OrdinalToShortString(c.Ordinal())
 			if dst.Label() == "" {
-				if c.owner.category != "Reserve" {
+				if c.Owner().category != "Reserve" {
 					return false, errors.New("The first Foundation card must come from a Reserve")
 				}
 				for _, pile := range self.foundations {
@@ -122,7 +122,7 @@ func (self *Canfield) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	case *Tableau:
 		if dst.Empty() {
 			// Spaces that occur on the tableau are filled only from reserve or waste
-			if tail[0].owner.category == "Tableau" {
+			if tail[0].Owner().category == "Tableau" {
 				return false, errors.New("An empty Tableau must be filled from the Reserve or Waste")
 			}
 			return true, nil

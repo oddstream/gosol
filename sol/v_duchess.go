@@ -96,7 +96,7 @@ func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 	case *Foundation:
 		if dst.Empty() {
 			if dst.Label() == "" {
-				if card.owner.category != "Reserve" {
+				if card.Owner().category != "Reserve" {
 					return false, errors.New("The first Foundation card must come from a Reserve")
 				}
 			}
@@ -112,7 +112,7 @@ func (self *Duchess) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 			}
 			if rescards > 0 {
 				// Spaces that occur on the tableau are filled with any top card in the reserve
-				if card.owner.category != "Reserve" {
+				if card.Owner().category != "Reserve" {
 					return false, errors.New("An empty Tableau must be filled from a Reserve")
 				}
 			}

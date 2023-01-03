@@ -77,11 +77,11 @@ type Pile struct {
 	magic     uint32
 	vtable    PileVtabler
 	category  string
-	slot      image.Point
 	fanType   FanType
 	moveType  MoveType
 	cards     []*Card
-	pos       image.Point
+	slot      image.Point // logical position on baize
+	pos       image.Point // actual position on baize
 	pos1      image.Point // waste pos #1
 	pos2      image.Point // waste pos #1
 	fanFactor float64
@@ -114,7 +114,7 @@ func (self *Pile) Reset() {
 	self.fanFactor = DefaultFanFactor[self.fanType]
 }
 
-// Hidden returns true if this is off screen
+// Hidden returns true if this pile is off screen
 func (self *Pile) Hidden() bool {
 	return self.slot.X < 0 || self.slot.Y < 0
 }
@@ -274,7 +274,7 @@ func (self *Pile) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.owner = self
+	c.SetOwner(self)
 	c.TransitionTo(pos)
 
 	if self.IsStock() {
@@ -322,7 +322,6 @@ func (self *Pile) SetBaizePos(pos image.Point) {
 		self.pos2.X = self.pos1.X + int(float64(CardWidth)/CARD_FACE_FAN_FACTOR_H)
 		self.pos2.Y = self.pos.Y
 	}
-	// println(base.category, base.pos.X, base.pos.Y)
 }
 
 func (self *Pile) BaizePos() image.Point {
@@ -482,6 +481,8 @@ func (self *Pile) Refan() {
 	}
 }
 
+// CanMoveTail filters out cases where a tail can be moved from a given pile type
+// eg if only one card can be moved at a time
 func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {
 	if !self.IsStock() {
 		if AnyCardsProne(tail) {
@@ -490,22 +491,26 @@ func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {
 	}
 	switch self.moveType {
 	case MOVE_NONE:
+		// eg Discard, Foundation
 		return false, fmt.Errorf("Cannot move a card from a %s", self.category)
 	case MOVE_ANY:
 		// well, that was easy
 	case MOVE_ONE:
+		// eg Cell, Reserve, Stock, Waste
 		if len(tail) > 1 {
 			return false, fmt.Errorf("Can only move one card from a %s", self.category)
 		}
 	case MOVE_ONE_PLUS:
-		// don't know destination, so we allow this as MOVE_ANY
+		// don't (yet) know destination, so we allow this as MOVE_ANY
+		// and do power moves check later, in Tableau CanAcceptTail
 	case MOVE_ONE_OR_ALL:
+		// Canfield, Toad
 		if len(tail) == 1 {
 			// that's okay
 		} else if len(tail) == self.Len() {
 			// that's okay too
 		} else {
-			return false, errors.New("Only move one card, or the whole pile")
+			return false, errors.New("Can only move one card, or the whole pile")
 		}
 	}
 	return true, nil
@@ -564,7 +569,7 @@ func (self *Pile) BuryCards(ordinal int) {
 func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
 	if len(card.destinations) > 0 {
-		src := card.owner
+		src := card.Owner()
 		dst := card.destinations[0].pile // presorted so biggest weight is first
 		tail = src.MakeTail(card)
 		if len(tail) == 1 {

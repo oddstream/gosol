@@ -22,7 +22,7 @@ type Preferences struct {
 	Mute                               bool
 	Volume                             float64
 	MirrorBaize                        bool
-	PreferredWindow                    bool
+	ShowMovableCards                   bool
 	CardRatio                          float64
 	LastVersionMajor, LastVersionMinor int
 }
@@ -46,6 +46,7 @@ var ThePreferences = &Preferences{
 	SpadeColor:           "Black",
 	Mute:                 false,
 	Volume:               0.75,
+	ShowMovableCards:     false,
 	// FixedCards:       false,
 	// FixedCardWidth:   90,
 	// FixedCardHeight:  122,

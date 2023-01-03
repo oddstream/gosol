@@ -25,7 +25,7 @@ func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) > 1 {
 		return false, errors.New("Can only move a single card to Waste")
 	}
-	if !tail[0].owner.IsStock() {
+	if !tail[0].Owner().IsStock() {
 		return false, errors.New("Waste can only accept cards from the Stock")
 	}
 	// nb card can be - usually is - face down

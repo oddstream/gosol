@@ -8,7 +8,7 @@ type SettingsDrawer struct {
 // NewSettingsDrawer creates the SettingsDrawer object; it starts life off screen to the left
 func NewSettingsDrawer() *SettingsDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	d := &SettingsDrawer{DrawerBase: DrawerBase{width: 256, height: 0, x: -256, y: 48}}
+	d := &SettingsDrawer{DrawerBase: DrawerBase{width: 400, height: 0, x: -400, y: 48}}
 	return d
 }
 
@@ -27,6 +27,7 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 		// NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Power moves", booleanSettings["PowerMoves"]),
 		NewCheckbox(u.settingsDrawer, "", "Colorful cards", booleanSettings["ColorfulCards"]),
+		NewCheckbox(u.settingsDrawer, "", "Show movable cards", booleanSettings["ShowMovableCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Mirror baize", booleanSettings["MirrorBaize"]),
 		NewCheckbox(u.settingsDrawer, "", "Mute sounds", booleanSettings["Mute"]),
 	}

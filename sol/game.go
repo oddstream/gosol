@@ -18,9 +18,9 @@ var (
 	// GosolVersionMajor is the integer version number
 	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	GosolVersionMinor int = 8
+	GosolVersionMinor int = 9
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	GosolVersionDate string = "2023-01-02"
+	GosolVersionDate string = "2023-01-03"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload

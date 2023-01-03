@@ -86,7 +86,7 @@ func (self *Toad) TailAppendError(dst *Pile, tail []*Card) (bool, error) {
 		if dst.Empty() {
 			// Once the reserve is empty, spaces in the tableau can be filled with a card from the Deck [Stock/Waste], but NOT from another tableau pile.
 			// pointless rule, since tableuax move rule is MOVE_ONE_OR_ALL
-			if card.owner != self.waste {
+			if card.Owner() != self.waste {
 				return false, errors.New("Empty tableaux must be filled with cards from the waste")
 			}
 		} else {

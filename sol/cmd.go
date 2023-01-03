@@ -18,8 +18,8 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
 	ebiten.KeyC: func() { TheBaize.Collect2() },
 	ebiten.KeyH: func() {
-		TheBaize.showMovableCards = !TheBaize.showMovableCards
-		if TheBaize.showMovableCards {
+		ThePreferences.ShowMovableCards = !ThePreferences.ShowMovableCards
+		if ThePreferences.ShowMovableCards {
 			if TheBaize.moves+TheBaize.fmoves > 0 {
 				TheUI.ToastInfo("Movable cards highlighted")
 			} else {
@@ -48,18 +48,15 @@ var CommandTable = map[ebiten.Key]func(){
 }
 
 func Execute(cmd interface{}) {
+	TheUI.HideActiveDrawer()
+	TheUI.HideFAB()
 	switch v := cmd.(type) {
 	case ebiten.Key:
 		if fn, ok := CommandTable[v]; ok {
-			TheUI.HideActiveDrawer()
-			TheUI.HideFAB()
 			fn()
 		}
-
 	case ui.ChangeRequest:
 		// a widget has sent a change request
-		TheUI.HideActiveDrawer()
-		TheUI.HideFAB()
 		switch v.ChangeRequested {
 		case "Variant":
 			if _, ok := Variants[v.Data]; !ok {
@@ -79,6 +76,8 @@ func Execute(cmd interface{}) {
 		case "Colorful cards":
 			ThePreferences.ColorfulCards, _ = strconv.ParseBool(v.Data)
 			TheBaize.setFlag(dirtyCardImages)
+		case "Show movable cards":
+			ThePreferences.ShowMovableCards, _ = strconv.ParseBool(v.Data)
 		case "Mirror baize":
 			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
 			savedUndoStack := TheBaize.undoStack
@@ -95,7 +94,6 @@ func Execute(cmd interface{}) {
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}
 		ThePreferences.Save() // save now especially if running on a browser
-
 	default:
 		log.Fatal("Baize.Execute unknown command type", cmd)
 	}

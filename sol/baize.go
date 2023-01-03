@@ -29,22 +29,21 @@ const (
 
 // Baize object describes the baize
 type Baize struct {
-	magic            uint32
-	script           Scripter
-	piles            []*Pile
-	tail             []*Card // array of cards currently being dragged
-	bookmark         int     // index into undo stack
-	recycles         int     // number of available stock recycles
-	undoStack        []*SavableBaize
-	dirtyFlags       uint32 // what needs doing when we Update
-	moves            int    // number of possible (not useless) moves
-	fmoves           int    // number of possible moves to a Foundation (for enabling Collect button)
-	stroke           *input.Stroke
-	dragStart        image.Point
-	dragOffset       image.Point
-	showMovableCards bool // show movable cards until the next move (default: false)
-	WindowWidth      int  // the most recent window width given to Layout
-	WindowHeight     int  // the most recent window height given to Layout
+	magic        uint32
+	script       Scripter
+	piles        []*Pile
+	tail         []*Card // array of cards currently being dragged
+	bookmark     int     // index into undo stack
+	recycles     int     // number of available stock recycles
+	undoStack    []*SavableBaize
+	dirtyFlags   uint32 // what needs doing when we Update
+	moves        int    // number of possible (not useless) moves
+	fmoves       int    // number of possible moves to a Foundation (for enabling Collect button)
+	stroke       *input.Stroke
+	dragStart    image.Point
+	dragOffset   image.Point
+	WindowWidth  int // the most recent window width given to Layout
+	WindowHeight int // the most recent window height given to Layout
 }
 
 //--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
@@ -118,7 +117,6 @@ func (b *Baize) NewDeal() {
 	FillFromLibrary(stockPile)
 	stockPile.Shuffle()
 
-	b.showMovableCards = false
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
@@ -211,7 +209,6 @@ func (b *Baize) StartFreshGame() {
 
 	b.dirtyFlags = 0xFFFF
 
-	b.showMovableCards = false
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
@@ -347,7 +344,6 @@ func (b *Baize) MakeTail(c *Card) bool {
 }
 
 func (b *Baize) AfterUserMove() {
-	b.showMovableCards = false
 	b.script.AfterMove()
 	b.UndoPush()
 	b.FindDestinations()

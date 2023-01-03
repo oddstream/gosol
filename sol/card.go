@@ -12,13 +12,12 @@ import (
 const (
 	cardmagic = 0x29041962
 
+	// lerpStepAmount is the distance the card travels every tick
 	// debugSpeed  = 0.005
 	// slowSpeed   = 0.01
 	// normalSpeed = 0.025
 	// fastSpeed   = 0.04
-
-	// transitionStepAmount is the distance the card travels every tick
-	transitionStepAmount = 0.025
+	lerpStepAmount = 0.025
 
 	// cards have to flip faster than they transition
 	// remember that flipping happens in two steps
@@ -27,7 +26,7 @@ const (
 	// average transitions take 0.64ms, flips take 0.39ms
 
 	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
-	flipStepAmount = transitionStepAmount * 3
+	flipStepAmount = lerpStepAmount * 3
 )
 
 /*
@@ -43,12 +42,11 @@ type Card struct {
 	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
 
 	// dynamic things
-	owner          *Pile
-	pos            image.Point
-	src            image.Point // lerp origin
-	dst            image.Point // lerp destination
-	lerpStep       float64     // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
-	lerpStepAmount float64     // the amount a transitioning card moves each tick
+	owner    *Pile
+	pos      image.Point
+	src      image.Point // lerp origin
+	dst      image.Point // lerp destination
+	lerpStep float64     // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
 
 	dragStart image.Point // starting point for dragging
 
@@ -59,7 +57,7 @@ type Card struct {
 	directionZ, scaleZ     float64
 	angle, spin            float64 // current angle and spin when card is spinning
 
-	destinations []CardDestination // -1 cell, 0 normal, 1 foundation
+	destinations []CardDestination
 }
 
 // NewCard is a factory for Card objects
@@ -148,7 +146,6 @@ func (c *Card) TransitionTo(pos image.Point) {
 	// 	c.lerpStep = 0.1
 	// }
 	c.lerpStep = 0.1 // kickstart the lerp by starting from 0.1 instead of 0.0
-	c.lerpStepAmount = transitionStepAmount
 }
 
 // StartDrag informs card that it is being dragged
@@ -235,13 +232,6 @@ func (c *Card) SetFlip(prone bool) {
 // StartSpinning tells the card to start spinning
 // favor falling downwards
 func (c *Card) StartSpinning() {
-	// kludge alert
-	// problem with cards staying bunched at 0,0 when loaded a complete game
-	// be careful not to allow lerp AND spin at the same time
-	// WindowWidth, WindowHeight not yet set
-	// if c.pos.X == 0 || c.pos.Y == 0 {
-	// 	c.SetBaizePos(image.Point{1, 1})
-	// }
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 3
 	c.directionZ = (rand.Float64() - 0.5) / 100
@@ -327,7 +317,7 @@ func (c *Card) Update() error {
 	} else if c.pos != c.dst && c.lerpStep < 1.0 {
 		c.pos.X = int(util.Smootherstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
 		c.pos.Y = int(util.Smootherstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
-		if c.lerpStep += c.lerpStepAmount; c.lerpStep >= 1.0 {
+		if c.lerpStep += lerpStepAmount; c.lerpStep >= 1.0 {
 			c.pos = c.dst
 			c.src = image.Point{0, 0}
 		}
@@ -423,13 +413,13 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	// if c.owner.target && c == c.owner.Peek() {
+	// if c.Owner().target && c == c.Owner().Peek() {
 	// 	// op.GeoM.Translate(2, 2)
 	// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
 	// }
 
-	if TheBaize.showMovableCards {
-		if c.owner.IsStock() {
+	if ThePreferences.ShowMovableCards {
+		if c.Owner().IsStock() {
 			// card will be prone because Stock
 			img = MovableCardBackImage
 		} else {

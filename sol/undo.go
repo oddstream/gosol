@@ -144,13 +144,16 @@ func (b *Baize) Undo() {
 	if !ok {
 		log.Panic("error popping second state from undo stack")
 	}
-	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
 }
 
 func (b *Baize) RestartDeal() {
+	if b.Complete() {
+		TheUI.ToastError("Cannot restart a completed game") // otherwise the stats can be cooked
+		return
+	}
 	var sav *SavableBaize
 	var ok bool
 	for len(b.undoStack) > 0 {
@@ -159,7 +162,6 @@ func (b *Baize) RestartDeal() {
 			log.Panic("error popping from undo stack")
 		}
 	}
-	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.bookmark = 0 // do this AFTER UpdateFromSavable
 	b.UndoPush()   // replace current state
@@ -186,6 +188,10 @@ func (b *Baize) LoadPosition() {
 		TheUI.ToastError("No bookmark")
 		return
 	}
+	if b.Complete() {
+		TheUI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
+		return
+	}
 	var sav *SavableBaize
 	var ok bool
 	for len(b.undoStack)+1 > b.bookmark {
@@ -194,7 +200,6 @@ func (b *Baize) LoadPosition() {
 			log.Panic("error popping from undo stack")
 		}
 	}
-	b.showMovableCards = false
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()

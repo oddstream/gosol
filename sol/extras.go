@@ -36,7 +36,7 @@ func MoveCard(src *Pile, dst *Pile) *Card {
 
 // MoveTail moves all the cards from card downwards onto dst
 func MoveTail(card *Card, dst *Pile) {
-	var src *Pile = card.owner
+	var src *Pile = card.Owner()
 	tmp := make([]*Card, 0, len(src.cards))
 	// pop cards from src upto and including the head of the tail
 	for {

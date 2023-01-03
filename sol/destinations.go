@@ -9,7 +9,7 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	var homes []*Pile
 
 	var card = tail[0]
-	var src = card.owner
+	var src = card.Owner()
 	// can the tail be moved in general?
 	if ok, _ := src.CanMoveTail(tail); !ok {
 		return homes
@@ -88,7 +88,7 @@ func (b *Baize) FindDestinations() {
 	for _, mc := range b.findAllMovableTails() {
 		movable := true
 		card := mc.tail[0]
-		src := card.owner
+		src := card.Owner()
 		dst := mc.dst
 		// moving an full tail from one pile to another empty pile is pointless
 		if dst.Len() == 0 && len(mc.tail) == len(src.cards) {
@@ -102,24 +102,24 @@ func (b *Baize) FindDestinations() {
 				// if dst.category == "Foundation" {
 				b.fmoves++
 			}
-			var paw CardDestination = CardDestination{pile: dst, weight: 0}
+			var cdst CardDestination = CardDestination{pile: dst, weight: 0}
 			switch dst.vtable.(type) {
 			case *Cell:
-				paw.weight = -1
+				cdst.weight = -1
 			case *Foundation:
-				paw.weight = 2
+				cdst.weight = 2
 			case *Tableau:
 				if dst.Empty() {
 					if dst.Label() != "" {
-						paw.weight = 1
+						cdst.weight = 1
 					}
 				} else if dst.Peek().Suit() == card.Suit() {
 					// Spider
-					paw.weight = 1
+					cdst.weight = 1
 				}
 				// else weight will be 0
 			}
-			card.destinations = append(card.destinations, paw)
+			card.destinations = append(card.destinations, cdst)
 			if len(card.destinations) > 1 {
 				cd := card.destinations
 				sort.Slice(cd,
