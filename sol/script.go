@@ -328,6 +328,9 @@ var Variants = map[string]Scripter{
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 		cardsPerTab: 5,
 	},
+	"Mrs Mop": &MrsMop{
+		wikipedia: "https://en.wikipedia.org/wiki/Mrs._Mop",
+	},
 	"Penguin": &Penguin{
 		wikipedia: "https://www.parlettgames.uk/patience/penguin.html",
 	},
@@ -397,7 +400,7 @@ var VariantGroups = map[string][]string{
 	"> Klondikes":     {"Gargantua", "Triple Klondike", "Klondike", "Klondike Draw Three", "Thoughtful", "Whitehead"},
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
-	"> Puzzlers":      {"Antares", "Demons and Thieves", "Bisley", "Usk", "Penguin", "Simple Simon", "Baker's Dozen"},
+	"> Puzzlers":      {"Antares", "Demons and Thieves", "Bisley", "Usk", "Mrs Mop", "Penguin", "Simple Simon", "Baker's Dozen"},
 	"> Spiders":       {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
 	"> Yukons":        {"Yukon", "Yukon Cells"},
 }

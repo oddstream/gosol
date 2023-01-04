@@ -121,6 +121,8 @@ func (b *Baize) FindDestinations() {
 				if dst.Empty() {
 					if dst.Label() != "" {
 						cdst.weight = 1
+					} else {
+						cdst.weight = -1
 					}
 				} else if dst.Peek().Suit() == card.Suit() {
 					// Simple Simon, Spider
