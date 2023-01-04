@@ -120,16 +120,3 @@ var dst []int = []int{7, 8, 9}
 // 	src.Reset()
 // 	TheBaize.setFlag(dirtyCardPositions)
 // }
-
-func MarkAllCardsImmovable() {
-	// Golang gotcha:
-	// Go uses a copy of the value instead of the value itself within a range clause.
-	// fine for pointers, be careful with objects
-	// for _, c := range CardLibrary {
-	// 	c.movable = false
-	// }
-	// https://medium.com/@betable/3-go-gotchas-590b8c014e0a
-	for i := 0; i < len(CardLibrary); i++ {
-		CardLibrary[i].destinations = nil
-	}
-}

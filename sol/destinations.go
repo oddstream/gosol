@@ -68,7 +68,16 @@ type CardDestination struct {
 func (b *Baize) FindDestinations() {
 	b.moves, b.fmoves = 0, 0
 
-	MarkAllCardsImmovable()
+	// Golang gotcha:
+	// Go uses a copy of the value instead of the value itself within a range clause.
+	// fine for pointers, be careful with objects
+	// for _, c := range CardLibrary {
+	// 	c.movable = false
+	// }
+	// https://medium.com/@betable/3-go-gotchas-590b8c014e0a
+	for i := 0; i < len(CardLibrary); i++ {
+		CardLibrary[i].destinations = nil
+	}
 
 	if !b.script.Stock().Hidden() {
 		if b.script.Stock().Empty() {
@@ -99,7 +108,6 @@ func (b *Baize) FindDestinations() {
 		if movable {
 			b.moves++
 			if _, ok := dst.vtable.(*Foundation); ok {
-				// if dst.category == "Foundation" {
 				b.fmoves++
 			}
 			var cdst CardDestination = CardDestination{pile: dst, weight: 0}
@@ -107,6 +115,7 @@ func (b *Baize) FindDestinations() {
 			case *Cell:
 				cdst.weight = -1
 			case *Foundation:
+				// moves to Foundation get priority when card is tapped
 				cdst.weight = 2
 			case *Tableau:
 				if dst.Empty() {
@@ -114,7 +123,7 @@ func (b *Baize) FindDestinations() {
 						cdst.weight = 1
 					}
 				} else if dst.Peek().Suit() == card.Suit() {
-					// Spider
+					// Simple Simon, Spider
 					cdst.weight = 1
 				}
 				// else weight will be 0

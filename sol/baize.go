@@ -101,8 +101,6 @@ func (b *Baize) Refan() {
 // NewGame restarts current variant (ie no pile building) with a new seed
 func (b *Baize) NewDeal() {
 
-	b.StopSpinning()
-
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
 		TheStatistics.RecordLostGame(ThePreferences.Variant)
@@ -175,10 +173,10 @@ func (b *Baize) MirrorSlots() {
 }
 
 func (b *Baize) Reset() {
+	b.StopSpinning()
 	b.tail = nil
 	b.undoStack = nil
 	b.bookmark = 0
-	MarkAllCardsImmovable()
 }
 
 // StartFreshGame resets Baize and starts a new game with a new seed
@@ -441,6 +439,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 	case *Card:
 		c := v.Stroke.DraggedObject().(*Card)
 		if c.WasDragged() {
+			// if c.Dragging() {
 			src := c.Owner()
 			// tap handled elsewhere
 			// tap is time-limited
@@ -472,14 +471,17 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 							} else {
 								MoveTail(c, dst)
 							}
+							b.StopTailDrag() // do this before AfterUserMove
 							if crc != b.CRC() {
 								b.AfterUserMove()
 							}
-							b.StopTailDrag()
 						}
 					}
 				}
 			}
+		}
+		if c.Dragging() {
+			log.Printf("Card %s is still dragging", c.String())
 		}
 	case *Pile:
 		// do nothing
@@ -525,13 +527,13 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		// or use Pile.DefaultTailTapped
 		crc := b.CRC()
 		b.script.TailTapped(b.tail)
+		b.StopTailDrag() // do this before AfterUserMove
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
 		} else {
 			TheUI.Toast("Error", "Attention!")
 		}
-		b.StopTailDrag()
 	case *Pile:
 		crc := b.CRC()
 		b.script.PileTapped(obj)

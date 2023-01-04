@@ -48,7 +48,8 @@ type Card struct {
 	dst      image.Point // lerp destination
 	lerpStep float64     // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
 
-	dragStart image.Point // starting point for dragging
+	dragStart    image.Point // starting point for dragging
+	beingDragged bool        // true if this card is being dragged, or is in a dragged tail
 
 	flipStep  float64 // if 0, we are not flipping
 	flipWidth float64 // scale of the card width while flipping
@@ -151,7 +152,7 @@ func (c *Card) TransitionTo(pos image.Point) {
 // StartDrag informs card that it is being dragged
 func (c *Card) StartDrag() {
 	if c.Transitioning() {
-		println("Dragging a transitioning card", c.String())
+		log.Printf("StartDrag a transitioning card %s", c.String())
 		// set the drag origin to the be transition destination,
 		// so that cancelling this drag will return the card
 		// to where it thought it was going
@@ -159,6 +160,7 @@ func (c *Card) StartDrag() {
 	} else {
 		c.dragStart = c.pos
 	}
+	c.beingDragged = true
 	// println("start drag", c.ID.String(), "start", c.dragStartX, c.dragStartY)
 }
 
@@ -175,17 +177,20 @@ func (c *Card) DragBy(dx, dy int) {
 
 // StopDrag informs card that it is no longer being dragged
 func (c *Card) StopDrag() {
+	c.beingDragged = false
 	// println("stop drag", c.ID.String())
 }
 
 // CancelDrag informs card that it is no longer being dragged
 func (c *Card) CancelDrag() {
+	c.beingDragged = false
 	// println("cancel drag", c.ID.String(), "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
 	c.TransitionTo(c.dragStart)
 }
 
 // WasDragged returns true of this card has been dragged
 func (c *Card) WasDragged() bool {
+	// could use .beingDragged
 	return !c.pos.Eq(c.dragStart)
 }
 
@@ -230,10 +235,9 @@ func (c *Card) SetFlip(prone bool) {
 }
 
 // StartSpinning tells the card to start spinning
-// favor falling downwards
 func (c *Card) StartSpinning() {
 	c.directionX = rand.Intn(9) - 4
-	c.directionY = rand.Intn(9) - 3
+	c.directionY = rand.Intn(9) - 3 // favor falling downwards
 	c.directionZ = (rand.Float64() - 0.5) / 100
 	c.scaleZ = 1.0
 	c.spin = rand.Float64() - 0.5
@@ -259,16 +263,7 @@ func (c *Card) Transitioning() bool {
 
 // Dragging returns true if this card is being dragged
 func (c *Card) Dragging() bool {
-	// if TheBaize.tail == nil {
-	// 	return false
-	// }
-	for _, card := range TheBaize.tail {
-		if card == c {
-			return true
-		}
-	}
-	return false
-	// return c.dragging
+	return c.beingDragged
 }
 
 // Flipping returns true if this card is flipping
@@ -392,14 +387,15 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		if !c.Flipping() {
 			switch {
 			case c.Transitioning():
-				xoffset, yoffset := 1.0, 1.0 // same as lsol
+				xoffset, yoffset := 4.0, 4.0
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
 				xoffset = -xoffset
 				yoffset = -yoffset
 				op.GeoM.Translate(xoffset, yoffset)
 			case c.Dragging():
-				xoffset, yoffset := 2.0, 2.0 // same as lsol
+				op.ColorM.Scale(1, 0.9, 1, 1)
+				xoffset, yoffset := 4.0, 4.0
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)
 				// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
@@ -425,14 +421,12 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		} else {
 			if len(c.destinations) > 0 {
 				switch c.destinations[0].weight {
-				case -1:
-					op.ColorM.Scale(1.0, 1.0, 0.925, 1) // keep these numbers as high as possible
-				case 0:
-					op.ColorM.Scale(1.0, 1.0, 0.825, 1) // keep these numbers as high as possible
-				case 1:
-					op.ColorM.Scale(1.0, 1.0, 0.725, 1) // keep these numbers as high as possible
-				case 2:
-					op.ColorM.Scale(1.0, 1.0, 0.625, 1) // keep these numbers as high as possible
+				case -1: // Cell
+					op.ColorM.Scale(1.0, 1.0, 0.925, 1)
+				case 0: // Normal
+					op.ColorM.Scale(1.0, 1.0, 0.825, 1)
+				case 1, 2: // Suit match or Foundation
+					op.ColorM.Scale(1.0, 1.0, 0.725, 1)
 				}
 			}
 		}
