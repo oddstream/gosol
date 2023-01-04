@@ -331,6 +331,10 @@ var Variants = map[string]Scripter{
 	"Mrs Mop": &MrsMop{
 		wikipedia: "https://en.wikipedia.org/wiki/Mrs._Mop",
 	},
+	"Mrs Mop Easy": &MrsMop{
+		wikipedia: "https://en.wikipedia.org/wiki/Mrs._Mop",
+		easy:      true,
+	},
 	"Penguin": &Penguin{
 		wikipedia: "https://www.parlettgames.uk/patience/penguin.html",
 	},

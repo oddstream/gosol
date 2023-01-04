@@ -33,7 +33,12 @@ func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if len(tail) != len(CardLibrary)/len(TheBaize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
-	return TheBaize.script.TailMoveError(tail) // check cards are conformant
+	if ok, err := TailConformant(tail, CardPair.Compare_DownSuit); !ok {
+		return false, err
+	}
+	// Spider tails can always be moved, but Mrs Mop/Simple Simon tails
+	// must be conformant, so ...
+	return TheBaize.script.TailMoveError(tail)
 }
 
 func (*Discard) TailTapped([]*Card) {

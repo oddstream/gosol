@@ -12,6 +12,7 @@ import (
 type MrsMop struct {
 	ScriptBase
 	wikipedia string
+	easy      bool
 }
 
 func (self *MrsMop) BuildPiles() {
@@ -30,6 +31,14 @@ func (self *MrsMop) BuildPiles() {
 	for x := 0; x < 13; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		self.tableaux = append(self.tableaux, t)
+	}
+
+	self.cells = []*Pile{}
+	if self.easy {
+		for x := 5; x < 8; x++ {
+			t := NewCell(image.Point{x, 0})
+			self.cells = append(self.cells, t)
+		}
 	}
 }
 

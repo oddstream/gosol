@@ -24,6 +24,7 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	pilesToCheck = append(pilesToCheck, b.script.Foundations()...)
 	pilesToCheck = append(pilesToCheck, b.script.Tableaux()...)
 	pilesToCheck = append(pilesToCheck, b.script.Cells()...)
+	pilesToCheck = append(pilesToCheck, b.script.Discards()...)
 	if b.script.Waste() != nil {
 		// in Go 1.19, append will add a nil
 		// in Go 1.17, nil was not appended
@@ -114,7 +115,7 @@ func (b *Baize) FindDestinations() {
 			switch dst.vtable.(type) {
 			case *Cell:
 				cdst.weight = -1
-			case *Foundation:
+			case *Foundation, *Discard:
 				// moves to Foundation get priority when card is tapped
 				cdst.weight = 2
 			case *Tableau:

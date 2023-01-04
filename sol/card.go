@@ -241,6 +241,7 @@ func (c *Card) StartSpinning() {
 	c.directionZ = (rand.Float64() - 0.5) / 100
 	c.scaleZ = 1.0
 	c.spin = rand.Float64() - 0.5
+	c.destinations = nil
 }
 
 // StopSpinning tells the card to stop spinning and return to it's upright state
@@ -420,13 +421,18 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			img = MovableCardBackImage
 		} else {
 			if len(c.destinations) > 0 {
+				// c.destinations has been sorted so weightiest is first
 				switch c.destinations[0].weight {
 				case -1: // Cell
-					op.ColorM.Scale(1.0, 1.0, 0.925, 1)
+					op.ColorM.Scale(1.0, 1.0, 0.9, 1)
 				case 0: // Normal
-					op.ColorM.Scale(1.0, 1.0, 0.825, 1)
-				case 1, 2: // Suit match or Foundation
-					op.ColorM.Scale(1.0, 1.0, 0.725, 1)
+					op.ColorM.Scale(1.0, 1.0, 0.8, 1)
+				case 1: // Suit match or Foundation
+					op.ColorM.Scale(1.0, 1.0, 0.7, 1)
+				case 2: // Discard or Foundation
+					op.ColorM.Scale(1.0, 1.0, 0.65, 1)
+				default:
+					op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 				}
 			}
 		}
