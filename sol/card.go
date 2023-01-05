@@ -395,7 +395,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 				yoffset = -yoffset
 				op.GeoM.Translate(xoffset, yoffset)
 			case c.Dragging():
-				op.ColorM.Scale(1, 0.9, 1, 1)
+				op.ColorM.Scale(1, 0.95, 1, 1)
 				xoffset, yoffset := 4.0, 4.0
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)

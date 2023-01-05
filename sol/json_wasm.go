@@ -11,9 +11,6 @@ import (
 	"fmt"
 	"log"
 	"syscall/js"
-	"time"
-
-	"oddstream.games/gosol/util"
 )
 
 const keyPrefix = "gosol/"
