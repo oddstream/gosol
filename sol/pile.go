@@ -517,19 +517,19 @@ func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {
 }
 
 func (self *Pile) MakeTail(c *Card) []*Card {
-	var tail []*Card
-	if len(self.cards) > 0 {
-		for i, pc := range self.cards {
-			if pc == c {
-				tail = self.cards[i:]
-				break
-			}
+	if c.Owner() != self {
+		log.Panic("Pile.MakeTail called with a weird card")
+	}
+	if c == self.Peek() {
+		return []*Card{c}
+	}
+	for i, pc := range self.cards {
+		if pc == c {
+			return self.cards[i:]
 		}
 	}
-	if len(tail) == 0 {
-		log.Panic("Pile.MakeTail made an empty tail")
-	}
-	return tail
+	log.Panic("Pile.MakeTail made an empty tail")
+	return nil
 }
 
 // ApplyToCards applies a function to each card in the pile

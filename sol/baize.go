@@ -32,9 +32,8 @@ type Baize struct {
 	magic        uint32
 	script       Scripter
 	piles        []*Pile
-	tail         []*Card // array of cards currently being dragged
-	bookmark     int     // index into undo stack
-	recycles     int     // number of available stock recycles
+	bookmark     int // index into undo stack
+	recycles     int // number of available stock recycles
 	undoStack    []*SavableBaize
 	dirtyFlags   uint32 // what needs doing when we Update
 	moves        int    // number of possible (not useless) moves
@@ -174,7 +173,6 @@ func (b *Baize) MirrorSlots() {
 
 func (b *Baize) Reset() {
 	b.StopSpinning()
-	b.tail = nil
 	b.undoStack = nil
 	b.bookmark = 0
 }
@@ -336,11 +334,6 @@ func (b *Baize) StopSpinning() {
 	b.setFlag(dirtyCardPositions)
 }
 
-func (b *Baize) MakeTail(c *Card) bool {
-	b.tail = c.Owner().MakeTail(c)
-	return len(b.tail) > 0
-}
-
 func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
@@ -379,9 +372,10 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 		}
 	} else {
 		pt := image.Pt(v.X, v.Y)
-		if c := b.FindLowestCardAt(pt); c != nil {
-			b.StartTailDrag(c)
-			b.stroke.SetDraggedObject(c)
+		if card := b.FindLowestCardAt(pt); card != nil {
+			tail := card.Owner().MakeTail(card)
+			b.StartTailDrag(tail)
+			b.stroke.SetDraggedObject(tail)
 		} else {
 			if p := b.FindPileAt(pt); p != nil {
 				b.stroke.SetDraggedObject(p)
@@ -404,12 +398,12 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 	// for _, p := range b.piles {
 	// 	p.target = false
 	// }
-	switch v.Stroke.DraggedObject().(type) {
+	switch obj := v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
-		con := v.Stroke.DraggedObject().(ui.Containery)
-		con.DragBy(v.Stroke.PositionDiff())
-	case *Card:
-		b.DragTailBy(v.Stroke.PositionDiff())
+		obj.DragBy(v.Stroke.PositionDiff())
+	case []*Card:
+		dx, dy := v.Stroke.PositionDiff()
+		b.DragTailBy(obj, dx, dy)
 		// if c, ok := v.Stroke.DraggedObject().(*Card); ok {
 		// 	if p := b.LargestIntersection(c); p != nil {
 		// 		p.target = true
@@ -432,46 +426,46 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 	// for _, p := range b.piles {
 	// 	p.SetTarget(false)
 	// }
-	switch v.Stroke.DraggedObject().(type) {
+	switch obj := v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
-		con := v.Stroke.DraggedObject().(ui.Containery)
-		con.StopDrag()
-	case *Card:
-		c := v.Stroke.DraggedObject().(*Card)
-		if c.WasDragged() {
+		obj.StopDrag()
+	case []*Card:
+		tail := obj     // alias for readability
+		card := tail[0] // for readability
+		if card.WasDragged() {
 			// if c.Dragging() {
-			src := c.Owner()
+			src := card.Owner()
 			// tap handled elsewhere
 			// tap is time-limited
-			if dst := b.LargestIntersection(c); dst == nil {
+			if dst := b.LargestIntersection(card); dst == nil {
 				// println("no intersection for", c.String())
-				b.CancelTailDrag()
+				b.CancelTailDrag(tail)
 			} else {
 				var ok bool
 				var err error
 				// generically speaking, can this tail be moved?
-				if ok, err = src.CanMoveTail(b.tail); !ok {
+				if ok, err = src.CanMoveTail(tail); !ok {
 					TheUI.ToastError(err.Error())
-					b.CancelTailDrag()
+					b.CancelTailDrag(tail)
 				} else {
-					if ok, err = dst.vtable.CanAcceptTail(b.tail); !ok {
+					if ok, err = dst.vtable.CanAcceptTail(tail); !ok {
 						TheUI.ToastError(err.Error())
-						b.CancelTailDrag()
+						b.CancelTailDrag(tail)
 					} else {
 						// it's ok to move this tail
 						if src == dst {
-							b.CancelTailDrag()
-						} else if ok, err = b.script.TailMoveError(b.tail); !ok {
+							b.CancelTailDrag(tail)
+						} else if ok, err = b.script.TailMoveError(tail); !ok {
 							TheUI.ToastError(err.Error())
-							b.CancelTailDrag()
+							b.CancelTailDrag(tail)
 						} else {
 							crc := b.CRC()
-							if len(b.tail) == 1 {
+							if len(tail) == 1 {
 								MoveCard(src, dst)
 							} else {
-								MoveTail(c, dst)
+								MoveTail(card, dst)
 							}
-							b.StopTailDrag() // do this before AfterUserMove
+							b.StopTailDrag(tail) // do this before AfterUserMove
 							if crc != b.CRC() {
 								b.AfterUserMove()
 							}
@@ -480,8 +474,8 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				}
 			}
 		}
-		if c.Dragging() {
-			log.Printf("Card %s is still dragging", c.String())
+		if DebugMode && card.Dragging() {
+			log.Printf("Card %s is still dragging", card.String())
 		}
 	case *Pile:
 		// do nothing
@@ -498,12 +492,11 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 		return
 		// log.Panic("*** cancel stroke with nil dragged object ***")
 	}
-	switch v.Stroke.DraggedObject().(type) { // type switch
+	switch obj := v.Stroke.DraggedObject().(type) { // type switch
 	case ui.Containery:
-		con := v.Stroke.DraggedObject().(ui.Containery)
-		con.StopDrag()
-	case *Card:
-		b.CancelTailDrag()
+		obj.StopDrag()
+	case []*Card:
+		b.CancelTailDrag(obj)
 	case *Pile:
 		// p := v.Stroke.DraggedObject().(*Pile)
 		// println("stop dragging pile", p.Class)
@@ -519,15 +512,17 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 func (b *Baize) InputTap(v input.StrokeEvent) {
 	// println("Baize.NotifyCallback() tap", v.X, v.Y)
 	switch obj := v.Stroke.DraggedObject().(type) {
-	case *Card:
+	case ui.Containery:
+		// do nothing
+	case []*Card:
 		// offer TailTapped to the script first
 		// to implement things like Stock.TailTapped
 		// if the script doesn't want to do anything, it can call pile.vtable.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
 		// or use Pile.DefaultTailTapped
 		crc := b.CRC()
-		b.script.TailTapped(b.tail)
-		b.StopTailDrag() // do this before AfterUserMove
+		b.script.TailTapped(obj)
+		b.StopTailDrag(obj) // do this before AfterUserMove
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
@@ -547,6 +542,8 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		if con := TheUI.VisibleDrawer(); con != nil && !pt.In(image.Rect(con.Rect())) {
 			con.Hide()
 		}
+	default:
+		log.Panic("*** tap unknown object ***")
 	}
 }
 
@@ -569,42 +566,36 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 }
 
 // ApplyToTail applies a method func to this card and all the others after it in the tail
-func (b *Baize) ApplyToTail(fn func(*Card)) {
+func (b *Baize) ApplyToTail(tail []*Card, fn func(*Card)) {
 	// https://golang.org/ref/spec#Method_expressions
 	// (*Card).CancelDrag yields a function with the signature func(*Card)
 	// fn passed as a method expression so add the receiver explicitly
-	for _, c := range b.tail {
+	for _, c := range tail {
 		fn(c)
 	}
 }
 
 // DragTailBy repositions all the cards in the tail: dx, dy is the position difference from the start of the drag
-func (b *Baize) DragTailBy(dx, dy int) {
+func (b *Baize) DragTailBy(tail []*Card, dx, dy int) {
 	// println("Baize.DragTailBy(", dx, dy, ")")
-	for _, c := range b.tail {
+	for _, c := range tail {
 		c.DragBy(dx, dy)
 	}
 }
 
-func (b *Baize) StartTailDrag(c *Card) {
-	if b.MakeTail(c) {
-		b.ApplyToTail((*Card).StartDrag)
-		ebiten.SetCursorMode(ebiten.CursorModeHidden)
-	} else {
-		log.Println("failed to make a tail")
-	}
+func (b *Baize) StartTailDrag(tail []*Card) {
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
+	b.ApplyToTail(tail, (*Card).StartDrag)
 }
 
-func (b *Baize) StopTailDrag() {
+func (b *Baize) StopTailDrag(tail []*Card) {
 	ebiten.SetCursorMode(ebiten.CursorModeVisible)
-	b.ApplyToTail((*Card).StopDrag)
-	b.tail = nil
+	b.ApplyToTail(tail, (*Card).StopDrag)
 }
 
-func (b *Baize) CancelTailDrag() {
+func (b *Baize) CancelTailDrag(tail []*Card) {
 	ebiten.SetCursorMode(ebiten.CursorModeVisible)
-	b.ApplyToTail((*Card).CancelDrag)
-	b.tail = nil
+	b.ApplyToTail(tail, (*Card).CancelDrag)
 }
 
 // collectFromPile is a helper function for Collect2()
@@ -882,9 +873,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	for _, p := range b.piles {
 		p.Draw(screen)
-		// for _, c := range p.cards {
-		// 	c.Draw(screen)
-		// }
 	}
 	for _, p := range b.piles {
 		p.DrawStaticCards(screen)
