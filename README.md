@@ -285,7 +285,7 @@ Fourth, there is a version in C that uses the Raylib game engine and uses Lua to
 
 Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, allows the option for scripting games, and has sharp graphics.
 
-Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store. LÖVE is really good, but my implementation has some problems with fuzzy card graphics.
+Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store.
 
 ## Acknowledgements
 
