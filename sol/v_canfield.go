@@ -16,8 +16,6 @@ type Canfield struct {
 	variant        string
 	draw, recycles int
 	tabCompareFunc CardPairCompareFunc
-	wikipedia      string
-	cardColors     int
 }
 
 func (self *Canfield) BuildPiles() {
@@ -152,12 +150,4 @@ func (self *Canfield) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
-}
-
-func (self *Canfield) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Canfield) CardColors() int {
-	return self.cardColors
 }

@@ -631,13 +631,27 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 			if card == nil {
 				return cardsMoved
 			}
-			// TODO if b.script.tabCompareFunc == CardPair.CompareDownAltColor
-			// find the highest card in the foundations
-			// if this foundations's highest is 2 greater than all foundations highest
-			// don't collect to it
 			ok, _ := fp.vtable.CanAcceptTail([]*Card{card})
 			if !ok {
 				break // done with this foundation, try another
+			}
+			if ThePreferences.SafeCollect && b.script.SafeCollect() {
+				/*
+					3 3 3 4 -> collect 4
+					3 3 3 3 -> collect 4
+					2 3 4 5 -> collect 3
+					_ A 2 3 -> collect A
+					... collect where ord = lowest+1
+					+1 may wrap up from K to A
+					if pile is blank, lowest = pile label
+					it's a foundation, so there will always be a label
+				*/
+				var smallest int = b.SmallestFoundationOrdinal()
+				if card.Ordinal() > smallest+1 {
+					// can't toast here, collect all will create a lot of toasts
+					// TheUI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
+					break // done with this foundation, try another
+				}
 			}
 			MoveCard(pile, fp)
 			b.AfterUserMove() // does an undoPush()

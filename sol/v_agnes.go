@@ -11,7 +11,6 @@ import (
 
 type Agnes struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Agnes) BuildPiles() {
@@ -110,11 +109,3 @@ func (self *Agnes) TailTapped(tail []*Card) {
 }
 
 func (*Agnes) PileTapped(*Pile) {}
-
-func (self *Agnes) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Agnes) CardColors() int {
-	return 2
-}

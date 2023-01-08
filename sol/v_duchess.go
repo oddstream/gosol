@@ -12,7 +12,6 @@ import (
 
 type Duchess struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Duchess) BuildPiles() {
@@ -141,12 +140,4 @@ func (self *Duchess) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
-}
-
-func (self *Duchess) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Duchess) CardColors() int {
-	return 2
 }

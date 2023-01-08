@@ -15,7 +15,6 @@ type UskPileInfo struct {
 
 type Usk struct {
 	ScriptBase
-	wikipedia    string
 	tableauLabel string
 	layout       []UskPileInfo
 }
@@ -143,12 +142,4 @@ func (self *Usk) PileTapped(pile *Pile) {
 	// redeal cards
 	self.dealCards()
 	TheBaize.SetRecycles(0)
-}
-
-func (self *Usk) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Usk) CardColors() int {
-	return 2
 }

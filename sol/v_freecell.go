@@ -10,8 +10,6 @@ import (
 
 type Freecell struct {
 	ScriptBase
-	wikipedia      string
-	cardColors     int
 	tabCompareFunc CardPairCompareFunc
 	blind          bool
 	easy           bool
@@ -130,11 +128,3 @@ func (*Freecell) TailTapped(tail []*Card) {
 }
 
 func (*Freecell) PileTapped(*Pile) {}
-
-func (self *Freecell) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Freecell) CardColors() int {
-	return self.cardColors
-}

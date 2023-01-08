@@ -11,7 +11,6 @@ import (
 
 type BakersDozen struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *BakersDozen) BuildPiles() {
@@ -87,11 +86,3 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 }
 
 func (*BakersDozen) PileTapped(*Pile) {}
-
-func (self *BakersDozen) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*BakersDozen) CardColors() int {
-	return 1
-}

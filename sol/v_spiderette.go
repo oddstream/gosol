@@ -11,8 +11,6 @@ import (
 
 type Spiderette struct {
 	ScriptBase
-	wikipedia    string
-	cardColors   int
 	packs, suits int
 }
 
@@ -126,14 +124,6 @@ func (self *Spiderette) TailTapped(tail []*Card) {
 }
 
 func (*Spiderette) PileTapped(*Pile) {}
-
-func (self *Spiderette) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Spiderette) CardColors() int {
-	return self.cardColors
-}
 
 func (self *Spiderette) Complete() bool {
 	return self.SpiderComplete()

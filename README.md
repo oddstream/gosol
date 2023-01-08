@@ -6,6 +6,8 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
 
+It's created because I *have* to write software, and for my own personal enjoyment. It's definitely not for profit and will never contain ads.
+
 ## Variants
 
 It currently knows how to play:
@@ -49,21 +51,22 @@ Some will never make it here because they are just poor games:
 * Permissive card moves. If you want to move a card from here to there, go ahead and do it. If that move is not allowed by the current rules, the game will put the cards back *and explain why that move is not allowed*.
 * Unlimited undo, without penalty. Also, you can restart a deal without penalty.
 * Bookmarking positions (really good for puzzle-style games like Freecell or Simple Simon).
-* Scalable or fixed-size cards.
+* Scalable cards. Change the size and shape of the window to make the cards fit.
 * One-tap interface. Tapping on a card or cards tries to move them to a foundation, or to a suitable tableau pile.
-* Cards in red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider).
+* Cards in traditional red and black (best for games like Klondike or Yukon where cards are sorted into alternating colors), or in four colors (for games where cards are sorted by suit, like Australian or Spider).
 * Every game has a link to it's Wikipedia page.
 * Statistics (including percent complete and streaks; percent is good for games that are not often won, and streaks are good for games that are).
 * Cards spin and flutter when you complete a game, so you feel rewarded and happy.
 * Slightly randomized sounds.
 * Automatic saving of game in progress.
 * A dragable baize; if cards spill out of view to the bottom or right of the screen, just drag the baize to move them into view.
+* A 'discard' pile type so that Spideresque games can be implemented as they are described in the textbooks (other software reuses Foundation piles).
 
 ## Deliberate minimalism
 
 A lot a features have been tried and discarded, in order to keep the game (and player) focused. Weniger aber besser, as [Dieter Rams](https://en.wikipedia.org/wiki/Dieter_Rams) taught us. Design is all about saying "no", as Steve Jobs preached. Just because a feature *can* be implemented, does not mean it *should* be.
 
-Configurability is the root of all evil, someone said. Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it.
+Configurability is the root of all evil, someone said. Every configuration option in a program is a place where the program is too stupid to figure out for itself what the user really wants, and should be considered a failure of both the program and the programmer who implemented it. So, there's one card face, one color palette, one card animation speed, and so on.
 
 ![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/American%20Toad.png)
 
@@ -167,6 +170,10 @@ Mirrors the card piles on the baize from right to left, because not everyone is 
 
 So you can, for example, listen to an audio book while playing.
 
+#### Safe collect
+
+In games like Klondike that build tableau cards in alternating colors, you can sometimes get into trouble by moving cards to the foundations too soon. With this option turned on, the titlebar collect button will only move cards to the foundation piles when it is safe to do so.
+
 ### Is the game rigged?
 
 No. The cards are shuffled randomly using a Fisher-Yates shuffle driven by a Park-Miller pseudo random number generator, which is in itself seeded by a random number. This mechanism was tested and analysed to make sure it produced an even distribution of shuffled cards.
@@ -180,6 +187,7 @@ There are 80658175170943878571660636856403766975289505440883277824000000000000 p
 * For Forty Thieves-style games, the *other* priority is to minimize the number of cards in the waste pile.
 * For puzzle-type games (like Baker's Dozen, Freecell, Penguin, Simple Simon), take your time and think ahead.
 * For games with reshuffles (like Cruel and Perseverance) you need to anticipate the effects of the reshuffle.
+* Focus on sorting the cards in the tableaux, rather than moving cards to the foundations. Only move cards to the foundations when you *have* to.
 * Use undo and bookmark. Undo isn't cheating; it's improvising, adapting and overcoming.
 
 ## Where are the preferences, statistics and saved games stored?
@@ -271,7 +279,7 @@ Only one card at a time may be moved from a reserve, and cards can never be move
 * ~~The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.~~
 * ~~Get it working on Android (agggh! help!).~~
 * ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
-* Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/) or [Defold](https://www.defold.com), or Dart+Flutter, or Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, but keep coming back to C, Go or Lua.
+* Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/), [Defold](https://www.defold.com), Dart+Flutter, Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, and have made several false starts, but keep coming back to C, Go or Lua.
 
 ## History
 

@@ -9,7 +9,6 @@ import (
 
 type Whitehead struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Whitehead) BuildPiles() {
@@ -96,12 +95,4 @@ func (self *Whitehead) TailTapped(tail []*Card) {
 func (self *Whitehead) PileTapped(*Pile) {
 	// https://politaire.com/help/whitehead
 	// Only one pass through the Stock is permitted
-}
-
-func (self *Whitehead) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Whitehead) CardColors() int {
-	return 2
 }

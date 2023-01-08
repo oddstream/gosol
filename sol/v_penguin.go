@@ -10,7 +10,6 @@ import (
 
 type Penguin struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (pen *Penguin) BuildPiles() {
@@ -126,11 +125,3 @@ func (pen *Penguin) TailTapped(tail []*Card) {
 }
 
 func (pen *Penguin) PileTapped(pile *Pile) {}
-
-func (pen *Penguin) Wikipedia() string {
-	return pen.wikipedia
-}
-
-func (pen *Penguin) CardColors() int {
-	return 4
-}

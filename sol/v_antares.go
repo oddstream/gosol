@@ -175,11 +175,3 @@ func (*Antares) TailTapped(tail []*Card) {
 }
 
 func (self *Antares) PileTapped(pile *Pile) {}
-
-func (self *Antares) Wikipedia() string {
-	return "https://www.goodsol.com/games/antares.html"
-}
-
-func (self *Antares) CardColors() int {
-	return 2
-}

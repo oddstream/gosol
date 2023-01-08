@@ -9,8 +9,6 @@ import (
 
 type FortyThieves struct {
 	ScriptBase
-	wikipedia      string
-	cardColors     int
 	packs          int
 	founds         []int
 	tabs           []int
@@ -148,12 +146,4 @@ func (self *FortyThieves) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
-}
-
-func (self *FortyThieves) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *FortyThieves) CardColors() int {
-	return self.cardColors
 }

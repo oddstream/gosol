@@ -12,7 +12,6 @@ import (
 
 type Toad struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Toad) BuildPiles() {
@@ -114,12 +113,4 @@ func (self *Toad) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
-}
-
-func (self *Toad) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Toad) CardColors() int {
-	return 4
 }

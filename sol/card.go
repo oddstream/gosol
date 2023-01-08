@@ -1,6 +1,7 @@
 package sol
 
 import (
+	"fmt"
 	"image"
 	"log"
 	"math/rand"
@@ -85,7 +86,7 @@ func (c *Card) Owner() *Pile {
 
 // String satisfies the Stringer interface (defined by fmt package)
 func (c *Card) String() string {
-	return c.ID.String()
+	return fmt.Sprintf("%s %s", util.OrdinalToShortString(c.Ordinal()), SuitIntToString(c.Suit()))
 }
 
 // Pos returns the x,y baize coords of this card

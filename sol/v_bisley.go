@@ -9,7 +9,6 @@ import (
 
 type Bisley struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Bisley) BuildPiles() {
@@ -104,11 +103,3 @@ func (self *Bisley) TailTapped(tail []*Card) {
 }
 
 func (*Bisley) PileTapped(*Pile) {}
-
-func (self *Bisley) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Bisley) CardColors() int {
-	return 4
-}

@@ -19,6 +19,7 @@ type Preferences struct {
 	// FixedCards                         bool
 	// FixedCardWidth, FixedCardHeight    int
 	PowerMoves                         bool
+	SafeCollect                        bool
 	Mute                               bool
 	Volume                             float64
 	MirrorBaize                        bool
@@ -34,6 +35,7 @@ var ThePreferences = &Preferences{
 	Variant:              "Klondike",
 	BaizeColor:           "BaizeGreen",
 	PowerMoves:           true,
+	SafeCollect:          false,
 	CardFaceColor:        "Ivory",
 	CardBackColor:        "CornflowerBlue",
 	MovableCardBackColor: "Gold",

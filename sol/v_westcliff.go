@@ -9,13 +9,10 @@ import (
 
 type Westcliff struct {
 	ScriptBase
-	wikipedia string
-	variant   string
+	variant string
 }
 
 func (self *Westcliff) BuildPiles() {
-	self.wikipedia = "https://en.wikipedia.org/wiki/Westcliff_(card_game)"
-
 	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
 	switch self.variant {
 	case "Classic":
@@ -153,11 +150,3 @@ func (self *Westcliff) TailTapped(tail []*Card) {
 }
 
 func (*Westcliff) PileTapped(pile *Pile) {}
-
-func (self *Westcliff) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Westcliff) CardColors() int {
-	return 2
-}

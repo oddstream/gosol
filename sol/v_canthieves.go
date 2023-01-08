@@ -175,11 +175,3 @@ func (self *CanThieves) PileTapped(pile *Pile) {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
 }
-
-func (self *CanThieves) Wikipedia() string {
-	return "https://www.goodsol.com/pgshelp/index.html?demons_and_thieves.htm"
-}
-
-func (self *CanThieves) CardColors() int {
-	return 2
-}

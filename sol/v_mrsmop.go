@@ -11,8 +11,7 @@ import (
 
 type MrsMop struct {
 	ScriptBase
-	wikipedia string
-	easy      bool
+	easy bool
 }
 
 func (self *MrsMop) BuildPiles() {
@@ -100,14 +99,6 @@ func (*MrsMop) TailTapped(tail []*Card) {
 }
 
 func (*MrsMop) PileTapped(*Pile) {}
-
-func (self *MrsMop) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*MrsMop) CardColors() int {
-	return 4
-}
 
 func (self *MrsMop) Complete() bool {
 	return self.SpiderComplete()

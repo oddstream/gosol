@@ -9,7 +9,6 @@ import (
 
 type Alhambra struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Alhambra) BuildPiles() {
@@ -105,12 +104,4 @@ func (self *Alhambra) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.tableaux[0], self.stock)
 	}
-}
-
-func (self *Alhambra) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Alhambra) CardColors() int {
-	return 4
 }

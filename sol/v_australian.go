@@ -9,7 +9,6 @@ import (
 
 type Australian struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Australian) BuildPiles() {
@@ -84,11 +83,3 @@ func (self *Australian) TailTapped(tail []*Card) {
 }
 
 func (*Australian) PileTapped(*Pile) {}
-
-func (self *Australian) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Australian) CardColors() int {
-	return 4
-}

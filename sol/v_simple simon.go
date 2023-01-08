@@ -11,7 +11,6 @@ import (
 
 type SimpleSimon struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *SimpleSimon) BuildPiles() {
@@ -99,14 +98,6 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 }
 
 func (*SimpleSimon) PileTapped(*Pile) {}
-
-func (self *SimpleSimon) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*SimpleSimon) CardColors() int {
-	return 4
-}
 
 func (self *SimpleSimon) Complete() bool {
 	return self.SpiderComplete()

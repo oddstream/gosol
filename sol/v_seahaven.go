@@ -10,7 +10,6 @@ import (
 
 type Seahaven struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Seahaven) BuildPiles() {
@@ -92,11 +91,3 @@ func (*Seahaven) TailTapped(tail []*Card) {
 }
 
 func (*Seahaven) PileTapped(*Pile) {}
-
-func (self *Seahaven) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Seahaven) CardColors() int {
-	return 4
-}

@@ -11,8 +11,6 @@ import (
 
 type Spider struct {
 	ScriptBase
-	wikipedia    string
-	cardColors   int
 	packs, suits int
 }
 
@@ -123,14 +121,6 @@ func (self *Spider) TailTapped(tail []*Card) {
 }
 
 func (*Spider) PileTapped(*Pile) {}
-
-func (self *Spider) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Spider) CardColors() int {
-	return self.cardColors
-}
 
 func (self *Spider) Complete() bool {
 	return self.SpiderComplete()

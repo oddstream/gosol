@@ -90,6 +90,8 @@ func Execute(cmd interface{}) {
 			} else {
 				sound.SetVolume(ThePreferences.Volume)
 			}
+		case "Safe collect":
+			ThePreferences.SafeCollect, _ = strconv.ParseBool(v.Data)
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

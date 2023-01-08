@@ -11,7 +11,6 @@ import (
 
 type Scorpion struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Scorpion) BuildPiles() {
@@ -100,14 +99,6 @@ func (self *Scorpion) TailTapped(tail []*Card) {
 }
 
 func (*Scorpion) PileTapped(*Pile) {}
-
-func (self *Scorpion) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Scorpion) CardColors() int {
-	return 4
-}
 
 func (self *Scorpion) Complete() bool {
 	return self.SpiderComplete()

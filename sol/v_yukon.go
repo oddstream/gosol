@@ -10,7 +10,6 @@ import (
 
 type Yukon struct {
 	ScriptBase
-	wikipedia  string
 	extraCells int
 }
 
@@ -97,11 +96,3 @@ func (*Yukon) TailTapped(tail []*Card) {
 }
 
 func (*Yukon) PileTapped(*Pile) {}
-
-func (self *Yukon) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Yukon) CardColors() int {
-	return 2
-}

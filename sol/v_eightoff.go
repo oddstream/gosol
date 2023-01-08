@@ -10,7 +10,6 @@ import (
 
 type EightOff struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *EightOff) BuildPiles() {
@@ -93,11 +92,3 @@ func (*EightOff) TailTapped(tail []*Card) {
 }
 
 func (*EightOff) PileTapped(*Pile) {}
-
-func (self *EightOff) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*EightOff) CardColors() int {
-	return 4
-}

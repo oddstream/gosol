@@ -9,7 +9,6 @@ import (
 
 type Klondike struct {
 	ScriptBase
-	wikipedia             string
 	founds, tabs          []int
 	packs, draw, recycles int
 	thoughtful            bool
@@ -122,12 +121,4 @@ func (self *Klondike) PileTapped(pile *Pile) {
 	if pile == self.stock {
 		RecycleWasteToStock(self.waste, self.stock)
 	}
-}
-
-func (self *Klondike) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (self *Klondike) CardColors() int {
-	return 2
 }

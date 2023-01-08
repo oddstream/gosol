@@ -9,7 +9,6 @@ import (
 
 type Blockade struct {
 	ScriptBase
-	wikipedia string
 }
 
 func (self *Blockade) BuildPiles() {
@@ -92,11 +91,3 @@ func (self *Blockade) TailTapped(tail []*Card) {
 }
 
 func (*Blockade) PileTapped(*Pile) {}
-
-func (self *Blockade) Wikipedia() string {
-	return self.wikipedia
-}
-
-func (*Blockade) CardColors() int {
-	return 4
-}

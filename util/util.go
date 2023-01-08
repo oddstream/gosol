@@ -227,6 +227,22 @@ func RuneToSuit(r rune) int {
 	return 0
 }
 
+func SuitToRune(s int) rune {
+	switch s {
+	case 1:
+		return '♣'
+	case 2:
+		return '♥'
+	case 3:
+		return '♦'
+	case 4:
+		return '♠'
+	default:
+		log.Panic("Unknown suit", s)
+	}
+	return '?'
+}
+
 // Pluralize returns a string containing an attempt at a plural form of the word
 func Pluralize(word string, n int) string {
 	if n == 1 {
