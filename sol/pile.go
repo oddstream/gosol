@@ -142,15 +142,7 @@ func (self *Pile) Shuffle() {
 		return
 	}
 	rand.Seed(time.Now().UTC().UnixNano())
-	// I don't understand why, but testing has shown that a single
-	// shuffle doesn't produce an even distribution, and that six
-	// shuffles are required.
-	// Anecdotally, with a single shuffle Freecell kept
-	// having three Aces at or near the top of the dealt piles.
-	// Or, this could all be voodoo
-	// for i := 0; i < 6; i++ {
 	rand.Shuffle(self.Len(), self.Swap)
-	// }
 	log.Printf("Shuffled %d cards", self.Len())
 }
 

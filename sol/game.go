@@ -106,6 +106,12 @@ func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight 
 }
 
 // Update updates the current game state.
+// In Ebiten, the Update function is part of a fixed timestep loop,
+// and it's called based on the ticks per second (TPS) of your game.
+// By default, Ebiten's TPS is 60, which means that the Update method
+// will be called 60 times per second. In other words, unless you modify
+// the TPS with SetMaxTPS, the fixed timestep will be 1000/60 = 16.666 milliseconds.
+// https://ebitencookbook.vercel.app/blog
 func (*Game) Update() error {
 	TheBaize.Update()
 	if ExitRequested {
@@ -119,6 +125,8 @@ func (*Game) Update() error {
 }
 
 // Draw draws the current game to the given screen.
+// Draw will be called based on the refresh rate of the screen (FPS).
+// https://ebitencookbook.vercel.app/blog
 func (*Game) Draw(screen *ebiten.Image) {
 	TheBaize.Draw(screen)
 }

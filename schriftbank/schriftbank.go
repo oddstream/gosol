@@ -30,6 +30,8 @@ var (
 	CardSymbolSmall font.Face
 	// CardSymbolRegular is used to draw the suit symbols as pips in the middle of the card
 	CardSymbolRegular font.Face
+	// CardSymbolSimple is used in Simple card faces
+	// CardSymbolSimple font.Face
 	// CardSymbolLarge is used to draw the large suit symbol
 	CardSymbolLarge font.Face
 	// CardSymbolHuge is used to draw the recycle symbol
@@ -38,6 +40,8 @@ var (
 	CardOrdinalSmall font.Face
 	// CardOrdinal is used to draw the card ordinal (A to K)
 	CardOrdinal font.Face
+	// CardOrdinalSimple is used in Simple card faces
+	// CardOrdinalSimple font.Face
 	// CardOrdinalLarge is used to draw the card ordinal (J, Q, K)
 	CardOrdinalLarge font.Face
 )
@@ -83,13 +87,16 @@ func MakeCardFonts(cardWidth int) {
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
-
 	CardOrdinal = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(cardWidth) * 0.275,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
-
+	// CardOrdinalSimple = truetype.NewFace(tt, &truetype.Options{
+	// 	Size:    float64(cardWidth) * 0.4,
+	// 	DPI:     72,
+	// 	Hinting: font.HintingFull,
+	// })
 	CardOrdinalLarge = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(cardWidth) * 0.75,
 		DPI:     72,
@@ -102,15 +109,20 @@ func MakeCardFonts(cardWidth int) {
 	}
 
 	CardSymbolSmall = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(cardWidth) / 5,
+		Size:    float64(cardWidth) * 0.2,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
 	CardSymbolRegular = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(cardWidth) / 3.5,
+		Size:    float64(cardWidth) * 0.275,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
+	// CardSymbolSimple = truetype.NewFace(tt, &truetype.Options{
+	// 	Size:    float64(cardWidth) * 0.4,
+	// 	DPI:     72,
+	// 	Hinting: font.HintingFull,
+	// })
 	CardSymbolLarge = truetype.NewFace(tt, &truetype.Options{
 		Size:    float64(cardWidth) * 0.5,
 		DPI:     72,

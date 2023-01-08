@@ -54,8 +54,7 @@ type Card struct {
 	flipStep  float64 // if 0, we are not flipping
 	flipWidth float64 // scale of the card width while flipping
 
-	directionX, directionY int // direction vector when card is spinning
-	directionZ, scaleZ     float64
+	directionX, directionY int     // direction vector when card is spinning
 	angle, spin            float64 // current angle and spin when card is spinning
 
 	destinations []CardDestination
@@ -238,8 +237,6 @@ func (c *Card) SetFlip(prone bool) {
 func (c *Card) StartSpinning() {
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 3 // favor falling downwards
-	c.directionZ = (rand.Float64() - 0.5) / 100
-	c.scaleZ = 1.0
 	c.spin = rand.Float64() - 0.5
 	c.destinations = nil
 }
@@ -248,7 +245,6 @@ func (c *Card) StartSpinning() {
 func (c *Card) StopSpinning() {
 	c.directionX, c.directionY = 0, 0
 	c.angle, c.spin = 0, 0
-	c.scaleZ = 1.0
 }
 
 // Spinning returns true if this card is spinning
@@ -295,15 +291,11 @@ func (c *Card) Update() error {
 	if c.Spinning() {
 		c.pos.X += c.directionX
 		c.pos.Y += c.directionY
-		c.scaleZ += c.directionZ
-		if c.scaleZ < 0.5 || c.scaleZ > 1.5 {
-			// pearl from the mudbank:
-			// cannot flip card here (or anytime while spinning)
-			// because Baize.Complete() will fail (and record a lost game)
-			// because UnsortedPairs will "fail" because some cards will be face down
-			// c.Flip()
-			c.directionZ = -c.directionZ
-		}
+		// pearl from the mudbank:
+		// cannot flip card here (or anytime while spinning)
+		// because Baize.Complete() will fail (and record a lost game)
+		// because UnsortedPairs will "fail" because some cards will be face down
+		// so do not call c.Flip() here
 		c.angle += c.spin
 		if c.angle > 360 {
 			c.angle -= 360
@@ -359,7 +351,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		// do this before the baize position translate
 		op.GeoM.Translate(float64(-CardWidth/2), float64(-CardHeight/2))
 		op.GeoM.Rotate(c.angle * 3.1415926535 / 180.0)
-		op.GeoM.Scale(c.scaleZ, c.scaleZ)
 		op.GeoM.Translate(float64(CardWidth/2), float64(CardHeight/2))
 
 		// naughty to do this here instead of Update(), but Draw() knows the screen dimensions and Update() doesn't
@@ -376,7 +367,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		case c.pos.Y > h+CardHeight:
 			c.directionX = rand.Intn(5) // go downwards
 			c.pos.Y = -CardHeight       // start from off screen at top
-			c.scaleZ = 0.5              // start small
 		case c.pos.Y < -CardHeight:
 			c.directionY = rand.Intn(5) // go downwards
 		}
@@ -395,7 +385,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 				yoffset = -yoffset
 				op.GeoM.Translate(xoffset, yoffset)
 			case c.Dragging():
-				op.ColorM.Scale(1, 0.95, 1, 1)
+				// op.ColorM.Scale(1, 0.95, 1, 1)
 				xoffset, yoffset := 4.0, 4.0
 				op.GeoM.Translate(xoffset, yoffset)
 				screen.DrawImage(CardShadowImage, op)

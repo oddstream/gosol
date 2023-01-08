@@ -192,6 +192,48 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
+/*
+func createSimpleFaceImage(ID CardID) *ebiten.Image {
+	w := float64(CardWidth)
+	h := float64(CardHeight)
+
+	dc := gg.NewContext(CardWidth, CardHeight)
+
+	// draw the basic card face
+	dc.SetColor(ExtendedColors[ThePreferences.CardFaceColor])
+	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
+	dc.Fill()
+
+	// surround with a thin border
+	dc.SetLineWidth(1)
+	// card face is probably light, so darken the border a bit
+	dc.SetRGBA(0, 0, 0, 0.1)
+	// draw the RoundedRect entirely INSIDE the context
+	dc.DrawRoundedRectangle(1, 1, w-2, h-2, CardCornerRadius)
+	dc.Stroke() // otherwise outline gets drawn in textColor (!?)
+
+	var cardOrdinal = ID.Ordinal()
+	var suitRune rune = ID.SuitRune()
+	var cardColor color.RGBA = ID.Color()
+
+	dc.SetColor(cardColor)
+
+	// draw the card ordinals in top left corner
+	dc.SetFontFace(schriftbank.CardOrdinalSimple)
+	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*CTLX, h*CTLY, 0.35, 0.5)
+	dc.Stroke()
+
+	// draw the suit rune in top right corner
+	if suitRune != 0 {
+		dc.SetFontFace(schriftbank.CardSymbolSimple)
+		dc.DrawStringAnchored(string(suitRune), w*CTRX, h*CTRY, 0.65, 0.5)
+		dc.Stroke()
+	}
+
+	return ebiten.NewImageFromImage(dc.Image())
+}
+*/
+
 func CreateCardBackImage(color string) *ebiten.Image {
 	w := float64(CardWidth)
 	h := float64(CardHeight)

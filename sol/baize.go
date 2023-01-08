@@ -61,9 +61,9 @@ func (b *Baize) setFlag(flag uint32) {
 	b.dirtyFlags |= flag
 }
 
-func (b *Baize) clearFlag(flag uint32) {
-	b.dirtyFlags &= ^flag
-}
+// func (b *Baize) clearFlag(flag uint32) {
+// 	b.dirtyFlags &= ^flag
+// }
 
 func (b *Baize) Valid() bool {
 	return b != nil && b.magic == BAIZEMAGIC
@@ -598,6 +598,27 @@ func (b *Baize) CancelTailDrag(tail []*Card) {
 	b.ApplyToTail(tail, (*Card).CancelDrag)
 }
 
+func (b *Baize) SmallestFoundationOrdinal() int {
+	var ord int = 99
+	for _, f := range b.script.Foundations() {
+		var c *Card = f.Peek()
+		if c == nil {
+			if f.label == "" {
+				log.Panic("Foundation has no label")
+			}
+			n := util.ShortStringToOrdinal(f.label)
+			if n < ord {
+				ord = n
+			}
+		} else {
+			if c.Ordinal() < ord {
+				ord = c.Ordinal()
+			}
+		}
+	}
+	return ord
+}
+
 // collectFromPile is a helper function for Collect2()
 func (b *Baize) collectFromPile(pile *Pile) int {
 	if pile == nil {
@@ -610,6 +631,10 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 			if card == nil {
 				return cardsMoved
 			}
+			// TODO if b.script.tabCompareFunc == CardPair.CompareDownAltColor
+			// find the highest card in the foundations
+			// if this foundations's highest is 2 greater than all foundations highest
+			// don't collect to it
 			ok, _ := fp.vtable.CanAcceptTail([]*Card{card})
 			if !ok {
 				break // done with this foundation, try another
@@ -799,11 +824,11 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 				}
 				b.setFlag(dirtyCardImages | dirtyPilePositions | dirtyPileBackgrounds)
 			}
-			b.clearFlag(dirtyCardSizes)
+			// b.clearFlag(dirtyCardSizes)
 		}
 		if b.flagSet(dirtyCardImages) {
 			CreateCardImages()
-			b.clearFlag(dirtyCardImages)
+			// b.clearFlag(dirtyCardImages)
 		}
 		if b.flagSet(dirtyPilePositions) {
 			for _, p := range b.piles {
@@ -812,7 +837,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 					Y: TopMargin + (p.Slot().Y * (CardHeight + PilePaddingY)),
 				})
 			}
-			b.clearFlag(dirtyPilePositions)
+			// b.clearFlag(dirtyPilePositions)
 		}
 		if b.flagSet(dirtyPileBackgrounds) {
 			if !(CardWidth == 0 || CardHeight == 0) {
@@ -822,18 +847,19 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 					}
 				}
 			}
-			b.clearFlag(dirtyPileBackgrounds)
+			// b.clearFlag(dirtyPileBackgrounds)
 		}
 		if b.flagSet(dirtyWindowSize) {
 			TheUI.Layout(outsideWidth, outsideHeight)
-			b.clearFlag(dirtyWindowSize)
+			// b.clearFlag(dirtyWindowSize)
 		}
 		if b.flagSet(dirtyCardPositions) {
 			for _, p := range b.piles {
 				p.Scrunch()
 			}
-			b.clearFlag(dirtyCardPositions)
+			// b.clearFlag(dirtyCardPositions)
 		}
+		b.dirtyFlags = 0
 	}
 
 	return outsideWidth, outsideHeight

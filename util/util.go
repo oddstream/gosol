@@ -8,7 +8,6 @@ import (
 	"log"
 	"math"
 	"time"
-	"unicode"
 )
 
 // type Vector2 struct {
@@ -133,18 +132,18 @@ func Pow(x, y int) int {
 // }
 
 // OverlapArea returns the intersection of two rectangles
-func OverlapArea(x1, y1, x2, y2, X1, Y1, X2, Y2 int) int {
-	xOverlap := Max(0, Min(x2, X2)-Max(x1, X1))
-	yOverlap := Max(0, Min(y2, Y2)-Max(y1, Y1))
-	return xOverlap * yOverlap
-}
+// func OverlapArea(x1, y1, x2, y2, X1, Y1, X2, Y2 int) int {
+// 	xOverlap := Max(0, Min(x2, X2)-Max(x1, X1))
+// 	yOverlap := Max(0, Min(y2, Y2)-Max(y1, Y1))
+// 	return xOverlap * yOverlap
+// }
 
 // OverlapAreaFloat64 returns the intersection of two rectangles
-func OverlapAreaFloat64(x1, y1, x2, y2, X1, Y1, X2, Y2 float64) float64 {
-	xOverlap := math.Max(0, math.Min(x2, X2)-math.Max(x1, X1))
-	yOverlap := math.Max(0, math.Min(y2, Y2)-math.Max(y1, Y1))
-	return xOverlap * yOverlap
-}
+// func OverlapAreaFloat64(x1, y1, x2, y2, X1, Y1, X2, Y2 float64) float64 {
+// 	xOverlap := math.Max(0, math.Min(x2, X2)-math.Max(x1, X1))
+// 	yOverlap := math.Max(0, math.Min(y2, Y2)-math.Max(y1, Y1))
+// 	return xOverlap * yOverlap
+// }
 
 // OrdinalToShortString converts an ordinal (1..13) to a single(ish) character (A .. K)
 func OrdinalToShortString(ord int) string {
@@ -152,31 +151,43 @@ func OrdinalToShortString(ord int) string {
 	return chars[ord]
 }
 
-// RuneToOrdinal convert a single rune to an ordinal (1..13)
-func RuneToOrdinal(r rune) int {
-	var runes = [14]rune{'?', 'A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'}
-	for idx, r2 := range runes {
-		if r == r2 {
-			return idx
+// ShortStringToOrdinal converts a foundation label (probably) into an integer ordinal
+func ShortStringToOrdinal(str string) int {
+	var chars = [14]string{"?", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+	for i, s := range chars {
+		if str == s {
+			return i
 		}
 	}
-	return 99 // accept no card
+	log.Panicf("Unknown ordinal short string '%s'", str)
+	return 0
 }
 
+// RuneToOrdinal convert a single rune to an ordinal (1..13)
+// func RuneToOrdinal(r rune) int {
+// 	var runes = [14]rune{'?', 'A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'}
+// 	for idx, r2 := range runes {
+// 		if r == r2 {
+// 			return idx
+// 		}
+// 	}
+// 	return 99 // accept no card
+// }
+
 // ParseRunesCard parses short form of card (eg in Deal attribute)
-func ParseRunesCard(runes []rune) (ordinal int, suit int, prone bool) {
-	// "AC" or "ac" or "A" or "a"
-	// the suit is optional (think: a tableaux will accept any King)
-	if len(runes) == 0 {
-		return // default to 0, 0, false
-	}
-	ordinal = RuneToOrdinal(runes[0])
-	if len(runes) > 1 {
-		suit = RuneToSuit(runes[1])
-		prone = unicode.IsLower(runes[1])
-	}
-	return
-}
+// func ParseRunesCard(runes []rune) (ordinal int, suit int, prone bool) {
+// 	// "AC" or "ac" or "A" or "a"
+// 	// the suit is optional (think: a tableaux will accept any King)
+// 	if len(runes) == 0 {
+// 		return // default to 0, 0, false
+// 	}
+// 	ordinal = RuneToOrdinal(runes[0])
+// 	if len(runes) > 1 {
+// 		suit = RuneToSuit(runes[1])
+// 		prone = unicode.IsLower(runes[1])
+// 	}
+// 	return
+// }
 
 // OrdinalToLongString converts an ordinal (1..13) to a single(ish) character (A .. K)
 func OrdinalToLongString(ord int) string {

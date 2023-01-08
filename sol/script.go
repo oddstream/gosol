@@ -365,6 +365,9 @@ var Variants = map[string]Scripter{
 		packs:      2,
 		suits:      4,
 	},
+	"Spiderette": &Spiderette{
+		wikipedia: "https://en.wikipedia.org/wiki/Spider_(solitaire)#Variants",
+	},
 	"Classic Westcliff": &Westcliff{
 		variant: "Classic",
 	},
@@ -405,7 +408,7 @@ var VariantGroups = map[string][]string{
 	"> People":        {"Agnes Bernauer", "Duchess", "Josephine", "Maria", "Simple Simon", "Baker's Game"},
 	"> Places":        {"Australian", "Bisley", "Yukon", "Klondike", "Usk", "Usk Relaxed"},
 	"> Puzzlers":      {"Antares", "Demons and Thieves", "Bisley", "Usk", "Mrs Mop", "Penguin", "Simple Simon", "Baker's Dozen"},
-	"> Spiders":       {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion"},
+	"> Spiders":       {"Spider One Suit", "Spider Two Suits", "Spider Four Suits", "Scorpion", "Spiderette"},
 	"> Yukons":        {"Yukon", "Yukon Cells"},
 }
 

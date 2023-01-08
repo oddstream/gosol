@@ -48,7 +48,7 @@ func (self *Klondike) BuildPiles() {
 }
 
 func (self *Klondike) StartGame() {
-	var dealDown = 0
+	var dealDown int = 0
 	for _, pile := range self.tableaux {
 		for i := 0; i < dealDown; i++ {
 			card := MoveCard(self.stock, pile)
