@@ -646,8 +646,11 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 					if pile is blank, lowest = pile label
 					it's a foundation, so there will always be a label
 				*/
-				var smallest int = b.SmallestFoundationOrdinal()
-				if card.Ordinal() > smallest+1 {
+				var n int = b.SmallestFoundationOrdinal() + 1
+				if n > 13 {
+					n = 1
+				}
+				if card.Ordinal() > n {
 					// can't toast here, collect all will create a lot of toasts
 					// TheUI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
 					break // done with this foundation, try another
@@ -667,19 +670,22 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 // cards in them does not signify a complete game
 func (b *Baize) Collect2() {
 	for {
-		var totalCardsMoved int = b.collectFromPile(b.script.Waste())
+		var cardsMoved int = b.collectFromPile(b.script.Waste())
 		for _, pile := range b.script.Cells() {
-			totalCardsMoved += b.collectFromPile(pile)
+			cardsMoved += b.collectFromPile(pile)
 		}
 		for _, pile := range b.script.Reserves() {
-			totalCardsMoved += b.collectFromPile(pile)
+			cardsMoved += b.collectFromPile(pile)
 		}
 		for _, pile := range b.script.Tableaux() {
-			totalCardsMoved += b.collectFromPile(pile)
+			cardsMoved += b.collectFromPile(pile)
 		}
-		if totalCardsMoved == 0 {
+		if cardsMoved == 0 {
 			break
 		}
+	}
+	if ThePreferences.SafeCollect && b.script.SafeCollect() && b.fmoves > 0 {
+		TheUI.Toast("Glass", "Not safe to collect card(s)")
 	}
 }
 
