@@ -603,12 +603,14 @@ func (b *Baize) SmallestFoundationOrdinal() int {
 	for _, f := range b.script.Foundations() {
 		var c *Card = f.Peek()
 		if c == nil {
-			if f.label == "" {
-				log.Panic("Foundation has no label")
-			}
-			n := util.ShortStringToOrdinal(f.label)
-			if n < ord {
-				ord = n
+			if f.label != "" {
+				// Foundations usually are created with labels
+				// but some games like Duchess the label is not set
+				// until after the first move to a foundation
+				n := util.ShortStringToOrdinal(f.label)
+				if n < ord {
+					ord = n
+				}
 			}
 		} else {
 			if c.Ordinal() < ord {
