@@ -598,27 +598,37 @@ func (b *Baize) CancelTailDrag(tail []*Card) {
 	b.ApplyToTail(tail, (*Card).CancelDrag)
 }
 
-func (b *Baize) SmallestFoundationOrdinal() int {
-	var ord int = 99
-	for _, f := range b.script.Foundations() {
-		var c *Card = f.Peek()
-		if c == nil {
-			if f.label != "" {
-				// Foundations usually are created with labels
-				// but some games like Duchess the label is not set
-				// until after the first move to a foundation
-				n := util.ShortStringToOrdinal(f.label)
-				if n < ord {
-					ord = n
-				}
-			}
-		} else {
-			if c.Ordinal() < ord {
-				ord = c.Ordinal()
-			}
+// DoingSafeCollect return true if we are doing safe collect
+// and the safe ordinal to collect next
+func (b *Baize) DoingSafeCollect() (bool, int) {
+	if !ThePreferences.SafeCollect {
+		return false, 0
+	}
+	if !b.script.SafeCollect() {
+		return false, 0
+	}
+	var fs []*Pile = b.script.Foundations()
+	if fs == nil {
+		return false, 0
+	}
+	var f0 *Pile = fs[0]
+	if f0 == nil {
+		return false, 0
+	}
+	if f0.Label() != "A" {
+		return false, 0 // eg Duchess
+	}
+	var lowest int = 99
+	for _, f := range fs {
+		if f.Empty() {
+			return true, 1
+		}
+		var card *Card = f.Peek()
+		if card.Ordinal() < lowest {
+			lowest = card.Ordinal()
 		}
 	}
-	return ord
+	return true, lowest + 1
 }
 
 // collectFromPile is a helper function for Collect2()
@@ -637,22 +647,8 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 			if !ok {
 				break // done with this foundation, try another
 			}
-			if ThePreferences.SafeCollect && b.script.SafeCollect() {
-				/*
-					3 3 3 4 -> collect 4
-					3 3 3 3 -> collect 4
-					2 3 4 5 -> collect 3
-					_ A 2 3 -> collect A
-					... collect where ord = lowest+1
-					+1 may wrap up from K to A
-					if pile is blank, lowest = pile label
-					it's a foundation, so there will always be a label
-				*/
-				var n int = b.SmallestFoundationOrdinal() + 1
-				if n > 13 {
-					n = 1
-				}
-				if card.Ordinal() > n {
+			if ok, safeOrd := b.DoingSafeCollect(); ok {
+				if card.Ordinal() != safeOrd {
 					// can't toast here, collect all will create a lot of toasts
 					// TheUI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
 					break // done with this foundation, try another
@@ -686,9 +682,9 @@ func (b *Baize) Collect2() {
 			break
 		}
 	}
-	if ThePreferences.SafeCollect && b.script.SafeCollect() && b.fmoves > 0 {
-		TheUI.Toast("Glass", "Not safe to collect card(s)")
-	}
+	// if ThePreferences.SafeCollect && b.script.SafeCollect() && b.fmoves > 0 {
+	// 	TheUI.Toast("Glass", "Not safe to collect card(s)")
+	// }
 }
 
 func (b *Baize) MaxSlotX() int {

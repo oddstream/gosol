@@ -152,16 +152,16 @@ func OrdinalToShortString(ord int) string {
 }
 
 // ShortStringToOrdinal converts a foundation label (probably) into an integer ordinal
-func ShortStringToOrdinal(str string) int {
-	var chars = [14]string{"?", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
-	for i, s := range chars {
-		if str == s {
-			return i
-		}
-	}
-	log.Panicf("Unknown ordinal short string '%s'", str)
-	return 0
-}
+// func ShortStringToOrdinal(str string) int {
+// 	var chars = [14]string{"?", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+// 	for i, s := range chars {
+// 		if str == s {
+// 			return i
+// 		}
+// 	}
+// 	log.Panicf("Unknown ordinal short string '%s'", str)
+// 	return 0
+// }
 
 // RuneToOrdinal convert a single rune to an ordinal (1..13)
 // func RuneToOrdinal(r rune) int {
