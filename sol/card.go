@@ -5,29 +5,17 @@ import (
 	"image"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/util"
 )
 
 const (
-	cardmagic = 0x29041962
-
-	// lerpStepAmount is the distance the card travels every tick
-	// debugSpeed  = 0.005
-	// slowSpeed   = 0.01
-	// normalSpeed = 0.025
-	// fastSpeed   = 0.04
-	lerpStepAmount = 0.025
-
-	// cards have to flip faster than they transition
-	// remember that flipping happens in two steps
-	// so three times faster would do, but four times faster seems snappier
-	// with cardTransitionStep at 0.02, and flipStepAmount at 0.08,
-	// average transitions take 0.64ms, flips take 0.39ms
-
-	// flipStepAmount is the amount we shrink/grow the flipping card width every tick
-	flipStepAmount = lerpStepAmount * 3
+	cardmagic    = 0x29041962
+	LERP_SECONDS = 0.5
+	FLIP_SECONDS = LERP_SECONDS / 3
+	SPIN_SECONDS = LERP_SECONDS * 2
 )
 
 /*
@@ -43,22 +31,29 @@ type Card struct {
 	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
 
 	// dynamic things
-	owner    *Pile
-	pos      image.Point
-	src      image.Point // lerp origin
-	dst      image.Point // lerp destination
-	lerpStep float64     // current lerp value 0.0 .. 1.0; if < 1.0, card is lerping
+	owner        *Pile
+	pos          image.Point
+	destinations []CardDestination
 
+	// lerping things
+	src           image.Point // lerp origin
+	dst           image.Point // lerp destination
+	lerpStartTime time.Time
+	lerping       bool
+
+	// dragging things
 	dragStart    image.Point // starting point for dragging
 	beingDragged bool        // true if this card is being dragged, or is in a dragged tail
 
-	flipStep  float64 // if 0, we are not flipping
-	flipWidth float64 // scale of the card width while flipping
+	// flipping things
+	flipWidth     float64 // scale of the card width while flipping
+	flipDirection int
+	flipStartTime time.Time
 
+	// spinning things
 	directionX, directionY int     // direction vector when card is spinning
 	angle, spin            float64 // current angle and spin when card is spinning
-
-	destinations []CardDestination
+	spinStartAfter         time.Time
 }
 
 // NewCard is a factory for Card objects
@@ -97,7 +92,7 @@ func (c *Card) BaizePos() image.Point {
 // SetPosition sets the position of the Card
 func (c *Card) SetBaizePos(pos image.Point) {
 	c.pos = pos
-	c.lerpStep = 1.0 // stop any current lerp
+	c.lerping = false
 }
 
 // Rect gives the x,y baize coords of the card's top left and bottom right corners
@@ -116,37 +111,33 @@ func (c *Card) ScreenRect() image.Rectangle {
 	return r
 }
 
+func (c *Card) NearEnough() bool {
+	return util.Abs(c.pos.X-c.dst.X) <= 2 && util.Abs(c.pos.Y-c.dst.Y) <= 2
+}
+
 // TransitionTo starts the transition of this Card to pos
 func (c *Card) TransitionTo(pos image.Point) {
-	// if c.lerpStep < 1.0 {
-	// 	println(c.ID.String(), "already lerping")
-	// }
-	if NoCardLerp || pos.Eq(c.pos) {
-		c.SetBaizePos(pos)
-		return
-	}
-
-	if pos.Eq(c.dst) && c.lerpStep < 1.0 {
-		// println("repeat", c.String(), "from", c.pos.String(), "to", c.dst.String())
-		return
-	}
 
 	if c.Spinning() {
 		return
 	}
 
+	if NoCardLerp || pos.Eq(c.pos) {
+		c.SetBaizePos(pos)
+		return
+	}
+
+	if c.lerping {
+		if c.NearEnough() {
+			c.SetBaizePos(pos)
+			return // repeat request
+		}
+	}
+
 	c.src = c.pos
 	c.dst = pos
-	// tried calculating distance from s.src to c.dst
-	// and dynamically making the card move faster
-	// but it wasn't really worth it
-	// dist := util.Distance(c.src, c.dst)
-	// if dist < float64(CardWidth) {
-	// 	c.lerpStep = 0.25
-	// } else {
-	// 	c.lerpStep = 0.1
-	// }
-	c.lerpStep = 0.1 // kickstart the lerp by starting from 0.1 instead of 0.0
+	c.lerping = true
+	c.lerpStartTime = time.Now()
 }
 
 // StartDrag informs card that it is being dragged
@@ -194,13 +185,18 @@ func (c *Card) WasDragged() bool {
 	return !c.pos.Eq(c.dragStart)
 }
 
+func (c *Card) startFlip() {
+	c.flipWidth = 1.0    // card starts full width
+	c.flipDirection = -1 // start by making card narrower
+	c.flipStartTime = time.Now()
+}
+
 // FlipUp flips the card face up
 func (c *Card) FlipUp() {
 	if c.Prone() {
 		c.SetProne(false) // card is immediately face up, else fan isn't correct
 		if !NoCardFlip {
-			c.flipStep = -flipStepAmount // start by making card narrower
-			c.flipWidth = 1.0
+			c.startFlip()
 		}
 	}
 }
@@ -210,8 +206,7 @@ func (c *Card) FlipDown() {
 	if !c.Prone() {
 		c.SetProne(true) // card is immediately face down, else fan isn't correct
 		if !NoCardFlip {
-			c.flipStep = -flipStepAmount // start by making card narrower
-			c.flipWidth = 1.0
+			c.startFlip()
 		}
 	}
 }
@@ -240,6 +235,10 @@ func (c *Card) StartSpinning() {
 	c.directionY = rand.Intn(9) - 3 // favor falling downwards
 	c.spin = rand.Float64() - 0.5
 	c.destinations = nil
+	// delay start of spinning to allow cards to be seen to go to foundations
+	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
+	d := time.Duration(SPIN_SECONDS * float64(time.Second))
+	c.spinStartAfter = time.Now().Add(d)
 }
 
 // StopSpinning tells the card to stop spinning and return to it's upright state
@@ -250,13 +249,12 @@ func (c *Card) StopSpinning() {
 
 // Spinning returns true if this card is spinning
 func (c *Card) Spinning() bool {
-	return c.directionX != 0 || c.directionY != 0 || c.angle != 0 || c.spin != 0
+	return c.spin != 0.0
 }
 
 // Transitioning returns true if this card is lerping
 func (c *Card) Transitioning() bool {
-	// return c.lerpStep < 1.0
-	return c.lerpStep < 1.0 && c.pos != c.dst
+	return c.lerping
 }
 
 // Dragging returns true if this card is being dragged
@@ -269,7 +267,7 @@ func (c *Card) Flipping() bool {
 	if NoCardFlip {
 		return false
 	}
-	return c.flipStep != 0.0
+	return c.flipDirection != 0 // will be -1 or +1 if flipping
 }
 
 // Layout implements ebiten.Game's Layout.
@@ -279,36 +277,51 @@ func (c *Card) Flipping() bool {
 
 // Update the card state (transitions)
 func (c *Card) Update() error {
-	if c.Flipping() {
-		c.flipWidth += c.flipStep
-		if c.flipWidth <= 0 {
-			c.flipStep = flipStepAmount // now make card wider
-		} else if c.flipWidth >= 1.0 {
-			c.flipWidth = 1.0
-			c.flipStep = 0.0
+
+	if c.Transitioning() {
+		if !c.NearEnough() {
+			t := time.Since(c.lerpStartTime).Seconds() / LERP_SECONDS
+			c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), t))
+			c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), t))
+		} else {
+			c.SetBaizePos(c.dst) // also stops lerping
 		}
 	}
-	// cannot lerp AND spin at same time
-	if c.Spinning() {
-		c.pos.X += c.directionX
-		c.pos.Y += c.directionY
-		// pearl from the mudbank:
-		// cannot flip card here (or anytime while spinning)
-		// because Baize.Complete() will fail (and record a lost game)
-		// because UnsortedPairs will "fail" because some cards will be face down
-		// so do not call c.Flip() here
-		c.angle += c.spin
-		if c.angle > 360 {
-			c.angle -= 360
-		} else if c.angle < 0 {
-			c.angle += 360
+
+	if c.Flipping() {
+		t := time.Since(c.flipStartTime).Seconds() / FLIP_SECONDS
+		if c.flipDirection < 0 {
+			c.flipWidth = util.Lerp(1.0, 0.0, t)
+			if c.flipWidth <= 0.0 {
+				// reverse direction, make card wider
+				c.flipDirection = 1
+				c.flipStartTime = time.Now()
+			}
+		} else if c.flipDirection > 0 {
+			c.flipWidth = util.Lerp(0.0, 1.0, t)
+			if c.flipWidth >= 1.0 {
+				c.flipDirection = 0
+				c.flipWidth = 1.0
+			}
 		}
-	} else if c.pos != c.dst && c.lerpStep < 1.0 {
-		c.pos.X = int(util.Smootherstep(float64(c.src.X), float64(c.dst.X), c.lerpStep))
-		c.pos.Y = int(util.Smootherstep(float64(c.src.Y), float64(c.dst.Y), c.lerpStep))
-		if c.lerpStep += lerpStepAmount; c.lerpStep >= 1.0 {
-			c.pos = c.dst
-			c.src = image.Point{0, 0}
+	}
+
+	if c.Spinning() {
+		if time.Now().After(c.spinStartAfter) {
+			c.lerping = false
+			c.pos.X += c.directionX
+			c.pos.Y += c.directionY
+			// pearl from the mudbank:
+			// cannot flip card here (or anytime while spinning)
+			// because Baize.Complete() will fail (and record a lost game)
+			// because UnsortedPairs will "fail" because some cards will be face down
+			// so do not call c.Flip() here
+			c.angle += c.spin
+			if c.angle > 360 {
+				c.angle -= 360
+			} else if c.angle < 0 {
+				c.angle += 360
+			}
 		}
 	}
 	return nil
@@ -321,7 +334,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	var img *ebiten.Image
 	// card prone has already been set to destination state
-	if c.flipStep < 0 {
+	if c.flipDirection < 0 {
 		if c.Prone() {
 			// card is getting narrower, and it's going to show face down, but show face up
 			img = TheCardFaceImageLibrary[(c.Suit()*13)+(c.Ordinal()-1)]
