@@ -6,7 +6,7 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
 
-It's created because I *have* to write software, and for my own personal enjoyment. It's definitely not for profit and will never contain ads.
+It's created because I *have* to write software, and for my own personal enjoyment. It's skewed towrd puzzle-type games, because they're the ones I mostly play. It's definitely not for profit and will never contain ads.
 
 ## Variants
 

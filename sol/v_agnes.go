@@ -43,7 +43,13 @@ func (self *Agnes) StartGame() {
 		MoveCard(self.stock, pile)
 	}
 
+	var dealDown int = 0
 	for _, pile := range self.tableaux {
+		for i := 0; i < dealDown; i++ {
+			card := MoveCard(self.stock, pile)
+			card.FlipDown()
+		}
+		dealDown++
 		MoveCard(self.stock, pile)
 	}
 

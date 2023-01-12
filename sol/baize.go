@@ -112,7 +112,6 @@ func (b *Baize) NewDeal() {
 
 	stockPile := b.script.Stock()
 	FillFromLibrary(stockPile)
-	stockPile.Shuffle()
 
 	b.script.StartGame()
 	b.UndoPush()
@@ -373,9 +372,14 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 	} else {
 		pt := image.Pt(v.X, v.Y)
 		if card := b.FindLowestCardAt(pt); card != nil {
-			tail := card.Owner().MakeTail(card)
-			b.StartTailDrag(tail)
-			b.stroke.SetDraggedObject(tail)
+			if card.Transitioning() {
+				TheUI.Toast("Glass", "Confusing to move a moving card")
+				v.Stroke.Cancel()
+			} else {
+				tail := card.Owner().MakeTail(card)
+				b.StartTailDrag(tail)
+				b.stroke.SetDraggedObject(tail)
+			}
 		} else {
 			if p := b.FindPileAt(pt); p != nil {
 				b.stroke.SetDraggedObject(p)
@@ -520,6 +524,11 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		// if the script doesn't want to do anything, it can call pile.vtable.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
 		// or use Pile.DefaultTailTapped
+		if obj[0].Transitioning() {
+			// test for this but it won't happen?
+			TheUI.Toast("Glass", "Confusing to tap a moving card")
+			break
+		}
 		crc := b.CRC()
 		b.script.TailTapped(obj)
 		b.StopTailDrag(obj) // do this before AfterUserMove

@@ -24,6 +24,7 @@ type Preferences struct {
 	Volume                             float64
 	MirrorBaize                        bool
 	ShowMovableCards                   bool
+	AlwaysShowMovableCards             bool
 	CardRatio                          float64
 	LastVersionMajor, LastVersionMinor int
 }
@@ -31,24 +32,25 @@ type Preferences struct {
 // ThePreferences holds serialized game progress data
 // Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
 var ThePreferences = &Preferences{
-	Title:                "Solitaire",
-	Variant:              "Klondike",
-	BaizeColor:           "BaizeGreen",
-	PowerMoves:           true,
-	SafeCollect:          false,
-	CardFaceColor:        "Ivory",
-	CardBackColor:        "CornflowerBlue",
-	MovableCardBackColor: "Gold",
-	ColorfulCards:        true,
-	RedColor:             "Crimson",
-	BlackColor:           "Black",
-	ClubColor:            "DarkGreen",
-	DiamondColor:         "DarkBlue",
-	HeartColor:           "Crimson",
-	SpadeColor:           "Black",
-	Mute:                 false,
-	Volume:               0.75,
-	ShowMovableCards:     false,
+	Title:                  "Solitaire",
+	Variant:                "Klondike",
+	BaizeColor:             "BaizeGreen",
+	PowerMoves:             true,
+	SafeCollect:            false,
+	CardFaceColor:          "Ivory",
+	CardBackColor:          "CornflowerBlue",
+	MovableCardBackColor:   "Gold",
+	ColorfulCards:          true,
+	RedColor:               "Crimson",
+	BlackColor:             "Black",
+	ClubColor:              "DarkGreen",
+	DiamondColor:           "DarkBlue",
+	HeartColor:             "Crimson",
+	SpadeColor:             "Black",
+	Mute:                   false,
+	Volume:                 0.75,
+	ShowMovableCards:       false,
+	AlwaysShowMovableCards: false,
 	// FixedCards:       false,
 	// FixedCardWidth:   90,
 	// FixedCardHeight:  122,

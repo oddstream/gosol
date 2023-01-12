@@ -27,6 +27,13 @@ var CommandTable = map[ebiten.Key]func(){
 			}
 		}
 	},
+	ebiten.KeyM: func() {
+		ThePreferences.AlwaysShowMovableCards = !ThePreferences.AlwaysShowMovableCards
+		ThePreferences.ShowMovableCards = ThePreferences.AlwaysShowMovableCards
+		if ThePreferences.AlwaysShowMovableCards {
+			TheUI.ToastInfo("Movable cards always highlighted")
+		}
+	},
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	// ebiten.KeyTab: func() {
@@ -37,12 +44,11 @@ var CommandTable = map[ebiten.Key]func(){
 	// 		ThePreferences.Save()
 	// 	}
 	// },
-	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
-	ebiten.KeyF2: func() { ShowStatisticsDrawer() },
-	ebiten.KeyF3: func() { ShowSettingsDrawer() },
-	ebiten.KeyF5: func() { TheBaize.StartSpinning() },
-	ebiten.KeyF6: func() { TheBaize.StopSpinning() },
-	// ebiten.KeyF8:     func() { TheUI.HideFAB() },
+	ebiten.KeyF1:     func() { TheBaize.Wikipedia() },
+	ebiten.KeyF2:     func() { ShowStatisticsDrawer() },
+	ebiten.KeyF3:     func() { ShowSettingsDrawer() },
+	ebiten.KeyF5:     func() { TheBaize.StartSpinning() },
+	ebiten.KeyF6:     func() { TheBaize.StopSpinning() },
 	ebiten.KeyMenu:   func() { TheUI.ToggleNavDrawer() },
 	ebiten.KeyEscape: func() { TheUI.HideActiveDrawer() },
 }

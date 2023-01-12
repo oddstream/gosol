@@ -134,6 +134,10 @@ func (c *Card) TransitionTo(pos image.Point) {
 		}
 	}
 
+	if DebugMode && (c.dst.X < 0 || c.dst.Y < 0) {
+		log.Panicf("move card to %+v", c.dst)
+	}
+
 	c.src = c.pos
 	c.dst = pos
 	c.lerping = true
@@ -245,6 +249,8 @@ func (c *Card) StartSpinning() {
 func (c *Card) StopSpinning() {
 	c.directionX, c.directionY = 0, 0
 	c.angle, c.spin = 0, 0
+	// card may have spun off-screen slightly, and be -ve, which confuses Smoothstep
+	c.pos = c.owner.pos
 }
 
 // Spinning returns true if this card is spinning
@@ -278,11 +284,34 @@ func (c *Card) Flipping() bool {
 // Update the card state (transitions)
 func (c *Card) Update() error {
 
+	if c.Spinning() {
+		if time.Now().After(c.spinStartAfter) {
+			c.lerping = false
+			c.pos.X += c.directionX
+			c.pos.Y += c.directionY
+			// pearl from the mudbank:
+			// cannot flip card here (or anytime while spinning)
+			// because Baize.Complete() will fail (and record a lost game)
+			// because UnsortedPairs will "fail" because some cards will be face down
+			// so do not call c.Flip() here
+			c.angle += c.spin
+			if c.angle > 360 {
+				c.angle -= 360
+			} else if c.angle < 0 {
+				c.angle += 360
+			}
+		}
+	}
+
 	if c.Transitioning() {
 		if !c.NearEnough() {
 			t := time.Since(c.lerpStartTime).Seconds() / LERP_SECONDS
 			c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), t))
 			c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), t))
+			if DebugMode && (c.pos.X < 0 || c.pos.Y < 0) {
+				log.Panicf("lerp card to %+v", c.pos)
+			}
+
 		} else {
 			c.SetBaizePos(c.dst) // also stops lerping
 		}
@@ -306,24 +335,6 @@ func (c *Card) Update() error {
 		}
 	}
 
-	if c.Spinning() {
-		if time.Now().After(c.spinStartAfter) {
-			c.lerping = false
-			c.pos.X += c.directionX
-			c.pos.Y += c.directionY
-			// pearl from the mudbank:
-			// cannot flip card here (or anytime while spinning)
-			// because Baize.Complete() will fail (and record a lost game)
-			// because UnsortedPairs will "fail" because some cards will be face down
-			// so do not call c.Flip() here
-			c.angle += c.spin
-			if c.angle > 360 {
-				c.angle -= 360
-			} else if c.angle < 0 {
-				c.angle += 360
-			}
-		}
-	}
 	return nil
 }
 
@@ -422,6 +433,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	if ThePreferences.ShowMovableCards {
 		if c.Owner().IsStock() {
 			// card will be prone because Stock
+			// nb this will color all the stock cards, not just the top card
 			img = MovableCardBackImage
 		} else {
 			if len(c.destinations) > 0 {

@@ -74,14 +74,9 @@ func FillFromLibrary(pile *Pile) {
 		if !c.Valid() {
 			log.Panicf("invalid card at library index %d", i)
 		}
-		// the following mimics Pile.Push
-		pile.Append(c)
-		c.SetOwner(pile)
-		// don't set Card.pos here
-		// so that a new deal makes the spinning cards fall into place
-		// without going back to the CardStartPoint
-		c.SetProne(true)
+		pile.Push(c)
 	}
+	pile.Shuffle()
 }
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
@@ -89,7 +84,6 @@ func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilte
 	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
 	stock.vtable = &Stock{pile: &stock}
 	FillFromLibrary(&stock)
-	stock.Shuffle()
 	TheBaize.AddPile(&stock)
 	return &stock
 }

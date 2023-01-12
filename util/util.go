@@ -36,6 +36,13 @@ func Lerp(v0, v1, t float64) float64 {
 
 // Smoothstep see http://sol.gfxile.net/interpolation/
 func Smoothstep(A, B, v float64) float64 {
+	// cards that have spun off the screen may have -ve position
+	if A < 0.0 {
+		A = 0.0
+	}
+	if B < 0.0 {
+		B = 0.0
+	}
 	v = (v) * (v) * (3 - 2*(v))
 	X := (B * v) + (A * (1.0 - v))
 	return X
@@ -43,20 +50,27 @@ func Smoothstep(A, B, v float64) float64 {
 
 // Smootherstep see http://sol.gfxile.net/interpolation/
 func Smootherstep(A, B, v float64) float64 {
+	// cards that have spun off the screen may have -ve position
+	if A < 0.0 {
+		A = 0.0
+	}
+	if B < 0.0 {
+		B = 0.0
+	}
 	v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10)
 	X := (B * v) + (A * (1.0 - v))
 	return X
 }
 
-func EaseInSine(A, B, v float64) float64 {
-	v = 1.0 - math.Cos((v*math.Pi)/2.0) // easings.net
-	return (B * v) + (A * (1.0 - v))
-}
+// func EaseInSine(A, B, v float64) float64 {
+// 	v = 1.0 - math.Cos((v*math.Pi)/2.0) // easings.net
+// 	return (B * v) + (A * (1.0 - v))
+// }
 
-func EaseInCubic(A, B, v float64) float64 {
-	v = v * v * v
-	return (B * v) + (A * (1.0 - v))
-}
+// func EaseInCubic(A, B, v float64) float64 {
+// 	v = v * v * v
+// 	return (B * v) + (A * (1.0 - v))
+// }
 
 // Normalize is the opposite of lerp. Instead of a range and a factor, we give a range and a value to find out the factor.
 func Normalize(start, finish, value float64) float64 {
