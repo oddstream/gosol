@@ -526,6 +526,12 @@ var Variants = map[string]Scripter{
 		},
 		extraCells: 2,
 	},
+	"Oddstream": &Oddstream{
+		ScriptBase: ScriptBase{
+			wikipedia:  "https://oddstream.games",
+			cardColors: 4,
+		},
+	},
 }
 
 var VariantGroups = map[string][]string{

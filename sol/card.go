@@ -240,9 +240,9 @@ func (c *Card) StartSpinning() {
 	c.directionY = rand.Intn(9) - 3 // favor falling downwards
 	c.spin = rand.Float64() - 0.5
 	c.destinations = nil
-	// delay start of spinning to allow cards to be seen to go to foundations
+	// delay start of spinning to allow cards to be seen to go/finish their trip to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
-	d := time.Duration((ThePreferences.AniSpeed * 2) * float64(time.Second))
+	d := time.Duration(ThePreferences.AniSpeed * float64(time.Second))
 	c.spinStartAfter = time.Now().Add(d)
 }
 
@@ -308,7 +308,7 @@ func (c *Card) Update() error {
 		if !c.NearEnough() {
 			secs := time.Since(c.lerpStartTime).Seconds()
 			// secs will start at nearly zero, and rise to about the value of AniSpeed,
-			// because AniSpeed is the number of seconds the card will take to transition
+			// because AniSpeed is the number of seconds the card will take to transition.
 			// with AniSpeed at 0.75, this happens (for example) 45 times (we are at @ 60Hz)
 			t := secs / ThePreferences.AniSpeed
 			// with small values of AniSpeed, t can go above 1.0
@@ -319,17 +319,14 @@ func (c *Card) Update() error {
 			// }
 			c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), t))
 			c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), t))
-			// if DebugMode && (c.pos.X < 0 || c.pos.Y < 0) {
-			// 	log.Panicf("lerp card to %+v", c.pos)
-			// }
-
 		} else {
 			c.SetBaizePos(c.dst) // also stops lerping
 		}
 	}
 
 	if c.Flipping() {
-		t := time.Since(c.flipStartTime).Seconds() / (ThePreferences.AniSpeed / 3)
+		// we need to flip faster than we lerp, because flipping happens in two stages
+		t := time.Since(c.flipStartTime).Seconds() / (ThePreferences.AniSpeed / 2.0)
 		if c.flipDirection < 0 {
 			c.flipWidth = util.Lerp(1.0, 0.0, t)
 			if c.flipWidth <= 0.0 {
@@ -414,30 +411,14 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(float64(c.pos.X+TheBaize.dragOffset.X), float64(c.pos.Y+TheBaize.dragOffset.Y))
 
-	if CardShadowImage != nil { // why would this be nil?
-		if !c.Flipping() {
-			switch {
-			case c.Transitioning():
-				xoffset, yoffset := 4.0, 4.0
-				op.GeoM.Translate(xoffset, yoffset)
-				screen.DrawImage(CardShadowImage, op)
-				xoffset = -xoffset
-				yoffset = -yoffset
-				op.GeoM.Translate(xoffset, yoffset)
-			case c.Dragging():
-				// op.ColorM.Scale(1, 0.95, 1, 1)
-				xoffset, yoffset := 4.0, 4.0
-				op.GeoM.Translate(xoffset, yoffset)
-				screen.DrawImage(CardShadowImage, op)
-				// move the offset PARTIALLY back, making the card appear "pressed" when pushed with the mouse (like a button)
-				xoffset = -xoffset * 0.5
-				yoffset = -yoffset * 0.5
-				op.GeoM.Translate(xoffset, yoffset)
-				// this looks intuitively better than "lifting" the card with
-				// op.GeoM.Translate(-offset*2, -offset*2)
-				// even though "lifting" it (moving it up/left towards the light source) would be more "correct"
-			}
+	if !c.Flipping() {
+		if c.Transitioning() || c.Dragging() {
+			op.GeoM.Translate(4.0, 4.0)
+			screen.DrawImage(CardShadowImage, op)
+			op.GeoM.Translate(-4.0, -4.0)
 		}
+		// no longer "press" the card when dragging it
+		// because this made tapping look a little messy
 	}
 
 	// if c.Owner().target && c == c.Owner().Peek() {
