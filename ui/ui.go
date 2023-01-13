@@ -17,17 +17,17 @@ var (
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
 type UI struct {
-	toolbar        *Toolbar
-	statusbar      *Statusbar
-	fabbar         *FABBar
-	navDrawer      *NavDrawer
-	settingsDrawer *SettingsDrawer
-	variantPicker  *Picker
-	textDrawer     *TextDrawer
-	containers     []Containery // all the containers
-	bars           []Containery // just the status, toolbars
-	drawers        []Containery // just the drawers
-	toastManager   *ToastManager
+	toolbar                        *Toolbar
+	statusbar                      *Statusbar
+	fabbar                         *FABBar
+	navDrawer                      *NavDrawer
+	settingsDrawer, aniSpeedDrawer *SettingsDrawer
+	variantPicker                  *Picker
+	textDrawer                     *TextDrawer
+	containers                     []Containery // all the containers
+	bars                           []Containery // just the status, toolbars
+	drawers                        []Containery // just the drawers
+	toastManager                   *ToastManager
 }
 
 var cmdFn func(interface{})
@@ -45,12 +45,13 @@ func New(fn func(interface{})) *UI {
 	ui.fabbar = NewFABBar()
 	ui.navDrawer = NewNavDrawer()
 	ui.settingsDrawer = NewSettingsDrawer()
+	ui.aniSpeedDrawer = NewSettingsDrawer()
 	ui.variantPicker = NewVariantPicker()
 	ui.textDrawer = NewTextDrawer() // contents are added when shown
 
 	ui.bars = []Containery{ui.toolbar, ui.statusbar, ui.fabbar}
-	ui.drawers = []Containery{ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
-	ui.containers = []Containery{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.variantPicker, ui.textDrawer}
+	ui.drawers = []Containery{ui.navDrawer, ui.settingsDrawer, ui.aniSpeedDrawer, ui.variantPicker, ui.textDrawer}
+	ui.containers = []Containery{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.aniSpeedDrawer, ui.variantPicker, ui.textDrawer}
 
 	return ui
 }

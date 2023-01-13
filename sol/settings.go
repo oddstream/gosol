@@ -14,3 +14,8 @@ func ShowSettingsDrawer() {
 	}
 	TheUI.ShowSettingsDrawer(booleanSettings)
 }
+
+func ShowAniSpeedDrawer() {
+	// ThePreferences.AniSpeed is a float64 0.75, 0.5, 0.25
+	TheUI.ShowAniSpeedDrawer(ThePreferences.AniSpeed)
+}

@@ -615,9 +615,11 @@ func (self *Pile) Update() {
 }
 
 func (self *Pile) Draw(screen *ebiten.Image) {
-	if self.img == nil {
+
+	if self.img == nil || self.Hidden() {
 		return
 	}
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
 	// if self.target && len(self.cards) == 0 {

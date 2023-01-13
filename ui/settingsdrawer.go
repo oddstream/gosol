@@ -1,5 +1,7 @@
 package ui
 
+import "github.com/hajimehoshi/ebiten/v2"
+
 // SettingsDrawer slide out modal menu
 type SettingsDrawer struct {
 	DrawerBase
@@ -24,6 +26,7 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 	u.settingsDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.settingsDrawer.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
+		NewNavItem(u.settingsDrawer, "", "menu", "Animation speed", ebiten.KeyA),
 		// NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Power moves", booleanSettings["PowerMoves"]),
 		NewCheckbox(u.settingsDrawer, "", "Colorful cards", booleanSettings["ColorfulCards"]),
@@ -34,4 +37,23 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()
+}
+
+func (u *UI) ShowAniSpeedDrawer(aniSpeed float64) {
+	con := u.VisibleDrawer()
+	if con == u.aniSpeedDrawer {
+		return
+	}
+	if con != nil {
+		con.Hide()
+	}
+	u.aniSpeedDrawer.widgets = u.settingsDrawer.widgets[:0]
+	u.aniSpeedDrawer.widgets = []Widgety{
+		NewText(u.aniSpeedDrawer, "aniTitle", "Card Animation Speed"),
+		NewRadioButton(u.aniSpeedDrawer, "aniFast", "Fast", aniSpeed < 0.5),
+		NewRadioButton(u.aniSpeedDrawer, "aniNormal", "Normal", aniSpeed == 0.5),
+		NewRadioButton(u.aniSpeedDrawer, "aniSlow", "Slow", aniSpeed > 0.5),
+	}
+	u.aniSpeedDrawer.LayoutWidgets()
+	u.aniSpeedDrawer.Show()
 }

@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"runtime"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,24 +14,24 @@ type NavDrawer struct {
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
 func NewNavDrawer() *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	n := &NavDrawer{DrawerBase: DrawerBase{width: 300, height: 0, x: -300, y: 48}}
-	n.widgets = []Widgety{
+	nd := &NavDrawer{DrawerBase: DrawerBase{width: 300, height: 0, x: -300, y: 48}}
+	nd.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
-		NewNavItem(n, "newDeal", "star", "New deal", ebiten.KeyN),
-		NewNavItem(n, "restartDeal", "restore", "Restart deal", ebiten.KeyR),
-		NewNavItem(n, "findGame", "search", "Find game...", ebiten.KeyF),
-		NewNavItem(n, "bookmark", "bookmark_add", "Bookmark", ebiten.KeyS),
-		NewNavItem(n, "gotoBookmark", "bookmark", "Go to bookmark", ebiten.KeyL),
-		NewNavItem(n, "wikipedia", "info", "Wikipedia...", ebiten.KeyF1),
-		NewNavItem(n, "statistics", "poll", "Statistics...", ebiten.KeyF2),
-		NewNavItem(n, "settings", "settings", "Settings...", ebiten.KeyF3),
+		NewNavItem(nd, "newDeal", "star", "New deal", ebiten.KeyN),
+		NewNavItem(nd, "restartDeal", "restore", "Restart deal", ebiten.KeyR),
+		NewNavItem(nd, "findGame", "search", "Find game...", ebiten.KeyF),
+		NewNavItem(nd, "bookmark", "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(nd, "gotoBookmark", "bookmark", "Go to bookmark", ebiten.KeyL),
+		NewNavItem(nd, "wikipedia", "info", "Wikipedia...", ebiten.KeyF1),
+		NewNavItem(nd, "statistics", "poll", "Statistics...", ebiten.KeyF2),
+		NewNavItem(nd, "settings", "settings", "Settings...", ebiten.KeyF3),
 	}
 	// don't know how to ask a browser window to close
-	// if runtime.GOARCH != "wasm" {
-	// 	n.widgets = append(n.widgets, NewNavItem(n, "close", "Save and exit", ebiten.KeyX))
-	// }
-	n.LayoutWidgets()
-	return n
+	if runtime.GOARCH != "wasm" {
+		nd.widgets = append(nd.widgets, NewNavItem(nd, "exit", "close", "Save and exit", ebiten.KeyX))
+	}
+	nd.LayoutWidgets()
+	return nd
 }
 
 // ToggleNavDrawer animates the drawer on/off screen to the left

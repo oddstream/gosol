@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	cardmagic    = 0x29041962
-	LERP_SECONDS = 0.5
-	FLIP_SECONDS = LERP_SECONDS / 3
-	SPIN_SECONDS = LERP_SECONDS * 2
+	cardmagic = 0x29041962
+	// LERP_SECONDS = 0.5
+	// FLIP_SECONDS = LERP_SECONDS / 3
+	// SPIN_SECONDS = LERP_SECONDS * 2
 )
 
 /*
@@ -134,9 +134,10 @@ func (c *Card) TransitionTo(pos image.Point) {
 		}
 	}
 
-	if DebugMode && (c.dst.X < 0 || c.dst.Y < 0) {
-		log.Panicf("move card to %+v", c.dst)
-	}
+	// Stock pile is 'hidden' by being off screen, so cards in stock will be off screen
+	// if DebugMode && (c.dst.X < 0 || c.dst.Y < 0) {
+	// 	log.Panicf("move card to %+v", c.dst)
+	// }
 
 	c.src = c.pos
 	c.dst = pos
@@ -241,7 +242,7 @@ func (c *Card) StartSpinning() {
 	c.destinations = nil
 	// delay start of spinning to allow cards to be seen to go to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
-	d := time.Duration(SPIN_SECONDS * float64(time.Second))
+	d := time.Duration((ThePreferences.AniSpeed * 2) * float64(time.Second))
 	c.spinStartAfter = time.Now().Add(d)
 }
 
@@ -305,12 +306,22 @@ func (c *Card) Update() error {
 
 	if c.Transitioning() {
 		if !c.NearEnough() {
-			t := time.Since(c.lerpStartTime).Seconds() / LERP_SECONDS
+			secs := time.Since(c.lerpStartTime).Seconds()
+			// secs will start at nearly zero, and rise to about the value of AniSpeed,
+			// because AniSpeed is the number of seconds the card will take to transition
+			// with AniSpeed at 0.75, this happens (for example) 45 times (we are at @ 60Hz)
+			t := secs / ThePreferences.AniSpeed
+			// with small values of AniSpeed, t can go above 1.0
+			// which is bad: cards appear to fly away, never to be seen again
+			// Smoothstep will correct this
+			// if c.Ordinal() == 1 && c.Suit() == 1 {
+			// 	log.Printf("%v\t0.25=%v\t0.5=%v\t0.75=%v", ts, ts/0.25, ts/0.5, ts/0.75)
+			// }
 			c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), t))
 			c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), t))
-			if DebugMode && (c.pos.X < 0 || c.pos.Y < 0) {
-				log.Panicf("lerp card to %+v", c.pos)
-			}
+			// if DebugMode && (c.pos.X < 0 || c.pos.Y < 0) {
+			// 	log.Panicf("lerp card to %+v", c.pos)
+			// }
 
 		} else {
 			c.SetBaizePos(c.dst) // also stops lerping
@@ -318,7 +329,7 @@ func (c *Card) Update() error {
 	}
 
 	if c.Flipping() {
-		t := time.Since(c.flipStartTime).Seconds() / FLIP_SECONDS
+		t := time.Since(c.flipStartTime).Seconds() / (ThePreferences.AniSpeed / 3)
 		if c.flipDirection < 0 {
 			c.flipWidth = util.Lerp(1.0, 0.0, t)
 			if c.flipWidth <= 0.0 {
@@ -341,6 +352,10 @@ func (c *Card) Update() error {
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
 
+	if c.owner.Hidden() {
+		return // eg Freecell stock
+	}
+
 	op := &ebiten.DrawImageOptions{}
 
 	var img *ebiten.Image
@@ -361,7 +376,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if img == nil {
+	if DebugMode && img == nil {
 		log.Panic("Card.Draw no image for ", c.String(), " prone: ", c.Prone())
 	}
 

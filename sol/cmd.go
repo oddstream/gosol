@@ -35,6 +35,7 @@ var CommandTable = map[ebiten.Key]func(){
 		}
 	},
 	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
+	ebiten.KeyA: func() { ShowAniSpeedDrawer() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	// ebiten.KeyTab: func() {
 	// 	if DebugMode {
@@ -98,6 +99,12 @@ func Execute(cmd interface{}) {
 			}
 		case "Safe collect":
 			ThePreferences.SafeCollect, _ = strconv.ParseBool(v.Data)
+		case "Fast":
+			ThePreferences.AniSpeed = 0.25
+		case "Normal":
+			ThePreferences.AniSpeed = 0.5
+		case "Slow":
+			ThePreferences.AniSpeed = 0.75
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

@@ -31,6 +31,9 @@ func RectEmpty(x0, y0, x1, y1 int) bool {
 
 // Lerp see https://en.wikipedia.org/wiki/Linear_interpolation
 func Lerp(v0, v1, t float64) float64 {
+	if t > 1.0 {
+		t = 1.0
+	}
 	return (1-t)*v0 + t*v1
 }
 
@@ -42,6 +45,9 @@ func Smoothstep(A, B, v float64) float64 {
 	}
 	if B < 0.0 {
 		B = 0.0
+	}
+	if v > 1.0 {
+		v = 1.0
 	}
 	v = (v) * (v) * (3 - 2*(v))
 	X := (B * v) + (A * (1.0 - v))
@@ -56,6 +62,9 @@ func Smootherstep(A, B, v float64) float64 {
 	}
 	if B < 0.0 {
 		B = 0.0
+	}
+	if v > 1.0 {
+		v = 1.0
 	}
 	v = (v) * (v) * (v) * ((v)*((v)*6-15) + 10)
 	X := (B * v) + (A * (1.0 - v))

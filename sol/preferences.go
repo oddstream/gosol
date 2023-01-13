@@ -26,6 +26,7 @@ type Preferences struct {
 	ShowMovableCards                   bool
 	AlwaysShowMovableCards             bool
 	CardRatio                          float64
+	AniSpeed                           float64
 	LastVersionMajor, LastVersionMinor int
 }
 
@@ -55,6 +56,7 @@ var ThePreferences = &Preferences{
 	// FixedCardWidth:   90,
 	// FixedCardHeight:  122,
 	CardRatio:        1.357,
+	AniSpeed:         0.5,
 	LastVersionMajor: 0,
 	LastVersionMinor: 0,
 }
