@@ -38,6 +38,7 @@ type Card struct {
 	// lerping things
 	src           image.Point // lerp origin
 	dst           image.Point // lerp destination
+	aniSpeed      float64
 	lerpStartTime time.Time
 	lerping       bool
 
@@ -112,30 +113,30 @@ func (c *Card) ScreenRect() image.Rectangle {
 }
 
 // LerpTo starts the transition of this Card to pos
-func (c *Card) LerpTo(pos image.Point) {
+func (c *Card) LerpTo(dst image.Point) {
 
 	if c.Spinning() {
 		return
 	}
 
-	if NoCardLerp || pos.Eq(c.pos) {
-		c.SetBaizePos(pos)
-		return
-	}
-
-	if c.lerping && c.pos.Eq(c.dst) {
+	if dst.Eq(c.pos) {
 		c.lerping = false
-		return // repeat request
+		return // we are already here
 	}
 
-	// Stock pile is 'hidden' by being off screen, so cards in stock will be off screen
-	// if DebugMode && (c.dst.X < 0 || c.dst.Y < 0) {
-	// 	log.Panicf("move card to %+v", c.dst)
-	// }
+	if c.lerping && dst.Eq(c.dst) {
+		return // repeat request to lerp to dst
+	}
 
 	c.lerping = true
 	c.src = c.pos
-	c.dst = pos
+	c.dst = dst
+	// refanning waste cards can flutter with slow AniSpeed, so go faster if not far to go
+	if util.Distance(c.src, c.dst) < float64(CardWidth) {
+		c.aniSpeed = ThePreferences.AniSpeed / 2
+	} else {
+		c.aniSpeed = ThePreferences.AniSpeed
+	}
 	c.lerpStartTime = time.Now()
 }
 
@@ -250,7 +251,7 @@ func (c *Card) StopSpinning() {
 }
 
 func (c *Card) Static() bool {
-	return !c.lerping && !c.beingDragged && c.flipDirection == 0 && c.owner != nil
+	return !c.lerping && !c.beingDragged && c.flipDirection == 0
 }
 
 // Spinning returns true if this card is spinning
@@ -260,7 +261,7 @@ func (c *Card) Spinning() bool {
 
 // Lerping returns true if this card is lerping
 func (c *Card) Lerping() bool {
-	return c.lerping || c.owner == nil
+	return c.lerping
 }
 
 // Dragging returns true if this card is being dragged
@@ -306,7 +307,7 @@ func (c *Card) Update() error {
 			// secs will start at nearly zero, and rise to about the value of AniSpeed,
 			// because AniSpeed is the number of seconds the card will take to transition.
 			// with AniSpeed at 0.75, this happens (for example) 45 times (we are at @ 60Hz)
-			t := secs / (ThePreferences.AniSpeed)
+			var t float64 = secs / c.aniSpeed
 			// with small values of AniSpeed, t can go above 1.0
 			// which is bad: cards appear to fly away, never to be seen again
 			// Smoothstep will correct this

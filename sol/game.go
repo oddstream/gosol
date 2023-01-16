@@ -31,8 +31,6 @@ var (
 	NoShuffle bool = false
 	// NoScrunch stops cards being scrunched
 	NoScrunch bool = false
-	// NoCardLerp stops the cards from transitioning
-	NoCardLerp = false
 	// NoCardFlip stops the cards from animating their flip
 	NoCardFlip = false
 	// CardWidth of cards, start with a silly value to force a rescale/refan
