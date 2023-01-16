@@ -13,22 +13,22 @@ type Oddstream struct {
 
 func (self *Oddstream) BuildPiles() {
 
-	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, 2, 4, nil, 0)
 
 	self.cells = []*Pile{}
-	for x := 1; x < 3; x++ {
+	for x := 1; x < 4; x++ {
 		c := NewCell(image.Point{x, 0})
 		self.cells = append(self.cells, c)
 	}
 	self.foundations = []*Pile{}
-	for x := 3; x < 7; x++ {
+	for x := 4; x < 12; x++ {
 		f := NewFoundation(image.Point{x, 0})
 		f.SetLabel("A")
 		self.foundations = append(self.foundations, f)
 	}
 
 	self.tableaux = []*Pile{}
-	for x := 0; x < 7; x++ {
+	for x := 0; x < 12; x++ {
 		t := NewTableau(image.Point{x, 1}, FAN_DOWN, MOVE_ANY)
 		if x%2 == 0 {
 			t.SetLabel("K")

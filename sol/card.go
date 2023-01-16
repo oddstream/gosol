@@ -91,8 +91,8 @@ func (c *Card) BaizePos() image.Point {
 
 // SetPosition sets the position of the Card
 func (c *Card) SetBaizePos(pos image.Point) {
-	c.pos = pos
 	c.lerping = false
+	c.pos = pos
 }
 
 // Rect gives the x,y baize coords of the card's top left and bottom right corners
@@ -111,12 +111,8 @@ func (c *Card) ScreenRect() image.Rectangle {
 	return r
 }
 
-func (c *Card) NearEnough() bool {
-	return util.Abs(c.pos.X-c.dst.X) <= 2 && util.Abs(c.pos.Y-c.dst.Y) <= 2
-}
-
-// TransitionTo starts the transition of this Card to pos
-func (c *Card) TransitionTo(pos image.Point) {
+// LerpTo starts the transition of this Card to pos
+func (c *Card) LerpTo(pos image.Point) {
 
 	if c.Spinning() {
 		return
@@ -127,11 +123,9 @@ func (c *Card) TransitionTo(pos image.Point) {
 		return
 	}
 
-	if c.lerping {
-		if c.NearEnough() {
-			c.SetBaizePos(pos)
-			return // repeat request
-		}
+	if c.lerping && c.pos.Eq(c.dst) {
+		c.lerping = false
+		return // repeat request
 	}
 
 	// Stock pile is 'hidden' by being off screen, so cards in stock will be off screen
@@ -139,19 +133,20 @@ func (c *Card) TransitionTo(pos image.Point) {
 	// 	log.Panicf("move card to %+v", c.dst)
 	// }
 
+	c.lerping = true
 	c.src = c.pos
 	c.dst = pos
-	c.lerping = true
 	c.lerpStartTime = time.Now()
 }
 
 // StartDrag informs card that it is being dragged
 func (c *Card) StartDrag() {
-	if c.Transitioning() {
+	if c.Lerping() {
 		log.Printf("StartDrag a transitioning card %s", c.String())
 		// set the drag origin to the be transition destination,
 		// so that cancelling this drag will return the card
 		// to where it thought it was going
+		// doing this will be trapped by Baize, so this is belt-n-braces
 		c.dragStart = c.dst
 	} else {
 		c.dragStart = c.pos
@@ -181,12 +176,11 @@ func (c *Card) StopDrag() {
 func (c *Card) CancelDrag() {
 	c.beingDragged = false
 	// println("cancel drag", c.ID.String(), "start", c.dragStartX, c.dragStartY, "screen", c.screenX, c.screenY)
-	c.TransitionTo(c.dragStart)
+	c.LerpTo(c.dragStart)
 }
 
 // WasDragged returns true of this card has been dragged
 func (c *Card) WasDragged() bool {
-	// could use .beingDragged
 	return !c.pos.Eq(c.dragStart)
 }
 
@@ -243,6 +237,7 @@ func (c *Card) StartSpinning() {
 	// delay start of spinning to allow cards to be seen to go/finish their trip to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
 	d := time.Duration(ThePreferences.AniSpeed * float64(time.Second))
+	d *= 2.0 // pause for admiration
 	c.spinStartAfter = time.Now().Add(d)
 }
 
@@ -254,14 +249,18 @@ func (c *Card) StopSpinning() {
 	c.pos = c.owner.pos
 }
 
+func (c *Card) Static() bool {
+	return !c.lerping && !c.beingDragged && c.flipDirection == 0 && c.owner != nil
+}
+
 // Spinning returns true if this card is spinning
 func (c *Card) Spinning() bool {
 	return c.spin != 0.0
 }
 
-// Transitioning returns true if this card is lerping
-func (c *Card) Transitioning() bool {
-	return c.lerping
+// Lerping returns true if this card is lerping
+func (c *Card) Lerping() bool {
+	return c.lerping || c.owner == nil
 }
 
 // Dragging returns true if this card is being dragged
@@ -271,9 +270,6 @@ func (c *Card) Dragging() bool {
 
 // Flipping returns true if this card is flipping
 func (c *Card) Flipping() bool {
-	if NoCardFlip {
-		return false
-	}
 	return c.flipDirection != 0 // will be -1 or +1 if flipping
 }
 
@@ -304,13 +300,13 @@ func (c *Card) Update() error {
 		}
 	}
 
-	if c.Transitioning() {
-		if !c.NearEnough() {
+	if c.Lerping() {
+		if !c.pos.Eq(c.dst) {
 			secs := time.Since(c.lerpStartTime).Seconds()
 			// secs will start at nearly zero, and rise to about the value of AniSpeed,
 			// because AniSpeed is the number of seconds the card will take to transition.
 			// with AniSpeed at 0.75, this happens (for example) 45 times (we are at @ 60Hz)
-			t := secs / ThePreferences.AniSpeed
+			t := secs / (ThePreferences.AniSpeed)
 			// with small values of AniSpeed, t can go above 1.0
 			// which is bad: cards appear to fly away, never to be seen again
 			// Smoothstep will correct this
@@ -320,7 +316,7 @@ func (c *Card) Update() error {
 			c.pos.X = int(util.Smoothstep(float64(c.src.X), float64(c.dst.X), t))
 			c.pos.Y = int(util.Smoothstep(float64(c.src.Y), float64(c.dst.Y), t))
 		} else {
-			c.SetBaizePos(c.dst) // also stops lerping
+			c.lerping = false
 		}
 	}
 
@@ -412,7 +408,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(c.pos.X+TheBaize.dragOffset.X), float64(c.pos.Y+TheBaize.dragOffset.Y))
 
 	if !c.Flipping() {
-		if c.Transitioning() || c.Dragging() {
+		if c.Lerping() || c.Dragging() {
 			op.GeoM.Translate(4.0, 4.0)
 			screen.DrawImage(CardShadowImage, op)
 			op.GeoM.Translate(-4.0, -4.0)
@@ -424,6 +420,13 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	// if c.Owner().target && c == c.Owner().Peek() {
 	// 	// op.GeoM.Translate(2, 2)
 	// 	op.ColorM.Scale(0.95, 0.95, 0.95, 1)
+	// }
+
+	// if c.Lerping() {
+	// 	op.ColorM.Scale(0.8, 1.0, 0.8, 1.0)
+	// }
+	// if c.Dragging() {
+	// 	op.ColorM.Scale(0.8, 0.8, 1.0, 1.0)
 	// }
 
 	if ThePreferences.ShowMovableCards {

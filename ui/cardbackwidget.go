@@ -3,9 +3,7 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 type CardBackWidget struct {
@@ -61,12 +59,9 @@ func (cb *CardBackWidget) Deactivate() {
 	// cb.input.Remove(cb)
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (cb *CardBackWidget) NotifyCallback(v input.StrokeEvent) {
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, cb.OffsetRect) {
-			cmdFn(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
-		}
+func (cb *CardBackWidget) Tapped() {
+	if cb.disabled {
+		return
 	}
+	cmdFn(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
 }

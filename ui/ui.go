@@ -57,19 +57,19 @@ func New(fn func(interface{})) *UI {
 }
 
 // FindWidgetAt finds the widget at the screen coords
-// func (u *UI) FindWidgetAt(x, y int) Widget {
-// 	for _, con := range u.containers {
-// 		if w := con.FindWidgetAt(x, y); con != nil {
-// 			return w
-// 		}
-// 	}
-// 	// if u.fab != nil {
-// 	// 	if util.InRect(x, y, u.fab.Rect) {
-// 	// 		return u.fab
-// 	// 	}
-// 	// }
-// 	return nil
-// }
+func (u *UI) FindWidgetAt(x, y int) Widgety {
+	for _, con := range u.containers {
+		if w := con.FindWidgetAt(x, y); con != nil {
+			return w
+		}
+	}
+	// if u.fab != nil {
+	// 	if util.InRect(x, y, u.fab.Rect) {
+	// 		return u.fab
+	// 	}
+	// }
+	return nil
+}
 
 func (u *UI) FindContainerAt(x, y int) Containery {
 	for _, con := range u.containers {

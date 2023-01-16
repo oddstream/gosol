@@ -2,7 +2,6 @@ package input
 
 import (
 	"sync"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -59,26 +58,27 @@ func (t *TouchStrokeSource) IsJustReleased() bool {
 	return inpututil.IsTouchJustReleased(t.ID)
 }
 
+type WheelStrokeSource struct{}
+
+func (w *WheelStrokeSource) Position() (int, int) {
+	x, y := ebiten.Wheel()
+	return int(x), int(y)
+}
+
+func (w *WheelStrokeSource) IsJustReleased() bool {
+	_, y := ebiten.Wheel()
+	return y == 0.0
+}
+
 // Stroke manages the current drag state by mouse.
 type Stroke struct {
-	source StrokeSource
-
-	// init X,Y represents the position when dragging starts.
-	initX, initY int
-
-	// current X,Y represents the current position
-	currX, currY int
-
-	timeStart time.Time
-
-	released  bool
-	cancelled bool
-
-	// draggedObject represents a object (eg a Card) that is being dragged
-	// can't have a valid stroke with an object that is being dragged
-	draggedObject interface{}
-
-	observers sync.Map // sync.Map is not type safe, it is similar to a map[interface{}]interface{}
+	source        StrokeSource
+	initX, initY  int
+	currX, currY  int
+	released      bool
+	cancelled     bool
+	draggedObject interface{} // object (eg a []*Card) that is being dragged
+	observers     sync.Map    // sync.Map is not type safe, it is similar to a map[interface{}]interface{}
 }
 
 type EventType int
@@ -103,12 +103,11 @@ type StrokeEvent struct {
 func NewStroke(source StrokeSource) *Stroke {
 	x, y := source.Position()
 	return &Stroke{
-		source:    source,
-		initX:     x,
-		initY:     y,
-		currX:     x,
-		currY:     y,
-		timeStart: time.Now(),
+		source: source,
+		initX:  x,
+		initY:  y,
+		currX:  x,
+		currY:  y,
 	}
 }
 
@@ -119,11 +118,23 @@ func StartStroke(observer Observer) *Stroke {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		s = NewStroke(&MouseStrokeSource{})
 	}
-	ids := inpututil.JustPressedTouchIDs()
-	if len(ids) > 0 {
-		// println(len(ids), "touch IDs, first is", ids[0])
-		s = NewStroke(&TouchStrokeSource{ID: ids[0]})
+
+	if s == nil {
+		var ids []ebiten.TouchID = []ebiten.TouchID{}
+		ids = inpututil.AppendJustPressedTouchIDs(ids)
+		if len(ids) > 0 {
+			// println(len(ids), "touch IDs, first is", ids[0])
+			s = NewStroke(&TouchStrokeSource{ID: ids[0]})
+		}
 	}
+
+	if s == nil {
+		_, y := ebiten.Wheel()
+		if y != 0.0 {
+			s = NewStroke(&WheelStrokeSource{})
+		}
+	}
+
 	if s != nil {
 		s.Add(observer)
 		s.Notify(StrokeEvent{Event: Start, Stroke: s, X: s.initX, Y: s.initY})
@@ -142,19 +153,15 @@ func (s *Stroke) Update() {
 	// to make the "dropping while moving" problem better
 	if s.source.IsJustReleased() {
 		s.released = true
-		elapsed := time.Since(s.timeStart) / 1000 / 1000 // convert nano- to milli- seconds
 		// distance := util.DistanceInt(i.xPressed, i.yPressed, xNow, yNow)
 		// can't use distance < n because card will be animating
 
-		// send a tap event *before* sending a stroke cancel event, as the latter will cause owner to dispose of the stroke
+		// send a tap event *before* sending a stroke cancel event,
+		// as the latter will cause owner to dispose of the stroke
 		if util.Abs(s.initX-s.currX) < 4 && util.Abs(s.initY-s.currY) < 4 {
-			if elapsed < 200 {
-				// println("Stroke.Update() sending a tap event")
-				s.Notify(StrokeEvent{Event: Tap, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
-				s.Notify(StrokeEvent{Event: Cancel, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
-			} else {
-				s.Notify(StrokeEvent{Event: Cancel, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
-			}
+			// println("Stroke.Update() sending a tap event")
+			s.Notify(StrokeEvent{Event: Cancel, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
+			s.Notify(StrokeEvent{Event: Tap, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 		} else {
 			s.Notify(StrokeEvent{Event: Stop, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 		}

@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 )
 
 // Container is an interface for a UI widget
@@ -13,9 +12,11 @@ type Containery interface {
 	Widgets() []Widgety
 	FindWidgetAt(int, int) Widgety
 	LayoutWidgets()
-	StartDrag(*input.Stroke) bool
+	StartDrag()
 	DragBy(int, int)
 	StopDrag()
+	CancelDrag()
+	Tapped()
 	Visible() bool
 	Show()
 	Hide()

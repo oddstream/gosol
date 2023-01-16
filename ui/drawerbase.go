@@ -3,7 +3,6 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
@@ -16,7 +15,6 @@ const (
 
 type DrawerBase struct {
 	img              *ebiten.Image
-	stroke           *input.Stroke
 	widgets          []Widgety
 	x, y             int
 	width, height    int
@@ -111,20 +109,10 @@ func (db *DrawerBase) Visible() bool {
 }
 
 // StartDrag this container, if it is allowed
-func (db *DrawerBase) StartDrag(stroke *input.Stroke) bool {
-	// println("start drag with offset base", db.yOffsetBase)
-	// println("DrawerBase start drag")
-
-	db.stroke = stroke
-	for _, w := range db.widgets {
-		if !w.Disabled() {
-			stroke.Add(w)
-		}
-	}
-	return true
+func (db *DrawerBase) StartDrag() {
 }
 
-// DragBy this widget
+// DragBy this container
 func (db *DrawerBase) DragBy(dx, dy int) {
 	db.xOffset = db.xOffsetBase + dx
 	db.xOffset = util.ClampInt(db.xOffset, -db.width, 0)
@@ -143,19 +131,17 @@ func (db *DrawerBase) DragBy(dx, dy int) {
 	db.LayoutWidgets()
 }
 
-// StopDrag this widget
+// StopDrag this container
 func (db *DrawerBase) StopDrag() {
-	// println("DrawerBase stop drag")
-
-	for _, w := range db.widgets {
-		if !w.Disabled() {
-			db.stroke.Remove(w)
-		}
-	}
-	db.stroke = nil
 	// remember the amount of drag incase the widgets are dragged again
 	db.xOffsetBase = db.xOffset
 	db.yOffsetBase = db.yOffset
+}
+
+func (db *DrawerBase) CancelDrag() {
+}
+
+func (db DrawerBase) Tapped() {
 }
 
 // ResetScroll state for this drawer

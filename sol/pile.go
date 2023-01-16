@@ -267,10 +267,10 @@ func (self *Pile) Push(c *Card) {
 
 	self.cards = append(self.cards, c)
 	c.SetOwner(self)
-	c.TransitionTo(pos)
+	c.LerpTo(pos)
 
 	if self.IsStock() {
-		c.FlipDown()
+		c.FlipDown() // see? cards can transition and flip at the same time
 	}
 	TheBaize.setFlag(dirtyCardPositions)
 }
@@ -374,7 +374,7 @@ func (self *Pile) PosAfter(c *Card) image.Point {
 		return self.pos
 	}
 	var pos image.Point
-	if c.Transitioning() {
+	if c.Lerping() {
 		pos = c.dst
 	} else {
 		pos = c.pos
@@ -418,12 +418,12 @@ func (self *Pile) PosAfter(c *Card) image.Point {
 			pos = self.pos2 // incoming card at slot 2
 			// top card needs to transition from slot[2] to slot[1]
 			i := len(self.cards) - 1
-			self.cards[i].TransitionTo(self.pos1)
+			self.cards[i].LerpTo(self.pos1)
 			// mid card needs to transition from slot[1] to slot[0]
 			// all other cards to slot[0]
 			for i > 0 {
 				i--
-				self.cards[i].TransitionTo(self.pos)
+				self.cards[i].LerpTo(self.pos)
 			}
 		}
 	}
@@ -436,18 +436,18 @@ func (self *Pile) Refan() {
 	switch self.fanType {
 	case FAN_NONE:
 		for _, c := range self.cards {
-			c.TransitionTo(self.pos)
+			c.LerpTo(self.pos)
 		}
 	case FAN_DOWN3, FAN_LEFT3, FAN_RIGHT3:
 		for _, c := range self.cards {
-			c.TransitionTo(self.pos)
+			c.LerpTo(self.pos)
 		}
 		doFan3 = true
 	case FAN_DOWN, FAN_LEFT, FAN_RIGHT:
 		var pos = self.pos
 		var i = 0
 		for _, c := range self.cards {
-			c.TransitionTo(pos)
+			c.LerpTo(pos)
 			pos = self.PosAfter(self.cards[i])
 			i++
 		}
@@ -460,15 +460,15 @@ func (self *Pile) Refan() {
 			// nothing to do
 		case 2:
 			c := self.cards[1]
-			c.TransitionTo(self.pos1)
+			c.LerpTo(self.pos1)
 		default:
 			i := len(self.cards)
 			i--
 			c := self.cards[i]
-			c.TransitionTo(self.pos2)
+			c.LerpTo(self.pos2)
 			i--
 			c = self.cards[i]
-			c.TransitionTo(self.pos1)
+			c.LerpTo(self.pos1)
 		}
 	}
 }
@@ -578,23 +578,15 @@ func (self *Pile) DefaultTailTapped(tail []*Card) {
 
 func (self *Pile) DrawStaticCards(screen *ebiten.Image) {
 	for _, c := range self.cards {
-		if !(c.Transitioning() || c.Flipping() || c.Dragging()) {
+		if c.Static() {
 			c.Draw(screen)
 		}
 	}
 }
 
-func (self *Pile) DrawTransitioningCards(screen *ebiten.Image) {
+func (self *Pile) DrawAnimatingCards(screen *ebiten.Image) {
 	for _, c := range self.cards {
-		if c.Transitioning() && !c.Flipping() {
-			c.Draw(screen)
-		}
-	}
-}
-
-func (self *Pile) DrawFlippingCards(screen *ebiten.Image) {
-	for _, c := range self.cards {
-		if c.Flipping() {
+		if c.Lerping() || c.Flipping() {
 			c.Draw(screen)
 		}
 	}

@@ -6,9 +6,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 // Checkbox is a button that displays a single rune
@@ -69,17 +67,11 @@ func (w *Checkbox) Deactivate() {
 	w.img = w.createImg()
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *Checkbox) NotifyCallback(v input.StrokeEvent) {
+func (w *Checkbox) Tapped() {
 	if w.disabled {
 		return
 	}
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, w.OffsetRect) {
-			w.checked = !w.checked
-			w.img = w.createImg()
-			cmdFn(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
-		}
-	}
+	w.checked = !w.checked
+	w.img = w.createImg()
+	cmdFn(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
 }

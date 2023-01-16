@@ -5,8 +5,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/util"
 )
 
 // IconButton is a button that displays a single rune
@@ -47,18 +45,9 @@ func (b *IconButton) Deactivate() {
 	b.img = b.createImg()
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (b *IconButton) NotifyCallback(v input.StrokeEvent) {
-	// log.Printf("IconButton NotifyCallback, type=%T, disabled=%t\n", event, b.disabled)
+func (b *IconButton) Tapped() {
 	if b.disabled {
 		return
 	}
-	// log.Printf("IconButton Event=%s (%T) Stroke=%T Object=%T", v.Event, v.Event, v.Stroke, v.Object)
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, b.OffsetRect) {
-			// println("IconButton sending command", b.key)
-			cmdFn(b.key)
-		}
-	}
+	cmdFn(b.key)
 }

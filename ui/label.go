@@ -4,8 +4,6 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
-	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/util"
 )
 
 // Label is a button that displays a single rune
@@ -68,17 +66,12 @@ func (l *Label) Deactivate() {
 	l.img = l.createImg()
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (l *Label) NotifyCallback(v input.StrokeEvent) {
+func (l *Label) Tapped() {
 	if l.disabled {
 		return
 	}
-	switch v.Event {
-	case input.Tap:
-		if l.requestType != "" && util.InRect(v.X, v.Y, l.OffsetRect) {
-			// println("label notify", l.requestType, ":=", l.text)
-			cmdFn(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
-		}
+	if l.requestType != "" {
+		cmdFn(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
 	}
 }
 

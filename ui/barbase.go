@@ -3,13 +3,11 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/util"
 )
 
 type BarBase struct {
 	img           *ebiten.Image
-	stroke        *input.Stroke
 	widgets       []Widgety
 	x, y          int
 	width, height int
@@ -93,32 +91,25 @@ func (bb *BarBase) LayoutWidgets() {
 // 	bb.widgets[n] = w
 // }
 
-// StartDrag this container, if it is allowed
-func (bb *BarBase) StartDrag(stroke *input.Stroke) bool {
+// StartDrag notifies this container that dragging has started
+func (bb *BarBase) StartDrag() {
 	// println("BarBase start drag, adding widgets")
-	bb.stroke = stroke
-	for _, w := range bb.widgets {
-		if !w.Disabled() {
-			stroke.Add(w)
-		}
-	}
-	return true
 }
 
-// DragBy this widget
+// DragBy this container
 func (bb *BarBase) DragBy(dx, dy int) {
 	// you can't drag a bar
 }
 
-// StopDrag this widget
+// StopDrag notifies the container that dragging has been stopped
 func (bb *BarBase) StopDrag() {
-	// println("BarBase stop drag, removing widgets")
-	for _, w := range bb.widgets {
-		if !w.Disabled() {
-			bb.stroke.Remove(w)
-		}
-	}
-	bb.stroke = nil
+}
+
+// CancelDrag notifies the container that dragging has been cancelled
+func (bb *BarBase) CancelDrag() {
+}
+
+func (bb *BarBase) Tapped() {
 }
 
 // Show the bar

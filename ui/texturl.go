@@ -3,9 +3,7 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 // TextUrl is a widget that displays a clickable url
@@ -62,20 +60,9 @@ func (w *TextUrl) Deactivate() {
 	// w.input.Remove(w)
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *TextUrl) NotifyCallback(v input.StrokeEvent) {
-
+func (w *TextUrl) Tapped() {
 	if w.disabled {
 		return
 	}
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, w.OffsetRect) {
-			OpenBrowserWindow(w.url)
-		}
-	}
-}
-
-// Update the state of this widget
-func (w *TextUrl) Update() {
+	OpenBrowserWindow(w.url)
 }

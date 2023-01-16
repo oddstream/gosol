@@ -364,15 +364,16 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 	b.stroke = v.Stroke
 
 	if con := TheUI.FindContainerAt(v.X, v.Y); con != nil {
-		if con.StartDrag(b.stroke) {
-			b.stroke.SetDraggedObject(con)
+		if w := con.FindWidgetAt(v.X, v.Y); w != nil {
+			b.stroke.SetDraggedObject(w)
 		} else {
-			b.stroke.Cancel()
+			con.StartDrag()
+			b.stroke.SetDraggedObject(con)
 		}
 	} else {
 		pt := image.Pt(v.X, v.Y)
 		if card := b.FindLowestCardAt(pt); card != nil {
-			if card.Transitioning() {
+			if card.Lerping() {
 				TheUI.Toast("Glass", "Confusing to move a moving card")
 				v.Stroke.Cancel()
 			} else {
@@ -405,6 +406,8 @@ func (b *Baize) InputMove(v input.StrokeEvent) {
 	switch obj := v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
 		obj.DragBy(v.Stroke.PositionDiff())
+	case ui.Widgety:
+		obj.Parent().DragBy(v.Stroke.PositionDiff())
 	case []*Card:
 		dx, dy := v.Stroke.PositionDiff()
 		b.DragTailBy(obj, dx, dy)
@@ -433,11 +436,12 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 	switch obj := v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
 		obj.StopDrag()
+	case ui.Widgety:
+		obj.Parent().StopDrag()
 	case []*Card:
 		tail := obj     // alias for readability
 		card := tail[0] // for readability
 		if card.WasDragged() {
-			// if c.Dragging() {
 			src := card.Owner()
 			// tap handled elsewhere
 			// tap is time-limited
@@ -493,12 +497,14 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 
 func (b *Baize) InputCancel(v input.StrokeEvent) {
 	if v.Stroke.DraggedObject() == nil {
+		log.Print("*** cancel stroke with nil dragged object ***")
 		return
-		// log.Panic("*** cancel stroke with nil dragged object ***")
 	}
 	switch obj := v.Stroke.DraggedObject().(type) { // type switch
 	case ui.Containery:
-		obj.StopDrag()
+		obj.CancelDrag()
+	case ui.Widgety:
+		obj.Parent().CancelDrag()
 	case []*Card:
 		b.CancelTailDrag(obj)
 	case *Pile:
@@ -514,24 +520,21 @@ func (b *Baize) InputCancel(v input.StrokeEvent) {
 }
 
 func (b *Baize) InputTap(v input.StrokeEvent) {
+	// stroke sends a tap event, and later sends a cancel event
 	// println("Baize.NotifyCallback() tap", v.X, v.Y)
 	switch obj := v.Stroke.DraggedObject().(type) {
 	case ui.Containery:
-		// do nothing
+		obj.Tapped()
+	case ui.Widgety:
+		obj.Tapped()
 	case []*Card:
 		// offer TailTapped to the script first
 		// to implement things like Stock.TailTapped
 		// if the script doesn't want to do anything, it can call pile.vtable.TailTapped
 		// which will either ignore it (eg Foundation, Discard)
 		// or use Pile.DefaultTailTapped
-		if obj[0].Transitioning() {
-			// test for this but it won't happen?
-			TheUI.Toast("Glass", "Confusing to tap a moving card")
-			break
-		}
 		crc := b.CRC()
 		b.script.TailTapped(obj)
-		b.StopTailDrag(obj) // do this before AfterUserMove
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
@@ -593,17 +596,18 @@ func (b *Baize) DragTailBy(tail []*Card, dx, dy int) {
 }
 
 func (b *Baize) StartTailDrag(tail []*Card) {
-	ebiten.SetCursorMode(ebiten.CursorModeHidden)
+	// hiding the mouse cursor creates flickering when tapping
+	// ebiten.SetCursorMode(ebiten.CursorModeHidden)
 	b.ApplyToTail(tail, (*Card).StartDrag)
 }
 
 func (b *Baize) StopTailDrag(tail []*Card) {
-	ebiten.SetCursorMode(ebiten.CursorModeVisible)
+	// ebiten.SetCursorMode(ebiten.CursorModeVisible)
 	b.ApplyToTail(tail, (*Card).StopDrag)
 }
 
 func (b *Baize) CancelTailDrag(tail []*Card) {
-	ebiten.SetCursorMode(ebiten.CursorModeVisible)
+	// ebiten.SetCursorMode(ebiten.CursorModeVisible)
 	b.ApplyToTail(tail, (*Card).CancelDrag)
 }
 
@@ -926,15 +930,15 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	for _, p := range b.piles {
 		p.Draw(screen)
+		// for _, c := range p.cards {
+		// 	c.Draw(screen)
+		// }
 	}
 	for _, p := range b.piles {
 		p.DrawStaticCards(screen)
 	}
 	for _, p := range b.piles {
-		p.DrawTransitioningCards(screen)
-	}
-	for _, p := range b.piles {
-		p.DrawFlippingCards(screen)
+		p.DrawAnimatingCards(screen)
 	}
 	for _, p := range b.piles {
 		p.DrawDraggingCards(screen)

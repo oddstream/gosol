@@ -3,8 +3,6 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
-	"oddstream.games/gosol/util"
 )
 
 type FAB struct {
@@ -31,15 +29,11 @@ func NewFAB(parent Containery, id string, iconName string, key ebiten.Key) *FAB 
 	return f
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (f *FAB) NotifyCallback(v input.StrokeEvent) {
-	// println("FAB NotifyCallback")
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, f.OffsetRect) {
-			cmdFn(f.key)
-		}
+func (f *FAB) Tapped() {
+	if f.disabled {
+		return
 	}
+	cmdFn(f.key)
 }
 
 // Activate this widget

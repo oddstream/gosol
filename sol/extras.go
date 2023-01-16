@@ -26,9 +26,9 @@ func FlipUpExposedCard(p *Pile) {
 // MoveCard moves the top card from src to dst
 func MoveCard(src *Pile, dst *Pile) *Card {
 	if c := src.Pop(); c != nil {
-		sound.Play("Place")
 		dst.Push(c)
 		FlipUpExposedCard(src)
+		sound.Play("Place")
 		return c
 	}
 	return nil
@@ -51,13 +51,13 @@ func MoveTail(card *Card, dst *Pile) {
 	}
 	// pop cards from the tmp stack and push onto dst
 	if len(tmp) > 0 {
-		sound.Play("Place")
 		for len(tmp) > 0 {
 			var c *Card = tmp[len(tmp)-1]
 			tmp = tmp[:len(tmp)-1]
 			dst.Push(c)
 		}
 		FlipUpExposedCard(src)
+		sound.Play("Place")
 	}
 }
 

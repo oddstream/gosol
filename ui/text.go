@@ -3,7 +3,6 @@ package ui
 import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -70,21 +69,4 @@ func (w *Text) Deactivate() {
 	w.disabled = true
 	w.img = w.createImg()
 	// w.input.Remove(w)
-}
-
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (w *Text) NotifyCallback(v input.StrokeEvent) {
-	if w.disabled {
-		return
-	}
-	// switch v.Event {
-	// case "tap":
-	// 	if util.InRect(v.X, v.Y, w.OffsetRect) {
-	// 		println("Text NotifyCallback", w.text)
-	// 	}
-	// }
-}
-
-// Update the state of this widget
-func (w *Text) Update() {
 }

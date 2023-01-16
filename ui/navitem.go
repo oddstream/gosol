@@ -5,9 +5,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/input"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 // NavItem is a button that displays a single rune
@@ -64,15 +62,9 @@ func (n *NavItem) Deactivate() {
 	n.img = n.createImg() // incase disabled flag has changed
 }
 
-// NotifyCallback is called by the Subject (Input/Stroke) when something interesting happens
-func (n *NavItem) NotifyCallback(v input.StrokeEvent) {
+func (n *NavItem) Tapped() {
 	if n.disabled {
 		return
 	}
-	switch v.Event {
-	case input.Tap:
-		if util.InRect(v.X, v.Y, n.OffsetRect) {
-			cmdFn(n.key)
-		}
-	}
+	cmdFn(n.key)
 }

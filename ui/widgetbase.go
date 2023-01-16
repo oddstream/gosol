@@ -76,6 +76,9 @@ func (wb *WidgetBase) Disabled() bool {
 	return wb.disabled
 }
 
+func (wb *WidgetBase) Tapped() {
+}
+
 // Update the state of this widget
 func (wb *WidgetBase) Update() {
 }
