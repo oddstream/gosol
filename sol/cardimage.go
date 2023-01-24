@@ -192,7 +192,7 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-/*
+/***
 func createSimpleFaceImage(ID CardID) *ebiten.Image {
 	w := float64(CardWidth)
 	h := float64(CardHeight)
@@ -232,7 +232,7 @@ func createSimpleFaceImage(ID CardID) *ebiten.Image {
 
 	return ebiten.NewImageFromImage(dc.Image())
 }
-*/
+***/
 
 func CreateCardBackImage(color string) *ebiten.Image {
 	w := float64(CardWidth)

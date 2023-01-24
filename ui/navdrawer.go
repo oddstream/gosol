@@ -22,7 +22,7 @@ func NewNavDrawer() *NavDrawer {
 		NewNavItem(nd, "findGame", "search", "Find game...", ebiten.KeyF),
 		NewNavItem(nd, "bookmark", "bookmark_add", "Bookmark", ebiten.KeyS),
 		NewNavItem(nd, "gotoBookmark", "bookmark", "Go to bookmark", ebiten.KeyL),
-		NewNavItem(nd, "wikipedia", "info", "Wikipedia...", ebiten.KeyF1),
+		NewNavItem(nd, "wikipedia", "wikipedia", "Wikipedia...", ebiten.KeyF1),
 		NewNavItem(nd, "statistics", "poll", "Statistics...", ebiten.KeyF2),
 		NewNavItem(nd, "settings", "settings", "Settings...", ebiten.KeyF3),
 	}

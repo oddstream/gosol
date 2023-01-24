@@ -15,10 +15,6 @@ import (
 )
 
 const (
-	BAIZEMAGIC uint32 = 0xfeedface
-)
-
-const (
 	dirtyWindowSize = 1 << iota
 	dirtyPilePositions
 	dirtyCardSizes
@@ -29,7 +25,6 @@ const (
 
 // Baize object describes the baize
 type Baize struct {
-	magic        uint32
 	script       Scripter
 	piles        []*Pile
 	bookmark     int // index into undo stack
@@ -50,7 +45,7 @@ type Baize struct {
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
 	// let WindowWidth,WindowHeight be zero, so that the first Layout will trigger card scaling and pile placement
-	return &Baize{magic: BAIZEMAGIC, dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
+	return &Baize{dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -66,7 +61,7 @@ func (b *Baize) setFlag(flag uint32) {
 // }
 
 func (b *Baize) Valid() bool {
-	return b != nil && b.magic == BAIZEMAGIC
+	return b != nil
 }
 
 func (b *Baize) CRC() uint32 {
@@ -89,6 +84,22 @@ func (b *Baize) CRC() uint32 {
 	return crc32.ChecksumIEEE(lens)
 }
 
+/*
+func (b *Baize) NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
+	var p Pile = Pile{
+		// static
+		category: category,
+		slot:     slot,
+		fanType:  fanType,
+		moveType: moveType,
+		// dynamic
+		fanFactor: DefaultFanFactor[fanType],
+	}
+	b.piles = append(b.piles, &p)
+	return p
+}
+*/
+
 func (b *Baize) AddPile(pile *Pile) {
 	b.piles = append(b.piles, pile)
 }
@@ -105,17 +116,24 @@ func (b *Baize) NewDeal() {
 		TheStatistics.RecordLostGame(ThePreferences.Variant)
 	}
 
+	// for {
 	b.Reset()
+
 	for _, p := range b.piles {
 		p.Reset()
 	}
 
-	stockPile := b.script.Stock()
-	FillFromLibrary(stockPile)
-
+	b.script.Stock().FillFromCardLibrary()
+	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
 	b.FindDestinations()
+
+	// 	if b.moves > 0 {
+	// 		break
+	// 	}
+	// 	TheUI.Toast("Glass", "Found a deal with no moves")
+	// }
 
 	sound.Play("Fan")
 
@@ -754,6 +772,7 @@ func (b *Baize) ScaleCards() bool {
 	PilePaddingY = int(slotHeight / 10)
 	CardHeight = int(slotHeight) - PilePaddingY
 	LeftMargin = (CardWidth / 2) + PilePaddingX
+	// CardDiagonal = math.Sqrt(math.Pow(float64(CardWidth), 2) + math.Pow(float64(CardHeight), 2))
 	// }
 	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
 	TopMargin = 48 + CardHeight/3

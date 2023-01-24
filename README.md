@@ -6,7 +6,7 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
 
-It's created because I *have* to write software, and for my own personal enjoyment. It's skewed towrd puzzle-type games, because they're the ones I mostly play. It's definitely not for profit and will never contain ads.
+It's created because I *have* to write software, and for my own personal enjoyment. It's skewed toward puzzle-type games, because they're the ones I mostly play. It's definitely not for profit and will never contain ads.
 
 ## Variants
 
@@ -279,11 +279,13 @@ Only one card at a time may be moved from a reserve, and cards can never be move
 * ~~The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.~~
 * ~~Get it working on Android (agggh! help!).~~
 * ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
-* Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/), [Defold](https://www.defold.com), Dart+Flutter, Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Wren, Clojure, or something else. I agonize over this, usually early in the morning, and have made several false starts, but keep coming back to C, Go or Lua.
+* Split the code into front and back end, and add a universal solver.
+* (Don't) replace Ebiten with [Fyne](https://fyne.io). That's a complete rewrite because Ebiten is [immediate mode](https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)), and Fyne is [retained mode](https://en.wikipedia.org/wiki/Retained_mode). I prefer immediate mode.
+* Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/), [Defold](https://www.defold.com), Dart+Flutter, Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Pascal, Wren, Clojure, or something else. I agonize over this, and have made several false starts, but keep coming back to C, Go or Lua.
 
 ## History
 
-First, there was a Javascript version that used SVG graphics and ran in web browsers. Game variants were configured using static lookup tables, which I thought was a good idea at the time. It's still available via the https://oddstream.games website, but I don't recommend it.
+First, there was a Javascript version that used SVG graphics and ran in web browsers. Game variants were configured using static lookup tables, which I thought was a good idea at the time. It's still available via the https://oddstream.games website, but I don't recommend it. The cards are not pretty and some of the rules are incorrect.
 
 Second, there was a version in Lua, using the Solar2d game engine, that made it to the Google Play store.  Game variants were configured using static lookup tables, which I still thought was a good idea.
 
@@ -293,7 +295,7 @@ Fourth, there is a version in C that uses the Raylib game engine and uses Lua to
 
 Fifth, there was this version in Go, using the Ebiten game engine, with help from gg/fogleman. The design is way better than the original attempt in Go, allows the option for scripting games, and has sharp graphics.
 
-Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store.
+Sixth, there was a complete rewrite in Lua + the LÖVE game engine. It replaced the second version, runs on Android/Linux/Windows, and is available in the Google Play Store. It's similar to the Go version, and the two get together to swap features and design ideas.
 
 ## Acknowledgements
 

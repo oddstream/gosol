@@ -14,10 +14,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const (
-	PILEMAGIC uint32 = 0xdeadbeef
-)
-
 type FanType int
 
 const (
@@ -74,7 +70,6 @@ type PileVtabler interface {
 
 // Pile is a generic container for cards
 type Pile struct {
-	magic     uint32
 	vtable    PileVtabler
 	category  string
 	fanType   FanType
@@ -94,7 +89,6 @@ type Pile struct {
 func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
 	var self Pile = Pile{
 		// static
-		magic:    PILEMAGIC,
 		category: category,
 		slot:     slot,
 		fanType:  fanType,
@@ -106,7 +100,7 @@ func NewPile(category string, slot image.Point, fanType FanType, moveType MoveTy
 }
 
 func (self *Pile) Valid() bool {
-	return self != nil && self.magic == PILEMAGIC
+	return self != nil
 }
 
 func (self *Pile) Reset() {
@@ -137,13 +131,22 @@ func (self *Pile) IsStock() bool {
 }
 
 func (self *Pile) Shuffle() {
-	if NoShuffle {
-		log.Println("Not shuffling cards")
-		return
-	}
 	rand.Seed(time.Now().UTC().UnixNano())
 	rand.Shuffle(self.Len(), self.Swap)
 	log.Printf("Shuffled %d cards", self.Len())
+}
+
+func (self *Pile) FillFromCardLibrary() {
+	if !self.Empty() {
+		log.Panic("stock should be empty")
+	}
+	for i := 0; i < len(CardLibrary); i++ {
+		var c *Card = &CardLibrary[i]
+		// if !c.Valid() {
+		// 	log.Panicf("invalid card at library index %d", i)
+		// }
+		self.Push(c)
+	}
 }
 
 // Deprecated: not needed in new model

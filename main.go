@@ -32,8 +32,6 @@ func main() {
 	flag.BoolVar(&sol.DebugMode, "debug", false, "turn debug graphics on")
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
-	flag.BoolVar(&sol.NoCardFlip, "noflip", false, "do not animate card flips")
-	flag.BoolVar(&sol.NoShuffle, "noshuf", false, "do not shuffle cards")
 	flag.BoolVar(&sol.NoScrunch, "noscrunch", false, "do not scrunch cards")
 	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
 
@@ -45,17 +43,16 @@ func main() {
 		}
 	}
 
-	// this is deprecated, but there's a name clash with 'ui'
-	// ebiten.SetWindowResizingMode(ebiten.ui.WindowResizingModeEnabled)
-	ebiten.SetWindowResizable(true) //ebiten panics if a window to maximize is not resizable
+	// ebiten panics if a window to maximize is not resizable
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
 		// GNOME (maybe) annoyingly keeps maximizing the window
 		ebiten.RestoreWindow()
 	}
 	{
 		x, y := ebiten.ScreenSizeInFullscreen()
-		z := util.Min(x, y)
-		ebiten.SetWindowSize(z, z)
+		n := util.Max(x, y)
+		ebiten.SetWindowSize(n/2, n/2)
 	}
 	ebiten.SetWindowIcon(sol.WindowIcons())
 	{

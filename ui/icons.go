@@ -76,8 +76,13 @@ func LoadIconMapFromZipFiles() {
 
 	// get the icon .zip files from here:
 	// https://material.io/resources/icons/style=baseline
+	// https://fonts.google.com/icons
 	// select Android, white and download the .zip file
 	// edit /home/gilbert/ to match your folders
+
+	// https://materialdesignicons.com/
+	// 24dp icons are 36x36
+	// downloaded ic_speedometer+white_24dp.png, renamed to speed.png
 
 	println("loading ui icons from zip files")
 

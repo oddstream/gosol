@@ -64,6 +64,12 @@ var lightbulbIconBytes []byte
 //go:embed icons/poll.png
 var pollIconBytes []byte
 
+//go:embed icons/speed.png
+var speedIconBytes []byte
+
+//go:embed icons/wikipedia.png
+var wikipediaIconBytes []byte
+
 // LoadIconMapFromEmbedded loads icons from go:embed vars
 func LoadIconMapFromEmbedded() {
 	decode("bookmark", bookmarkIconBytes)
@@ -85,4 +91,6 @@ func LoadIconMapFromEmbedded() {
 	decode("undo", undoIconBytes)
 	decode("lightbulb", lightbulbIconBytes)
 	decode("poll", pollIconBytes)
+	decode("speed", speedIconBytes)
+	decode("wikipedia", wikipediaIconBytes)
 }

@@ -27,16 +27,13 @@ var (
 	NoGameLoad bool = false
 	// NoGameSave is a boolean set by command line flag -nosave
 	NoGameSave bool = false
-	// NoShuffle stops the cards from being shuffled
-	NoShuffle bool = false
 	// NoScrunch stops cards being scrunched
 	NoScrunch bool = false
-	// NoCardFlip stops the cards from animating their flip
-	NoCardFlip = false
 	// CardWidth of cards, start with a silly value to force a rescale/refan
 	CardWidth int = 9
 	// CardHeight of cards, start with a silly value to force a rescale/refan
 	CardHeight int = 13
+	// CardDiagonal float64 = 15.8
 	// Card Corner Radius
 	CardCornerRadius float64 = float64(CardWidth) / 15.0
 	// PilePaddingX the gap left to the right of the pile

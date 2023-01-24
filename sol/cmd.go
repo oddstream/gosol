@@ -100,11 +100,11 @@ func Execute(cmd interface{}) {
 		case "Safe collect":
 			ThePreferences.SafeCollect, _ = strconv.ParseBool(v.Data)
 		case "Fast":
-			ThePreferences.AniSpeed = 0.25
+			ThePreferences.AniSpeed = 0.3
 		case "Normal":
-			ThePreferences.AniSpeed = 0.5
+			ThePreferences.AniSpeed = 0.6
 		case "Slow":
-			ThePreferences.AniSpeed = 0.75
+			ThePreferences.AniSpeed = 0.9
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}

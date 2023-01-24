@@ -670,37 +670,37 @@ func NewCardPairs(cards []*Card) CardPairs {
 // little library of simple compares
 
 func (cp CardPair) Compare_Up() (bool, error) {
-	if !(cp.c1.Ordinal()+1 == cp.c2.Ordinal()) {
-		return false, errors.New("Cards must be in ascending sequence")
+	if cp.c1.Ordinal() == cp.c2.Ordinal()-1 {
+		return true, nil
 	}
-	return true, nil
+	return false, errors.New("Cards must be in ascending sequence")
 }
 
 func (cp CardPair) Compare_UpWrap() (bool, error) {
-	if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
-		return true, nil // Ace on King
-	}
 	if cp.c1.Ordinal() == cp.c2.Ordinal()-1 {
 		return true, nil
+	}
+	if cp.c1.Ordinal() == 13 && cp.c2.Ordinal() == 1 {
+		return true, nil // Ace on King
 	}
 	return false, errors.New("Cards must go up in rank (Aces on Kings allowed)")
 }
 
 func (cp CardPair) Compare_Down() (bool, error) {
-	if !(cp.c1.Ordinal() == cp.c2.Ordinal()+1) {
-		return false, errors.New("Cards must be in descending sequence")
+	if cp.c1.Ordinal() == cp.c2.Ordinal()+1 {
+		return true, nil
 	}
-	return true, nil
+	return false, errors.New("Cards must be in descending sequence")
 }
 
 func (cp CardPair) Compare_DownWrap() (bool, error) {
+	if cp.c1.Ordinal() == cp.c2.Ordinal()+1 {
+		return true, nil
+	}
 	if cp.c1.Ordinal() == 1 && cp.c2.Ordinal() == 13 {
 		return true, nil // King on Ace
 	}
-	if cp.c1.Ordinal() != cp.c2.Ordinal()+1 {
-		return false, errors.New("Cards must be in descending sequence (Kings on Aces allowed)")
-	}
-	return true, nil
+	return false, errors.New("Cards must be in descending sequence (Kings on Aces allowed)")
 }
 
 func (cp CardPair) Compare_UpOrDown() (bool, error) {

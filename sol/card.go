@@ -12,10 +12,9 @@ import (
 )
 
 const (
-	cardmagic = 0x29041962
-	// LERP_SECONDS = 0.5
-	// FLIP_SECONDS = LERP_SECONDS / 3
-	// SPIN_SECONDS = LERP_SECONDS * 2
+// LERP_SECONDS = 0.5
+// FLIP_SECONDS = LERP_SECONDS / 3
+// SPIN_SECONDS = LERP_SECONDS * 2
 )
 
 /*
@@ -27,8 +26,7 @@ const (
 // Card object
 type Card struct {
 	// static things
-	magic uint32
-	ID    CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
+	ID CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
 
 	// dynamic things
 	owner        *Pile
@@ -60,7 +58,7 @@ type Card struct {
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
 	// be nice to start the cards in the middle of the screen, but the screen will be 0,0 when app starts
-	c := Card{magic: cardmagic, ID: NewCardID(pack, suit, ordinal), pos: image.Point{0, 0}}
+	c := Card{ID: NewCardID(pack, suit, ordinal), pos: image.Point{0, 0}}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
@@ -68,7 +66,7 @@ func NewCard(pack, suit, ordinal int) Card {
 }
 
 func (c *Card) Valid() bool {
-	return c != nil && c.magic == cardmagic
+	return c != nil
 }
 
 func (c *Card) SetOwner(p *Pile) {
@@ -132,8 +130,10 @@ func (c *Card) LerpTo(dst image.Point) {
 	c.src = c.pos
 	c.dst = dst
 	// refanning waste cards can flutter with slow AniSpeed, so go faster if not far to go
-	if util.Distance(c.src, c.dst) < float64(CardWidth) {
-		c.aniSpeed = ThePreferences.AniSpeed / 2
+	dist := util.Distance(c.src, c.dst)
+	// c.aniSpeed = util.MapValue(ThePreferences.AniSpeed, 0, dist, 0.2, 0.9)
+	if dist < float64(CardWidth) {
+		c.aniSpeed = ThePreferences.AniSpeed / 2.0
 	} else {
 		c.aniSpeed = ThePreferences.AniSpeed
 	}
@@ -195,9 +195,7 @@ func (c *Card) startFlip() {
 func (c *Card) FlipUp() {
 	if c.Prone() {
 		c.SetProne(false) // card is immediately face up, else fan isn't correct
-		if !NoCardFlip {
-			c.startFlip()
-		}
+		c.startFlip()
 	}
 }
 
@@ -205,9 +203,7 @@ func (c *Card) FlipUp() {
 func (c *Card) FlipDown() {
 	if !c.Prone() {
 		c.SetProne(true) // card is immediately face down, else fan isn't correct
-		if !NoCardFlip {
-			c.startFlip()
-		}
+		c.startFlip()
 	}
 }
 
@@ -424,7 +420,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	// }
 
 	// if c.Lerping() {
-	// 	op.ColorM.Scale(0.8, 1.0, 0.8, 1.0)
+	// 	op.ColorM.Scale(0.9, 0.9, 0.9, 1.0)
 	// }
 	// if c.Dragging() {
 	// 	op.ColorM.Scale(0.8, 0.8, 1.0, 1.0)

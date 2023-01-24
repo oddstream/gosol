@@ -153,13 +153,7 @@ func (s *Stroke) Update() {
 	// to make the "dropping while moving" problem better
 	if s.source.IsJustReleased() {
 		s.released = true
-		// distance := util.DistanceInt(i.xPressed, i.yPressed, xNow, yNow)
-		// can't use distance < n because card will be animating
-
-		// send a tap event *before* sending a stroke cancel event,
-		// as the latter will cause owner to dispose of the stroke
 		if util.Abs(s.initX-s.currX) < 4 && util.Abs(s.initY-s.currY) < 4 {
-			// println("Stroke.Update() sending a tap event")
 			s.Notify(StrokeEvent{Event: Cancel, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 			s.Notify(StrokeEvent{Event: Tap, Stroke: s, Object: s.draggedObject, X: s.currX, Y: s.currY})
 		} else {

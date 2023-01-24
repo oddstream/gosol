@@ -44,6 +44,7 @@ var (
 	// CardOrdinalSimple font.Face
 	// CardOrdinalLarge is used to draw the card ordinal (J, Q, K)
 	CardOrdinalLarge font.Face
+	CardOrdinalHuge  font.Face
 )
 
 func init() {
@@ -129,9 +130,8 @@ func MakeCardFonts(cardWidth int) {
 		Hinting: font.HintingFull,
 	})
 	CardSymbolHuge = truetype.NewFace(tt, &truetype.Options{
-		Size:    float64(cardWidth) * 0.75,
+		Size:    float64(cardWidth),
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
-
 }

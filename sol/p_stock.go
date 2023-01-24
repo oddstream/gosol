@@ -65,25 +65,12 @@ type Stock struct {
 	pile *Pile
 }
 
-func FillFromLibrary(pile *Pile) {
-	if !pile.Empty() {
-		log.Panic("stock should be empty")
-	}
-	for i := 0; i < len(CardLibrary); i++ {
-		var c *Card = &CardLibrary[i]
-		if !c.Valid() {
-			log.Panicf("invalid card at library index %d", i)
-		}
-		pile.Push(c)
-	}
-	pile.Shuffle()
-}
-
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
 	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
 	stock.vtable = &Stock{pile: &stock}
-	FillFromLibrary(&stock)
+	(&stock).FillFromCardLibrary()
+	(&stock).Shuffle()
 	TheBaize.AddPile(&stock)
 	return &stock
 }
@@ -139,7 +126,7 @@ func (*Stock) Placeholder() *ebiten.Image {
 		label = RECYCLE_RUNE
 	}
 	dc.SetFontFace(schriftbank.CardSymbolHuge)
-	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.45, 0.5, 0.5)
+	dc.DrawStringAnchored(string(label), float64(CardWidth)*0.5, float64(CardHeight)*0.4, 0.5, 0.5)
 
 	dc.Stroke()
 	return ebiten.NewImageFromImage(dc.Image())
