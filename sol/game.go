@@ -43,7 +43,7 @@ var (
 	// LeftMargin the gap between the left of the screen and the first pile
 	LeftMargin int = (CardWidth / 2) + PilePaddingX
 	// TopMargin the gap between top pile and top of baize
-	TopMargin int = 48 + CardHeight/3
+	TopMargin int = ui.ToolbarHeight + CardHeight/3
 	// CardFaceImageLibrary
 	// thirteen suitless cards,
 	// one entry for each face card (4 suits * 13 cards),

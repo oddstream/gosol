@@ -11,7 +11,7 @@ type Picker struct {
 
 // NewVariantPicker creates a new container
 func NewVariantPicker() *Picker {
-	p := &Picker{DrawerBase: DrawerBase{x: -300, y: 48, width: 300}} // height will be set when drawn
+	p := &Picker{DrawerBase: DrawerBase{WindowBase: WindowBase{x: -300, y: ToolbarHeight, width: 300}}} // height will be set when drawn
 	return p
 }
 

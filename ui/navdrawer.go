@@ -14,13 +14,17 @@ type NavDrawer struct {
 // NewNavDrawer creates the NavDrawer object; it starts life off screen to the left
 func NewNavDrawer() *NavDrawer {
 	// according to https://material.io/components/navigation-drawer#specs, always 256 wide
-	nd := &NavDrawer{DrawerBase: DrawerBase{width: 300, height: 0, x: -300, y: 48}}
+	nd := &NavDrawer{
+		DrawerBase: DrawerBase{
+			WindowBase: WindowBase{width: 300, height: 0, x: -300, y: ToolbarHeight},
+		},
+	}
 	nd.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
 		NewNavItem(nd, "newDeal", "star", "New deal", ebiten.KeyN),
 		NewNavItem(nd, "restartDeal", "restore", "Restart deal", ebiten.KeyR),
 		NewNavItem(nd, "findGame", "search", "Find game...", ebiten.KeyF),
-		NewNavItem(nd, "bookmark", "bookmark_add", "Bookmark", ebiten.KeyS),
+		NewNavItem(nd, "bookmark", "bookmark_add", "Set bookmark", ebiten.KeyS),
 		NewNavItem(nd, "gotoBookmark", "bookmark", "Go to bookmark", ebiten.KeyL),
 		NewNavItem(nd, "wikipedia", "wikipedia", "Wikipedia...", ebiten.KeyF1),
 		NewNavItem(nd, "statistics", "poll", "Statistics...", ebiten.KeyF2),

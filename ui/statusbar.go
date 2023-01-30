@@ -14,7 +14,7 @@ type Statusbar struct {
 // NewStatusbar creates a new statusbar
 func NewStatusbar() *Statusbar {
 	// img will created first time it's drawn if width == 0
-	sb := &Statusbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 24}}
+	sb := &Statusbar{BarBase: BarBase{WindowBase: WindowBase{x: 0, y: 0, width: 0, height: StatusbarHeight}}}
 
 	sb.widgets = []Widgety{
 		// button's x will be set by LayoutWidgets()
@@ -72,7 +72,7 @@ func (sb *Statusbar) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if sb.img == nil || outsideWidth != sb.width {
 		sb.width = outsideWidth
 		// sb.height is fixed (at 24)
-		sb.img = sb.createImg()
+		sb.img = sb.createImg(BackgroundColor)
 		sb.LayoutWidgets()
 	}
 	sb.x, sb.y = 0, outsideHeight-sb.height

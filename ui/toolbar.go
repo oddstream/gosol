@@ -13,7 +13,7 @@ type Toolbar struct {
 // NewToolbar creates a new toolbar
 func NewToolbar() *Toolbar {
 	// img will created first time it's drawn if width == 0
-	tb := &Toolbar{BarBase: BarBase{x: 0, y: 0, width: 0, height: 48}}
+	tb := &Toolbar{BarBase: BarBase{WindowBase: WindowBase{x: 0, y: 0, width: 0, height: 48}}}
 
 	tb.widgets = []Widgety{
 		// button's x will be set by LayoutWidgets() (y will always be 0 in a toolbar)
@@ -39,7 +39,7 @@ func (tb *Toolbar) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if tb.img == nil || outsideWidth != tb.width {
 		tb.width = outsideWidth
 		// tb.height is fixed (at 48)
-		tb.img = tb.createImg()
+		tb.img = tb.createImg(BackgroundColor)
 		tb.LayoutWidgets()
 	}
 	// tb.x, tb.y = 0, 0

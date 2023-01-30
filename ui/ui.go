@@ -9,10 +9,18 @@ import (
 	"oddstream.games/gosol/util"
 )
 
+const (
+	ToolbarHeight   int = 48
+	StatusbarHeight int = 24
+	ToastHeight     int = 48
+	FABWidth        int = 72
+)
+
 var (
-	GenerateIcons   bool        = false
-	ForegroundColor color.Color = color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xee}
-	BackgroundColor color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xee}
+	GenerateIcons    bool        = false
+	ForegroundColor  color.Color = color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xe8}
+	BackgroundColor  color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xe8}
+	TransparentColor color.Color = color.RGBA{R: 0, G: 0, B: 0, A: 0}
 )
 
 // UI encapsulates a complete user interface that can be rendered onto the screen.
@@ -25,7 +33,7 @@ type UI struct {
 	variantPicker                  *Picker
 	textDrawer                     *TextDrawer
 	containers                     []Containery // all the containers
-	bars                           []Containery // just the status, toolbars
+	bars                           []Containery // just the status, toolbar, fab
 	drawers                        []Containery // just the drawers
 	toastManager                   *ToastManager
 }

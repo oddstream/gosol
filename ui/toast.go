@@ -50,7 +50,7 @@ func (u *UI) Toast(soundEffect string, message string) {
 	w, _ := dc.MeasureString(message)
 
 	w += 48
-	h := float64(48) // ignore measured height, force height to be 48
+	h := float64(ToolbarHeight) // ignore measured height, force height to be 48
 
 	// now reuse the dummy context, making it the correct size
 	dc = gg.NewContext(int(w), int(h))

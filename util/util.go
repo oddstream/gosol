@@ -2,22 +2,11 @@
 package util
 
 import (
-	"bytes"
-	"encoding/gob"
-	"fmt"
 	"image"
 	"log"
 	"math"
 	"time"
 )
-
-// type Vector2 struct {
-// 	x, y float64
-// }
-
-// type Rectangle struct {
-// 	x, y, width, height float64
-// }
 
 // InRect returns true if px,py is within Rect returned by function parameter
 func InRect(x, y int, fn func() (int, int, int, int)) bool {
@@ -103,7 +92,7 @@ func ClampInt(value, min, max int) int {
 	return Min(Max(value, min), max)
 }
 
-// Abs returns the absolute value of x.
+// Abs returns the absolute value of x
 func Abs(x int) int {
 	if x < 0 {
 		return -x
@@ -111,7 +100,7 @@ func Abs(x int) int {
 	return x
 }
 
-// Max returns the largest of of it's two int parameters
+// Max returns the largest of it's two int parameters
 func Max(a, b int) int {
 	if a > b {
 		return a
@@ -119,7 +108,7 @@ func Max(a, b int) int {
 	return b
 }
 
-// Min returns the largest of of it's two int parameters
+// Min returns the smallest of it's two int parameters
 func Min(a, b int) int {
 	if a < b {
 		return a
@@ -214,10 +203,10 @@ func OrdinalToShortString(ord int) string {
 // }
 
 // OrdinalToLongString converts an ordinal (1..13) to a single(ish) character (A .. K)
-func OrdinalToLongString(ord int) string {
-	var cardValueEnglish [14]string = [14]string{"", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
-	return cardValueEnglish[ord]
-}
+// func OrdinalToLongString(ord int) string {
+// 	var cardValueEnglish [14]string = [14]string{"", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+// 	return cardValueEnglish[ord]
+// }
 
 // StringToOrdinal converts a short ordinal string to it's longer equivalent
 func ShortOrdinalToLongOrdinal(str string) string {
@@ -235,45 +224,45 @@ func ShortOrdinalToLongOrdinal(str string) string {
 	}
 }
 
-func RuneToSuit(r rune) int {
-	switch r {
-	case '♣', 'C', 'c':
-		return 1 //CLUB
-	case '♥', 'H', 'h':
-		return 2 //HEART
-	case '♦', 'D', 'd':
-		return 3 //DIAMOND
-	case '♠', 'S', 's':
-		return 4 //SPADE
-	default:
-		log.Panic("Unknown suit rune", r)
-	}
-	return 0
-}
+// func RuneToSuit(r rune) int {
+// 	switch r {
+// 	case '♣', 'C', 'c':
+// 		return 1 //CLUB
+// 	case '♥', 'H', 'h':
+// 		return 2 //HEART
+// 	case '♦', 'D', 'd':
+// 		return 3 //DIAMOND
+// 	case '♠', 'S', 's':
+// 		return 4 //SPADE
+// 	default:
+// 		log.Panic("Unknown suit rune", r)
+// 	}
+// 	return 0
+// }
 
-func SuitToRune(s int) rune {
-	switch s {
-	case 1:
-		return '♣'
-	case 2:
-		return '♥'
-	case 3:
-		return '♦'
-	case 4:
-		return '♠'
-	default:
-		log.Panic("Unknown suit", s)
-	}
-	return '?'
-}
+// func SuitToRune(s int) rune {
+// 	switch s {
+// 	case 1:
+// 		return '♣'
+// 	case 2:
+// 		return '♥'
+// 	case 3:
+// 		return '♦'
+// 	case 4:
+// 		return '♠'
+// 	default:
+// 		log.Panic("Unknown suit", s)
+// 	}
+// 	return '?'
+// }
 
 // Pluralize returns a string containing an attempt at a plural form of the word
-func Pluralize(word string, n int) string {
-	if n == 1 {
-		return fmt.Sprintf("%d %s", n, word)
-	}
-	return fmt.Sprintf("%d %ss", n, word)
-}
+// func Pluralize(word string, n int) string {
+// 	if n == 1 {
+// 		return fmt.Sprintf("%d %s", n, word)
+// 	}
+// 	return fmt.Sprintf("%d %ss", n, word)
+// }
 
 // Duration of a func call
 // Arguments to a defer statement are immediately evaluated and stored.
@@ -294,24 +283,24 @@ func Duration(invocation time.Time, name string) {
 // }
 
 // Clone deep-copies src to dst
-func Clone(dst, src interface{}) {
+// func Clone(dst, src interface{}) {
 
-	buff := new(bytes.Buffer)
-	enc := gob.NewEncoder(buff)
-	dec := gob.NewDecoder(buff)
-	if err := enc.Encode(src); err != nil {
-		log.Panic("Clone Encode error")
-	}
-	if err := dec.Decode(dst); err != nil {
-		log.Panic("Clone Decode error")
-	}
-}
+// 	buff := new(bytes.Buffer)
+// 	enc := gob.NewEncoder(buff)
+// 	dec := gob.NewDecoder(buff)
+// 	if err := enc.Encode(src); err != nil {
+// 		log.Panic("Clone Encode error")
+// 	}
+// 	if err := dec.Decode(dst); err != nil {
+// 		log.Panic("Clone Decode error")
+// 	}
+// }
 
-func Contains[T comparable](s []T, e T) bool {
-	for _, v := range s {
-		if v == e {
-			return true
-		}
-	}
-	return false
-}
+// func Contains[T comparable](s []T, e T) bool {
+// 	for _, v := range s {
+// 		if v == e {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

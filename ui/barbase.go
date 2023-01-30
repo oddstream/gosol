@@ -1,66 +1,7 @@
 package ui
 
-import (
-	"github.com/fogleman/gg"
-	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/util"
-)
-
 type BarBase struct {
-	img           *ebiten.Image
-	widgets       []Widgety
-	x, y          int
-	width, height int
-}
-
-func (bb *BarBase) createImg() *ebiten.Image {
-	if bb.width == 0 || bb.height == 0 {
-		return nil
-		// log.Panic("BarBase img with a zero dimension, unliked by wasm")
-	}
-	dc := gg.NewContext(bb.width, bb.height)
-	dc.SetColor(BackgroundColor)
-	dc.DrawRectangle(0, 0, float64(bb.width), float64(bb.height))
-	dc.Fill()
-	return ebiten.NewImageFromImage(dc.Image())
-}
-
-// Position gives the screen position of this container
-func (bb *BarBase) Position() (x, y int) {
-	x = bb.x
-	y = bb.y
-	return // using named parameters
-}
-
-// Size gives the size of the container
-func (bb *BarBase) Size() (width, height int) {
-	width = bb.width
-	height = bb.height
-	return // using named parameters
-}
-
-// Rect gives the screen position and extent of this container
-func (bb *BarBase) Rect() (x0, y0, x1, y1 int) {
-	x0 = bb.x
-	y0 = bb.y
-	x1 = bb.x + bb.width
-	y1 = bb.y + bb.height
-	return // using named parameters
-}
-
-// Widgets returns a list of Widgets
-func (bb *BarBase) Widgets() []Widgety {
-	return bb.widgets
-}
-
-// FindWidgetAt given screen coordinates
-func (bb *BarBase) FindWidgetAt(x, y int) Widgety {
-	for _, w := range bb.widgets {
-		if util.InRect(x, y, w.OffsetRect) {
-			return w
-		}
-	}
-	return nil
+	WindowBase
 }
 
 // LayoutWidgets that belong to this container
@@ -129,7 +70,7 @@ func (bb *BarBase) Visible() bool {
 func (bb *BarBase) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if bb.img == nil || outsideWidth != bb.width {
 		bb.width = outsideWidth
-		bb.img = bb.createImg()
+		bb.img = bb.createImg(BackgroundColor)
 		bb.LayoutWidgets()
 	}
 	return outsideWidth, outsideHeight
@@ -139,19 +80,5 @@ func (bb *BarBase) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (bb *BarBase) Update() {
 	for _, w := range bb.widgets {
 		w.Update()
-	}
-}
-
-// Draw the bar
-func (bb *BarBase) Draw(screen *ebiten.Image) {
-	if bb.img == nil {
-		return
-	}
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(bb.x), float64(bb.y))
-	screen.DrawImage(bb.img, op)
-
-	for _, w := range bb.widgets {
-		w.Draw(screen)
 	}
 }

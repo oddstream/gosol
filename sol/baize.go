@@ -38,6 +38,7 @@ type Baize struct {
 	dragOffset   image.Point
 	WindowWidth  int // the most recent window width given to Layout
 	WindowHeight int // the most recent window height given to Layout
+	// hotCard      *Card
 }
 
 //--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
@@ -775,7 +776,7 @@ func (b *Baize) ScaleCards() bool {
 	// CardDiagonal = math.Sqrt(math.Pow(float64(CardWidth), 2) + math.Pow(float64(CardHeight), 2))
 	// }
 	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
-	TopMargin = 48 + CardHeight/3
+	TopMargin = ui.ToolbarHeight + CardHeight/3
 
 	// if DebugMode {
 	// 	if CardWidth != OldWidth || CardHeight != OldHeight {
@@ -927,6 +928,14 @@ func (b *Baize) Update() error {
 		}
 	}
 
+	// {
+	// 	var x, y int = ebiten.CursorPosition()
+	// 	// x, y will be 0,0 on mobiles, and before main loop starts
+	// 	if !(x == 0 && y == 0) {
+	// 		b.hotCard = b.FindLowestCardAt(image.Point{x, y})
+	// 	}
+	// }
+
 	for _, p := range b.piles {
 		p.Update()
 	}
@@ -949,9 +958,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 
 	for _, p := range b.piles {
 		p.Draw(screen)
-		// for _, c := range p.cards {
-		// 	c.Draw(screen)
-		// }
 	}
 	for _, p := range b.piles {
 		p.DrawStaticCards(screen)
@@ -962,6 +968,9 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	for _, p := range b.piles {
 		p.DrawDraggingCards(screen)
 	}
+	// if b.hotCard != nil {
+	// 	b.hotCard.Draw(screen)
+	// }
 
 	TheUI.Draw(screen)
 	// if DebugMode {

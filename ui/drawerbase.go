@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"github.com/fogleman/gg"
-	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
@@ -14,58 +12,11 @@ const (
 )
 
 type DrawerBase struct {
-	img              *ebiten.Image
-	widgets          []Widgety
-	x, y             int
-	width, height    int
+	WindowBase
 	aniState         int
 	xOffset, yOffset int // used when dragging group of widgets
 	xOffsetBase      int // used when dragging group of widgets more than once
 	yOffsetBase      int // used when dragging group of widgets more than once
-}
-
-func (db *DrawerBase) createImg() *ebiten.Image {
-	dc := gg.NewContext(db.width, db.height)
-	dc.SetColor(BackgroundColor)
-	dc.DrawRectangle(0, 0, float64(db.width), float64(db.height))
-	dc.Fill()
-	return ebiten.NewImageFromImage(dc.Image())
-}
-
-// Position gives the screen position
-func (db *DrawerBase) Position() (x, y int) {
-	x = db.x
-	y = db.y
-	return // using named parameters
-}
-
-// Size gives the size of the container
-func (db *DrawerBase) Size() (width, height int) {
-	width = db.width
-	height = db.height
-	return // using named parameters
-}
-
-// Rect gives the screen position
-func (db *DrawerBase) Rect() (x0, y0, x1, y1 int) {
-	x0 = db.x
-	y0 = db.y
-	x1 = db.x + db.width
-	y1 = db.y + db.height
-	return // using named parameters
-}
-
-func (db DrawerBase) Widgets() []Widgety {
-	return db.widgets
-}
-
-func (db *DrawerBase) FindWidgetAt(x, y int) Widgety {
-	for _, w := range db.widgets {
-		if util.InRect(x, y, w.OffsetRect) {
-			return w
-		}
-	}
-	return nil
 }
 
 // LayoutWidgets that belong to this container
@@ -154,11 +105,9 @@ func (db *DrawerBase) ResetScroll() {
 
 // Layout implements Ebiten's Layout
 func (db *DrawerBase) Layout(outsideWidth, outsideHeight int) (int, int) {
-	const toolbarHeight int = 48   // draw drawer below toolbar
-	const statusbarHeight int = 24 // draw drawer above statusbar
-	if db.img == nil || db.height != outsideHeight-toolbarHeight-statusbarHeight {
-		db.height = outsideHeight - toolbarHeight - statusbarHeight
-		db.img = db.createImg()
+	if db.img == nil || db.height != outsideHeight-ToolbarHeight-StatusbarHeight {
+		db.height = outsideHeight - ToolbarHeight - StatusbarHeight
+		db.img = db.createImg(BackgroundColor)
 		db.LayoutWidgets()
 	}
 	return outsideWidth, outsideHeight
@@ -185,22 +134,4 @@ func (db *DrawerBase) Update() {
 	for _, w := range db.widgets {
 		w.Update()
 	}
-}
-
-// Draw the Drawer
-func (db *DrawerBase) Draw(screen *ebiten.Image) {
-
-	if db.img == nil {
-		return
-	}
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(db.x), float64(db.y))
-	// op.ColorM.Scale(1, 1, 1, 0.95)
-	screen.DrawImage(db.img, op)
-
-	for _, w := range db.widgets {
-		w.Draw(screen)
-	}
-
 }
