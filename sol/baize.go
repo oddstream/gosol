@@ -242,17 +242,17 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
 	b.FindDestinations()
+	TheUI.HideFAB()
 	if b.Complete() {
 		TheUI.Toast("Complete", "Complete")
-		TheUI.ShowFAB("star", ebiten.KeyN)
+		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
-		TheUI.ShowFAB("done_all", ebiten.KeyC)
+		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
 		TheUI.Toast("Error", "No movable cards")
-		TheUI.ShowFAB("star", ebiten.KeyN)
-	} else {
-		TheUI.HideFAB()
+		TheUI.AddButtonToFAB("star", ebiten.KeyN)
+		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
 	}
 }
 
@@ -356,19 +356,18 @@ func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
 	b.FindDestinations()
-
+	TheUI.HideFAB()
 	if b.Complete() {
-		TheUI.ShowFAB("star", ebiten.KeyN)
+		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 		TheStatistics.RecordWonGame(ThePreferences.Variant, len(b.undoStack)-1)
 		ShowStatisticsDrawer()
 	} else if b.Conformant() {
-		TheUI.ShowFAB("done_all", ebiten.KeyC)
+		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
 		TheUI.ToastError("No movable cards")
-		TheUI.ShowFAB("star", ebiten.KeyN)
-	} else {
-		TheUI.HideFAB()
+		TheUI.AddButtonToFAB("star", ebiten.KeyN)
+		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
 	}
 }
 

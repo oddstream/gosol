@@ -45,11 +45,16 @@ var CommandTable = map[ebiten.Key]func(){
 	// 		ThePreferences.Save()
 	// 	}
 	// },
-	ebiten.KeyF1:     func() { TheBaize.Wikipedia() },
-	ebiten.KeyF2:     func() { ShowStatisticsDrawer() },
-	ebiten.KeyF3:     func() { ShowSettingsDrawer() },
-	ebiten.KeyF5:     func() { TheBaize.StartSpinning() },
-	ebiten.KeyF6:     func() { TheBaize.StopSpinning() },
+	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
+	ebiten.KeyF2: func() { ShowStatisticsDrawer() },
+	ebiten.KeyF3: func() { ShowSettingsDrawer() },
+	ebiten.KeyF5: func() { TheBaize.StartSpinning() }, // debug
+	ebiten.KeyF6: func() { TheBaize.StopSpinning() },  // debug
+	ebiten.KeyF7: func() {
+		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
+		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
+	}, // debug
+	ebiten.KeyF8:     func() { TheUI.HideFAB() }, // debug
 	ebiten.KeyMenu:   func() { TheUI.ToggleNavDrawer() },
 	ebiten.KeyEscape: func() { TheUI.HideActiveDrawer() },
 }

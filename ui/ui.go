@@ -10,10 +10,12 @@ import (
 )
 
 const (
-	ToolbarHeight   int = 48
-	StatusbarHeight int = 24
-	ToastHeight     int = 48
-	FABWidth        int = 72
+	ToolbarHeight    int = 48
+	StatusbarHeight  int = 24
+	ToastHeight      int = 48
+	FABWidth         int = 72
+	FABHeight        int = 72 * 3
+	ActionButtonSize int = FABWidth
 )
 
 var (
@@ -27,7 +29,7 @@ var (
 type UI struct {
 	toolbar                        *Toolbar
 	statusbar                      *Statusbar
-	fabbar                         *FABBar
+	fab                            *FAB
 	navDrawer                      *NavDrawer
 	settingsDrawer, aniSpeedDrawer *SettingsDrawer
 	variantPicker                  *Picker
@@ -50,16 +52,16 @@ func New(fn func(interface{})) *UI {
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar()
 	ui.statusbar = NewStatusbar()
-	ui.fabbar = NewFABBar()
+	ui.fab = NewFAB()
 	ui.navDrawer = NewNavDrawer()
 	ui.settingsDrawer = NewSettingsDrawer()
 	ui.aniSpeedDrawer = NewSettingsDrawer()
 	ui.variantPicker = NewVariantPicker()
 	ui.textDrawer = NewTextDrawer() // contents are added when shown
 
-	ui.bars = []Containery{ui.toolbar, ui.statusbar, ui.fabbar}
+	ui.bars = []Containery{ui.toolbar, ui.statusbar, ui.fab}
 	ui.drawers = []Containery{ui.navDrawer, ui.settingsDrawer, ui.aniSpeedDrawer, ui.variantPicker, ui.textDrawer}
-	ui.containers = []Containery{ui.toolbar, ui.statusbar, ui.fabbar, ui.navDrawer, ui.settingsDrawer, ui.aniSpeedDrawer, ui.variantPicker, ui.textDrawer}
+	ui.containers = []Containery{ui.toolbar, ui.statusbar, ui.fab, ui.navDrawer, ui.settingsDrawer, ui.aniSpeedDrawer, ui.variantPicker, ui.textDrawer}
 
 	return ui
 }
@@ -149,7 +151,6 @@ func (u *UI) Update() {
 
 // Draw is called once per tick and renders the UI to the screen
 func (u *UI) Draw(screen *ebiten.Image) {
-
 	for _, con := range u.containers {
 		con.Draw(screen)
 	}
