@@ -4,7 +4,9 @@ Towards a polymorphic solitaire engine in [Go](https://golang.org/)+[Ebiten](htt
 
 ![Screenshot](https://github.com/oddstream/gosol/blob/7152668f4b5053a1d438981e9d4564624616da6a/screenshots/Simple%20Simon.png)
 
-It's tested on Linux, Windows and in a web browser. You should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
+It's tested on Linux, Windows and in a web browser. If you have go installed, you should be able to run it on Linux or Windows by cloning this repo and then `go run .` in the cloned directory. Or, install it using `go install github.com/oddstream/gosol@latest`.
+
+There is a live playable WASM version [here](https://oddstream.games/gosol/gosol.html) (sorry about the large initial download).
 
 It's created because I *have* to write software, and for my own personal enjoyment. It's skewed toward puzzle-type games, because they're the ones I mostly play. It's definitely not for profit and will never contain ads.
 
