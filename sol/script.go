@@ -105,6 +105,8 @@ func (sb ScriptBase) Waste() *Pile {
 	return sb.waste
 }
 
+func (sb ScriptBase) AfterMove() {}
+
 // You can't use functions as keys in maps : the key type must be comparable
 // so you can't do: var ExtendedColorMap = map[CardPairCompareFunc]bool{}
 // type CardPairCompareFunc func(CardPair) (bool, error)

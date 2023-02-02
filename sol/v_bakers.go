@@ -52,8 +52,6 @@ func (self *BakersDozen) StartGame() {
 	}
 }
 
-func (*BakersDozen) AfterMove() {}
-
 func (*BakersDozen) TailMoveError(tail []*Card) (bool, error) {
 	// attempt to move more than one card will be caught before this
 	return true, nil

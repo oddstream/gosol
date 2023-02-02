@@ -53,8 +53,6 @@ func (self *MrsMop) StartGame() {
 	}
 }
 
-func (*MrsMop) AfterMove() {}
-
 func (*MrsMop) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

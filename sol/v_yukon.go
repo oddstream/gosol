@@ -63,8 +63,6 @@ func (self *Yukon) StartGame() {
 	}
 }
 
-func (*Yukon) AfterMove() {}
-
 func (*Yukon) TailMoveError([]*Card) (bool, error) {
 	return true, nil
 }

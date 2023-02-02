@@ -87,8 +87,6 @@ func (self *Freecell) StartGame() {
 	}
 }
 
-func (*Freecell) AfterMove() {}
-
 func (self *Freecell) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

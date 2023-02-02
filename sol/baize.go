@@ -371,6 +371,15 @@ func (b *Baize) AfterUserMove() {
 	}
 }
 
+// AfterAfterMove checks for and executes an automatic collect.
+// Kept as separated-out function at the moment, in case this
+// creates a horrible recursive loop
+func (b *Baize) AfterAfterUserMove() {
+	if b.fmoves > 0 && ThePreferences.AutoCollect {
+		b.Collect2()
+	}
+}
+
 /*
 InputStart finds out what object the user input is starting on
 (UI Container > Card > Pile > Baize, in that order)
@@ -494,6 +503,7 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 							b.StopTailDrag(tail) // do this before AfterUserMove
 							if crc != b.CRC() {
 								b.AfterUserMove()
+								b.AfterAfterUserMove()
 							}
 						}
 					}
@@ -556,6 +566,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		if crc != b.CRC() {
 			sound.Play("Slide")
 			b.AfterUserMove()
+			b.AfterAfterUserMove()
 		} else {
 			TheUI.Toast("Error", "Attention!")
 		}
@@ -565,6 +576,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 		if crc != b.CRC() {
 			sound.Play("Shove")
 			b.AfterUserMove()
+			b.AfterAfterUserMove()
 		}
 	case *Baize:
 		pt := image.Pt(v.X, v.Y)
@@ -687,6 +699,7 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 			}
 			MoveCard(pile, fp)
 			b.AfterUserMove() // does an undoPush()
+			b.AfterAfterUserMove()
 			cardsMoved += 1
 		}
 	}
@@ -694,9 +707,11 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 }
 
 // Collect2 should be exactly the same as the user tapping repeatedly on the
-// waste, cell, reserve and tableau piles
+// waste, cell, reserve and tableau piles.
 // nb there is no collecting to discard piles, they are optional and presence of
-// cards in them does not signify a complete game
+// cards in them does not signify a complete game.
+// It's called Collect2 because it's the third or fourth rewrite of a
+// basic and seemingly simple function.
 func (b *Baize) Collect2() {
 	for {
 		var cardsMoved int = b.collectFromPile(b.script.Waste())

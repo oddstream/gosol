@@ -71,8 +71,6 @@ func (self *Usk) StartGame() {
 	}
 }
 
-func (*Usk) AfterMove() {}
-
 func (*Usk) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

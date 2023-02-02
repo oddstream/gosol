@@ -60,8 +60,6 @@ func (self *Spiderette) StartGame() {
 	TheBaize.SetRecycles(0)
 }
 
-func (*Spiderette) AfterMove() {}
-
 func (*Spiderette) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

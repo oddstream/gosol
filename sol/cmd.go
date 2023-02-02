@@ -102,6 +102,8 @@ func Execute(cmd interface{}) {
 			} else {
 				sound.SetVolume(ThePreferences.Volume)
 			}
+		case "Auto collect":
+			ThePreferences.AutoCollect, _ = strconv.ParseBool(v.Data)
 		case "Safe collect":
 			ThePreferences.SafeCollect, _ = strconv.ParseBool(v.Data)
 		case "Fast":

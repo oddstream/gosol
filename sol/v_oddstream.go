@@ -52,8 +52,6 @@ func (self *Oddstream) StartGame() {
 	TheBaize.SetRecycles(0)
 }
 
-func (*Oddstream) AfterMove() {}
-
 func (*Oddstream) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

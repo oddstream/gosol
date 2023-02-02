@@ -67,19 +67,14 @@ func New(fn func(interface{})) *UI {
 }
 
 // FindWidgetAt finds the widget at the screen coords
-func (u *UI) FindWidgetAt(x, y int) Widgety {
-	for _, con := range u.containers {
-		if w := con.FindWidgetAt(x, y); con != nil {
-			return w
-		}
-	}
-	// if u.fab != nil {
-	// 	if util.InRect(x, y, u.fab.Rect) {
-	// 		return u.fab
-	// 	}
-	// }
-	return nil
-}
+// func (u *UI) FindWidgetAt(x, y int) Widgety {
+// 	for _, con := range u.containers {
+// 		if w := con.FindWidgetAt(x, y); con != nil {
+// 			return w
+// 		}
+// 	}
+// 	return nil
+// }
 
 func (u *UI) FindContainerAt(x, y int) Containery {
 	for _, con := range u.containers {
@@ -101,14 +96,14 @@ func (u *UI) VisibleDrawer() Containery {
 }
 
 // VisibleContainer returns the drawer that is currently open
-func (u *UI) VisibleContainer() Containery {
-	for _, con := range u.containers {
-		if con.Visible() {
-			return con
-		}
-	}
-	return nil
-}
+// func (u *UI) VisibleContainer() Containery {
+// 	for _, con := range u.containers {
+// 		if con.Visible() {
+// 			return con
+// 		}
+// 	}
+// 	return nil
+// }
 
 // HideActiveDrawer closes the active/open drawer
 func (u *UI) HideActiveDrawer() {

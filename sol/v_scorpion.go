@@ -53,8 +53,6 @@ func (self *Scorpion) StartGame() {
 	}
 }
 
-func (*Scorpion) AfterMove() {}
-
 func (*Scorpion) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }

@@ -59,8 +59,6 @@ func (self *Alhambra) StartGame() {
 	TheBaize.SetRecycles(2)
 }
 
-func (self *Alhambra) AfterMove() {}
-
 func (*Alhambra) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }

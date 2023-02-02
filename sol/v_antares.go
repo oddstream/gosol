@@ -99,8 +99,6 @@ func (self *Antares) StartGame() {
 	}
 }
 
-func (self *Antares) AfterMove() {}
-
 func (self *Antares) inFirstFour(tab *Pile) bool {
 	for i := 0; i < 4; i++ {
 		if tab == self.tableaux[i] {

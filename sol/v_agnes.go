@@ -67,8 +67,6 @@ func (self *Agnes) StartGame() {
 	}
 }
 
-func (*Agnes) AfterMove() {}
-
 func (self *Agnes) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

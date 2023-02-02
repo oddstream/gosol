@@ -83,8 +83,6 @@ func (pen *Penguin) StartGame() {
 	}
 }
 
-func (pen *Penguin) AfterMove() {}
-
 func (*Penguin) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

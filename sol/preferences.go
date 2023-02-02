@@ -19,7 +19,7 @@ type Preferences struct {
 	// FixedCards                         bool
 	// FixedCardWidth, FixedCardHeight    int
 	PowerMoves                         bool
-	SafeCollect                        bool
+	SafeCollect, AutoCollect           bool
 	Mute                               bool
 	Volume                             float64
 	MirrorBaize                        bool
@@ -38,6 +38,7 @@ var ThePreferences = &Preferences{
 	BaizeColor:             "BaizeGreen",
 	PowerMoves:             true,
 	SafeCollect:            false,
+	AutoCollect:            false,
 	CardFaceColor:          "Ivory",
 	CardBackColor:          "CornflowerBlue",
 	MovableCardBackColor:   "Gold",
@@ -55,7 +56,7 @@ var ThePreferences = &Preferences{
 	// FixedCards:       false,
 	// FixedCardWidth:   90,
 	// FixedCardHeight:  122,
-	CardRatio:        1.357,
+	CardRatio:        1.39, // official poker size
 	AniSpeed:         0.5,
 	LastVersionMajor: 0,
 	LastVersionMinor: 0,

@@ -60,8 +60,6 @@ func (self *Bisley) StartGame() {
 	TheBaize.SetRecycles(0)
 }
 
-func (self *Bisley) AfterMove() {}
-
 func (*Bisley) TailMoveError(tail []*Card) (bool, error) {
 	return true, nil
 }

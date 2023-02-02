@@ -50,8 +50,6 @@ func (self *EightOff) StartGame() {
 	}
 }
 
-func (*EightOff) AfterMove() {}
-
 func (*EightOff) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

@@ -57,8 +57,6 @@ func (self *Spider) StartGame() {
 	TheBaize.SetRecycles(0)
 }
 
-func (*Spider) AfterMove() {}
-
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {

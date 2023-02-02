@@ -33,6 +33,7 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 		NewCheckbox(u.settingsDrawer, "", "Show movable cards", booleanSettings["ShowMovableCards"]),
 		NewCheckbox(u.settingsDrawer, "", "Mirror baize", booleanSettings["MirrorBaize"]),
 		NewCheckbox(u.settingsDrawer, "", "Mute sounds", booleanSettings["Mute"]),
+		NewCheckbox(u.settingsDrawer, "", "Auto collect", booleanSettings["AutoCollect"]),
 		NewCheckbox(u.settingsDrawer, "", "Safe collect", booleanSettings["SafeCollect"]),
 	}
 	u.settingsDrawer.LayoutWidgets()

@@ -51,9 +51,6 @@ func (self *SimpleSimon) StartGame() {
 	}
 }
 
-func (*SimpleSimon) AfterMove() {
-}
-
 func (*SimpleSimon) TailMoveError(tail []*Card) (bool, error) {
 	var pile *Pile = tail[0].Owner()
 	switch pile.vtable.(type) {
