@@ -112,18 +112,25 @@ func (u *UI) HideActiveDrawer() {
 	}
 }
 
-func (u *UI) EnableWidget(id string, enabled bool) {
+func (u *UI) FindWidget(id string) Widgety {
 	for _, con := range u.containers {
 		for _, wgt := range con.Widgets() {
 			if wgt.ID() == id {
-				if enabled {
-					wgt.Activate()
-				} else {
-					wgt.Deactivate()
-				}
-				// println("EnableWidget", id, enabled)
+				return wgt
 			}
 		}
+	}
+	return nil
+}
+
+func (u *UI) EnableWidget(id string, enabled bool) {
+	if wgt := u.FindWidget(id); wgt != nil {
+		if enabled {
+			wgt.Activate()
+		} else {
+			wgt.Deactivate()
+		}
+		// println("DisableWidget", wgt.ID(), wgt.Disabled())
 	}
 }
 

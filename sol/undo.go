@@ -183,7 +183,7 @@ func (b *Baize) SavePosition() {
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
-	if b.bookmark == 0 || b.bookmark > len(b.undoStack) || b.Complete() {
+	if b.bookmark == 0 || b.bookmark > len(b.undoStack) {
 		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
 		TheUI.ToastError("No bookmark")
 		return

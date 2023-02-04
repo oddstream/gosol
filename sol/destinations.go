@@ -147,6 +147,7 @@ func (b *Baize) FindDestinations() {
 	}
 
 	b.UpdateToolbar()
+	b.UpdateDrawers()
 	b.UpdateStatusbar()
 
 	if !ThePreferences.AlwaysShowMovableCards {

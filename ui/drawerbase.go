@@ -35,18 +35,18 @@ func (db *DrawerBase) LayoutWidgets() {
 
 // Show starts to animate the drawer on screen from the left
 func (db *DrawerBase) Show() {
-	for _, w := range db.widgets {
-		w.Activate()
-	}
+	// for _, w := range db.widgets {
+	// 	w.Activate()
+	// }
 	db.aniState = aniRight
 	sound.Play("Click")
 }
 
 // Hide starts to animate the drawer off screen to the left
 func (db *DrawerBase) Hide() {
-	for _, w := range db.widgets {
-		w.Deactivate()
-	}
+	// for _, w := range db.widgets {
+	// 	w.Deactivate()
+	// }
 	if db.x == -db.width {
 		db.aniState = aniStop
 	} else {

@@ -664,7 +664,8 @@ func (b *Baize) DoingSafeCollect() (bool, int) {
 	var lowest int = 99
 	for _, f := range fs {
 		if f.Empty() {
-			return true, 1
+			// it's okay to collect aces and twos to start with
+			return true, 2
 		}
 		var card *Card = f.Peek()
 		if card.Ordinal() < lowest {
@@ -691,7 +692,7 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 				break // done with this foundation, try another
 			}
 			if ok, safeOrd := b.DoingSafeCollect(); ok {
-				if card.Ordinal() != safeOrd {
+				if card.Ordinal() > safeOrd {
 					// can't toast here, collect all will create a lot of toasts
 					// TheUI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
 					break // done with this foundation, try another
@@ -845,6 +846,11 @@ func (b *Baize) UpdateStatusbar() {
 	// }
 	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d", len(b.undoStack)-1))
 	TheUI.SetPercent(b.PercentComplete())
+}
+
+func (b *Baize) UpdateDrawers() {
+	TheUI.EnableWidget("restartDeal", len(b.undoStack) > 1)
+	TheUI.EnableWidget("gotoBookmark", len(b.undoStack) > 1)
 }
 
 func (b *Baize) Conformant() bool {

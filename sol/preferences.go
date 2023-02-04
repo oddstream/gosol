@@ -33,7 +33,7 @@ type Preferences struct {
 // ThePreferences holds serialized game progress data
 // Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
 var ThePreferences = &Preferences{
-	Title:                  "Solitaire",
+	Title:                  "Go Solitaire",
 	Variant:                "Klondike",
 	BaizeColor:             "BaizeGreen",
 	PowerMoves:             true,

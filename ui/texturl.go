@@ -43,6 +43,7 @@ func NewTextUrl(parent Containery, id string, text string) *TextUrl {
 		text:       "Wikipedia",
 		url:        text}
 	w.calcHeights()
+	w.Activate()
 	return w
 }
 

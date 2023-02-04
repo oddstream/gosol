@@ -54,6 +54,7 @@ func NewText(parent Containery, id string, text string) *Text {
 		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, width: width},
 		text:       text}
 	w.calcHeights()
+	w.Activate()
 	return w
 }
 
