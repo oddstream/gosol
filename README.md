@@ -172,6 +172,10 @@ Mirrors the card piles on the baize from right to left, because not everyone is 
 
 So you can, for example, listen to an audio book while playing.
 
+#### Auto collect
+
+Enabling this will cause cards to be moved to the Foundation piles after every move you make.
+
 #### Safe collect
 
 In games like Klondike that build tableau cards in alternating colors, you can sometimes get into trouble by moving cards to the foundations too soon. With this option turned on, the titlebar collect button will only move cards to the foundation piles when it is safe to do so.
