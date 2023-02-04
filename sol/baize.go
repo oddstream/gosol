@@ -850,7 +850,7 @@ func (b *Baize) UpdateStatusbar() {
 
 func (b *Baize) UpdateDrawers() {
 	TheUI.EnableWidget("restartDeal", len(b.undoStack) > 1)
-	TheUI.EnableWidget("gotoBookmark", len(b.undoStack) > 1)
+	TheUI.EnableWidget("gotoBookmark", b.bookmark > 0)
 }
 
 func (b *Baize) Conformant() bool {
