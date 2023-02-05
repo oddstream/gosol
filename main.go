@@ -10,10 +10,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
-	"runtime"
 
 	// load png decoder in main package
 	_ "image/png"
@@ -55,15 +53,7 @@ func main() {
 		ebiten.SetWindowSize(n/2, n/2)
 	}
 	ebiten.SetWindowIcon(sol.WindowIcons())
-	{
-		var title string = sol.ThePreferences.Title
-		if sol.DebugMode {
-			title = fmt.Sprintf("%s (%s/%s)", title, runtime.GOOS, runtime.GOARCH)
-		}
-		ebiten.SetWindowTitle(title)
-	}
-
-	ebiten.SetScreenClearedEveryFrame(true)
+	ebiten.SetWindowTitle("Go Solitaire")
 
 	game, err := sol.NewGame()
 	if err != nil {

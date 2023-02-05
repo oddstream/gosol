@@ -141,14 +141,6 @@ func (b *Baize) NewDeal() {
 	b.setFlag(dirtyCardPositions)
 }
 
-func (b *Baize) ShowVariantGroupPicker() {
-	TheUI.ShowVariantGroupPicker(VariantGroupNames())
-}
-
-func (b *Baize) ShowVariantPicker(group string) {
-	TheUI.ShowVariantPicker(VariantNames(group))
-}
-
 func (b *Baize) MirrorSlots() {
 	/*
 		0 1 2 3 4 5

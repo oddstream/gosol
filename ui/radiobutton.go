@@ -2,7 +2,6 @@ package ui
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -12,15 +11,16 @@ import (
 // RadioButton is a button that displays a single rune
 type RadioButton struct {
 	WidgetBase
-	checked bool
-	text    string
+	floatVarPtr *float64
+	value       float64
+	text        string
 }
 
 func (w *RadioButton) createImg() *ebiten.Image {
 	dc := gg.NewContext(w.width, w.height)
 
 	var iconName string
-	if w.checked {
+	if *(w.floatVarPtr) == w.value {
 		iconName = "radio_button_checked"
 	} else {
 		iconName = "radio_button_unchecked"
@@ -46,11 +46,11 @@ func (w *RadioButton) createImg() *ebiten.Image {
 }
 
 // NewRadioButton creates a new RadioButton
-func NewRadioButton(parent Containery, id string, text string, checked bool) *RadioButton {
+func NewRadioButton(parent Containery, id string, text string, floatVarPtr *float64, value float64) *RadioButton {
 	width, _ := parent.Size()
 	w := &RadioButton{
-		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, x: 0, y: 0, width: width, height: 48},
-		text:       text, checked: checked}
+		WidgetBase:  WidgetBase{parent: parent, id: id, img: nil, x: 0, y: 0, width: width, height: 48},
+		floatVarPtr: floatVarPtr, value: value, text: text}
 	w.Activate()
 	return w
 }
@@ -71,7 +71,10 @@ func (w *RadioButton) Tapped() {
 	if w.disabled {
 		return
 	}
-	w.checked = !w.checked
-	w.img = w.createImg()
-	cmdFn(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
+	*(w.floatVarPtr) = w.value
+	for _, wgt := range w.parent.Widgets() {
+		if rb, ok := wgt.(*RadioButton); ok {
+			rb.img = rb.createImg()
+		}
+	}
 }

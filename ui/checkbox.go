@@ -2,7 +2,6 @@ package ui
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -12,15 +11,16 @@ import (
 // Checkbox is a button that displays a single rune
 type Checkbox struct {
 	WidgetBase
-	checked bool
-	text    string
+	boolVarPtr *bool
+	fnUpdate   func()
+	text       string
 }
 
 func (w *Checkbox) createImg() *ebiten.Image {
 	dc := gg.NewContext(w.width, w.height)
 
 	var iconName string
-	if w.checked {
+	if *(w.boolVarPtr) {
 		iconName = "check_box"
 	} else {
 		iconName = "check_box_outline_blank"
@@ -45,12 +45,12 @@ func (w *Checkbox) createImg() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// NewCheckbox creates a new Checkbox
-func NewCheckbox(parent Containery, id string, text string, checked bool) *Checkbox {
+// NewCheckbox2 creates a new Checkbox
+func NewCheckbox(parent Containery, id string, text string, boolVarPtr *bool, fnUpdate func()) *Checkbox {
 	width, _ := parent.Size()
 	w := &Checkbox{
 		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, x: 0, y: 0, width: width, height: 48},
-		text:       text, checked: checked}
+		text:       text, boolVarPtr: boolVarPtr, fnUpdate: fnUpdate}
 	w.Activate()
 	return w
 }
@@ -71,7 +71,7 @@ func (w *Checkbox) Tapped() {
 	if w.disabled {
 		return
 	}
-	w.checked = !w.checked
+	*(w.boolVarPtr) = !*(w.boolVarPtr)
 	w.img = w.createImg()
-	cmdFn(ChangeRequest{ChangeRequested: w.text, Data: strconv.FormatBool(w.checked)})
+	w.fnUpdate()
 }

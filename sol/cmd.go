@@ -34,7 +34,7 @@ var CommandTable = map[ebiten.Key]func(){
 			TheUI.ToastInfo("Movable cards always highlighted")
 		}
 	},
-	ebiten.KeyF: func() { TheBaize.ShowVariantGroupPicker() },
+	ebiten.KeyF: func() { TheUI.ShowVariantPickerEx(VariantGroupNames(), "VariantGroup") },
 	ebiten.KeyA: func() { ShowAniSpeedDrawer() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	// ebiten.KeyTab: func() {
@@ -79,7 +79,8 @@ func Execute(cmd interface{}) {
 				}
 			}
 		case "VariantGroup":
-			TheBaize.ShowVariantPicker(v.Data)
+			TheUI.ShowVariantPickerEx(VariantNames(v.Data), "Variant")
+			// TheBaize.ShowVariantPicker(v.Data)
 		// case "Fixed cards":
 		// 	ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
 		// 	TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)

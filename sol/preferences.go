@@ -1,9 +1,13 @@
 package sol
 
+import (
+	"oddstream.games/gosol/sound"
+	"oddstream.games/gosol/ui"
+)
+
 // Preferences contains the settings and preferences for the user
 type Preferences struct {
 	// Capitals to emit to json
-	Title                string
 	Variant              string
 	BaizeColor           string
 	CardFaceColor        string
@@ -33,7 +37,6 @@ type Preferences struct {
 // ThePreferences holds serialized game progress data
 // Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
 var ThePreferences = &Preferences{
-	Title:                  "Go Solitaire",
 	Variant:                "Klondike",
 	BaizeColor:             "BaizeGreen",
 	PowerMoves:             true,
@@ -57,7 +60,41 @@ var ThePreferences = &Preferences{
 	// FixedCardWidth:   90,
 	// FixedCardHeight:  122,
 	CardRatio:        1.39, // official poker size
-	AniSpeed:         0.5,
+	AniSpeed:         0.6,  // Normal
 	LastVersionMajor: 0,
 	LastVersionMinor: 0,
+}
+
+var BooleanPreferences = []ui.BooleanPreference{
+	{Title: "Power moves", Var: &ThePreferences.PowerMoves, Update: func() {}},
+	{Title: "Auto collect", Var: &ThePreferences.AutoCollect, Update: func() {}},
+	{Title: "Safe collect", Var: &ThePreferences.SafeCollect, Update: func() {}},
+	{Title: "Show movable cards", Var: &ThePreferences.ShowMovableCards, Update: func() {}},
+	{Title: "Colorful cards", Var: &ThePreferences.ColorfulCards, Update: func() { TheBaize.setFlag(dirtyCardImages) }},
+	{Title: "Mute sounds", Var: &ThePreferences.Mute, Update: func() {
+		if ThePreferences.Mute {
+			sound.SetVolume(0.0)
+		} else {
+			sound.SetVolume(ThePreferences.Volume)
+		}
+	}},
+	{Title: "Mirror baize", Var: &ThePreferences.MirrorBaize, Update: func() {
+		savedUndoStack := TheBaize.undoStack
+		TheBaize.StartFreshGame()
+		TheBaize.SetUndoStack(savedUndoStack)
+	}},
+}
+
+func ShowSettingsDrawer() {
+	TheUI.ShowSettingsDrawer(&BooleanPreferences)
+}
+
+var AniSpeedPreferences = []ui.FloatPreference{
+	{Title: "Fast", Var: &ThePreferences.AniSpeed, Value: 0.3},
+	{Title: "Normal", Var: &ThePreferences.AniSpeed, Value: 0.6},
+	{Title: "Slow", Var: &ThePreferences.AniSpeed, Value: 0.9},
+}
+
+func ShowAniSpeedDrawer() {
+	TheUI.ShowAniSpeedDrawer(&AniSpeedPreferences)
 }

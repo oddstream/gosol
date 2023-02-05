@@ -1,6 +1,8 @@
 package ui
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 // SettingsDrawer slide out modal menu
 type SettingsDrawer struct {
@@ -14,8 +16,14 @@ func NewSettingsDrawer() *SettingsDrawer {
 	return d
 }
 
+type BooleanPreference struct {
+	Title  string
+	Var    *bool
+	Update func()
+}
+
 // ShowSettingsDrawer makes the card back picker visible
-func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
+func (u *UI) ShowSettingsDrawer(booleanSettings *[]BooleanPreference) {
 	con := u.VisibleDrawer()
 	if con == u.settingsDrawer {
 		return
@@ -27,20 +35,21 @@ func (u *UI) ShowSettingsDrawer(booleanSettings map[string]bool) {
 	u.settingsDrawer.widgets = []Widgety{
 		// widget x, y will be set by LayoutWidgets()
 		NewNavItem(u.settingsDrawer, "", "speed", "Card speed...", ebiten.KeyA),
-		// NewCheckbox(u.settingsDrawer, "", "Fixed cards", booleanSettings["FixedCards"]),
-		NewCheckbox(u.settingsDrawer, "", "Power moves", booleanSettings["PowerMoves"]),
-		NewCheckbox(u.settingsDrawer, "", "Colorful cards", booleanSettings["ColorfulCards"]),
-		NewCheckbox(u.settingsDrawer, "", "Show movable cards", booleanSettings["ShowMovableCards"]),
-		NewCheckbox(u.settingsDrawer, "", "Mirror baize", booleanSettings["MirrorBaize"]),
-		NewCheckbox(u.settingsDrawer, "", "Mute sounds", booleanSettings["Mute"]),
-		NewCheckbox(u.settingsDrawer, "", "Auto collect", booleanSettings["AutoCollect"]),
-		NewCheckbox(u.settingsDrawer, "", "Safe collect", booleanSettings["SafeCollect"]),
+	}
+	for _, p := range *booleanSettings {
+		u.settingsDrawer.widgets = append(u.settingsDrawer.widgets, NewCheckbox(u.settingsDrawer, "", p.Title, p.Var, p.Update))
 	}
 	u.settingsDrawer.LayoutWidgets()
 	u.settingsDrawer.Show()
 }
 
-func (u *UI) ShowAniSpeedDrawer(aniSpeed float64) {
+type FloatPreference struct {
+	Title string
+	Var   *float64
+	Value float64
+}
+
+func (u *UI) ShowAniSpeedDrawer(floatSettings *[]FloatPreference) {
 	con := u.VisibleDrawer()
 	if con == u.aniSpeedDrawer {
 		return
@@ -51,9 +60,9 @@ func (u *UI) ShowAniSpeedDrawer(aniSpeed float64) {
 	u.aniSpeedDrawer.widgets = u.settingsDrawer.widgets[:0]
 	u.aniSpeedDrawer.widgets = []Widgety{
 		NewText(u.aniSpeedDrawer, "aniTitle", "Card Animation Speed"),
-		NewRadioButton(u.aniSpeedDrawer, "aniFast", "Fast", aniSpeed < 0.6),
-		NewRadioButton(u.aniSpeedDrawer, "aniNormal", "Normal", aniSpeed == 0.6),
-		NewRadioButton(u.aniSpeedDrawer, "aniSlow", "Slow", aniSpeed > 0.6),
+	}
+	for _, p := range *floatSettings {
+		u.aniSpeedDrawer.widgets = append(u.aniSpeedDrawer.widgets, NewRadioButton(u.aniSpeedDrawer, "", p.Title, p.Var, p.Value))
 	}
 	u.aniSpeedDrawer.LayoutWidgets()
 	u.aniSpeedDrawer.Show()
