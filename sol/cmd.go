@@ -3,10 +3,8 @@ package sol
 import (
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/ui"
 )
 
@@ -81,38 +79,6 @@ func Execute(cmd interface{}) {
 		case "VariantGroup":
 			TheUI.ShowVariantPickerEx(VariantNames(v.Data), "Variant")
 			// TheBaize.ShowVariantPicker(v.Data)
-		// case "Fixed cards":
-		// 	ThePreferences.FixedCards, _ = strconv.ParseBool(v.Data)
-		// 	TheBaize.setFlag(dirtyCardSizes | dirtyPileBackgrounds | dirtyPilePositions | dirtyCardPositions)
-		case "Power moves":
-			ThePreferences.PowerMoves, _ = strconv.ParseBool(v.Data)
-		case "Colorful cards":
-			ThePreferences.ColorfulCards, _ = strconv.ParseBool(v.Data)
-			TheBaize.setFlag(dirtyCardImages)
-		case "Show movable cards":
-			ThePreferences.ShowMovableCards, _ = strconv.ParseBool(v.Data)
-		case "Mirror baize":
-			ThePreferences.MirrorBaize, _ = strconv.ParseBool(v.Data)
-			savedUndoStack := TheBaize.undoStack
-			TheBaize.StartFreshGame()
-			TheBaize.SetUndoStack(savedUndoStack)
-		case "Mute sounds":
-			ThePreferences.Mute, _ = strconv.ParseBool(v.Data)
-			if ThePreferences.Mute {
-				sound.SetVolume(0.0)
-			} else {
-				sound.SetVolume(ThePreferences.Volume)
-			}
-		case "Auto collect":
-			ThePreferences.AutoCollect, _ = strconv.ParseBool(v.Data)
-		case "Safe collect":
-			ThePreferences.SafeCollect, _ = strconv.ParseBool(v.Data)
-		case "Fast":
-			ThePreferences.AniSpeed = 0.3
-		case "Normal":
-			ThePreferences.AniSpeed = 0.6
-		case "Slow":
-			ThePreferences.AniSpeed = 0.9
 		default:
 			log.Panic("unknown change request", v.ChangeRequested, v.Data)
 		}
