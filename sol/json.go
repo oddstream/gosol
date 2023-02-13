@@ -108,9 +108,9 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 	log.Println("saved", path)
 }
 
-// Load an already existing Preferences object from file
-func (prefs *Preferences) Load() {
-	// defer util.Duration(time.Now(), "Preferences.Load")
+// Load an already existing Settings object from file
+func (prefs *Settings) Load() {
+	// defer util.Duration(time.Now(), "Settings.Load")
 
 	bytes, count, err := loadBytesFromFile("preferences.json", false)
 	if err != nil || count == 0 || bytes == nil {
@@ -120,13 +120,13 @@ func (prefs *Preferences) Load() {
 	// golang gotcha reslice buffer to number of bytes actually read
 	err = json.Unmarshal(bytes[:count], prefs)
 	if err != nil {
-		log.Panic("Preferences.Load Unmarshal", err)
+		log.Panic("Settings.Load Unmarshal", err)
 	}
 }
 
-// Save writes the Preferences object to file
-func (prefs *Preferences) Save() {
-	// defer util.Duration(time.Now(), "Preferences.Save")
+// Save writes the Settings object to file
+func (prefs *Settings) Save() {
+	// defer util.Duration(time.Now(), "Settings.Save")
 
 	prefs.LastVersionMajor = GosolVersionMajor
 	prefs.LastVersionMinor = GosolVersionMinor

@@ -2,7 +2,6 @@
 package ui
 
 import (
-	_ "embed" // go:embed only allowed in Go files that import "embed"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"

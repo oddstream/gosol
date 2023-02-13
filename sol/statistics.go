@@ -173,8 +173,8 @@ func (s *Statistics) RecordLostGame(v string) {
 }
 
 func ShowStatisticsDrawer() {
-	stats := TheStatistics.findVariant(ThePreferences.Variant)
-	var strs []string = stats.strings(ThePreferences.Variant)
+	stats := TheStatistics.findVariant(TheSettings.Variant)
+	var strs []string = stats.strings(TheSettings.Variant)
 	strs = append(strs, " ") // n.b. can't use empty string
 	strs = append(strs, "ALL VARIANTS")
 	strs = append(strs, TheStatistics.strings()...)

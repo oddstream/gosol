@@ -103,7 +103,7 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 
 	// draw the basic card face
-	dc.SetColor(ExtendedColors[ThePreferences.CardFaceColor])
+	dc.SetColor(ExtendedColors[TheSettings.CardFaceColor])
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
@@ -200,7 +200,7 @@ func createSimpleFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 
 	// draw the basic card face
-	dc.SetColor(ExtendedColors[ThePreferences.CardFaceColor])
+	dc.SetColor(ExtendedColors[TheSettings.CardFaceColor])
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
@@ -294,7 +294,7 @@ func CreateCardImages() {
 	}
 	schriftbank.MakeCardFonts(CardWidth)
 	CreateCardFaceImageLibrary()
-	CardBackImage = CreateCardBackImage(ThePreferences.CardBackColor)
-	MovableCardBackImage = CreateCardBackImage(ThePreferences.MovableCardBackColor)
+	CardBackImage = CreateCardBackImage(TheSettings.CardBackColor)
+	MovableCardBackImage = CreateCardBackImage(TheSettings.MovableCardBackColor)
 	CardShadowImage = CreateCardShadowImage()
 }

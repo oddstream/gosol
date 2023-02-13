@@ -37,8 +37,8 @@ func saveBytesToLocalStorage(bytes []byte, key string) {
 	js.Global().Get("window").Get("localStorage").Set(keyName, string(bytes))
 }
 
-// Load an already existing Preferences object from browser localStorage
-func (ud *Preferences) Load() {
+// Load an already existing Settings object from browser localStorage
+func (ud *Settings) Load() {
 
 	bytes, err := loadBytesFromLocalStorage("preferences", false)
 	if err != nil {
@@ -47,17 +47,17 @@ func (ud *Preferences) Load() {
 	}
 	err = json.Unmarshal(bytes, ud)
 	if err != nil {
-		log.Println("Preferences.Load().Unmarshal() error", err)
+		log.Println("Settings.Load().Unmarshal() error", err)
 	}
 
 }
 
-// Save writes the Preferences object to localStorage
-func (ud *Preferences) Save() {
+// Save writes the Settings object to localStorage
+func (ud *Settings) Save() {
 
 	bytes, err := json.Marshal(ud)
 	if err != nil {
-		log.Println("Preferences.Save().Marshal() error", err)
+		log.Println("Settings.Save().Marshal() error", err)
 	} else {
 		saveBytesToLocalStorage(bytes, "preferences")
 	}

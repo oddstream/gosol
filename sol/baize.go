@@ -61,9 +61,9 @@ func (b *Baize) setFlag(flag uint32) {
 // 	b.dirtyFlags &= ^flag
 // }
 
-func (b *Baize) Valid() bool {
-	return b != nil
-}
+// func (b *Baize) Valid() bool {
+// 	return b != nil
+// }
 
 func (b *Baize) CRC() uint32 {
 	/*
@@ -114,7 +114,7 @@ func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(ThePreferences.Variant)
+		TheStatistics.RecordLostGame(TheSettings.Variant)
 	}
 
 	// for {
@@ -194,22 +194,22 @@ func (b *Baize) StartFreshGame() {
 	b.piles = nil
 
 	var ok bool
-	if b.script, ok = Variants[ThePreferences.Variant]; !ok {
-		log.Println("no interface for variant", ThePreferences.Variant, "reverting to Klondike")
-		ThePreferences.Variant = "Klondike"
-		ThePreferences.Save()
-		if b.script, ok = Variants[ThePreferences.Variant]; !ok {
+	if b.script, ok = Variants[TheSettings.Variant]; !ok {
+		log.Println("no interface for variant", TheSettings.Variant, "reverting to Klondike")
+		TheSettings.Variant = "Klondike"
+		TheSettings.Save()
+		if b.script, ok = Variants[TheSettings.Variant]; !ok {
 			log.Panic("no interface for Klondike")
 		}
 		NoGameLoad = true
 	}
 	b.script.BuildPiles()
-	if ThePreferences.MirrorBaize {
+	if TheSettings.MirrorBaize {
 		b.MirrorSlots()
 	}
 	// b.FindBuddyPiles()
 
-	TheUI.SetTitle(ThePreferences.Variant)
+	TheUI.SetTitle(TheSettings.Variant)
 
 	sound.Play("Fan")
 
@@ -223,9 +223,9 @@ func (b *Baize) StartFreshGame() {
 func (b *Baize) ChangeVariant(newVariant string) {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(ThePreferences.Variant)
+		TheStatistics.RecordLostGame(TheSettings.Variant)
 	}
-	ThePreferences.Variant = newVariant
+	TheSettings.Variant = newVariant
 	b.StartFreshGame()
 }
 
@@ -245,6 +245,9 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 		TheUI.Toast("Error", "No movable cards")
 		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
+		if b.bookmark > 0 {
+			TheUI.AddButtonToFAB("bookmark", ebiten.KeyL)
+		}
 	}
 }
 
@@ -352,7 +355,7 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
-		TheStatistics.RecordWonGame(ThePreferences.Variant, len(b.undoStack)-1)
+		TheStatistics.RecordWonGame(TheSettings.Variant, len(b.undoStack)-1)
 		ShowStatisticsDrawer()
 	} else if b.Conformant() {
 		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
@@ -360,6 +363,9 @@ func (b *Baize) AfterUserMove() {
 		TheUI.ToastError("No movable cards")
 		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
+		if b.bookmark > 0 {
+			TheUI.AddButtonToFAB("bookmark", ebiten.KeyL)
+		}
 	}
 }
 
@@ -367,7 +373,7 @@ func (b *Baize) AfterUserMove() {
 // Kept as separated-out function at the moment, in case this
 // creates a horrible recursive loop
 func (b *Baize) AfterAfterUserMove() {
-	if b.fmoves > 0 && ThePreferences.AutoCollect {
+	if b.fmoves > 0 && TheSettings.AutoCollect {
 		b.Collect2()
 	}
 }
@@ -636,7 +642,7 @@ func (b *Baize) CancelTailDrag(tail []*Card) {
 // DoingSafeCollect return true if we are doing safe collect
 // and the safe ordinal to collect next
 func (b *Baize) DoingSafeCollect() (bool, int) {
-	if !ThePreferences.SafeCollect {
+	if !TheSettings.SafeCollect {
 		return false, 0
 	}
 	if !b.script.SafeCollect() {
@@ -752,8 +758,6 @@ func (b *Baize) ScaleCards() bool {
 
 	var maxX int = b.MaxSlotX()
 
-	// "add" two extra piles and a LeftMargin to make a half-card-width border
-
 	/*
 		71 x 96 = 1:1.352 (Microsoft retro)
 		140 x 190 = 1:1.357 (kenney, large)
@@ -773,17 +777,24 @@ func (b *Baize) ScaleCards() bool {
 	// 	cardsWidth := PilePaddingX + CardWidth*(maxX+2)
 	// 	LeftMargin = (b.WindowWidth - cardsWidth) / 2
 	// } else {
-	slotWidth := float64(b.WindowWidth) / float64(maxX+2)
+
+	// "add" two extra piles and a LeftMargin to make a half-card-width border
+
+	var slotWidth, slotHeight float64
+	slotWidth = float64(b.WindowWidth) / float64(maxX+2)
+	slotHeight = slotWidth * TheSettings.CardRatio
+
 	PilePaddingX = int(slotWidth / 10)
 	CardWidth = int(slotWidth) - PilePaddingX
-	slotHeight := slotWidth * ThePreferences.CardRatio
 	PilePaddingY = int(slotHeight / 10)
 	CardHeight = int(slotHeight) - PilePaddingY
+
+	TopMargin = ui.ToolbarHeight + CardHeight/3
 	LeftMargin = (CardWidth / 2) + PilePaddingX
+
 	// CardDiagonal = math.Sqrt(math.Pow(float64(CardWidth), 2) + math.Pow(float64(CardHeight), 2))
 	// }
 	CardCornerRadius = float64(CardWidth) / 10.0 // same as lsol
-	TopMargin = ui.ToolbarHeight + CardHeight/3
 
 	// if DebugMode {
 	// 	if CardWidth != OldWidth || CardHeight != OldHeight {
@@ -966,7 +977,7 @@ func (b *Baize) Update() error {
 // Draw renders the baize into the screen
 func (b *Baize) Draw(screen *ebiten.Image) {
 
-	screen.Fill(ExtendedColors[ThePreferences.BaizeColor])
+	screen.Fill(ExtendedColors[TheSettings.BaizeColor])
 
 	for _, p := range b.piles {
 		p.Draw(screen)

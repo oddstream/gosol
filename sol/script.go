@@ -575,7 +575,7 @@ func VariantGroupNames() []string {
 
 // VariantNames returns an alpha-sorted []string of the variants in a group
 func VariantNames(group string) []string {
-	var vnames []string = make([]string, 0, len(VariantGroups[group]))
+	var vnames []string = nil
 	vnames = append(vnames, VariantGroups[group]...)
 	if group == "> All by Played" {
 		sort.Slice(vnames, func(i, j int) bool { return TheStatistics.Played(vnames[i]) > TheStatistics.Played(vnames[j]) })

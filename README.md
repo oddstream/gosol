@@ -111,13 +111,12 @@ So, rather than just making this stuff up, I've tried to find a well researched 
 
 ### Keyboard shortcuts?
 
-* U - undo
+* C - collect cards to the foundations
+* B - bookmark current position; Ctrl+B - return position to last bookmark
+* H - hint/help - show movable cards
 * N - new deal (resign current game, if started)
 * R - restart deal
-* S - save current position ('bookmark')
-* L - load/return to a previously saved position
-* H - hint/help - show movable cards
-* C - collect cards to the foundations
+* U - undo
 
 ### What about scores?
 

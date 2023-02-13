@@ -63,5 +63,5 @@ func (cb *CardBackWidget) Tapped() {
 	if cb.disabled {
 		return
 	}
-	cmdFn(ChangeRequest{ChangeRequested: "CardBack", Data: cb.name})
+	cmdFn(Command{Command: "CardBack", Data: cb.name})
 }

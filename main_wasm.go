@@ -27,7 +27,7 @@ func main() {
 		if !sol.NoGameSave {
 			sol.TheBaize.Save()
 		}
-		sol.ThePreferences.Save()
+		sol.TheSettings.Save()
 	}()
 
 	if err := ebiten.RunGame(game); err != nil {

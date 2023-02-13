@@ -30,9 +30,8 @@ func (w *Checkbox) createImg() *ebiten.Image {
 	if !ok || img == nil {
 		log.Fatal(iconName, " not in icon map")
 	}
-	dc.DrawImage(img, 0, w.height/4)
-
 	dc.SetColor(ForegroundColor)
+	dc.DrawImage(img, 0, w.height/4)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(w.text, float64(48), float64(w.height)*0.8)
 
@@ -45,7 +44,7 @@ func (w *Checkbox) createImg() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-// NewCheckbox2 creates a new Checkbox
+// NewCheckbox creates a new Checkbox
 func NewCheckbox(parent Containery, id string, text string, boolVarPtr *bool, fnUpdate func()) *Checkbox {
 	width, _ := parent.Size()
 	w := &Checkbox{
@@ -74,4 +73,5 @@ func (w *Checkbox) Tapped() {
 	*(w.boolVarPtr) = !*(w.boolVarPtr)
 	w.img = w.createImg()
 	w.fnUpdate()
+	cmdFn(Command{Command: "SaveSettings"})
 }

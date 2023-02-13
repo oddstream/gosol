@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"log"
 	"sort"
 )
 
@@ -32,9 +31,9 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	}
 
 	for _, dst := range pilesToCheck {
-		if !dst.Valid() {
-			log.Println("Destination pile not valid", dst)
-		}
+		// if !dst.Valid() {
+		// 	log.Println("Destination pile not valid", dst)
+		// }
 		if dst != src {
 			if ok, _ := dst.vtable.CanAcceptTail(tail); ok {
 				homes = append(homes, dst)
@@ -150,8 +149,8 @@ func (b *Baize) FindDestinations() {
 	b.UpdateDrawers()
 	b.UpdateStatusbar()
 
-	if !ThePreferences.AlwaysShowMovableCards {
-		ThePreferences.ShowMovableCards = false
+	if !TheSettings.AlwaysShowMovableCards {
+		TheSettings.ShowMovableCards = false
 	}
 }
 

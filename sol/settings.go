@@ -5,8 +5,8 @@ import (
 	"oddstream.games/gosol/ui"
 )
 
-// Preferences contains the settings and preferences for the user
-type Preferences struct {
+// Settings contains the settings and preferences for the user
+type Settings struct {
 	// Capitals to emit to json
 	Variant              string
 	BaizeColor           string
@@ -34,9 +34,9 @@ type Preferences struct {
 	LastVersionMajor, LastVersionMinor int
 }
 
-// ThePreferences holds serialized game progress data
+// TheSettings holds serialized game progress data
 // Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
-var ThePreferences = &Preferences{
+var TheSettings = &Settings{
 	Variant:                "Klondike",
 	BaizeColor:             "BaizeGreen",
 	PowerMoves:             true,
@@ -65,20 +65,20 @@ var ThePreferences = &Preferences{
 	LastVersionMinor: 0,
 }
 
-var BooleanPreferences = []ui.BooleanPreference{
-	{Title: "Power moves", Var: &ThePreferences.PowerMoves, Update: func() {}},
-	{Title: "Auto collect", Var: &ThePreferences.AutoCollect, Update: func() {}},
-	{Title: "Safe collect", Var: &ThePreferences.SafeCollect, Update: func() {}},
-	{Title: "Show movable cards", Var: &ThePreferences.ShowMovableCards, Update: func() {}},
-	{Title: "Colorful cards", Var: &ThePreferences.ColorfulCards, Update: func() { TheBaize.setFlag(dirtyCardImages) }},
-	{Title: "Mute sounds", Var: &ThePreferences.Mute, Update: func() {
-		if ThePreferences.Mute {
+var BooleanSettings = []ui.BooleanSetting{
+	{Title: "Power moves", Var: &TheSettings.PowerMoves, Update: func() {}},
+	{Title: "Auto collect", Var: &TheSettings.AutoCollect, Update: func() {}},
+	{Title: "Safe collect", Var: &TheSettings.SafeCollect, Update: func() {}},
+	{Title: "Show movable cards", Var: &TheSettings.ShowMovableCards, Update: func() {}},
+	{Title: "Colorful cards", Var: &TheSettings.ColorfulCards, Update: func() { TheBaize.setFlag(dirtyCardImages) }},
+	{Title: "Mute sounds", Var: &TheSettings.Mute, Update: func() {
+		if TheSettings.Mute {
 			sound.SetVolume(0.0)
 		} else {
-			sound.SetVolume(ThePreferences.Volume)
+			sound.SetVolume(TheSettings.Volume)
 		}
 	}},
-	{Title: "Mirror baize", Var: &ThePreferences.MirrorBaize, Update: func() {
+	{Title: "Mirror baize", Var: &TheSettings.MirrorBaize, Update: func() {
 		savedUndoStack := TheBaize.undoStack
 		TheBaize.StartFreshGame()
 		TheBaize.SetUndoStack(savedUndoStack)
@@ -86,15 +86,15 @@ var BooleanPreferences = []ui.BooleanPreference{
 }
 
 func ShowSettingsDrawer() {
-	TheUI.ShowSettingsDrawer(&BooleanPreferences)
+	TheUI.ShowSettingsDrawer(&BooleanSettings)
 }
 
-var AniSpeedPreferences = []ui.FloatPreference{
-	{Title: "Fast", Var: &ThePreferences.AniSpeed, Value: 0.3},
-	{Title: "Normal", Var: &ThePreferences.AniSpeed, Value: 0.6},
-	{Title: "Slow", Var: &ThePreferences.AniSpeed, Value: 0.9},
+var AniSpeedSettings = []ui.FloatSetting{
+	{Title: "Fast", Var: &TheSettings.AniSpeed, Value: 0.3},
+	{Title: "Normal", Var: &TheSettings.AniSpeed, Value: 0.6},
+	{Title: "Slow", Var: &TheSettings.AniSpeed, Value: 0.9},
 }
 
 func ShowAniSpeedDrawer() {
-	TheUI.ShowAniSpeedDrawer(&AniSpeedPreferences)
+	TheUI.ShowAniSpeedDrawer(&AniSpeedSettings)
 }

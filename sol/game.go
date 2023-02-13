@@ -74,20 +74,20 @@ var CardLibrary []Card
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
-	ThePreferences.Load()
-	if ThePreferences.Mute {
+	TheSettings.Load()
+	if TheSettings.Mute {
 		sound.SetVolume(0.0)
 	} else {
-		sound.SetVolume(ThePreferences.Volume)
+		sound.SetVolume(TheSettings.Volume)
 	}
 	TheUI = ui.New(Execute)
 	TheStatistics = NewStatistics()
 	TheBaize = NewBaize()
 	TheBaize.StartFreshGame()
-	if ThePreferences.LastVersionMajor != GosolVersionMajor || ThePreferences.LastVersionMinor != GosolVersionMinor {
+	if TheSettings.LastVersionMajor != GosolVersionMajor || TheSettings.LastVersionMinor != GosolVersionMinor {
 		TheUI.Toast("Glass", fmt.Sprintf("Upgraded from %d.%d to %d.%d",
-			ThePreferences.LastVersionMajor,
-			ThePreferences.LastVersionMinor,
+			TheSettings.LastVersionMajor,
+			TheSettings.LastVersionMinor,
 			GosolVersionMajor,
 			GosolVersionMinor))
 	}
@@ -113,7 +113,7 @@ func (*Game) Update() error {
 		if !NoGameSave {
 			TheBaize.Save()
 		}
-		ThePreferences.Save()
+		TheSettings.Save()
 		return errors.New("exit requested")
 	}
 	return nil

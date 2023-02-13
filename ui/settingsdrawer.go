@@ -16,14 +16,14 @@ func NewSettingsDrawer() *SettingsDrawer {
 	return d
 }
 
-type BooleanPreference struct {
+type BooleanSetting struct {
 	Title  string
 	Var    *bool
 	Update func()
 }
 
 // ShowSettingsDrawer makes the card back picker visible
-func (u *UI) ShowSettingsDrawer(booleanSettings *[]BooleanPreference) {
+func (u *UI) ShowSettingsDrawer(booleanSettings *[]BooleanSetting) {
 	con := u.VisibleDrawer()
 	if con == u.settingsDrawer {
 		return
@@ -43,13 +43,13 @@ func (u *UI) ShowSettingsDrawer(booleanSettings *[]BooleanPreference) {
 	u.settingsDrawer.Show()
 }
 
-type FloatPreference struct {
+type FloatSetting struct {
 	Title string
 	Var   *float64
 	Value float64
 }
 
-func (u *UI) ShowAniSpeedDrawer(floatSettings *[]FloatPreference) {
+func (u *UI) ShowAniSpeedDrawer(floatSettings *[]FloatSetting) {
 	con := u.VisibleDrawer()
 	if con == u.aniSpeedDrawer {
 		return

@@ -15,10 +15,10 @@ func NewVariantPicker() *Picker {
 }
 
 // ShowVariantPicker makes the variant picker visible
-func (u *UI) ShowVariantPickerEx(content []string, requestType string) {
+func (u *UI) ShowVariantPickerEx(content []string, widgetCommand string) {
 	u.variantPicker.widgets = u.variantPicker.widgets[:0]
 	for _, c := range content {
-		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, "", 0, c, schriftbank.RobotoMedium24, requestType))
+		u.variantPicker.widgets = append(u.variantPicker.widgets, NewLabel(u.variantPicker, "", 0, c, schriftbank.RobotoMedium24, widgetCommand))
 	}
 	u.variantPicker.ResetScroll()
 	u.variantPicker.LayoutWidgets()

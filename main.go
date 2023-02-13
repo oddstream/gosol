@@ -77,5 +77,5 @@ func main() {
 		sol.TheBaize.Save()
 	}
 
-	sol.ThePreferences.Save()
+	sol.TheSettings.Save()
 }

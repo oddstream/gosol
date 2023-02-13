@@ -9,9 +9,9 @@ import (
 // Label is a button that displays a single rune
 type Label struct {
 	WidgetBase
-	text        string
-	fontFace    font.Face
-	requestType string
+	text     string
+	fontFace font.Face
+	command  string
 }
 
 func (l *Label) createImg() *ebiten.Image {
@@ -49,7 +49,7 @@ func NewLabel(parent Containery, id string, align int, text string, fontFace fon
 	l := &Label{
 		// widget x, y will be set by LayoutWidgets
 		WidgetBase: WidgetBase{parent: parent, id: id, img: nil, width: int(width), height: int(height), align: align},
-		text:       text, fontFace: fontFace, requestType: requestType}
+		text:       text, fontFace: fontFace, command: requestType}
 	l.Activate()
 	return l
 }
@@ -70,8 +70,8 @@ func (l *Label) Tapped() {
 	if l.disabled {
 		return
 	}
-	if l.requestType != "" {
-		cmdFn(ChangeRequest{ChangeRequested: l.requestType, Data: l.text})
+	if l.command != "" {
+		cmdFn(Command{Command: l.command, Data: l.text})
 	}
 }
 

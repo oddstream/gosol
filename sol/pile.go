@@ -99,9 +99,9 @@ func NewPile(category string, slot image.Point, fanType FanType, moveType MoveTy
 	return self
 }
 
-func (self *Pile) Valid() bool {
-	return self != nil
-}
+// func (self *Pile) Valid() bool {
+// 	return self != nil
+// }
 
 func (self *Pile) Reset() {
 	self.cards = self.cards[:0]

@@ -57,17 +57,20 @@ type Card struct {
 
 // NewCard is a factory for Card objects
 func NewCard(pack, suit, ordinal int) Card {
-	// be nice to start the cards in the middle of the screen, but the screen will be 0,0 when app starts
-	c := Card{ID: NewCardID(pack, suit, ordinal), pos: image.Point{0, 0}}
+	// be nice to start the cards in the middle of the screen,
+	// but the screen will be 0,0 when app starts
+	// and ebiten.WindowSize() only works on desktops
+	// Stock is usually at (slot) 0,0 which is half a card width/height into the baize, so...
+	c := Card{ID: NewCardID(pack, suit, ordinal), pos: image.Point{X: (CardWidth / 2), Y: (CardHeight / 2)}}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
 	return c
 }
 
-func (c *Card) Valid() bool {
-	return c != nil
-}
+// func (c *Card) Valid() bool {
+// 	return c != nil
+// }
 
 func (c *Card) SetOwner(p *Pile) {
 	// p may be nil if we have just popped the card
@@ -131,11 +134,10 @@ func (c *Card) LerpTo(dst image.Point) {
 	c.dst = dst
 	// refanning waste cards can flutter with slow AniSpeed, so go faster if not far to go
 	dist := util.Distance(c.src, c.dst)
-	// c.aniSpeed = util.MapValue(ThePreferences.AniSpeed, 0, dist, 0.2, 0.9)
 	if dist < float64(CardWidth) {
-		c.aniSpeed = ThePreferences.AniSpeed / 2.0
+		c.aniSpeed = TheSettings.AniSpeed / 2.0
 	} else {
-		c.aniSpeed = ThePreferences.AniSpeed
+		c.aniSpeed = TheSettings.AniSpeed
 	}
 	c.lerpStartTime = time.Now()
 }
@@ -233,7 +235,7 @@ func (c *Card) StartSpinning() {
 	c.destinations = nil
 	// delay start of spinning to allow cards to be seen to go/finish their trip to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
-	d := time.Duration(ThePreferences.AniSpeed * float64(time.Second))
+	d := time.Duration(TheSettings.AniSpeed * float64(time.Second))
 	d *= 2.0 // pause for admiration
 	c.spinStartAfter = time.Now().Add(d)
 }
@@ -319,7 +321,7 @@ func (c *Card) Update() error {
 
 	if c.Flipping() {
 		// we need to flip faster than we lerp, because flipping happens in two stages
-		t := time.Since(c.flipStartTime).Seconds() / (ThePreferences.AniSpeed / 2.0)
+		t := time.Since(c.flipStartTime).Seconds() / (TheSettings.AniSpeed / 2.0)
 		if c.flipDirection < 0 {
 			c.flipWidth = util.Lerp(1.0, 0.0, t)
 			if c.flipWidth <= 0.0 {
@@ -426,7 +428,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	// 	op.ColorM.Scale(0.8, 0.8, 1.0, 1.0)
 	// }
 
-	if ThePreferences.ShowMovableCards {
+	if TheSettings.ShowMovableCards {
 		if c.Owner().IsStock() {
 			// card will be prone because Stock
 			// nb this will color all the stock cards, not just the top card

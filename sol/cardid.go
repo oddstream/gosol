@@ -135,41 +135,41 @@ func (c *Card) Joker() bool {
 // Color returns Red or Black
 func (cid CardID) Color() color.RGBA {
 	suit := cid.Suit()
-	if ThePreferences.ColorfulCards {
+	if TheSettings.ColorfulCards {
 		switch TheBaize.script.CardColors() {
 		case 4:
 			switch suit {
 			case NOSUIT:
 				return BasicColors["Silver"]
 			case CLUB:
-				return ExtendedColors[ThePreferences.ClubColor]
+				return ExtendedColors[TheSettings.ClubColor]
 			case DIAMOND:
-				return ExtendedColors[ThePreferences.DiamondColor]
+				return ExtendedColors[TheSettings.DiamondColor]
 			case HEART:
-				return ExtendedColors[ThePreferences.HeartColor]
+				return ExtendedColors[TheSettings.HeartColor]
 			case SPADE:
-				return ExtendedColors[ThePreferences.SpadeColor]
+				return ExtendedColors[TheSettings.SpadeColor]
 			}
 		case 2:
 			switch suit {
 			case NOSUIT:
 				return BasicColors["Silver"]
 			case CLUB, SPADE:
-				return ExtendedColors[ThePreferences.BlackColor]
+				return ExtendedColors[TheSettings.BlackColor]
 			case DIAMOND, HEART:
-				return ExtendedColors[ThePreferences.RedColor]
+				return ExtendedColors[TheSettings.RedColor]
 			}
 		case 1:
-			return ExtendedColors[ThePreferences.SpadeColor]
+			return ExtendedColors[TheSettings.SpadeColor]
 		}
 	} else {
 		switch suit {
 		case NOSUIT:
 			return BasicColors["Silver"]
 		case CLUB, SPADE:
-			return ExtendedColors[ThePreferences.BlackColor]
+			return ExtendedColors[TheSettings.BlackColor]
 		case DIAMOND, HEART:
-			return ExtendedColors[ThePreferences.RedColor]
+			return ExtendedColors[TheSettings.RedColor]
 		}
 	}
 	return BasicColors["Purple"]

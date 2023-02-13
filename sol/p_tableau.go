@@ -62,7 +62,7 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	// because we didn't then know the destination pile
 	// which we need to know to calculate power moves
 	if self.pile.moveType == MOVE_ONE_PLUS {
-		if ThePreferences.PowerMoves {
+		if TheSettings.PowerMoves {
 			moves := powerMoves(TheBaize.piles, self.pile)
 			if len(tail) > moves {
 				if moves == 1 {

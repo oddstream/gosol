@@ -12,12 +12,19 @@ var CommandTable = map[ebiten.Key]func(){
 	ebiten.KeyN: func() { TheBaize.NewDeal() },
 	ebiten.KeyR: func() { TheBaize.RestartDeal() },
 	ebiten.KeyU: func() { TheBaize.Undo() },
-	ebiten.KeyS: func() { TheBaize.SavePosition() },
+	ebiten.KeyB: func() {
+		if ebiten.IsKeyPressed(ebiten.KeyControl) {
+			TheBaize.LoadPosition()
+		} else {
+			TheBaize.SavePosition()
+		}
+	},
 	ebiten.KeyL: func() { TheBaize.LoadPosition() },
+	ebiten.KeyS: func() { TheBaize.SavePosition() },
 	ebiten.KeyC: func() { TheBaize.Collect2() },
 	ebiten.KeyH: func() {
-		ThePreferences.ShowMovableCards = !ThePreferences.ShowMovableCards
-		if ThePreferences.ShowMovableCards {
+		TheSettings.ShowMovableCards = !TheSettings.ShowMovableCards
+		if TheSettings.ShowMovableCards {
 			if TheBaize.moves+TheBaize.fmoves > 0 {
 				TheUI.ToastInfo("Movable cards highlighted")
 			} else {
@@ -26,13 +33,13 @@ var CommandTable = map[ebiten.Key]func(){
 		}
 	},
 	ebiten.KeyM: func() {
-		ThePreferences.AlwaysShowMovableCards = !ThePreferences.AlwaysShowMovableCards
-		ThePreferences.ShowMovableCards = ThePreferences.AlwaysShowMovableCards
-		if ThePreferences.AlwaysShowMovableCards {
+		TheSettings.AlwaysShowMovableCards = !TheSettings.AlwaysShowMovableCards
+		TheSettings.ShowMovableCards = TheSettings.AlwaysShowMovableCards
+		if TheSettings.AlwaysShowMovableCards {
 			TheUI.ToastInfo("Movable cards always highlighted")
 		}
 	},
-	ebiten.KeyF: func() { TheUI.ShowVariantPickerEx(VariantGroupNames(), "VariantGroup") },
+	ebiten.KeyF: func() { TheUI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker") },
 	ebiten.KeyA: func() { ShowAniSpeedDrawer() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	// ebiten.KeyTab: func() {
@@ -40,7 +47,6 @@ var CommandTable = map[ebiten.Key]func(){
 	// 		for _, p := range TheBaize.piles {
 	// 			p.Refan()
 	// 		}
-	// 		ThePreferences.Save()
 	// 	}
 	// },
 	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
@@ -65,24 +71,27 @@ func Execute(cmd interface{}) {
 		if fn, ok := CommandTable[v]; ok {
 			fn()
 		}
-	case ui.ChangeRequest:
-		// a widget has sent a change request
-		switch v.ChangeRequested {
-		case "Variant":
+	case ui.Command:
+		// a widget has sent a command
+		switch v.Command {
+		case "ShowVariantGroupPicker":
+			TheUI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker")
+		case "ShowVariantPicker":
+			TheUI.ShowVariantPickerEx(VariantNames(v.Data), "ChangeVariant")
+		case "ChangeVariant":
 			if _, ok := Variants[v.Data]; !ok {
 				TheUI.ToastError(fmt.Sprintf("Don't know how to play '%s'", v.Data))
+			} else if v.Data == TheSettings.Variant {
+				TheUI.ToastError(fmt.Sprintf("Already playing '%s'", v.Data))
 			} else {
-				if v.Data != ThePreferences.Variant {
-					TheBaize.ChangeVariant(v.Data)
-				}
+				TheBaize.ChangeVariant(v.Data)
+				TheSettings.Save() // save now especially if running in a browser
 			}
-		case "VariantGroup":
-			TheUI.ShowVariantPickerEx(VariantNames(v.Data), "Variant")
-			// TheBaize.ShowVariantPicker(v.Data)
+		case "SaveSettings":
+			TheSettings.Save() // save now especially if running in a browser
 		default:
-			log.Panic("unknown change request", v.ChangeRequested, v.Data)
+			log.Panic("unknown command", v.Command, v.Data)
 		}
-		ThePreferences.Save() // save now especially if running on a browser
 	default:
 		log.Fatal("Baize.Execute unknown command type", cmd)
 	}

@@ -30,9 +30,8 @@ func (w *RadioButton) createImg() *ebiten.Image {
 	if !ok || img == nil {
 		log.Fatal(iconName, " not in icon map")
 	}
-	dc.DrawImage(img, 0, w.height/4)
-
 	dc.SetColor(ForegroundColor)
+	dc.DrawImage(img, 0, w.height/4)
 	dc.SetFontFace(schriftbank.RobotoMedium24)
 	dc.DrawString(w.text, float64(48), float64(w.height)*0.8)
 
@@ -77,4 +76,5 @@ func (w *RadioButton) Tapped() {
 			rb.img = rb.createImg()
 		}
 	}
+	cmdFn(Command{Command: "SaveSettings"})
 }
