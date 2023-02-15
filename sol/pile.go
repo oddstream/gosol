@@ -220,10 +220,10 @@ func (self *Pile) Delete(index int) {
 }
 
 // Extract a specific *Card from this pile
-func (self *Pile) Extract(ordinal, suit int) *Card {
-	var ID CardID = NewCardID(0, suit, ordinal)
+func (self *Pile) Extract(pack, ordinal, suit int) *Card {
+	var ID CardID = NewCardID(pack, suit, ordinal)
 	for i, c := range self.cards {
-		if SameCard(ID, c.ID) {
+		if SameCardAndPack(ID, c.ID) {
 			self.Delete(i)
 			c.FlipUp()
 			return c
@@ -508,7 +508,7 @@ func (self *Pile) CanMoveTail(tail []*Card) (bool, error) {
 
 func (self *Pile) MakeTail(c *Card) []*Card {
 	if c.Owner() != self {
-		log.Panic("Pile.MakeTail called with a weird card")
+		log.Panic("Pile.MakeTail called with a card that is not of this pile")
 	}
 	if c == self.Peek() {
 		return []*Card{c}
@@ -559,13 +559,13 @@ func (self *Pile) BuryCards(ordinal int) {
 func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
 	if len(card.destinations) > 0 {
-		src := card.Owner()
-		dst := card.destinations[0].pile // presorted so biggest weight is first
-		tail = src.MakeTail(card)
-		if len(tail) == 1 {
-			MoveCard(src, dst)
+		csrc := card.Owner()
+		cdst := card.destinations[0].pile // presorted so biggest weight is first
+		ctail := csrc.MakeTail(card)
+		if len(ctail) == 1 {
+			MoveCard(csrc, cdst)
 		} else {
-			MoveTail(card, dst)
+			MoveTail(card, cdst)
 		}
 	}
 	// don't play an error sound here, leave it up to higher level (Baize.InputTap)

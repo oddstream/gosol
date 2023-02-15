@@ -118,10 +118,10 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	var cardOrdinal = ID.Ordinal()
 	var suitRune rune = ID.SuitRune()
 	var cardColor color.RGBA = ID.Color()
-	if ID.Joker() {
-		// if a joker is pretending to be a certain card, then show it's pretend ordinal and suit, but faded
-		cardColor.A = 64
-	}
+	// if ID.Joker() {
+	// 	// if a joker is pretending to be a certain card, then show it's pretend ordinal and suit, but faded
+	// 	cardColor.A = 64
+	// }
 
 	// draw the card ordinals in top left and bottom right corners
 	dc.SetColor(cardColor)

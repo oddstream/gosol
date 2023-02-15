@@ -39,10 +39,10 @@ func (self *Bisley) BuildPiles() {
 
 func (self *Bisley) StartGame() {
 
-	self.foundations[4].Push(self.stock.Extract(1, CLUB))
-	self.foundations[5].Push(self.stock.Extract(1, DIAMOND))
-	self.foundations[6].Push(self.stock.Extract(1, HEART))
-	self.foundations[7].Push(self.stock.Extract(1, SPADE))
+	self.foundations[4].Push(self.stock.Extract(0, 1, CLUB))
+	self.foundations[5].Push(self.stock.Extract(0, 1, DIAMOND))
+	self.foundations[6].Push(self.stock.Extract(0, 1, HEART))
+	self.foundations[7].Push(self.stock.Extract(0, 1, SPADE))
 
 	// the first 4 tableaux have 3 cards
 	for i := 0; i < 4; i++ {

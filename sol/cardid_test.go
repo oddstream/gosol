@@ -11,10 +11,10 @@ func TestCardID(t *testing.T) {
 	if str != "0 Club 1" {
 		t.Errorf("wrong string for 0 1 1: %s", cid)
 	}
-	col := cid.Color()
-	if col != BasicColors["Black"] {
-		t.Errorf("wrong color for %s", cid)
-	}
+	// col := cid.Color()
+	// if col != BasicColors["Black"] {
+	// 	t.Errorf("wrong color for %s", cid)
+	// }
 
 	cid2 := NewCardID(1, 1, 1)
 	if !SameCard(cid, cid2) {

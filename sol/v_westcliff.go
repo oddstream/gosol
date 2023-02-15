@@ -61,16 +61,16 @@ func (self *Westcliff) BuildPiles() {
 func (self *Westcliff) StartGame() {
 	switch self.variant {
 	case "Classic":
-		if c := self.stock.Extract(1, CLUB); c != nil {
+		if c := self.stock.Extract(0, 1, CLUB); c != nil {
 			self.foundations[0].Push(c)
 		}
-		if c := self.stock.Extract(1, DIAMOND); c != nil {
+		if c := self.stock.Extract(0, 1, DIAMOND); c != nil {
 			self.foundations[1].Push(c)
 		}
-		if c := self.stock.Extract(1, HEART); c != nil {
+		if c := self.stock.Extract(0, 1, HEART); c != nil {
 			self.foundations[2].Push(c)
 		}
-		if c := self.stock.Extract(1, SPADE); c != nil {
+		if c := self.stock.Extract(0, 1, SPADE); c != nil {
 			self.foundations[3].Push(c)
 		}
 		fallthrough
