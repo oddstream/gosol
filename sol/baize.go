@@ -23,12 +23,10 @@ const (
 	dirtyCardPositions
 )
 
-// Baize object describes the baize
+// Baize object describes the baize; it contains dark (background/engine)
+// and light (user interface) components
 type Baize struct {
-	script       Scripter
-	piles        []*Pile
-	bookmark     int // index into undo stack
-	recycles     int // number of available stock recycles
+	DarkBaize
 	undoStack    []*SavableBaize
 	dirtyFlags   uint32 // what needs doing when we Update
 	moves        int    // number of possible (not useless) moves
@@ -45,8 +43,9 @@ type Baize struct {
 
 // NewBaize is the factory func for the single Baize object
 func NewBaize() *Baize {
-	// let WindowWidth,WindowHeight be zero, so that the first Layout will trigger card scaling and pile placement
-	return &Baize{dragOffset: image.Point{0, 0}, dirtyFlags: 0xFFFF}
+	// let WindowWidth, WindowHeight be zero, so that the first Layout will
+	// trigger card scaling and pile placement
+	return &Baize{dirtyFlags: 0xFFFF}
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -84,22 +83,6 @@ func (b *Baize) CRC() uint32 {
 	}
 	return crc32.ChecksumIEEE(lens)
 }
-
-/*
-func (b *Baize) NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
-	var p Pile = Pile{
-		// static
-		category: category,
-		slot:     slot,
-		fanType:  fanType,
-		moveType: moveType,
-		// dynamic
-		fanFactor: DefaultFanFactor[fanType],
-	}
-	b.piles = append(b.piles, &p)
-	return p
-}
-*/
 
 func (b *Baize) AddPile(pile *Pile) {
 	b.piles = append(b.piles, pile)

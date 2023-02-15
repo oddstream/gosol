@@ -70,10 +70,8 @@ type PileVtabler interface {
 
 // Pile is a generic container for cards
 type Pile struct {
-	vtable    PileVtabler
-	category  string
+	DarkPile
 	fanType   FanType
-	moveType  MoveType
 	cards     []*Card
 	slot      image.Point // logical position on baize
 	pos       image.Point // actual position on baize
@@ -81,19 +79,16 @@ type Pile struct {
 	pos2      image.Point // waste pos #1
 	fanFactor float64
 	// buddyPos    image.Point
-	label string
-	img   *ebiten.Image
+	// label string
+	img *ebiten.Image
 	// target bool // experimental, might delete later, IDK
 }
 
 func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
 	var self Pile = Pile{
-		// static
-		category: category,
-		slot:     slot,
-		fanType:  fanType,
-		moveType: moveType,
-		// dynamic
+		DarkPile:  DarkPile{category: category, moveType: moveType},
+		slot:      slot,
+		fanType:   fanType,
 		fanFactor: DefaultFanFactor[fanType],
 	}
 	return self
