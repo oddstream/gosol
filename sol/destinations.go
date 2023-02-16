@@ -26,7 +26,7 @@ func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	pilesToCheck = append(pilesToCheck, b.script.Discards()...)
 	if b.script.Waste() != nil {
 		// in Go 1.19, append will add a nil
-		// in Go 1.17, nil was not appended
+		// in Go 1.17, nil was not appended?
 		pilesToCheck = append(pilesToCheck, b.script.Waste())
 	}
 

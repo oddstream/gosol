@@ -1,12 +1,12 @@
 {
-	// "editor.fontFamily": "DejaVu Sans Mono",
+	"editor.fontFamily": "Fira Code Retina",
 	// "editor.fontFamily": "Fira Code",
-	// "editor.fontFamily": "Fira Code Retina",
+	// "editor.fontFamily": "JetBrains Mono",
+	// "editor.fontFamily": "Droid Sans Mono",
+	// "editor.fontFamily": "DejaVu Sans Mono",
 	// "editor.fontFamily": "Hack",
 	// "editor.fontFamily": "Ubuntu Mono",
-	"editor.fontFamily": "Droid Sans Mono",
 	// "editor.fontFamily": "Inconsolata",
-	// "editor.fontFamily": "JetBrains Mono",
 	// "editor.fontFamily": "Go Mono",
 	// "editor.fontFamily": "Cascadia Code",
   }

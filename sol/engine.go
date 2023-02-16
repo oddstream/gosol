@@ -8,17 +8,11 @@ type DarkBaize struct {
 }
 
 type DarkPile struct {
+	// cards    []*DarkCard
 	category string
 	vtable   PileVtabler
 	label    string
 	moveType MoveType
 }
 
-type DarkCard struct {
-	pack    int
-	suit    int
-	ordinal int
-	prone   bool
-	// ID    CardID
-	owner *DarkPile
-}
+// DarkCard is CardID

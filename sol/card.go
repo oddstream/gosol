@@ -11,25 +11,18 @@ import (
 	"oddstream.games/gosol/util"
 )
 
-const (
-// LERP_SECONDS = 0.5
-// FLIP_SECONDS = LERP_SECONDS / 3
-// SPIN_SECONDS = LERP_SECONDS * 2
-)
-
 /*
-	Cards have several states: idle, being dragged, transitioning, shaking, spinning, flipping
+	Cards have several states: idle, being dragged, transitioning, shaking, spinning, flipping.
 	You'd think that cards should have a 'state' enum, but the states can overlap (eg a card
-	can transition and flip at the same time)
+	can transition and flip at the same time).
 */
 
 // Card object
 type Card struct {
-	// static things
-	ID CardID // contains pack, ordinal, suit, ordinal (and bonus prone and joker flag bits)
+	// dark card things
+	ID CardID
 
-	// dynamic things
-	owner        *Pile
+	// display things
 	pos          image.Point
 	destinations []CardDestination
 
@@ -72,13 +65,18 @@ func NewCard(pack, suit, ordinal int) Card {
 // 	return c != nil
 // }
 
-func (c *Card) SetOwner(p *Pile) {
-	// p may be nil if we have just popped the card
-	c.owner = p
-}
-
+// Owner finds the pile this card currently lives in. We used to store a Card.owner
+// field, but now use this ugly slow way to dynamically determine owner.
 func (c *Card) Owner() *Pile {
-	return c.owner
+	for _, p := range TheBaize.piles {
+		for _, card := range p.cards {
+			if SameCardAndPack(c.ID, card.ID) {
+				return p
+			}
+		}
+	}
+	log.Panicf("Card %s has no owner", c)
+	return nil
 }
 
 // String satisfies the Stringer interface (defined by fmt package)
@@ -245,7 +243,7 @@ func (c *Card) StopSpinning() {
 	c.directionX, c.directionY = 0, 0
 	c.angle, c.spin = 0, 0
 	// card may have spun off-screen slightly, and be -ve, which confuses Smoothstep
-	c.pos = c.owner.pos
+	c.pos = c.Owner().pos
 }
 
 func (c *Card) Static() bool {
@@ -344,7 +342,7 @@ func (c *Card) Update() error {
 // Draw renders the card into the screen
 func (c *Card) Draw(screen *ebiten.Image) {
 
-	if c.owner.Hidden() {
+	if c.Owner().Hidden() {
 		return // eg Freecell stock
 	}
 
@@ -373,7 +371,6 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	}
 
 	if c.Flipping() {
-		// img = ebiten.NewImageFromImage(img)
 		op.GeoM.Translate(float64(-CardWidth/2), 0)
 		op.GeoM.Scale(c.flipWidth, 1.0)
 		op.GeoM.Translate(float64(CardWidth/2), 0)

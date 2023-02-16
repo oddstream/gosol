@@ -248,7 +248,6 @@ func (self *Pile) Pop() *Card {
 	}
 	c := self.cards[len(self.cards)-1]
 	self.cards = self.cards[:len(self.cards)-1]
-	c.SetOwner(nil)
 	c.FlipUp()
 	TheBaize.setFlag(dirtyCardPositions)
 	return c
@@ -264,7 +263,6 @@ func (self *Pile) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
-	c.SetOwner(self)
 	c.LerpTo(pos)
 
 	if self.IsStock() {

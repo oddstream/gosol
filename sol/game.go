@@ -48,7 +48,7 @@ var (
 	// thirteen suitless cards,
 	// one entry for each face card (4 suits * 13 cards),
 	// suits are 1-indexed (eg club == 1) so image to be used for a card is (suit * 13) + (ord - 1).
-	// can use (ord - 1) as in index to get suitless card
+	// can use (ord - 1) as an index to get suitless card
 	TheCardFaceImageLibrary [13 * 5]*ebiten.Image
 	// CardBackImage applies to all cards so is kept globally as an optimization
 	CardBackImage *ebiten.Image

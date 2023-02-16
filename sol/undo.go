@@ -37,6 +37,9 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 	self.Reset()
 	for _, cid := range sp.Cards {
 		for i := 0; i < len(CardLibrary); i++ {
+			// look in CardLibrary to find each card to create our *Card pointer
+			// don't use range for this loop; it creates a copy
+			//
 			// the only use for storing pack in the CardID, is here
 			// without specifying pack, in variants with >1 pack,
 			// the same card may be 'taken' from the CardLibrary

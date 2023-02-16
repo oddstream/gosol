@@ -26,11 +26,12 @@ const (
 type CardID uint16
 
 const (
-	packMask    CardID = 0b0000111100000000
-	suitMask    CardID = 0b0000000011110000
-	ordinalMask CardID = 0b0000000000001111
-	proneFlag   CardID = 0b0001000000000000
-	jokerFlag   CardID = 0b0010000000000000
+	packMask    CardID = 0b0000111100000000 // 0..15 0xf00
+	suitMask    CardID = 0b0000000011110000 // 0..15 0xf0
+	ordinalMask CardID = 0b0000000000001111 // 0..15 0xf
+	proneFlag   CardID = 0b0001000000000000 // single bit
+	jokerFlag   CardID = 0b0010000000000000 // single bit
+	ownerMask   CardID = 0xffff
 )
 
 func (cid CardID) String() string {
