@@ -241,6 +241,8 @@ All cards in the stock are always face down. You can't move a card to the stock 
 
 Tableau piles are where the main building in the game happens. The player tries to move the cards around the tableau and other piles, so that the cards in each tableau pile are sorted into some game-specific order. For example, in Klondike and Freecell, the tableau cards start in some random order, and must be sorted into increasing rank and alternating color.
 
+Normally, only the top card of a tableau pile may be moved. This can be relaxed to allow consecutive sequences of conformant cards at the top of the pile to be moved as a unit. Some games appear to allow the latter while actually only allowing one card at a time to be moved; Freecell is a prime example of this. In reality, Freecell allows 'power moves' to hide the one-card-only rule.
+
 Sometimes, there is a constraint on which card may be placed onto an empty tableau, for example in Klondike, and empty tableau can only contain a King.
 
 Some cards in the tableau pile may start life face down; the game will automatically turn the cards up when they are exposed.
@@ -251,7 +253,7 @@ Foundation piles are where the player is trying to move the cards to, so that th
 
 The cards in each foundation usually start with an Ace, and build up, always the same suit. A foundation pile is full (complete) when it contains 13 cards.
 
-Only one card at a time can be moved to a foundation.
+Only one card at a time can be moved to a foundation. Cards cannot be taken off a foundation.
 
 ### Discard
 
@@ -279,12 +281,12 @@ Only one card at a time may be moved from a reserve, and cards can never be move
 
 ## TODO
 
+* Split the code into front and back end, and add a universal solver.
 * Reduce the size of the executable (using [UPX](https://upx.github.io/)?) and WASM files.
 * Scripted game variants, possibly using [GopherLua](https://github.com/yuin/gopher-lua), or a Tcl-style little language.
 * ~~The LÖVE+Lua version contains several things that are implemented better, so I'm in the process of copying the designs back to this version.~~
 * ~~Get it working on Android (agggh! help!).~~
 * ~~I'd like it to have an inter-user high scores table, but the Google Play games services interface and setup is inpenetrable to me at the moment.~~
-* Split the code into front and back end, and add a universal solver.
 * (Don't) replace Ebiten with [Fyne](https://fyne.io). That's a complete rewrite because Ebiten is [immediate mode](https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)), and Fyne is [retained mode](https://en.wikipedia.org/wiki/Retained_mode). I prefer immediate mode.
 * Give up and rewrite the whole thing in Go+Fyne, [Godot](https://godotengine.org/), [Defold](https://www.defold.com), Dart+Flutter, Java+libGDX, Kotlin+Korge, Haxe, Rust, Tcl/Tk, Pascal, Wren, Clojure, or something else. I agonize over this, and have made several false starts, but keep coming back to C, Go or Lua.
 

@@ -1,12 +1,12 @@
 {
-	"editor.fontFamily": "Fira Code Retina",
-	// "editor.fontFamily": "Fira Code",
-	// "editor.fontFamily": "JetBrains Mono",
-	// "editor.fontFamily": "Droid Sans Mono",
+	"editor.fontFamily": "Hack",	// better DejaVu Sans Mono
 	// "editor.fontFamily": "DejaVu Sans Mono",
-	// "editor.fontFamily": "Hack",
-	// "editor.fontFamily": "Ubuntu Mono",
-	// "editor.fontFamily": "Inconsolata",
-	// "editor.fontFamily": "Go Mono",
-	// "editor.fontFamily": "Cascadia Code",
-  }
+	// "editor.fontFamily": "JetBrains Mono",
+	// "editor.fontFamily": "Fira Code Retina",
+	// "editor.fontFamily": "Fira Code",
+	// "editor.fontFamily": "Droid Sans Mono",
+	// "editor.fontFamily": "Ubuntu Mono",	// too small
+	// "editor.fontFamily": "Inconsolata",	// too small
+	// "editor.fontFamily": "Go Mono",	// too serifed
+	// "editor.fontFamily": "Cascadia Code",	// too fat
+}

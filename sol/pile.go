@@ -552,25 +552,24 @@ func (self *Pile) BuryCards(ordinal int) {
 
 // default behaviours for all pile types, that can be over-ridden by providing (eg) *Stock.Collect
 
-//func (self *Pile) DefaultCanAcceptTail([]*Card) (bool, error) { return false, nil }
+// func (self *Pile) DefaultCanAcceptTail([]*Card) (bool, error) { return false, nil }
 
 func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
-	if len(card.destinations) > 0 {
+	if card.tapDestination != nil {
 		csrc := card.Owner()
-		cdst := card.destinations[0].pile // presorted so biggest weight is first
 		ctail := csrc.MakeTail(card)
 		if len(ctail) == 1 {
-			MoveCard(csrc, cdst)
+			MoveCard(csrc, card.tapDestination)
 		} else {
-			MoveTail(card, cdst)
+			MoveTail(card, card.tapDestination)
 		}
 	}
 	// don't play an error sound here, leave it up to higher level (Baize.InputTap)
 }
 
-//func (self *Pile) DefaultConformant() bool   { return false }
-//func (self *Pile) DefaultUnsortedPairs() int { return 0 }
+// func (self *Pile) DefaultConformant() bool   { return false }
+// func (self *Pile) DefaultUnsortedPairs() int { return 0 }
 
 func (self *Pile) DrawStaticCards(screen *ebiten.Image) {
 	for _, c := range self.cards {

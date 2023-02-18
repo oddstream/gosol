@@ -1,0 +1,110 @@
+LIGHT-DARK
+
+single-session
+
+layout of variant is separate from the rules/script; the layout of piles is of no concern to DARK
+
+DARK knows nothing of ebiten or gg
+
+LIGHT is really stupid. It's passed an entire baize of cards,
+and lerps the difference between old and new.
+
+Q. CardLibrary?
+A. Just a slice of sol.CardID.
+	Does DARK even need this, if length of pack is known when creating stock?
+
+Q. Is the Baize transport object going to be *Baize or Baize?
+A.
+
+Q. Pile.Placeholder()
+A. In LIGHT, this needs recreating everytime Pile.Label/Baize.Recycles is updated
+	Stock is a special case (uses rune based on Baize.Recycles)
+	Cell, Reserve are special cases (they draw nothing)
+	Light is going to need a switch Pile.Category
+
+Q. Is Statistics LIGHT or DARK?
+	Dark needs it for sorting "All by Played"
+	Light needs it to display to user
+	Dark knows when a game is complete, so it can record to json
+A. DARK
+
+Q. Are preferences LIGHT or DARK?
+A. They are LIGHT
+	But DARK must be told of PowerMoves
+	SafeCollect, AutoCollect, can be API calls from Light to DARK
+
+Q. MirrorBaize?
+A. Entirely up to LIGHT, as the relative positions of piles don't change, only slot positions
+
+DARKER INTERFACE
+========
+type Darker interface {
+	ListVariantGroups() []string
+	ListVariants(group: string) []string
+	NewGame(variant: string) (ok, error)
+	LoadGame() (ok, error)
+		tries to load saved.json into current Baize
+	GetBaize() baize
+	SaveGame()
+		saves current baize to saved.json
+	RestartGame()
+		unwinds undo stack and returns initial baize
+	Undo()
+	UndoStackSize() int
+		for knowing number of moves, and grey out restart deal
+	Bookmark()
+		sets bookmark
+	GotoBookmark() (ok, error)
+	PercentComplete() int
+	Complete() bool
+	Conformant() bool
+	?RecordCompletedGame(variant string)
+	?RecordLostGame(variant string)
+	Statistics(variant string) []string
+	Solve(movesAhead: int) (baize, error)
+	SetPowerMoves(bool)
+}
+
+type dark struct {
+	handle Dark
+}
+
+PileTapped(handle, pileIndex: int) (baize, error)
+TailTapped(handle, pileIndex: int, cardIndex: int) (baize, error)
+TailDragged(handle, fromPileIndex int, cardIndex: int, toPileIndex: int) (baize, error)
+
+BAIZE
+=====
+type DarkBaize struct {
+	piles []DarkPile
+	recycles int
+	bookmark int
+}
+type DarkPile struct {
+	cards []DarkCard
+	category string
+	label string
+}
+type DarkCard struct {
+	card CardID
+	weight int
+}
+
+	card ordinals A23456789XJQK
+	card suits    CDHS
+	example       JC AH XD
+	face down     ##
+	... or could use CardID uint16
+	... lower case suit for face down, upper case for face up?
+
+	piles		cell discard foundation reserve tableau stock waste
+	example		cell[0] cell[1] tableau[12] waste stock
+				pile index defaults to 0 if not given
+	moves		src-pile dst-pile
+				stock waste	// top card from stock(0) popped and pushed to waste(0)
+				stock		// recycle tap on stock
+				tableau[2] tableau[3]
+				tableau[2] 0 tableau[3]	// tail from, first card
+
+				or do it as a go struct eg
+

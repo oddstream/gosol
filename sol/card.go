@@ -1,7 +1,6 @@
 package sol
 
 import (
-	"fmt"
 	"image"
 	"log"
 	"math/rand"
@@ -19,12 +18,15 @@ import (
 
 // Card object
 type Card struct {
-	// dark card things
+	// static things
 	ID CardID
 
 	// display things
-	pos          image.Point
-	destinations []CardDestination
+	pos image.Point
+
+	// tap things
+	tapDestination *Pile
+	tapWeight      int
 
 	// lerping things
 	src           image.Point // lerp origin
@@ -65,23 +67,9 @@ func NewCard(pack, suit, ordinal int) Card {
 // 	return c != nil
 // }
 
-// Owner finds the pile this card currently lives in. We used to store a Card.owner
-// field, but now use this ugly slow way to dynamically determine owner.
-func (c *Card) Owner() *Pile {
-	for _, p := range TheBaize.piles {
-		for _, card := range p.cards {
-			if SameCardAndPack(c.ID, card.ID) {
-				return p
-			}
-		}
-	}
-	log.Panicf("Card %s has no owner", c)
-	return nil
-}
-
 // String satisfies the Stringer interface (defined by fmt package)
 func (c *Card) String() string {
-	return fmt.Sprintf("%s %s", util.OrdinalToShortString(c.Ordinal()), SuitIntToString(c.Suit()))
+	return c.ID.String()
 }
 
 // Pos returns the x,y baize coords of this card
@@ -230,7 +218,8 @@ func (c *Card) StartSpinning() {
 	c.directionX = rand.Intn(9) - 4
 	c.directionY = rand.Intn(9) - 3 // favor falling downwards
 	c.spin = rand.Float64() - 0.5
-	c.destinations = nil
+	c.tapDestination = nil
+	c.tapWeight = 0
 	// delay start of spinning to allow cards to be seen to go/finish their trip to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
 	d := time.Duration(TheSettings.AniSpeed * float64(time.Second))
@@ -431,17 +420,17 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			// nb this will color all the stock cards, not just the top card
 			img = MovableCardBackImage
 		} else {
-			if len(c.destinations) > 0 {
+			if c.tapDestination != nil {
 				// c.destinations has been sorted so weightiest is first
-				switch c.destinations[0].weight {
-				case -1: // Cell
+				switch c.tapWeight {
+				case 0: // Cell
 					op.ColorM.Scale(1.0, 1.0, 0.9, 1)
-				case 0: // Normal
+				case 1: // Normal
 					op.ColorM.Scale(1.0, 1.0, 0.8, 1)
-				case 1: // Suit match or Foundation
+				case 2: // Suit match
 					op.ColorM.Scale(1.0, 1.0, 0.7, 1)
-				case 2: // Discard or Foundation
-					op.ColorM.Scale(1.0, 1.0, 0.65, 1)
+				case 3: // Discard or Foundation
+					op.ColorM.Scale(1.0, 1.0, 0.6, 1)
 				default:
 					op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 				}

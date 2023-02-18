@@ -1,9 +1,5 @@
 package sol
 
-import (
-	"sort"
-)
-
 func (b *Baize) FindHomesForTail(tail []*Card) []*Pile {
 	var homes []*Pile
 
@@ -59,11 +55,6 @@ func (b *Baize) findAllMovableTails() []*MovableTail {
 // 	return false
 // }
 
-type CardDestination struct {
-	pile   *Pile
-	weight int
-}
-
 // FindDestinations sets Baize.moves, Baize.fmoves, Card.destinations
 func (b *Baize) FindDestinations() {
 	b.moves, b.fmoves = 0, 0
@@ -76,7 +67,8 @@ func (b *Baize) FindDestinations() {
 	// }
 	// https://medium.com/@betable/3-go-gotchas-590b8c014e0a
 	for i := 0; i < len(CardLibrary); i++ {
-		CardLibrary[i].destinations = nil
+		CardLibrary[i].tapDestination = nil
+		CardLibrary[i].tapWeight = 0
 	}
 
 	if !b.script.Stock().Hidden() {
@@ -110,37 +102,32 @@ func (b *Baize) FindDestinations() {
 			if _, ok := dst.vtable.(*Foundation); ok {
 				b.fmoves++
 			}
-			var cdst CardDestination = CardDestination{pile: dst, weight: 0}
+			var weight int
 			switch dst.vtable.(type) {
 			case *Cell:
-				cdst.weight = -1
-			case *Foundation, *Discard:
-				// moves to Foundation get priority when card is tapped
-				cdst.weight = 2
+				weight = 0
 			case *Tableau:
 				if dst.Empty() {
 					if dst.Label() != "" {
-						cdst.weight = 1
+						weight = 1
 					} else {
-						cdst.weight = -1
+						weight = 0
 					}
 				} else if dst.Peek().Suit() == card.Suit() {
 					// Simple Simon, Spider
-					cdst.weight = 1
+					weight = 2
+				} else {
+					weight = 1
 				}
-				// else weight will be 0
+			case *Foundation, *Discard:
+				// moves to Foundation get priority when card is tapped
+				weight = 3
+			default:
+				weight = 0
 			}
-			card.destinations = append(card.destinations, cdst)
-			if len(card.destinations) > 1 {
-				cd := card.destinations
-				sort.Slice(cd,
-					func(i, j int) bool {
-						if cd[i].weight == cd[j].weight {
-							return cd[i].pile.Len() > cd[j].pile.Len()
-						} else {
-							return cd[i].weight > cd[j].weight
-						}
-					})
+			if card.tapDestination == nil || weight > card.tapWeight {
+				card.tapDestination = dst
+				card.tapWeight = weight
 			}
 		}
 	}

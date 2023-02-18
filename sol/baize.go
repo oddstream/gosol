@@ -97,7 +97,9 @@ func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(TheSettings.Variant)
+		percent := b.PercentComplete()
+		toastStr := TheStatistics.RecordLostGame(TheSettings.Variant, percent)
+		TheUI.Toast("Fail", toastStr)
 	}
 
 	// for {
@@ -206,7 +208,9 @@ func (b *Baize) StartFreshGame() {
 func (b *Baize) ChangeVariant(newVariant string) {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
-		TheStatistics.RecordLostGame(TheSettings.Variant)
+		percent := b.PercentComplete()
+		toastStr := TheStatistics.RecordLostGame(TheSettings.Variant, percent)
+		TheUI.Toast("Fail", toastStr)
 	}
 	TheSettings.Variant = newVariant
 	b.StartFreshGame()
@@ -338,7 +342,10 @@ func (b *Baize) AfterUserMove() {
 	if b.Complete() {
 		TheUI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
-		TheStatistics.RecordWonGame(TheSettings.Variant, len(b.undoStack)-1)
+		{
+			var toastStr = TheStatistics.RecordWonGame(TheSettings.Variant, len(b.undoStack)-1)
+			TheUI.Toast("Complete", toastStr)
+		}
 		ShowStatisticsDrawer()
 	} else if b.Conformant() {
 		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)

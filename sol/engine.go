@@ -8,11 +8,11 @@ type DarkBaize struct {
 }
 
 type DarkPile struct {
-	// cards    []*DarkCard
 	category string
 	vtable   PileVtabler
 	label    string
 	moveType MoveType
+	// needs card []CardID, but at the same time []*Card
 }
 
 // DarkCard is CardID

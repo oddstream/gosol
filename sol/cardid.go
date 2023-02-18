@@ -3,6 +3,7 @@ package sol
 import (
 	"fmt"
 	"image/color"
+	"log"
 )
 
 // enum types for card suits
@@ -31,7 +32,6 @@ const (
 	ordinalMask CardID = 0b0000000000001111 // 0..15 0xf
 	proneFlag   CardID = 0b0001000000000000 // single bit
 	jokerFlag   CardID = 0b0010000000000000 // single bit
-	ownerMask   CardID = 0xffff
 )
 
 func (cid CardID) String() string {
@@ -121,6 +121,24 @@ func (c *Card) SetProne(prone bool) {
 	} else {
 		c.ID = c.ID & (^proneFlag)
 	}
+}
+
+func (cid CardID) Owner() *Pile {
+	for _, p := range TheBaize.piles {
+		for _, card := range p.cards {
+			if SameCardAndPack(cid, card.ID) {
+				return p
+			}
+		}
+	}
+	log.Panicf("%s has no owner", cid)
+	return nil
+}
+
+// Owner finds the pile this card currently lives in. We used to store a Card.owner
+// field, but now use this ugly slow way to dynamically determine owner.
+func (c *Card) Owner() *Pile {
+	return c.ID.Owner()
 }
 
 // Joker returns the joker flag buried in the card id

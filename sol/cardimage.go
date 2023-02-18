@@ -11,24 +11,28 @@ import (
 )
 
 const (
-	CTLX = 0.1333
-	CTLY = 0.1333
-	CTRX = 0.8666
-	CTRY = 0.1333
-	CBLX = 0.1333
-	CBLY = 0.8666
-	CBRX = 0.8666
-	CBRY = 0.8666
-	XL   = 0.375 // X Left
-	XC   = 0.5   // X Center
-	XR   = 0.625 // X Right
-	YT   = 0.166 // Y Top
-	Y1   = 0.33  // Y between top and center
-	Y2   = 0.4
-	YC   = 0.5 // Y Center
-	Y3   = 0.6
-	Y4   = 0.66  // Y between center and bottom
-	YB   = 0.833 // Y Bottom
+	// Ordinals
+	// 1.0 / 7.5 = 0.1333333
+	// 1.0 - 0.1333333 = 0.866666
+	COTLX = 0.1333 // Card Ordinal Top Left X
+	COTLY = 0.1333 // Card Ordinal Top Left Y
+	COTRX = 0.8666 // Card Ordinal Top Right X
+	COTRY = 0.1333 // Card Ordinal Top Right Y
+	COBLX = 0.1333 // Card Ordinal Bottom Left X
+	COBLY = 0.8666 // Card Ordinal Bottom Left Y
+	COBRX = 0.8666 // Card Ordinal Bottom Right X
+	COBRY = 0.8666 // Card Ordinal Bottom Right Y
+	// Pips
+	XL = 0.375 // X Left
+	XC = 0.5   // X Center
+	XR = 0.625 // X Right
+	YT = 0.166 // Y Top
+	Y1 = 0.333 // Y between top and center
+	Y2 = 0.4
+	YC = 0.5 // Y Center
+	Y3 = 0.6
+	Y4 = 0.666 // Y between center and bottom
+	YB = 0.833 // Y Bottom
 )
 
 type PipInfo struct {
@@ -130,10 +134,10 @@ func createFaceImage(ID CardID) *ebiten.Image {
 	} else {
 		dc.SetFontFace(schriftbank.CardOrdinal)
 	}
-	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*CTLX, h*CTLY, 0.5, 0.4)
-	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
-	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*CBRX, h*CBRY, 0.5, 0.4)
-	dc.RotateAbout(gg.Radians(180), w*CBRX, h*CBRY)
+	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*COTLX, h*COTLY, 0.5, 0.4)
+	dc.RotateAbout(gg.Radians(180), w*COBRX, h*COBRY)
+	dc.DrawStringAnchored(util.OrdinalToShortString(cardOrdinal), w*COBRX, h*COBRY, 0.5, 0.4)
+	dc.RotateAbout(gg.Radians(180), w*COBRX, h*COBRY)
 	dc.Stroke()
 
 	// https://unicodelookup.com/#club/1
@@ -152,10 +156,10 @@ func createFaceImage(ID CardID) *ebiten.Image {
 			// they also get purdy rectangles in the middle
 			dc.SetFontFace(schriftbank.CardSymbolRegular)
 			dc.SetColor(cardColor)
-			dc.DrawStringAnchored(string(suitRune), w*CTRX, h*CTRY, 0.5, 0.4)
-			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
-			dc.DrawStringAnchored(string(suitRune), w*CBLX, h*CBLY, 0.5, 0.4)
-			dc.RotateAbout(gg.Radians(180), w*CBLX, h*CBRY)
+			dc.DrawStringAnchored(string(suitRune), w*COTRX, h*COTRY, 0.5, 0.4)
+			dc.RotateAbout(gg.Radians(180), w*COBLX, h*COBRY)
+			dc.DrawStringAnchored(string(suitRune), w*COBLX, h*COBLY, 0.5, 0.4)
+			dc.RotateAbout(gg.Radians(180), w*COBLX, h*COBRY)
 			// dc.DrawStringAnchored(string(r), w*0.16, h*0.27, 0.5, 0.5)
 			// dc.DrawStringAnchored(string(r), w*0.84, h*0.73, 0.5, 0.5)
 			dc.Stroke()
@@ -275,17 +279,6 @@ func CreateCardShadowImage() *ebiten.Image {
 	return ebiten.NewImageFromImage(dc.Image())
 }
 
-func CreateCardFaceImageLibrary() {
-	// defer util.Duration(time.Now(), "CreateCardFaceImageLibrary")
-
-	for _, suit := range []int{NOSUIT, CLUB, DIAMOND, HEART, SPADE} {
-		for ord := 1; ord < 14; ord++ {
-			ID := NewCardID(0, suit, ord)
-			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(ID)
-		}
-	}
-}
-
 func CreateCardImages() {
 	// defer util.Duration(time.Now(), "CreateCardImages")
 	if CardWidth == 0 || CardHeight == 0 {
@@ -293,7 +286,12 @@ func CreateCardImages() {
 		return
 	}
 	schriftbank.MakeCardFonts(CardWidth)
-	CreateCardFaceImageLibrary()
+	for _, suit := range []int{NOSUIT, CLUB, DIAMOND, HEART, SPADE} {
+		for ord := 1; ord < 14; ord++ {
+			ID := NewCardID(0, suit, ord)
+			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(ID)
+		}
+	}
 	CardBackImage = CreateCardBackImage(TheSettings.CardBackColor)
 	MovableCardBackImage = CreateCardBackImage(TheSettings.MovableCardBackColor)
 	CardShadowImage = CreateCardShadowImage()

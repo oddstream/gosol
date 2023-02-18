@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -23,6 +22,15 @@ type VariantStatistics struct {
 	// average % is (sum of Percents) + (100 * Won) / (Won+Lost)
 }
 
+// NewStatistics creates a new Statistics object (a map)
+// and loads the saved statistics into it from file
+func NewStatistics() *Statistics {
+	s := &Statistics{StatsMap: make(map[string]*VariantStatistics)}
+	s.Load()
+	return s
+}
+
+// averagePercent is a helper function
 func (stats *VariantStatistics) averagePercent() int {
 	played := stats.Won + stats.Lost
 	if played > 0 {
@@ -76,7 +84,7 @@ func (stats *VariantStatistics) strings(v string) []string {
 func (s *Statistics) strings() []string {
 	var strs []string = []string{}
 	var numPlayed, numWon, numLost int
-	for _, vs := range TheStatistics.StatsMap {
+	for _, vs := range s.StatsMap {
 		numPlayed += vs.Won + vs.Lost
 		numWon += vs.Won
 		numLost += vs.Lost
@@ -89,92 +97,79 @@ func (s *Statistics) strings() []string {
 	return strs
 }
 
-// NewStatistics creates a new Statistics object (a map)
-// and loads the saved statistics into it from file
-func NewStatistics() *Statistics {
-	s := &Statistics{StatsMap: make(map[string]*VariantStatistics)}
-	s.Load()
-	return s
-}
-
 func (s *Statistics) findVariant(v string) *VariantStatistics {
-	stats, ok := s.StatsMap[v]
+	vstats, ok := s.StatsMap[v]
 	if !ok {
-		stats = &VariantStatistics{} // everything 0
-		s.StatsMap[v] = stats
+		vstats = &VariantStatistics{} // everything 0
+		s.StatsMap[v] = vstats
 		// println("statistics has encountered a new variant", v)
 	}
-	return stats
+	return vstats
 }
 
 func (s *Statistics) Played(v string) int {
-	stats := s.findVariant(v)
-	return stats.Won + stats.Lost
+	vstats := s.findVariant(v)
+	return vstats.Won + vstats.Lost
 }
 
-func (s *Statistics) RecordWonGame(v string, moves int) {
+func (s *Statistics) RecordWonGame(v string, moves int) string {
 
-	TheUI.Toast("Complete", fmt.Sprintf("Recording completed game of %s", v))
+	vstats := s.findVariant(v)
 
-	stats := s.findVariant(v)
+	vstats.Won = vstats.Won + 1
 
-	stats.Won = stats.Won + 1
-
-	if stats.CurrStreak < 0 {
-		stats.CurrStreak = 1
+	if vstats.CurrStreak < 0 {
+		vstats.CurrStreak = 1
 	} else {
-		stats.CurrStreak = stats.CurrStreak + 1
+		vstats.CurrStreak = vstats.CurrStreak + 1
 	}
-	if stats.CurrStreak > stats.BestStreak {
-		stats.BestStreak = stats.CurrStreak
+	if vstats.CurrStreak > vstats.BestStreak {
+		vstats.BestStreak = vstats.CurrStreak
 	}
 
-	stats.BestPercent = 100
+	vstats.BestPercent = 100
 
-	if stats.BestMoves == 0 || moves < stats.BestMoves {
-		stats.BestMoves = moves
+	if vstats.BestMoves == 0 || moves < vstats.BestMoves {
+		vstats.BestMoves = moves
 	}
-	if stats.WorstMoves == 0 || moves > stats.WorstMoves {
-		stats.WorstMoves = moves
+	if vstats.WorstMoves == 0 || moves > vstats.WorstMoves {
+		vstats.WorstMoves = moves
 	}
-	stats.SumMoves += moves
+	vstats.SumMoves += moves
 
 	s.Save()
+
+	return fmt.Sprintf("Recording completed game of %s", v)
 }
 
-func (s *Statistics) RecordLostGame(v string) {
+func (s *Statistics) RecordLostGame(v string, percent int) string {
 
-	percent := TheBaize.PercentComplete()
-	if percent == 100 {
-		log.Println("*** That's odd, here is a lost game that is 100% complete ***")
-	}
+	vstats := s.findVariant(v)
 
-	TheUI.Toast("Fail", fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent))
-
-	stats := s.findVariant(v)
-
-	stats.Lost = stats.Lost + 1
+	vstats.Lost = vstats.Lost + 1
 	// don't see that currStreak can ever be zero
-	if stats.CurrStreak > 0 {
-		stats.CurrStreak = -1
+	if vstats.CurrStreak > 0 {
+		vstats.CurrStreak = -1
 	} else {
-		stats.CurrStreak = stats.CurrStreak - 1
+		vstats.CurrStreak = vstats.CurrStreak - 1
 	}
-	if stats.CurrStreak < stats.WorstStreak {
-		stats.WorstStreak = stats.CurrStreak
+	if vstats.CurrStreak < vstats.WorstStreak {
+		vstats.WorstStreak = vstats.CurrStreak
 	}
 
-	if percent > stats.BestPercent {
-		stats.BestPercent = percent
+	if percent > vstats.BestPercent {
+		vstats.BestPercent = percent
 	}
-	stats.SumPercents += percent
+	vstats.SumPercents += percent
 
 	s.Save()
+
+	return fmt.Sprintf("Recording lost game of %s, %d%% complete", v, percent)
 }
 
 func ShowStatisticsDrawer() {
-	stats := TheStatistics.findVariant(TheSettings.Variant)
-	var strs []string = stats.strings(TheSettings.Variant)
+	vstats := TheStatistics.findVariant(TheSettings.Variant)
+	var strs []string = vstats.strings(TheSettings.Variant)
 	strs = append(strs, " ") // n.b. can't use empty string
 	strs = append(strs, "ALL VARIANTS")
 	strs = append(strs, TheStatistics.strings()...)
