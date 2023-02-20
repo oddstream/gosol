@@ -5,15 +5,16 @@ package sol
 import (
 	"log"
 
+	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/sound"
 )
 
 // The CardID contains everything we need to serialize the card: pack, ordinal, suit and prone flag
 
 type SavablePile struct {
-	Category string   // for readability and sanity checks
-	Label    string   `json:",omitempty"`
-	Cards    []CardID `json:",omitempty"`
+	Category string          // for readability and sanity checks
+	Label    string          `json:",omitempty"`
+	Cards    []cardid.CardID `json:",omitempty"`
 }
 
 type SavableBaize struct {
@@ -25,7 +26,7 @@ type SavableBaize struct {
 func (self *Pile) Savable() *SavablePile {
 	sp := &SavablePile{Category: self.category, Label: self.label}
 	for _, c := range self.cards {
-		sp.Cards = append(sp.Cards, c.ID)
+		sp.Cards = append(sp.Cards, c.id)
 	}
 	return sp
 }
@@ -44,7 +45,7 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile) {
 			// without specifying pack, in variants with >1 pack,
 			// the same card may be 'taken' from the CardLibrary
 			// more than once, which creates ownership panics
-			if SameCardAndPack(cid, CardLibrary[i].ID) {
+			if cardid.SameCardAndPack(cid, CardLibrary[i].id) {
 				c := &CardLibrary[i]
 				self.Push(c)
 				// Push() may have flipped the card, so do this afterwards ...

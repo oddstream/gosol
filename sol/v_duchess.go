@@ -62,7 +62,7 @@ func (self *Duchess) AfterMove() {
 		for _, f := range self.foundations {
 			// find where the first card landed
 			if len(f.cards) > 0 {
-				ord = f.Peek().ID.Ordinal()
+				ord = f.Peek().id.Ordinal()
 				break
 			}
 		}

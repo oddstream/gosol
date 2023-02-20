@@ -1,9 +1,7 @@
-package sol
+package cardid
 
 import (
 	"fmt"
-	"image/color"
-	"log"
 )
 
 // enum types for card suits
@@ -52,11 +50,6 @@ func (cid CardID) Pack() int {
 	return int((cid & packMask) >> 8)
 }
 
-// Pack returns the pack number this card belongs to
-func (c *Card) Pack() int {
-	return c.ID.Pack()
-}
-
 // Suit returns the suit number buried in the card id
 func (cid CardID) Suit() int {
 	return int((cid & suitMask) >> 4)
@@ -84,24 +77,9 @@ func (cid CardID) SuitRune() (r rune) {
 	return
 }
 
-// Suit returns 1=club, 2=diamond, 3=heart, 4=spade
-func (c *Card) Suit() int {
-	return c.ID.Suit()
-}
-
-// StringSuit returns the suit as a string
-func (c *Card) StringSuit() string {
-	return c.ID.StringSuit()
-}
-
 // Ordinal returns the ordinal number buried in the card id
 func (cid CardID) Ordinal() int {
 	return int(cid & ordinalMask)
-}
-
-// Ordinal returns the face value of this card 1..13
-func (c *Card) Ordinal() int {
-	return c.ID.Ordinal()
 }
 
 // Prone returns the prone flag buried in the card id
@@ -109,36 +87,14 @@ func (cid CardID) Prone() bool {
 	return cid&proneFlag == proneFlag
 }
 
-// Prone returns true if the card is face down, false if it is face up
-func (c *Card) Prone() bool {
-	return c.ID.Prone()
-}
-
 // SetProne true or false
-func (c *Card) SetProne(prone bool) {
+func (cid CardID) SetProne(prone bool) CardID {
 	if prone {
-		c.ID = c.ID | proneFlag
+		cid = cid | proneFlag
 	} else {
-		c.ID = c.ID & (^proneFlag)
+		cid = cid & (^proneFlag)
 	}
-}
-
-func (cid CardID) Owner() *Pile {
-	for _, p := range TheBaize.piles {
-		for _, card := range p.cards {
-			if SameCardAndPack(cid, card.ID) {
-				return p
-			}
-		}
-	}
-	log.Panicf("%s has no owner", cid)
-	return nil
-}
-
-// Owner finds the pile this card currently lives in. We used to store a Card.owner
-// field, but now use this ugly slow way to dynamically determine owner.
-func (c *Card) Owner() *Pile {
-	return c.ID.Owner()
+	return cid
 }
 
 // Joker returns the joker flag buried in the card id
@@ -146,66 +102,9 @@ func (cid CardID) Joker() bool {
 	return cid&jokerFlag == jokerFlag
 }
 
-// Joker returns the joker flag buried in the card id
-func (c *Card) Joker() bool {
-	return c.ID.Joker()
-}
-
-// Color returns Red or Black
-func (cid CardID) Color() color.RGBA {
-	suit := cid.Suit()
-	if TheSettings.ColorfulCards {
-		switch TheBaize.script.CardColors() {
-		case 4:
-			switch suit {
-			case NOSUIT:
-				return BasicColors["Silver"]
-			case CLUB:
-				return ExtendedColors[TheSettings.ClubColor]
-			case DIAMOND:
-				return ExtendedColors[TheSettings.DiamondColor]
-			case HEART:
-				return ExtendedColors[TheSettings.HeartColor]
-			case SPADE:
-				return ExtendedColors[TheSettings.SpadeColor]
-			}
-		case 2:
-			switch suit {
-			case NOSUIT:
-				return BasicColors["Silver"]
-			case CLUB, SPADE:
-				return ExtendedColors[TheSettings.BlackColor]
-			case DIAMOND, HEART:
-				return ExtendedColors[TheSettings.RedColor]
-			}
-		case 1:
-			return ExtendedColors[TheSettings.SpadeColor]
-		}
-	} else {
-		switch suit {
-		case NOSUIT:
-			return BasicColors["Silver"]
-		case CLUB, SPADE:
-			return ExtendedColors[TheSettings.BlackColor]
-		case DIAMOND, HEART:
-			return ExtendedColors[TheSettings.RedColor]
-		}
-	}
-	return BasicColors["Purple"]
-}
-
-// Color returns Red or Black
-func (c *Card) Color() color.RGBA {
-	return c.ID.Color()
-}
-
 func (cid CardID) Black() bool {
 	suit := cid.Suit()
 	return suit == CLUB || suit == SPADE
-}
-
-func (c *Card) Black() bool {
-	return c.ID.Black()
 }
 
 // NewCardID constructor

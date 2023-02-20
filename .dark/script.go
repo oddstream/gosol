@@ -22,14 +22,14 @@ type scriptBase struct {
 func (sb scriptBase) complete() bool {
 	var n = 0
 	for _, f := range sb.foundations {
-		n += len(f.Cards)
+		n += len(f.cards)
 	}
 	return n == numberOfCardsInStock
 }
 
 func (sb scriptBase) SpiderComplete() bool {
 	for _, tab := range sb.tableaux {
-		switch len(tab.Cards) {
+		switch len(tab.cards) {
 		case 0:
 			// that's fine
 		case 13:

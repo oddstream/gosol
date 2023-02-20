@@ -5,8 +5,10 @@ package sol
 import (
 	"errors"
 	"fmt"
+	"log"
 	"sort"
 
+	"oddstream.games/gosol/sound"
 	"oddstream.games/gosol/util"
 )
 
@@ -586,6 +588,53 @@ func VariantNames(group string) []string {
 }
 
 // useful generic game library of functions
+
+func AnyCardsProne(cards []*Card) bool {
+	for _, c := range cards {
+		if c.Prone() {
+			return true
+		}
+	}
+	return false
+}
+
+// MoveCard moves the top card from src to dst
+func MoveCard(src *Pile, dst *Pile) *Card {
+	if c := src.Pop(); c != nil {
+		dst.Push(c)
+		src.FlipUpExposedCard()
+		sound.Play("Place")
+		return c
+	}
+	return nil
+}
+
+// MoveTail moves all the cards from card downwards onto dst
+func MoveTail(card *Card, dst *Pile) {
+	var src *Pile = card.Owner()
+	tmp := make([]*Card, 0, len(src.cards))
+	// pop cards from src upto and including the head of the tail
+	for {
+		var c *Card = src.Pop()
+		if c == nil {
+			log.Panicf("MoveTail could not find %s", card)
+		}
+		tmp = append(tmp, c)
+		if c == card {
+			break
+		}
+	}
+	// pop cards from the tmp stack and push onto dst
+	if len(tmp) > 0 {
+		for len(tmp) > 0 {
+			var c *Card = tmp[len(tmp)-1]
+			tmp = tmp[:len(tmp)-1]
+			dst.Push(c)
+		}
+		src.FlipUpExposedCard()
+		sound.Play("Place")
+	}
+}
 
 func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	if TheBaize.Recycles() > 0 {

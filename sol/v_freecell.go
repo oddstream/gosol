@@ -6,6 +6,8 @@ package sol
 import (
 	"image"
 	"log"
+
+	"oddstream.games/gosol/cardid"
 )
 
 type Freecell struct {
@@ -47,10 +49,10 @@ func (self *Freecell) BuildPiles() {
 
 func (self *Freecell) StartGame() {
 	if self.easy {
-		self.foundations[0].Push(self.stock.Extract(0, 1, CLUB))
-		self.foundations[1].Push(self.stock.Extract(0, 1, DIAMOND))
-		self.foundations[2].Push(self.stock.Extract(0, 1, HEART))
-		self.foundations[3].Push(self.stock.Extract(0, 1, SPADE))
+		self.foundations[0].Push(self.stock.Extract(0, 1, cardid.CLUB))
+		self.foundations[1].Push(self.stock.Extract(0, 1, cardid.DIAMOND))
+		self.foundations[2].Push(self.stock.Extract(0, 1, cardid.HEART))
+		self.foundations[3].Push(self.stock.Extract(0, 1, cardid.SPADE))
 		for _, t := range self.tableaux {
 			for i := 0; i < 6; i++ {
 				MoveCard(self.stock, t)

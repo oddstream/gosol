@@ -11,6 +11,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -48,13 +49,13 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 						run the suits loop backwards, so spades are used first
 						(folks expect Spider One Suit to use spades)
 					*/
-					var c Card = NewCard(pack, SPADE-suit, ord)
+					var c Card = NewCard(pack, cardid.SPADE-suit, ord)
 					CardLibrary = append(CardLibrary, c)
 				}
 			}
 		}
 		for i := 0; i < jokersPerPack; i++ {
-			var c Card = NewCard(pack, NOSUIT, 0) // NOSUIT and ordinal == 0 creates a joker
+			var c Card = NewCard(pack, cardid.NOSUIT, 0) // NOSUIT and ordinal == 0 creates a joker
 			CardLibrary = append(CardLibrary, c)
 		}
 	}

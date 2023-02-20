@@ -6,6 +6,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/schriftbank"
 	"oddstream.games/gosol/util"
 )
@@ -99,8 +100,50 @@ var Pips [13][]PipInfo = [13][]PipInfo{
 	{},
 }
 
+func cardColor(cid cardid.CardID) color.RGBA {
+	suit := cid.Suit()
+	if TheSettings.ColorfulCards {
+		switch TheBaize.script.CardColors() {
+		case 4:
+			switch suit {
+			case cardid.NOSUIT:
+				return BasicColors["Silver"]
+			case cardid.CLUB:
+				return ExtendedColors[TheSettings.ClubColor]
+			case cardid.DIAMOND:
+				return ExtendedColors[TheSettings.DiamondColor]
+			case cardid.HEART:
+				return ExtendedColors[TheSettings.HeartColor]
+			case cardid.SPADE:
+				return ExtendedColors[TheSettings.SpadeColor]
+			}
+		case 2:
+			switch suit {
+			case cardid.NOSUIT:
+				return BasicColors["Silver"]
+			case cardid.CLUB, cardid.SPADE:
+				return ExtendedColors[TheSettings.BlackColor]
+			case cardid.DIAMOND, cardid.HEART:
+				return ExtendedColors[TheSettings.RedColor]
+			}
+		case 1:
+			return ExtendedColors[TheSettings.SpadeColor]
+		}
+	} else {
+		switch suit {
+		case cardid.NOSUIT:
+			return BasicColors["Silver"]
+		case cardid.CLUB, cardid.SPADE:
+			return ExtendedColors[TheSettings.BlackColor]
+		case cardid.DIAMOND, cardid.HEART:
+			return ExtendedColors[TheSettings.RedColor]
+		}
+	}
+	return BasicColors["Purple"]
+}
+
 // createFaceImage tries to draw an image for this card that looks like kenney.nl playingCards.png
-func createFaceImage(ID CardID) *ebiten.Image {
+func createFaceImage(ID cardid.CardID) *ebiten.Image {
 	w := float64(CardWidth)
 	h := float64(CardHeight)
 
@@ -121,7 +164,7 @@ func createFaceImage(ID CardID) *ebiten.Image {
 
 	var cardOrdinal = ID.Ordinal()
 	var suitRune rune = ID.SuitRune()
-	var cardColor color.RGBA = ID.Color()
+	var cardColor color.RGBA = cardColor(ID)
 	// if ID.Joker() {
 	// 	// if a joker is pretending to be a certain card, then show it's pretend ordinal and suit, but faded
 	// 	cardColor.A = 64
@@ -257,13 +300,13 @@ func CreateCardBackImage(color string) *ebiten.Image {
 
 	dc.SetFontFace(schriftbank.CardSymbolRegular)
 	dc.SetRGBA(0, 0, 0, 0.2)
-	dc.DrawStringAnchored(string(SPADE_RUNE), w*0.4, h*0.4, 0.5, 0.5)
+	dc.DrawStringAnchored(string(cardid.SPADE_RUNE), w*0.4, h*0.4, 0.5, 0.5)
 	dc.SetRGBA(0, 0, 0, 0.1)
-	dc.DrawStringAnchored(string(HEART_RUNE), w*0.6, h*0.4, 0.5, 0.5)
+	dc.DrawStringAnchored(string(cardid.HEART_RUNE), w*0.6, h*0.4, 0.5, 0.5)
 	dc.SetRGBA(0, 0, 0, 0.1)
-	dc.DrawStringAnchored(string(DIAMOND_RUNE), w*0.4, h*0.6, 0.5, 0.5)
+	dc.DrawStringAnchored(string(cardid.DIAMOND_RUNE), w*0.4, h*0.6, 0.5, 0.5)
 	dc.SetRGBA(0, 0, 0, 0.2)
-	dc.DrawStringAnchored(string(CLUB_RUNE), w*0.6, h*0.6, 0.5, 0.5)
+	dc.DrawStringAnchored(string(cardid.CLUB_RUNE), w*0.6, h*0.6, 0.5, 0.5)
 	dc.Stroke()
 
 	return ebiten.NewImageFromImage(dc.Image())
@@ -286,9 +329,9 @@ func CreateCardImages() {
 		return
 	}
 	schriftbank.MakeCardFonts(CardWidth)
-	for _, suit := range []int{NOSUIT, CLUB, DIAMOND, HEART, SPADE} {
+	for _, suit := range []int{cardid.NOSUIT, cardid.CLUB, cardid.DIAMOND, cardid.HEART, cardid.SPADE} {
 		for ord := 1; ord < 14; ord++ {
-			ID := NewCardID(0, suit, ord)
+			ID := cardid.NewCardID(0, suit, ord)
 			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(ID)
 		}
 	}

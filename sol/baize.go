@@ -26,7 +26,10 @@ const (
 // Baize object describes the baize; it contains dark (background/engine)
 // and light (user interface) components
 type Baize struct {
-	DarkBaize
+	piles        []*Pile
+	recycles     int
+	bookmark     int
+	script       Scripter
 	undoStack    []*SavableBaize
 	dirtyFlags   uint32 // what needs doing when we Update
 	moves        int    // number of possible (not useless) moves

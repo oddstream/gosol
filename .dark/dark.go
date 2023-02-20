@@ -2,8 +2,6 @@ package dark
 
 import (
 	"errors"
-
-	"oddstream.games/gosol/sol"
 )
 
 // "private struct that implements a public interface"
@@ -23,7 +21,7 @@ type Darker interface {
 	NewGame(string) (bool, error)
 	LoadGame() (bool, error)
 	SaveGame() (bool, error)
-	GetBaize() Baize
+	Baize() *Baize
 	RestartGame() (bool, error)
 	Undo() (bool, error)
 	UndoStackSize() int
@@ -35,9 +33,9 @@ type Darker interface {
 	Statistics() []string
 	SetPowerMoves(bool)
 
-	PileTapped(int) (bool, error)            // pileIndex
-	TailTapped(int, int) (bool, error)       // pileIndex, cardIndex
-	TailDragged(int, int, int) (bool, error) // srcPileIndex, srcCardIndex, dstPileIndex
+	PileTapped(*Pile) (bool, error)
+	TailTapped(*Pile, *Card) (bool, error)
+	TailDragged(*Pile, *Card, *Pile) (bool, error)
 }
 
 // dark holds the state for the current game/baize in play. It is NOT exported
@@ -55,27 +53,23 @@ type dark struct {
 
 // Baize holds the state of the baize, piles and cards therein.
 // Baize is exported from this package because it's used to pass between light and dark.
+// LIGHT should see a Baize object as immutable, hence the unexported fields and getters.
 type Baize struct {
-	Piles    []Pile // needed by LIGHT to display piles and cards
-	Recycles int    // needed by LIGHT to determine Stock rune
-	Bookmark int    // needed by LIGHT to grey out goto bookmark menu item
+	piles    []*Pile // needed by LIGHT to display piles and cards
+	recycles int     // needed by LIGHT to determine Stock rune
+	bookmark int     // needed by LIGHT to grey out goto bookmark menu item
 }
 
-// Pile holds the state of the piles and cards therein.
-// Pile is exported from this package because it's used to pass between light and dark.
-type Pile struct {
-	Category string // needed by LIGHT when creating Pile Placeholder (switch)
-	Label    string // needed by LIGHT when creating Pile Placeholder
-	moveType MoveType
-	Cards    []Card
-	vtable   PileVtabler
+func (b *Baize) Piles() []*Pile {
+	return b.piles
 }
 
-// Card holds the state of the cards.
-// Card is exported from this package because it's used to pass between light and dark.
-type Card struct {
-	Card   sol.CardID
-	Weight int
+func (b *Baize) Recycles() int {
+	return b.recycles
+}
+
+func (b *Baize) Bookmark() int {
+	return b.bookmark
 }
 
 func NewDark() Darker {
@@ -87,7 +81,7 @@ func (d *dark) SetPowerMoves(value bool) {
 }
 
 func (d *dark) Bookmark() {
-	d.baize.Bookmark = 32
+	d.baize.bookmark = 32
 }
 
 func (d *dark) Complete() bool {
@@ -98,8 +92,8 @@ func (d *dark) Conformant() bool {
 	return false
 }
 
-func (d *dark) GetBaize() Baize {
-	return d.baize // here: have a copy of the dark baize object
+func (d *dark) Baize() *Baize {
+	return &(d.baize)
 }
 
 func (d *dark) GotoBookmark() (bool, error) {
@@ -118,7 +112,7 @@ func (d *dark) PercentComplete() int {
 	return 0
 }
 
-func (d *dark) PileTapped(pileIndex int) (bool, error) {
+func (d *dark) PileTapped(pile *Pile) (bool, error) {
 	return false, errors.New("not implemented")
 }
 
@@ -134,11 +128,11 @@ func (d *dark) Statistics() []string {
 	return []string{}
 }
 
-func (d *dark) TailDragged(srcPileIndex, cardIndex, dstPileIndex int) (bool, error) {
+func (d *dark) TailDragged(src *Pile, card *Card, dst *Pile) (bool, error) {
 	return false, errors.New("not implemented")
 }
 
-func (d *dark) TailTapped(pileIndex, cardIndex int) (bool, error) {
+func (d *dark) TailTapped(pile *Pile, card *Card) (bool, error) {
 	return false, errors.New("not implemented")
 }
 

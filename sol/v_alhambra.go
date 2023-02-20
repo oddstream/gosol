@@ -5,6 +5,8 @@ package sol
 
 import (
 	"image"
+
+	"oddstream.games/gosol/cardid"
 )
 
 type Alhambra struct {
@@ -41,14 +43,14 @@ func (self *Alhambra) BuildPiles() {
 
 func (self *Alhambra) StartGame() {
 
-	self.foundations[0].Push(self.stock.Extract(0, 1, CLUB))
-	self.foundations[1].Push(self.stock.Extract(0, 1, DIAMOND))
-	self.foundations[2].Push(self.stock.Extract(0, 1, HEART))
-	self.foundations[3].Push(self.stock.Extract(0, 1, SPADE))
-	self.foundations[4].Push(self.stock.Extract(0, 13, CLUB))
-	self.foundations[5].Push(self.stock.Extract(0, 13, DIAMOND))
-	self.foundations[6].Push(self.stock.Extract(0, 13, HEART))
-	self.foundations[7].Push(self.stock.Extract(0, 13, SPADE))
+	self.foundations[0].Push(self.stock.Extract(0, 1, cardid.CLUB))
+	self.foundations[1].Push(self.stock.Extract(0, 1, cardid.DIAMOND))
+	self.foundations[2].Push(self.stock.Extract(0, 1, cardid.HEART))
+	self.foundations[3].Push(self.stock.Extract(0, 1, cardid.SPADE))
+	self.foundations[4].Push(self.stock.Extract(0, 13, cardid.CLUB))
+	self.foundations[5].Push(self.stock.Extract(0, 13, cardid.DIAMOND))
+	self.foundations[6].Push(self.stock.Extract(0, 13, cardid.HEART))
+	self.foundations[7].Push(self.stock.Extract(0, 13, cardid.SPADE))
 
 	for _, r := range self.reserves {
 		for i := 0; i < 4; i++ {

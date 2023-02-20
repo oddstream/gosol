@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/util"
 )
 
@@ -18,11 +19,9 @@ import (
 
 // Card object
 type Card struct {
-	// static things
-	ID CardID
-
-	// display things
-	pos image.Point
+	id    cardid.CardID
+	owner *Pile
+	pos   image.Point
 
 	// tap things
 	tapDestination *Pile
@@ -56,7 +55,7 @@ func NewCard(pack, suit, ordinal int) Card {
 	// but the screen will be 0,0 when app starts
 	// and ebiten.WindowSize() only works on desktops
 	// Stock is usually at (slot) 0,0 which is half a card width/height into the baize, so...
-	c := Card{ID: NewCardID(pack, suit, ordinal), pos: image.Point{X: (CardWidth / 2), Y: (CardHeight / 2)}}
+	c := Card{id: cardid.NewCardID(pack, suit, ordinal), pos: image.Point{X: (CardWidth / 2), Y: (CardHeight / 2)}}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
 	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
@@ -69,7 +68,44 @@ func NewCard(pack, suit, ordinal int) Card {
 
 // String satisfies the Stringer interface (defined by fmt package)
 func (c *Card) String() string {
-	return c.ID.String()
+	return c.id.String()
+}
+
+func (c *Card) Owner() *Pile {
+	// for _, p := range TheBaize.piles {
+	// 	for _, card := range p.cards {
+	// 		if cardid.SameCardAndPack(c.id, card.id) {
+	// 			return p
+	// 		}
+	// 	}
+	// }
+	// log.Panicf("%s has no owner", c.id)
+	// return nil
+	return c.owner
+}
+
+func (c *Card) SetOwner(p *Pile) {
+	c.owner = p
+}
+
+func (c *Card) Ordinal() int {
+	return c.id.Ordinal()
+}
+
+func (c *Card) Suit() int {
+	return c.id.Suit()
+}
+
+func (c *Card) Prone() bool {
+	return c.id.Prone()
+}
+
+func (c *Card) SetProne(prone bool) {
+	c.id = c.id.SetProne(prone)
+}
+
+func (c *Card) Black() bool {
+	return c.id.Black()
 }
 
 // Pos returns the x,y baize coords of this card

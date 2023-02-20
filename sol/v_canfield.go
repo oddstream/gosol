@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"image"
 
+	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/util"
 )
 
@@ -41,16 +42,16 @@ func (self *Canfield) BuildPiles() {
 func (self *Canfield) StartGame() {
 
 	if self.variant == "storehouse" {
-		if c := self.stock.Extract(0, 2, CLUB); c != nil {
+		if c := self.stock.Extract(0, 2, cardid.CLUB); c != nil {
 			self.foundations[0].Push(c)
 		}
-		if c := self.stock.Extract(0, 2, DIAMOND); c != nil {
+		if c := self.stock.Extract(0, 2, cardid.DIAMOND); c != nil {
 			self.foundations[1].Push(c)
 		}
-		if c := self.stock.Extract(0, 2, HEART); c != nil {
+		if c := self.stock.Extract(0, 2, cardid.HEART); c != nil {
 			self.foundations[2].Push(c)
 		}
-		if c := self.stock.Extract(0, 2, SPADE); c != nil {
+		if c := self.stock.Extract(0, 2, cardid.SPADE); c != nil {
 			self.foundations[3].Push(c)
 		}
 	} else {

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"oddstream.games/gosol/cardid"
 )
 
 type FanType int
@@ -52,6 +53,7 @@ var DefaultFanFactor [7]float64 = [7]float64{
 	CARD_FACE_FAN_FACTOR_H, // FAN_RIGHT3,
 }
 
+// MovableTail is used for collecting tap destinations
 type MovableTail struct {
 	dst  *Pile
 	tail []*Card
@@ -70,7 +72,10 @@ type PileVtabler interface {
 
 // Pile is a generic container for cards
 type Pile struct {
-	DarkPile
+	category  string
+	vtable    PileVtabler
+	label     string
+	moveType  MoveType
 	fanType   FanType
 	cards     []*Card
 	slot      image.Point // logical position on baize
@@ -79,14 +84,14 @@ type Pile struct {
 	pos2      image.Point // waste pos #1
 	fanFactor float64
 	// buddyPos    image.Point
-	// label string
 	img *ebiten.Image
 	// target bool // experimental, might delete later, IDK
 }
 
 func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
 	var self Pile = Pile{
-		DarkPile:  DarkPile{category: category, moveType: moveType},
+		category:  category,
+		moveType:  moveType,
 		slot:      slot,
 		fanType:   fanType,
 		fanFactor: DefaultFanFactor[fanType],
@@ -144,23 +149,27 @@ func (self *Pile) FillFromCardLibrary() {
 	}
 }
 
+func (self *Pile) Cards() []*Card {
+	return self.cards
+}
+
 // Deprecated: not needed in new model
-func (self *Pile) FanType() FanType { // TODO RETIRE
+func (self *Pile) FanType() FanType {
 	return self.fanType
 }
 
 // Deprecated: not needed in new model
-func (self *Pile) SetFanType(fanType FanType) { // TODO RETIRE
+func (self *Pile) SetFanType(fanType FanType) {
 	self.fanType = fanType
 }
 
 // Deprecated: not needed in new model
-func (self *Pile) MoveType() MoveType { // TODO RETIRE
+func (self *Pile) MoveType() MoveType {
 	return self.moveType
 }
 
 // Deprecated: not needed in new model
-func (self *Pile) Label() string { // TODO RETIRE
+func (self *Pile) Label() string {
 	return self.label
 }
 
@@ -221,9 +230,9 @@ func (self *Pile) Delete(index int) {
 
 // Extract a specific *Card from this pile
 func (self *Pile) Extract(pack, ordinal, suit int) *Card {
-	var ID CardID = NewCardID(pack, suit, ordinal)
+	var ID cardid.CardID = cardid.NewCardID(pack, suit, ordinal)
 	for i, c := range self.cards {
-		if SameCardAndPack(ID, c.ID) {
+		if cardid.SameCardAndPack(ID, c.id) {
 			self.Delete(i)
 			c.FlipUp()
 			return c
@@ -248,6 +257,7 @@ func (self *Pile) Pop() *Card {
 	}
 	c := self.cards[len(self.cards)-1]
 	self.cards = self.cards[:len(self.cards)-1]
+	c.SetOwner(nil)
 	c.FlipUp()
 	TheBaize.setFlag(dirtyCardPositions)
 	return c
@@ -263,6 +273,7 @@ func (self *Pile) Push(c *Card) {
 	}
 
 	self.cards = append(self.cards, c)
+	c.SetOwner(self)
 	c.LerpTo(pos)
 
 	if self.IsStock() {
@@ -271,14 +282,43 @@ func (self *Pile) Push(c *Card) {
 	TheBaize.setFlag(dirtyCardPositions)
 }
 
+func (self *Pile) FlipUpExposedCard() {
+	if !self.IsStock() {
+		if c := self.Peek(); c != nil {
+			c.FlipUp()
+		}
+	}
+}
+
 func (self *Pile) ReverseCards() {
 	for i, j := 0, len(self.cards)-1; i < j; i, j = i+1, j-1 {
 		self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
 	}
 }
 
+// BuryCards moves cards with the specified ordinal to the beginning of the pile
+func (self *Pile) BuryCards(ordinal int) {
+	tmp := make([]*Card, 0, cap(self.cards))
+	for _, c := range self.cards {
+		if c.Ordinal() == ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	for _, c := range self.cards {
+		if c.Ordinal() != ordinal {
+			tmp = append(tmp, c)
+		}
+	}
+	self.Reset()
+	for i := 0; i < len(tmp); i++ {
+		self.Push(tmp[i])
+	}
+	self.Refan()
+	// nb the card owner does not change
+}
+
 // Slot returns the virtual slot this pile is positioned at
-// TODO to use fractional slots, scale the slot values up by, say, 10
+// TODO to use fractional slots, scale the slot values up by, say, 10.
 // Deprecated: not needed in new model
 func (self *Pile) Slot() image.Point {
 	return self.slot
@@ -527,27 +567,6 @@ func (self *Pile) ApplyToCards(fn func(*Card)) {
 	for _, c := range self.cards {
 		fn(c)
 	}
-}
-
-// BuryCards moves cards with the specified ordinal to the beginning of the pile
-func (self *Pile) BuryCards(ordinal int) {
-	tmp := make([]*Card, 0, cap(self.cards))
-	for _, c := range self.cards {
-		if c.Ordinal() == ordinal {
-			tmp = append(tmp, c)
-		}
-	}
-	for _, c := range self.cards {
-		if c.Ordinal() != ordinal {
-			tmp = append(tmp, c)
-		}
-	}
-	self.Reset()
-	for i := 0; i < len(tmp); i++ {
-		self.Push(tmp[i])
-	}
-	self.Refan()
-	// nb the card owner does not change
 }
 
 // default behaviours for all pile types, that can be over-ridden by providing (eg) *Stock.Collect
