@@ -66,11 +66,11 @@ var TheStatistics *Statistics
 // TheBaize points to the Baize, so that main can see it
 var TheBaize *Baize
 
+// TheCardCount is the number of cards created for the current variant. TODO refactor out this kludge.
+var TheCardCount int
+
 // The UI points to the singleton User Interface object
 var TheUI *ui.UI
-
-// CardLibrary is the slice where Card objects actually exist, everything else is a *Card
-var CardLibrary []Card
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {

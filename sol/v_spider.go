@@ -11,7 +11,6 @@ import (
 
 type Spider struct {
 	ScriptBase
-	packs, suits int
 }
 
 func (self *Spider) BuildPiles() {

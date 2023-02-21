@@ -66,10 +66,7 @@ func (b *Baize) FindDestinations() {
 	// 	c.movable = false
 	// }
 	// https://medium.com/@betable/3-go-gotchas-590b8c014e0a
-	for i := 0; i < len(CardLibrary); i++ {
-		CardLibrary[i].tapDestination = nil
-		CardLibrary[i].tapWeight = 0
-	}
+	b.ForeachCard(func(c *Card) { c.tapDestination = nil; c.tapWeight = 0 })
 
 	if !b.script.Stock().Hidden() {
 		if b.script.Stock().Empty() {

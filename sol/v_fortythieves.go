@@ -11,7 +11,6 @@ import (
 
 type FortyThieves struct {
 	ScriptBase
-	packs          int
 	founds         []int
 	tabs           []int
 	proneRows      []int
@@ -24,9 +23,6 @@ type FortyThieves struct {
 
 func (self *FortyThieves) BuildPiles() {
 
-	if self.packs == 0 {
-		self.packs = 2
-	}
 	if self.moveType == MOVE_NONE /* 0 */ {
 		self.moveType = MOVE_ONE_PLUS
 	}

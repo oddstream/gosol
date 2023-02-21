@@ -11,17 +11,10 @@ import (
 
 type Spiderette struct {
 	ScriptBase
-	packs, suits int
 }
 
 func (self *Spiderette) BuildPiles() {
 
-	if self.packs == 0 {
-		self.packs = 1
-	}
-	if self.suits == 0 {
-		self.suits = 4
-	}
 	if self.cardColors == 0 {
 		self.cardColors = 4
 	}

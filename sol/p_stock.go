@@ -7,11 +7,9 @@ import (
 	"errors"
 	"image"
 	"image/color"
-	"log"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
-	"oddstream.games/gosol/cardid"
 	"oddstream.games/gosol/schriftbank"
 )
 
@@ -21,6 +19,7 @@ const (
 	NORECYCLE_RUNE = rune(0x2613)
 )
 
+/***** ARCHIVED TO REMEMBER HOW TO DO suitFilter *******************
 func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack int) {
 
 	var numberOfCardsInSuit int = 0
@@ -43,12 +42,10 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 		for suit := 0; suit < suits; suit++ {
 			for ord := 1; ord < 14; ord++ {
 				if cardFilter[ord] {
-					/*
-						suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
-						(i.e. not 0..3)
-						run the suits loop backwards, so spades are used first
-						(folks expect Spider One Suit to use spades)
-					*/
+					// suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
+					// (i.e. not 0..3)
+					// run the suits loop backwards, so spades are used first
+					// (folks expect Spider One Suit to use spades)
 					var c Card = NewCard(pack, cardid.SPADE-suit, ord)
 					CardLibrary = append(CardLibrary, c)
 				}
@@ -61,16 +58,16 @@ func CreateCardLibrary(packs int, suits int, cardFilter *[14]bool, jokersPerPack
 	}
 	log.Printf("%d packs, %d suits, %d cards created\n", packs, suits, len(CardLibrary))
 }
+*********/
 
 type Stock struct {
 	pile *Pile
 }
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
-	CreateCardLibrary(packs, suits, cardFilter, jokersPerPack)
 	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
 	stock.vtable = &Stock{pile: &stock}
-	(&stock).FillFromCardLibrary()
+	(&stock).Fill(packs, suits)
 	(&stock).Shuffle()
 	TheBaize.AddPile(&stock)
 	return &stock

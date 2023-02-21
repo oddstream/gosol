@@ -130,23 +130,29 @@ func (self *Pile) IsStock() bool {
 	// return self.category == "Stock"
 }
 
+func (self *Pile) Fill(packs, suits int) {
+	TheCardCount = packs * suits * 13
+
+	self.cards = make([]*Card, 0, TheCardCount)
+
+	for pack := 0; pack < packs; pack++ {
+		for suit := 0; suit < suits; suit++ {
+			for ord := 1; ord < 14; ord++ {
+				// suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
+				// (i.e. not 0..3)
+				// run the suits loop backwards, so spades are used first
+				// (folks expect Spider One Suit to use spades)
+				var c Card = NewCard(pack, cardid.SPADE-suit, ord)
+				self.Push(&c)
+			}
+		}
+	}
+}
+
 func (self *Pile) Shuffle() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	rand.Shuffle(self.Len(), self.Swap)
 	log.Printf("Shuffled %d cards", self.Len())
-}
-
-func (self *Pile) FillFromCardLibrary() {
-	if !self.Empty() {
-		log.Panic("stock should be empty")
-	}
-	for i := 0; i < len(CardLibrary); i++ {
-		var c *Card = &CardLibrary[i]
-		// if !c.Valid() {
-		// 	log.Panicf("invalid card at library index %d", i)
-		// }
-		self.Push(c)
-	}
 }
 
 func (self *Pile) Cards() []*Card {

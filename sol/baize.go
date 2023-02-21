@@ -23,8 +23,7 @@ const (
 	dirtyCardPositions
 )
 
-// Baize object describes the baize; it contains dark (background/engine)
-// and light (user interface) components
+// Baize object describes the baize
 type Baize struct {
 	piles        []*Pile
 	recycles     int
@@ -112,7 +111,8 @@ func (b *Baize) NewDeal() {
 		p.Reset()
 	}
 
-	b.script.Stock().FillFromCardLibrary()
+	// Stock.Fill() needs parameters
+	b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
 	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
@@ -595,6 +595,15 @@ func (b *Baize) NotifyCallback(v input.StrokeEvent) {
 		b.InputTap(v)
 	default:
 		log.Panic("*** unknown stroke event ***", v.Event)
+	}
+}
+
+// ForeachCard applys a function to each card
+func (b *Baize) ForeachCard(fn func(*Card)) {
+	for _, p := range b.piles {
+		for _, c := range p.cards {
+			fn(c)
+		}
 	}
 }
 

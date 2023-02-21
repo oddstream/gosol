@@ -21,8 +21,9 @@ type ScriptBase struct {
 	tableaux    []*Pile
 	waste       *Pile
 
-	wikipedia  string
-	cardColors int
+	wikipedia    string
+	cardColors   int
+	packs, suits int
 }
 
 // Complete - default is number of cards in Foundations == number of cards in CardLibrary.
@@ -35,7 +36,7 @@ func (sb ScriptBase) Complete() bool {
 	for _, f := range sb.foundations {
 		n += len(f.cards)
 	}
-	return n == len(CardLibrary)
+	return n == TheCardCount
 }
 
 // SpiderComplete - used to override default Complete() in Spider varaints.
@@ -107,6 +108,20 @@ func (sb ScriptBase) Waste() *Pile {
 	return sb.waste
 }
 
+func (sb ScriptBase) Packs() int {
+	if sb.packs == 0 {
+		return 1
+	}
+	return sb.packs
+}
+
+func (sb ScriptBase) Suits() int {
+	if sb.suits == 0 {
+		return 4
+	}
+	return sb.suits
+}
+
 func (sb ScriptBase) AfterMove() {}
 
 // You can't use functions as keys in maps : the key type must be comparable
@@ -137,6 +152,8 @@ type Scripter interface {
 	Wikipedia() string
 	CardColors() int
 	SafeCollect() bool
+	Packs() int
+	Suits() int
 }
 
 var Variants = map[string]Scripter{
@@ -150,12 +167,14 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Alhambra_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 	},
 	"American Toad": &Toad{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/American_Toad_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 	},
 	"Antares": &Antares{
@@ -200,6 +219,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Blockade_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 	},
 	"Canfield": &Canfield{
@@ -228,6 +248,7 @@ var Variants = map[string]Scripter{
 	"Demons and Thieves": &CanThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://www.goodsol.com/pgshelp/index.html?demons_and_thieves.htm",
+			packs:     2,
 		},
 	},
 	"Klondike": &Klondike{
@@ -295,6 +316,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -304,6 +326,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -313,6 +336,7 @@ var Variants = map[string]Scripter{
 	"Rank and File": &FortyThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+			packs:     2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -325,6 +349,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -335,6 +360,7 @@ var Variants = map[string]Scripter{
 	"Streets": &FortyThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+			packs:     2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -344,6 +370,7 @@ var Variants = map[string]Scripter{
 	"Number Ten": &FortyThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+			packs:     2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -356,6 +383,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
@@ -365,6 +393,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10},
@@ -374,6 +403,7 @@ var Variants = map[string]Scripter{
 	"Red and Black": &FortyThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+			packs:     2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{3, 4, 5, 6, 7, 8, 9, 10},
@@ -384,6 +414,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{5, 6, 7, 8, 9, 10, 11, 12},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
@@ -394,6 +425,7 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      2,
 		},
 		founds:      []int{4, 5, 6, 7, 8, 9, 10, 11},
 		tabs:        []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
@@ -402,6 +434,7 @@ var Variants = map[string]Scripter{
 	"Maria": &FortyThieves{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
+			packs:     2,
 		},
 		founds:         []int{3, 4, 5, 6, 7, 8, 9, 10},
 		tabs:           []int{2, 3, 4, 5, 6, 7, 8, 9, 10},
@@ -412,8 +445,8 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Forty_Thieves_(solitaire)",
 			cardColors: 4,
+			packs:      3,
 		},
-		packs:       3,
 		founds:      []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 		tabs:        []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 		cardsPerTab: 5,
@@ -422,12 +455,14 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Mrs._Mop",
 			cardColors: 4,
+			packs:      2,
 		},
 	},
 	"Mrs Mop Easy": &MrsMop{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Mrs._Mop",
 			cardColors: 4,
+			packs:      2,
 		},
 		easy: true,
 	},
@@ -459,25 +494,25 @@ var Variants = map[string]Scripter{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 			cardColors: 1,
+			packs:      8,
+			suits:      1,
 		},
-		packs: 8,
-		suits: 1,
 	},
 	"Spider Two Suits": &Spider{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 			cardColors: 2,
+			packs:      4,
+			suits:      2,
 		},
-		packs: 4,
-		suits: 2,
 	},
 	"Spider Four Suits": &Spider{
 		ScriptBase: ScriptBase{
 			wikipedia:  "https://en.wikipedia.org/wiki/Spider_(solitaire)",
 			cardColors: 4,
+			packs:      2,
+			suits:      4,
 		},
-		packs: 2,
-		suits: 4,
 	},
 	"Spiderette": &Spiderette{
 		ScriptBase: ScriptBase{
@@ -529,12 +564,6 @@ var Variants = map[string]Scripter{
 			wikipedia: "https://en.wikipedia.org/wiki/Yukon_(solitaire)",
 		},
 		extraCells: 2,
-	},
-	"Oddstream": &Oddstream{
-		ScriptBase: ScriptBase{
-			wikipedia:  "https://oddstream.games",
-			cardColors: 4,
-		},
 	},
 }
 

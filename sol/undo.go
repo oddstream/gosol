@@ -3,6 +3,7 @@ package sol
 //lint:file-ignore ST1006 Receiver name will be anything I like, thank you
 
 import (
+	"image"
 	"log"
 
 	"oddstream.games/gosol/cardid"
@@ -31,31 +32,19 @@ func (self *Pile) Savable() *SavablePile {
 	return sp
 }
 
-func (self *Pile) UpdateFromSavable(sp *SavablePile) {
+func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.CardID]image.Point) {
 	if self.category != sp.Category {
 		log.Panicf("Baize pile (%s) and SavablePile (%s) are different", self.category, sp.Category)
 	}
 	self.Reset()
 	for _, cid := range sp.Cards {
-		for i := 0; i < len(CardLibrary); i++ {
-			// look in CardLibrary to find each card to create our *Card pointer
-			// don't use range for this loop; it creates a copy
-			//
-			// the only use for storing pack in the CardID, is here
-			// without specifying pack, in variants with >1 pack,
-			// the same card may be 'taken' from the CardLibrary
-			// more than once, which creates ownership panics
-			if cardid.SameCardAndPack(cid, CardLibrary[i].id) {
-				c := &CardLibrary[i]
-				self.Push(c)
-				// Push() may have flipped the card, so do this afterwards ...
-				if cid.Prone() {
-					c.FlipDown()
-				} else {
-					c.FlipUp()
-				}
-				break
-			}
+		var c Card = Card{id: cid, pos: cardPositionMap[cid]}
+		self.Push(&c)
+		// Push() may have flipped the card, so do this afterwards ...
+		if cid.Prone() {
+			c.FlipDown()
+		} else {
+			c.FlipUp()
 		}
 	}
 	if len(self.cards) != len(sp.Cards) {
@@ -124,8 +113,11 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
 		log.Panicf("Baize piles (%d) and SavableBaize piles (%d) are different", len(b.piles), len(sb.Piles))
 	}
+	var cardPositionMap map[cardid.CardID]image.Point = make(map[cardid.CardID]image.Point)
+	b.ForeachCard(func(c *Card) { cardPositionMap[c.id] = c.pos })
+
 	for i := 0; i < len(sb.Piles); i++ {
-		b.piles[i].UpdateFromSavable(sb.Piles[i])
+		b.piles[i].UpdateFromSavable(sb.Piles[i], cardPositionMap)
 	}
 	sound.Play("TakeOutPackage")
 	b.bookmark = sb.Bookmark

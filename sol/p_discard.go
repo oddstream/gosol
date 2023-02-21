@@ -30,7 +30,7 @@ func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot move a face down card to a Discard")
 	}
-	if len(tail) != len(CardLibrary)/len(TheBaize.script.Discards()) {
+	if len(tail) != TheCardCount/len(TheBaize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
 	if ok, err := TailConformant(tail, CardPair.Compare_DownSuit); !ok {
