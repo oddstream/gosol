@@ -20,10 +20,10 @@ type Tableau struct {
 }
 
 func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
-	tableau := NewPile("Tableau", slot, fanType, moveType)
-	tableau.vtable = &Tableau{pile: &tableau}
-	TheBaize.AddPile(&tableau)
-	return &tableau
+	pile := NewPile("Tableau", slot, fanType, moveType)
+	pile.vtable = &Tableau{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func powerMoves(piles []*Pile, pDraggingTo *Pile) int {

@@ -26,7 +26,7 @@ func (self *Freecell) BuildPiles() {
 		self.tabCompareFunc = CardPair.Compare_DownAltColor
 	}
 
-	self.stock = NewStock(image.Point{5, -5}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	self.cells = []*Pile{}
 	for x := 0; x < 4; x++ {

@@ -17,10 +17,10 @@ type Discard struct {
 }
 
 func NewDiscard(slot image.Point, fanType FanType) *Pile {
-	discard := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
-	discard.vtable = &Discard{pile: &discard}
-	TheBaize.AddPile(&discard)
-	return &discard
+	pile := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
+	pile.vtable = &Discard{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {

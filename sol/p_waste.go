@@ -15,10 +15,10 @@ type Waste struct {
 }
 
 func NewWaste(slot image.Point, fanType FanType) *Pile {
-	waste := NewPile("Waste", slot, fanType, MOVE_ONE)
-	waste.vtable = &Waste{pile: &waste}
-	TheBaize.AddPile(&waste)
-	return &waste
+	pile := NewPile("Waste", slot, fanType, MOVE_ONE)
+	pile.vtable = &Waste{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {

@@ -15,7 +15,7 @@ type Bisley struct {
 
 func (self *Bisley) BuildPiles() {
 
-	self.stock = NewStock(image.Point{0, -4}, FAN_NONE, 1, 4, nil, 0)
+	self.stock = NewStock(image.Point{-5, -5}, FAN_NONE, 1, 4, nil, 0)
 
 	self.foundations = nil
 

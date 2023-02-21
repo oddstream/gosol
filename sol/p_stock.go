@@ -65,12 +65,12 @@ type Stock struct {
 }
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
-	stock := NewPile("Stock", slot, fanType, MOVE_ONE)
-	stock.vtable = &Stock{pile: &stock}
-	(&stock).Fill(packs, suits)
-	(&stock).Shuffle()
-	TheBaize.AddPile(&stock)
-	return &stock
+	pile := NewPile("Stock", slot, fanType, MOVE_ONE)
+	pile.vtable = &Stock{pile: &pile}
+	TheCardCount = (&pile).Fill(packs, suits)
+	(&pile).Shuffle()
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func (*Stock) CanAcceptTail([]*Card) (bool, error) {

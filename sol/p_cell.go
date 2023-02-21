@@ -17,10 +17,10 @@ type Cell struct {
 }
 
 func NewCell(slot image.Point) *Pile {
-	cell := NewPile("Cell", slot, FAN_NONE, MOVE_ONE)
-	cell.vtable = &Cell{pile: &cell}
-	TheBaize.AddPile(&cell)
-	return &cell
+	pile := NewPile("Cell", slot, FAN_NONE, MOVE_ONE)
+	pile.vtable = &Cell{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func (self *Cell) CanAcceptTail(tail []*Card) (bool, error) {

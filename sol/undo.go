@@ -38,14 +38,20 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.
 	}
 	self.Reset()
 	for _, cid := range sp.Cards {
-		var c Card = Card{id: cid, pos: cardPositionMap[cid]}
-		self.Push(&c)
-		// Push() may have flipped the card, so do this afterwards ...
-		if cid.Prone() {
-			c.FlipDown()
-		} else {
-			c.FlipUp()
+		pos, ok := cardPositionMap[cid]
+		if !ok {
+			pos = cardPositionMap[cid.PackSuitOrdinal()]
+			// card was put in the map face up,
+			// but is now face down
 		}
+		var c Card = Card{id: cid, pos: pos}
+		self.Push(&c) // will always flip down if pile is Stock
+		// Push() may have flipped the card, so do this afterwards ...
+		// if cid.Prone() {
+		// 	c.FlipDown()
+		// } else {
+		// 	c.FlipUp()
+		// }
 	}
 	if len(self.cards) != len(sp.Cards) {
 		log.Panicf("%s cards rebuilt incorrectly", self.category)

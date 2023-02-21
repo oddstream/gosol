@@ -130,10 +130,11 @@ func (self *Pile) IsStock() bool {
 	// return self.category == "Stock"
 }
 
-func (self *Pile) Fill(packs, suits int) {
-	TheCardCount = packs * suits * 13
+// Fill this pile with a new set of cards. Returns the number of cards added.
+func (self *Pile) Fill(packs, suits int) int {
+	var count int = packs * suits * 13
 
-	self.cards = make([]*Card, 0, TheCardCount)
+	self.cards = make([]*Card, 0, count)
 
 	for pack := 0; pack < packs; pack++ {
 		for suit := 0; suit < suits; suit++ {
@@ -147,6 +148,8 @@ func (self *Pile) Fill(packs, suits int) {
 			}
 		}
 	}
+
+	return count
 }
 
 func (self *Pile) Shuffle() {

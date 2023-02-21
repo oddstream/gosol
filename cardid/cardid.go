@@ -119,6 +119,10 @@ func NewCardID(pack, suit, ordinal int) CardID {
 	return CardID(u)
 }
 
+func (cid CardID) PackSuitOrdinal() CardID {
+	return cid & (packMask | suitMask | ordinalMask)
+}
+
 // SameCard returns true if the two cards have the same ordinal and suit; pack is ignored
 func SameCard(ID1, ID2 CardID) bool {
 	return ID1&(suitMask|ordinalMask) == ID2&(suitMask|ordinalMask)
@@ -126,7 +130,7 @@ func SameCard(ID1, ID2 CardID) bool {
 
 // SameCardAndPack returns true if the two card IDs have the same ordinal and suit, and are from the same pack
 func SameCardAndPack(ID1, ID2 CardID) bool {
-	return ID1&(packMask|suitMask|ordinalMask) == ID2&(packMask|suitMask|ordinalMask)
+	return ID1.PackSuitOrdinal() == ID2.PackSuitOrdinal()
 }
 
 // SuitStringToInt converts a suit string ("Heart") to an int (HEART)

@@ -15,10 +15,10 @@ type Reserve struct {
 }
 
 func NewReserve(slot image.Point, fanType FanType) *Pile {
-	reserve := NewPile("Reserve", slot, fanType, MOVE_ONE)
-	reserve.vtable = &Reserve{pile: &reserve}
-	TheBaize.AddPile(&reserve)
-	return &reserve
+	pile := NewPile("Reserve", slot, fanType, MOVE_ONE)
+	pile.vtable = &Reserve{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {

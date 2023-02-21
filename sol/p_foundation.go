@@ -18,10 +18,10 @@ type Foundation struct {
 }
 
 func NewFoundation(slot image.Point) *Pile {
-	foundation := NewPile("Foundation", slot, FAN_NONE, MOVE_NONE)
-	foundation.vtable = &Foundation{pile: &foundation}
-	TheBaize.AddPile(&foundation)
-	return &foundation
+	pile := NewPile("Foundation", slot, FAN_NONE, MOVE_NONE)
+	pile.vtable = &Foundation{pile: &pile}
+	TheBaize.AddPile(&pile)
+	return &pile
 }
 
 // CanAcceptTail does some obvious check on the tail before passing it to the script

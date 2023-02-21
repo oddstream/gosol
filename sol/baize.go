@@ -112,7 +112,7 @@ func (b *Baize) NewDeal() {
 	}
 
 	// Stock.Fill() needs parameters
-	b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
+	TheCardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
 	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
