@@ -150,7 +150,7 @@ func (self *Pile) pop() *Card {
 	c := self.cards[len(self.cards)-1]
 	self.cards = self.cards[:len(self.cards)-1]
 	c.flipUp()
-	c.owner = nil
+	c.setOwner(nil)
 	return c
 }
 
@@ -160,7 +160,7 @@ func (self *Pile) push(c *Card) {
 	if self.isStock() {
 		c.flipDown()
 	}
-	c.owner = self
+	c.setOwner(self)
 }
 
 func (self *Pile) flipUpExposedCard() {

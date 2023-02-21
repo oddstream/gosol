@@ -24,10 +24,10 @@ func (sb scriptBase) complete() bool {
 	for _, f := range sb.foundations {
 		n += len(f.cards)
 	}
-	return n == numberOfCardsInStock
+	return n == len(baize.pack)
 }
 
-func (sb scriptBase) SpiderComplete() bool {
+func (sb scriptBase) spiderComplete() bool {
 	for _, tab := range sb.tableaux {
 		switch len(tab.cards) {
 		case 0:

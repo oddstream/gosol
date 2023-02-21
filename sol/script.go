@@ -587,7 +587,7 @@ func VariantNames(group string) []string {
 	return vnames
 }
 
-// useful generic game library of functions
+// useful generic game library of functions ///////////////////////////////////
 
 func AnyCardsProne(cards []*Card) bool {
 	for _, c := range cards {
@@ -655,15 +655,20 @@ func RecycleWasteToStock(waste *Pile, stock *Pile) {
 	}
 }
 
-func Compare_Empty(p *Pile, c *Card) (bool, error) {
+// CardCompare stuff //////////////////////////////////////////////////////////
 
-	if p.Label() != "" {
-		if p.Label() == "x" || p.Label() == "X" {
-			return false, errors.New("Cannot move cards to that empty pile")
-		}
-		ord := util.OrdinalToShortString(c.Ordinal())
-		if ord != p.Label() {
-			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.Label()), util.ShortOrdinalToLongOrdinal(ord))
+type CardPair struct {
+	c1, c2 *Card
+}
+
+type CardPairs []CardPair
+
+type CardPairCompareFunc func(CardPair) (bool, error)
+
+func TailConformant(tail []*Card, fn CardPairCompareFunc) (bool, error) {
+	for _, pair := range NewCardPairs(tail) {
+		if ok, err := fn(pair); !ok {
+			return false, err
 		}
 	}
 	return true, nil
@@ -690,14 +695,6 @@ func UnsortedPairs(pile *Pile, fn CardPairCompareFunc) int {
 	return unsorted
 }
 
-type CardPairCompareFunc func(CardPair) (bool, error)
-
-type CardPair struct {
-	c1, c2 *Card
-}
-
-type CardPairs []CardPair
-
 func NewCardPairs(cards []*Card) CardPairs {
 	if len(cards) < 2 {
 		return []CardPair{} // always return a list, not nil
@@ -717,6 +714,19 @@ func NewCardPairs(cards []*Card) CardPairs {
 // 		println(pair.c1.String(), pair.c2.String())
 // 	}
 // }
+
+func Compare_Empty(p *Pile, c *Card) (bool, error) {
+	if p.Label() != "" {
+		if p.Label() == "x" || p.Label() == "X" {
+			return false, errors.New("Cannot move cards to that empty pile")
+		}
+		ord := util.OrdinalToShortString(c.Ordinal())
+		if ord != p.Label() {
+			return false, fmt.Errorf("Can only accept %s, not %s", util.ShortOrdinalToLongOrdinal(p.Label()), util.ShortOrdinalToLongOrdinal(ord))
+		}
+	}
+	return true, nil
+}
 
 // little library of simple compares
 
@@ -915,13 +925,4 @@ func (cp CardPair) ChainCall(fns ...func(CardPair) (bool, error)) (ok bool, err 
 		}
 	}
 	return
-}
-
-func TailConformant(tail []*Card, fn CardPairCompareFunc) (bool, error) {
-	for _, pair := range NewCardPairs(tail) {
-		if ok, err := fn(pair); !ok {
-			return false, err
-		}
-	}
-	return true, nil
 }

@@ -9,9 +9,15 @@ import (
 // LIGHT should see a Card object as immutable, hence the unexported fields and getters.
 type Card struct {
 	id             cardid.CardID
-	owner          *Pile
+	owningPile     *Pile
 	tapDestination *Pile
 	tapWeight      int
+}
+
+func NewCard(pack, suit, ordinal int) Card {
+	c := Card{id: cardid.NewCardID(pack, suit, ordinal)}
+	c.setProne(true)
+	return c
 }
 
 // Public functions
@@ -32,10 +38,6 @@ func (c *Card) Prone() bool {
 	return c.id.Prone()
 }
 
-func (c *Card) SetProne(prone bool) {
-	c.id = c.id.SetProne(prone)
-}
-
 func (c *Card) TapWeight() int {
 	return c.tapWeight
 }
@@ -43,17 +45,25 @@ func (c *Card) TapWeight() int {
 // Private functions
 
 func (c *Card) owner() *Pile {
-	return c.owner
+	return c.owningPile
+}
+
+func (c *Card) setOwner(p *Pile) *Pile {
+	c.owningPile = p
+}
+
+func (c *Card) setProne(prone bool) {
+	c.id = c.id.SetProne(prone)
 }
 
 func (c *Card) flipUp() {
 	if c.Prone() {
-		c.SetProne(false)
+		c.setProne(false)
 	}
 }
 
 func (c *Card) flipDown() {
 	if !c.Prone() {
-		c.SetProne(true)
+		c.setProne(true)
 	}
 }
