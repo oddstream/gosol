@@ -133,8 +133,8 @@ func (b *Baize) FindDestinations() {
 	b.UpdateDrawers()
 	b.UpdateStatusbar()
 
-	if !TheSettings.AlwaysShowMovableCards {
-		TheSettings.ShowMovableCards = false
+	if !TheGame.Settings.AlwaysShowMovableCards {
+		TheGame.Settings.ShowMovableCards = false
 	}
 }
 

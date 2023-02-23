@@ -88,15 +88,16 @@ type Pile struct {
 	// target bool // experimental, might delete later, IDK
 }
 
-func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
-	var self Pile = Pile{
+func NewPile(category string, slot image.Point, fanType FanType, moveType MoveType) *Pile {
+	var p *Pile = &Pile{
 		category:  category,
 		moveType:  moveType,
 		slot:      slot,
 		fanType:   fanType,
 		fanFactor: DefaultFanFactor[fanType],
 	}
-	return self
+	TheGame.Baize.AddPile(p)
+	return p
 }
 
 // func (self *Pile) Valid() bool {
@@ -143,7 +144,7 @@ func (self *Pile) Fill(packs, suits int) int {
 				// (i.e. not 0..3)
 				// run the suits loop backwards, so spades are used first
 				// (folks expect Spider One Suit to use spades)
-				var c Card = NewCard(pack, cardid.SPADE-suit, ord)
+				var c Card = NewCard(pack, cardid.SPADE-suit, ord, self.pos)
 				self.Push(&c)
 			}
 		}
@@ -185,7 +186,7 @@ func (self *Pile) Label() string {
 func (self *Pile) SetLabel(label string) {
 	if self.label != label {
 		self.label = label
-		TheBaize.setFlag(dirtyPileBackgrounds)
+		TheGame.Baize.setFlag(dirtyPileBackgrounds)
 	}
 }
 
@@ -268,7 +269,7 @@ func (self *Pile) Pop() *Card {
 	self.cards = self.cards[:len(self.cards)-1]
 	c.SetOwner(nil)
 	c.FlipUp()
-	TheBaize.setFlag(dirtyCardPositions)
+	TheGame.Baize.setFlag(dirtyCardPositions)
 	return c
 }
 
@@ -288,7 +289,7 @@ func (self *Pile) Push(c *Card) {
 	if self.IsStock() {
 		c.FlipDown() // see? cards can transition and flip at the same time
 	}
-	TheBaize.setFlag(dirtyCardPositions)
+	TheGame.Baize.setFlag(dirtyCardPositions)
 }
 
 func (self *Pile) FlipUpExposedCard() {
@@ -366,7 +367,7 @@ func (self *Pile) BaizePos() image.Point {
 }
 
 func (self *Pile) ScreenPos() image.Point {
-	return self.pos.Add(TheBaize.dragOffset)
+	return self.pos.Add(TheGame.Baize.dragOffset)
 }
 
 func (self *Pile) BaizeRect() image.Rectangle {
@@ -378,8 +379,8 @@ func (self *Pile) BaizeRect() image.Rectangle {
 
 func (self *Pile) ScreenRect() image.Rectangle {
 	var r image.Rectangle = self.BaizeRect()
-	r.Min = r.Min.Add(TheBaize.dragOffset)
-	r.Max = r.Max.Add(TheBaize.dragOffset)
+	r.Min = r.Min.Add(TheGame.Baize.dragOffset)
+	r.Max = r.Max.Add(TheGame.Baize.dragOffset)
 	return r
 }
 
@@ -407,8 +408,8 @@ func (self *Pile) FannedBaizeRect() image.Rectangle {
 
 func (self *Pile) FannedScreenRect() image.Rectangle {
 	var r image.Rectangle = self.FannedBaizeRect()
-	r.Min = r.Min.Add(TheBaize.dragOffset)
-	r.Max = r.Max.Add(TheBaize.dragOffset)
+	r.Min = r.Min.Add(TheGame.Baize.dragOffset)
+	r.Max = r.Max.Add(TheGame.Baize.dragOffset)
 	return r
 }
 
@@ -636,13 +637,13 @@ func (self *Pile) Draw(screen *ebiten.Image) {
 	}
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(self.pos.X+TheBaize.dragOffset.X), float64(self.pos.Y+TheBaize.dragOffset.Y))
+	op.GeoM.Translate(float64(self.pos.X+TheGame.Baize.dragOffset.X), float64(self.pos.Y+TheGame.Baize.dragOffset.Y))
 	// if self.target && len(self.cards) == 0 {
 	// 	op.ColorM.Scale(0.75, 0.75, 0.75, 1)
 	// 	// op.GeoM.Translate(2, 2)
 	// }
 
-	if self.IsStock() && TheBaize.Recycles() > 0 {
+	if self.IsStock() && TheGame.Baize.Recycles() > 0 {
 		if pt := image.Pt(ebiten.CursorPosition()); pt.In(self.ScreenRect()) {
 			if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 				op.GeoM.Translate(2, 2)

@@ -61,7 +61,7 @@ func (self *CanThieves) StartGame() {
 		}
 	}
 
-	TheBaize.SetRecycles(2)
+	TheGame.Baize.SetRecycles(2)
 }
 
 func (self *CanThieves) AfterMove() {

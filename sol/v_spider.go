@@ -53,7 +53,7 @@ func (self *Spider) StartGame() {
 		}
 		c.FlipUp()
 	}
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 }
 
 func (*Spider) TailMoveError(tail []*Card) (bool, error) {
@@ -105,7 +105,7 @@ func (self *Spider) TailTapped(tail []*Card) {
 			}
 		}
 		if emptyTabs > 0 && tabCards >= len(self.tableaux) {
-			TheUI.ToastError("All empty tableaux must be filled before dealing a new row")
+			TheGame.UI.ToastError("All empty tableaux must be filled before dealing a new row")
 		} else {
 			for _, tab := range self.tableaux {
 				MoveCard(self.stock, tab)

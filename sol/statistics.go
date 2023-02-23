@@ -168,10 +168,10 @@ func (s *Statistics) RecordLostGame(v string, percent int) string {
 }
 
 func ShowStatisticsDrawer() {
-	vstats := TheStatistics.findVariant(TheSettings.Variant)
-	var strs []string = vstats.strings(TheSettings.Variant)
+	vstats := TheGame.Statistics.findVariant(TheGame.Settings.Variant)
+	var strs []string = vstats.strings(TheGame.Settings.Variant)
 	strs = append(strs, " ") // n.b. can't use empty string
 	strs = append(strs, "ALL VARIANTS")
-	strs = append(strs, TheStatistics.strings()...)
-	TheUI.ShowTextDrawer(strs)
+	strs = append(strs, TheGame.Statistics.strings()...)
+	TheGame.UI.ShowTextDrawer(strs)
 }

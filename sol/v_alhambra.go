@@ -58,7 +58,7 @@ func (self *Alhambra) StartGame() {
 		}
 	}
 
-	TheBaize.SetRecycles(2)
+	TheGame.Baize.SetRecycles(2)
 }
 
 func (*Alhambra) TailMoveError(tail []*Card) (bool, error) {

@@ -70,7 +70,7 @@ func (self *Canfield) StartGame() {
 		MoveCard(self.stock, pile)
 	}
 
-	TheBaize.SetRecycles(self.recycles)
+	TheGame.Baize.SetRecycles(self.recycles)
 }
 
 func (self *Canfield) AfterMove() {

@@ -18,9 +18,8 @@ type Discard struct {
 
 func NewDiscard(slot image.Point, fanType FanType) *Pile {
 	pile := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
-	pile.vtable = &Discard{pile: &pile}
-	TheBaize.AddPile(&pile)
-	return &pile
+	pile.vtable = &Discard{pile: pile}
+	return pile
 }
 
 func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
@@ -30,7 +29,7 @@ func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot move a face down card to a Discard")
 	}
-	if len(tail) != TheCardCount/len(TheBaize.script.Discards()) {
+	if len(tail) != TheGame.cardCount/len(TheGame.Baize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
 	if ok, err := TailConformant(tail, CardPair.Compare_DownSuit); !ok {
@@ -38,7 +37,7 @@ func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	}
 	// Scorpion tails can always be moved, but Mrs Mop/Simple Simon tails
 	// must be conformant, so ...
-	return TheBaize.script.TailMoveError(tail)
+	return TheGame.Baize.script.TailMoveError(tail)
 }
 
 func (*Discard) TailTapped([]*Card) {

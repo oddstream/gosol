@@ -16,9 +16,8 @@ type Reserve struct {
 
 func NewReserve(slot image.Point, fanType FanType) *Pile {
 	pile := NewPile("Reserve", slot, fanType, MOVE_ONE)
-	pile.vtable = &Reserve{pile: &pile}
-	TheBaize.AddPile(&pile)
-	return &pile
+	pile.vtable = &Reserve{pile: pile}
+	return pile
 }
 
 func (*Reserve) CanAcceptTail(tail []*Card) (bool, error) {
@@ -48,7 +47,7 @@ func (self *Reserve) MovableTails() []*MovableTail {
 	if self.pile.Len() > 0 {
 		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
-		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		var homes []*Pile = TheGame.Baize.FindHomesForTail(tail)
 		for _, home := range homes {
 			tails = append(tails, &MovableTail{dst: home, tail: tail})
 		}

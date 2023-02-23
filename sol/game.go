@@ -12,15 +12,20 @@ import (
 
 // Game represents a game state
 type Game struct {
+	UI         *ui.UI
+	Baize      *Baize
+	Statistics *Statistics
+	Settings   *Settings
+	cardCount  int
 }
 
 var (
 	// GosolVersionMajor is the integer version number
 	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	GosolVersionMinor int = 13
+	GosolVersionMinor int = 14
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	GosolVersionDate string = "2023-02-20"
+	GosolVersionDate string = "2023-02-23"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -35,7 +40,7 @@ var (
 	CardHeight int = 13
 	// CardDiagonal float64 = 15.8
 	// Card Corner Radius
-	CardCornerRadius float64 = float64(CardWidth) / 15.0
+	CardCornerRadius float64 = float64(CardWidth) / 10.0
 	// PilePaddingX the gap left to the right of the pile
 	PilePaddingX int = CardWidth / 10
 	// PilePaddingY the gap left underneath each pile
@@ -60,43 +65,33 @@ var (
 	ExitRequested bool = false
 )
 
-// TheStatistics holds statistics for all variants
-var TheStatistics *Statistics
+var TheGame *Game // pointer to object that implements ebiten.Game interface
 
-// TheBaize points to the Baize, so that main can see it
-var TheBaize *Baize
-
-// TheCardCount is the number of cards created for the current variant. TODO refactor out this kludge.
-var TheCardCount int
-
-// The UI points to the singleton User Interface object
-var TheUI *ui.UI
-
-// NewGame generates a new Game object.
-func NewGame() (*Game, error) {
-	TheSettings.Load()
-	if TheSettings.Mute {
+// NewGame generates a new Game object, which implements ebiten.Game interface
+func NewGame() {
+	TheGame = &Game{Settings: NewSettings()}
+	TheGame.Settings.Load()
+	if TheGame.Settings.Mute {
 		sound.SetVolume(0.0)
 	} else {
-		sound.SetVolume(TheSettings.Volume)
+		sound.SetVolume(TheGame.Settings.Volume)
 	}
-	TheUI = ui.New(Execute)
-	TheStatistics = NewStatistics()
-	TheBaize = NewBaize()
-	TheBaize.StartFreshGame()
-	if TheSettings.LastVersionMajor != GosolVersionMajor || TheSettings.LastVersionMinor != GosolVersionMinor {
-		TheUI.Toast("Glass", fmt.Sprintf("Upgraded from %d.%d to %d.%d",
-			TheSettings.LastVersionMajor,
-			TheSettings.LastVersionMinor,
+	TheGame.Statistics = NewStatistics()
+	TheGame.UI = ui.New(Execute)
+	TheGame.Baize = NewBaize()
+	TheGame.Baize.StartFreshGame()
+	if TheGame.Settings.LastVersionMajor != GosolVersionMajor || TheGame.Settings.LastVersionMinor != GosolVersionMinor {
+		TheGame.UI.Toast("Glass", fmt.Sprintf("Upgraded from %d.%d to %d.%d",
+			TheGame.Settings.LastVersionMajor,
+			TheGame.Settings.LastVersionMinor,
 			GosolVersionMajor,
 			GosolVersionMinor))
 	}
-	return &Game{}, nil
 }
 
 // Layout implements ebiten.Game's Layout.
-func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	TheBaize.Layout(outsideWidth, outsideHeight)
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	g.Baize.Layout(outsideWidth, outsideHeight)
 	return outsideWidth, outsideHeight
 }
 
@@ -107,13 +102,13 @@ func (*Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight 
 // will be called 60 times per second. In other words, unless you modify
 // the TPS with SetMaxTPS, the fixed timestep will be 1000/60 = 16.666 milliseconds.
 // https://ebitencookbook.vercel.app/blog
-func (*Game) Update() error {
-	TheBaize.Update()
+func (g *Game) Update() error {
+	g.Baize.Update()
 	if ExitRequested {
 		if !NoGameSave {
-			TheBaize.Save()
+			g.Baize.Save()
 		}
-		TheSettings.Save()
+		g.Settings.Save()
 		return errors.New("exit requested")
 	}
 	return nil
@@ -122,6 +117,6 @@ func (*Game) Update() error {
 // Draw draws the current game to the given screen.
 // Draw will be called based on the refresh rate of the screen (FPS).
 // https://ebitencookbook.vercel.app/blog
-func (*Game) Draw(screen *ebiten.Image) {
-	TheBaize.Draw(screen)
+func (g *Game) Draw(screen *ebiten.Image) {
+	g.Baize.Draw(screen)
 }

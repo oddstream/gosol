@@ -16,11 +16,7 @@ import (
 )
 
 func main() {
-
-	game, err := sol.NewGame()
-	if err != nil {
-		log.Fatal(err)
-	}
+	sol.NewGame() // sets sol.TheGame
 
 	defer func() {
 		log.Println("main defer cleanup")
@@ -30,7 +26,7 @@ func main() {
 		sol.TheSettings.Save()
 	}()
 
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(sol.TheGame); err != nil {
 		log.Fatal(err)
 	}
 }

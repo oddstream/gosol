@@ -37,7 +37,7 @@ func (self *Duchess) BuildPiles() {
 }
 
 func (self *Duchess) StartGame() {
-	TheBaize.SetRecycles(1)
+	TheGame.Baize.SetRecycles(1)
 	for _, pile := range self.foundations {
 		pile.SetLabel("")
 	}
@@ -50,7 +50,7 @@ func (self *Duchess) StartGame() {
 	for _, pile := range self.tableaux {
 		MoveCard(self.stock, pile)
 	}
-	TheUI.ToastInfo("Move a Reserve card to a Foundation")
+	TheGame.UI.ToastInfo("Move a Reserve card to a Foundation")
 }
 
 func (self *Duchess) AfterMove() {
@@ -67,7 +67,7 @@ func (self *Duchess) AfterMove() {
 			}
 		}
 		if ord == 0 {
-			TheUI.ToastInfo("Move a Reserve card to a Foundation")
+			TheGame.UI.ToastInfo("Move a Reserve card to a Foundation")
 		} else {
 			for _, f := range self.foundations {
 				f.SetLabel(util.OrdinalToShortString(ord))

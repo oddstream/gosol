@@ -37,21 +37,27 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.
 		log.Panicf("Baize pile (%s) and SavablePile (%s) are different", self.category, sp.Category)
 	}
 	self.Reset()
+	// undo
+	// a card that was face up (eg because it was top of pile)
+	// now needs to be face down (because it is no longer top of pile)
+	// card is created same face up/down as it was saved
+	// when it should be created face up, then flipped.
+
 	for _, cid := range sp.Cards {
+		// pos will be set by Pile.Push(), and then lerped to
+		// but we need to set a pos to lerp from
+		// the default of {0,0} looks wrong
+		// so we get the last known position to lerp from
+		// nb a lot of the time, the pos won't change
+		// ie we lerp from pos to pos, which is handled efficiently
 		pos, ok := cardPositionMap[cid]
 		if !ok {
 			pos = cardPositionMap[cid.PackSuitOrdinal()]
-			// card was put in the map face up,
-			// but is now face down
+			// card was put in the map face up, but is now face down
+			// if still not ok, pos will be image.Point{0, 0}
 		}
 		var c Card = Card{id: cid, pos: pos}
 		self.Push(&c) // will always flip down if pile is Stock
-		// Push() may have flipped the card, so do this afterwards ...
-		// if cid.Prone() {
-		// 	c.FlipDown()
-		// } else {
-		// 	c.FlipUp()
-		// }
 	}
 	if len(self.cards) != len(sp.Cards) {
 		log.Panicf("%s cards rebuilt incorrectly", self.category)
@@ -134,11 +140,11 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 // Undo reverts the Baize state to it's previous state
 func (b *Baize) Undo() {
 	if len(b.undoStack) < 2 {
-		TheUI.ToastError("Nothing to undo")
+		TheGame.UI.ToastError("Nothing to undo")
 		return
 	}
 	if b.Complete() {
-		TheUI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
+		TheGame.UI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
 		return
 	}
 	_, ok := b.UndoPop() // removes current state
@@ -157,7 +163,7 @@ func (b *Baize) Undo() {
 
 func (b *Baize) RestartDeal() {
 	if b.Complete() {
-		TheUI.ToastError("Cannot restart a completed game") // otherwise the stats can be cooked
+		TheGame.UI.ToastError("Cannot restart a completed game") // otherwise the stats can be cooked
 		return
 	}
 	var sav *SavableBaize
@@ -177,25 +183,25 @@ func (b *Baize) RestartDeal() {
 // SavePosition saves the current Baize state
 func (b *Baize) SavePosition() {
 	if b.Complete() {
-		TheUI.ToastError("Cannot bookmark a completed game") // otherwise the stats can be cooked
+		TheGame.UI.ToastError("Cannot bookmark a completed game") // otherwise the stats can be cooked
 		return
 	}
 	b.bookmark = len(b.undoStack)
 	sb := b.UndoPeek()
 	sb.Bookmark = b.bookmark
 	sb.Recycles = b.recycles
-	TheUI.ToastInfo("Position bookmarked")
+	TheGame.UI.ToastInfo("Position bookmarked")
 }
 
 // LoadPosition loads a previously saved Baize state
 func (b *Baize) LoadPosition() {
 	if b.bookmark == 0 || b.bookmark > len(b.undoStack) {
 		// println("bookmark", b.bookmark, "undostack", len(b.undoStack))
-		TheUI.ToastError("No bookmark")
+		TheGame.UI.ToastError("No bookmark")
 		return
 	}
 	if b.Complete() {
-		TheUI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
+		TheGame.UI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
 		return
 	}
 	var sav *SavableBaize

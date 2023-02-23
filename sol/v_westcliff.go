@@ -90,7 +90,7 @@ func (self *Westcliff) StartGame() {
 			MoveCard(self.stock, self.waste)
 		}
 	}
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 }
 
 func (self *Westcliff) AfterMove() {

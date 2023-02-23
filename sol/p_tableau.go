@@ -12,7 +12,6 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/schriftbank"
-	"oddstream.games/gosol/util"
 )
 
 type Tableau struct {
@@ -21,33 +20,8 @@ type Tableau struct {
 
 func NewTableau(slot image.Point, fanType FanType, moveType MoveType) *Pile {
 	pile := NewPile("Tableau", slot, fanType, moveType)
-	pile.vtable = &Tableau{pile: &pile}
-	TheBaize.AddPile(&pile)
-	return &pile
-}
-
-func powerMoves(piles []*Pile, pDraggingTo *Pile) int {
-	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
-	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
-	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
-	var emptyCells, emptyCols int
-	for _, p := range piles {
-		if p.Empty() {
-			switch p.vtable.(type) {
-			case *Cell:
-				emptyCells++
-			case *Tableau:
-				if p.Label() == "" && p != pDraggingTo {
-					// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
-					emptyCols++
-				}
-			}
-		}
-	}
-	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
-	n := (1 + emptyCells) * util.Pow(2, emptyCols)
-	// println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
-	return n
+	pile.vtable = &Tableau{pile: pile}
+	return pile
 }
 
 func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
@@ -62,8 +36,8 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 	// because we didn't then know the destination pile
 	// which we need to know to calculate power moves
 	if self.pile.moveType == MOVE_ONE_PLUS {
-		if TheSettings.PowerMoves {
-			moves := powerMoves(TheBaize.piles, self.pile)
+		if TheGame.Settings.PowerMoves {
+			moves := TheGame.Baize.powerMoves(self.pile)
 			if len(tail) > moves {
 				if moves == 1 {
 					return false, fmt.Errorf("Space to move 1 card, not %d", len(tail))
@@ -77,7 +51,7 @@ func (self *Tableau) CanAcceptTail(tail []*Card) (bool, error) {
 			}
 		}
 	}
-	return TheBaize.script.TailAppendError(self.pile, tail)
+	return TheGame.Baize.script.TailAppendError(self.pile, tail)
 }
 
 func (self *Tableau) TailTapped(tail []*Card) {
@@ -85,12 +59,12 @@ func (self *Tableau) TailTapped(tail []*Card) {
 }
 
 func (self *Tableau) Conformant() bool {
-	// return TheBaize.script.UnsortedPairs(self.pile) == 0
+	// return TheGame.Baize.script.UnsortedPairs(self.pile) == 0
 	return self.UnsortedPairs() == 0
 }
 
 func (self *Tableau) UnsortedPairs() int {
-	return TheBaize.script.UnsortedPairs(self.pile)
+	return TheGame.Baize.script.UnsortedPairs(self.pile)
 }
 
 func (self *Tableau) MovableTails() []*MovableTail {
@@ -99,8 +73,8 @@ func (self *Tableau) MovableTails() []*MovableTail {
 		for _, card := range self.pile.cards {
 			var tail = self.pile.MakeTail(card)
 			if ok, _ := self.pile.CanMoveTail(tail); ok {
-				if ok, _ := TheBaize.script.TailMoveError(tail); ok {
-					var homes []*Pile = TheBaize.FindHomesForTail(tail)
+				if ok, _ := TheGame.Baize.script.TailMoveError(tail); ok {
+					var homes []*Pile = TheGame.Baize.FindHomesForTail(tail)
 					for _, home := range homes {
 						tails = append(tails, &MovableTail{dst: home, tail: tail})
 					}

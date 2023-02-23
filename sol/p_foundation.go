@@ -19,9 +19,8 @@ type Foundation struct {
 
 func NewFoundation(slot image.Point) *Pile {
 	pile := NewPile("Foundation", slot, FAN_NONE, MOVE_NONE)
-	pile.vtable = &Foundation{pile: &pile}
-	TheBaize.AddPile(&pile)
-	return &pile
+	pile.vtable = &Foundation{pile: pile}
+	return pile
 }
 
 // CanAcceptTail does some obvious check on the tail before passing it to the script
@@ -35,7 +34,7 @@ func (self *Foundation) CanAcceptTail(tail []*Card) (bool, error) {
 	if AnyCardsProne(tail) {
 		return false, errors.New("Cannot add a face down card to a Foundation")
 	}
-	return TheBaize.script.TailAppendError(self.pile, tail)
+	return TheGame.Baize.script.TailAppendError(self.pile, tail)
 }
 
 func (*Foundation) TailTapped([]*Card) {}

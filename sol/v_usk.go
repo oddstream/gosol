@@ -62,9 +62,9 @@ func (self *Usk) dealCards() {
 
 func (self *Usk) StartGame() {
 	self.dealCards()
-	TheBaize.SetRecycles(1)
+	TheGame.Baize.SetRecycles(1)
 	if self.tableauLabel == "" {
-		TheUI.ToastInfo("Relaxed version - any card may be placed in an empty tableaux pile")
+		TheGame.UI.ToastInfo("Relaxed version - any card may be placed in an empty tableaux pile")
 	}
 	if DebugMode && self.stock.Len() > 0 {
 		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
@@ -113,8 +113,8 @@ func (self *Usk) PileTapped(pile *Pile) {
 	if pile != self.stock {
 		return
 	}
-	if TheBaize.Recycles() == 0 {
-		TheUI.ToastError("No more recycles")
+	if TheGame.Baize.Recycles() == 0 {
+		TheGame.UI.ToastError("No more recycles")
 		return
 	}
 	/*
@@ -139,5 +139,5 @@ func (self *Usk) PileTapped(pile *Pile) {
 	self.stock.ReverseCards()
 	// redeal cards
 	self.dealCards()
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 }

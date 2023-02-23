@@ -3,7 +3,6 @@
 package mobilegosol
 
 import (
-	"log"
 
 	// load png decoder in main package
 	_ "image/png"
@@ -13,12 +12,8 @@ import (
 )
 
 func init() {
-
-	game, err := sol.NewGame()
-	if err != nil {
-		log.Fatal(err)
-	}
-	mobile.SetGame(game)
+	sol.NewGame() // sets sol.TheGame
+	mobile.SetGame(sol.TheGame)
 }
 
 // Dummy is a dummy exported function.

@@ -66,11 +66,10 @@ type Stock struct {
 
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	pile := NewPile("Stock", slot, fanType, MOVE_ONE)
-	pile.vtable = &Stock{pile: &pile}
-	TheCardCount = (&pile).Fill(packs, suits)
-	(&pile).Shuffle()
-	TheBaize.AddPile(&pile)
-	return &pile
+	pile.vtable = &Stock{pile: pile}
+	TheGame.cardCount = pile.Fill(packs, suits)
+	pile.Shuffle()
+	return pile
 }
 
 func (*Stock) CanAcceptTail([]*Card) (bool, error) {
@@ -98,7 +97,7 @@ func (self *Stock) MovableTails() []*MovableTail {
 	if self.pile.Len() > 0 {
 		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
-		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		var homes []*Pile = TheGame.Baize.FindHomesForTail(tail)
 		for _, home := range homes {
 			tails = append(tails, &MovableTail{dst: home, tail: tail})
 		}
@@ -118,7 +117,7 @@ func (*Stock) Placeholder() *ebiten.Image {
 	// and were stubbornly white
 
 	var label rune
-	if TheBaize.recycles == 0 {
+	if TheGame.Baize.recycles == 0 {
 		label = NORECYCLE_RUNE
 	} else {
 		label = RECYCLE_RUNE

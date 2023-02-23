@@ -36,7 +36,7 @@ func (self *Toad) BuildPiles() {
 
 func (self *Toad) StartGame() {
 
-	TheBaize.SetRecycles(1)
+	TheGame.Baize.SetRecycles(1)
 
 	for n := 0; n < 20; n++ {
 		MoveCard(self.stock, self.reserves[0])

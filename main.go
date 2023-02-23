@@ -55,18 +55,15 @@ func main() {
 	ebiten.SetWindowIcon(sol.WindowIcons())
 	ebiten.SetWindowTitle("Go Solitaire")
 
-	game, err := sol.NewGame()
-	if err != nil {
-		log.Fatal(err)
-	}
+	sol.NewGame() // sets sol.TheGame
 
 	if !sol.NoGameLoad {
-		if undoStack := sol.LoadUndoStack(); sol.TheBaize.IsSavableStackOk(undoStack) {
-			sol.TheBaize.SetUndoStack(undoStack) // TODO doing this before Baize.Layout sets WindowWidth,Height
+		if undoStack := sol.LoadUndoStack(); sol.TheGame.Baize.IsSavableStackOk(undoStack) {
+			sol.TheGame.Baize.SetUndoStack(undoStack) // TODO doing this before Baize.Layout sets WindowWidth,Height
 		}
 	}
 
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(sol.TheGame); err != nil {
 		log.Fatal(err)
 	}
 
@@ -74,8 +71,8 @@ func main() {
 	// println("main exit")
 
 	if !sol.NoGameSave {
-		sol.TheBaize.Save()
+		sol.TheGame.Baize.Save()
 	}
 
-	sol.TheSettings.Save()
+	sol.TheGame.Settings.Save()
 }

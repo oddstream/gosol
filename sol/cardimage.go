@@ -102,41 +102,41 @@ var Pips [13][]PipInfo = [13][]PipInfo{
 
 func cardColor(cid cardid.CardID) color.RGBA {
 	suit := cid.Suit()
-	if TheSettings.ColorfulCards {
-		switch TheBaize.script.CardColors() {
+	if TheGame.Settings.ColorfulCards {
+		switch TheGame.Baize.script.CardColors() {
 		case 4:
 			switch suit {
 			case cardid.NOSUIT:
 				return BasicColors["Silver"]
 			case cardid.CLUB:
-				return ExtendedColors[TheSettings.ClubColor]
+				return ExtendedColors[TheGame.Settings.ClubColor]
 			case cardid.DIAMOND:
-				return ExtendedColors[TheSettings.DiamondColor]
+				return ExtendedColors[TheGame.Settings.DiamondColor]
 			case cardid.HEART:
-				return ExtendedColors[TheSettings.HeartColor]
+				return ExtendedColors[TheGame.Settings.HeartColor]
 			case cardid.SPADE:
-				return ExtendedColors[TheSettings.SpadeColor]
+				return ExtendedColors[TheGame.Settings.SpadeColor]
 			}
 		case 2:
 			switch suit {
 			case cardid.NOSUIT:
 				return BasicColors["Silver"]
 			case cardid.CLUB, cardid.SPADE:
-				return ExtendedColors[TheSettings.BlackColor]
+				return ExtendedColors[TheGame.Settings.BlackColor]
 			case cardid.DIAMOND, cardid.HEART:
-				return ExtendedColors[TheSettings.RedColor]
+				return ExtendedColors[TheGame.Settings.RedColor]
 			}
 		case 1:
-			return ExtendedColors[TheSettings.SpadeColor]
+			return ExtendedColors[TheGame.Settings.SpadeColor]
 		}
 	} else {
 		switch suit {
 		case cardid.NOSUIT:
 			return BasicColors["Silver"]
 		case cardid.CLUB, cardid.SPADE:
-			return ExtendedColors[TheSettings.BlackColor]
+			return ExtendedColors[TheGame.Settings.BlackColor]
 		case cardid.DIAMOND, cardid.HEART:
-			return ExtendedColors[TheSettings.RedColor]
+			return ExtendedColors[TheGame.Settings.RedColor]
 		}
 	}
 	return BasicColors["Purple"]
@@ -150,7 +150,7 @@ func createFaceImage(ID cardid.CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 
 	// draw the basic card face
-	dc.SetColor(ExtendedColors[TheSettings.CardFaceColor])
+	dc.SetColor(ExtendedColors[TheGame.Settings.CardFaceColor])
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
@@ -247,7 +247,7 @@ func createSimpleFaceImage(ID CardID) *ebiten.Image {
 	dc := gg.NewContext(CardWidth, CardHeight)
 
 	// draw the basic card face
-	dc.SetColor(ExtendedColors[TheSettings.CardFaceColor])
+	dc.SetColor(ExtendedColors[TheGame.Settings.CardFaceColor])
 	dc.DrawRoundedRectangle(0, 0, w, h, CardCornerRadius)
 	dc.Fill()
 
@@ -335,7 +335,7 @@ func CreateCardImages() {
 			TheCardFaceImageLibrary[(suit*13)+(ord-1)] = createFaceImage(ID)
 		}
 	}
-	CardBackImage = CreateCardBackImage(TheSettings.CardBackColor)
-	MovableCardBackImage = CreateCardBackImage(TheSettings.MovableCardBackColor)
+	CardBackImage = CreateCardBackImage(TheGame.Settings.CardBackColor)
+	MovableCardBackImage = CreateCardBackImage(TheGame.Settings.MovableCardBackColor)
 	CardShadowImage = CreateCardShadowImage()
 }

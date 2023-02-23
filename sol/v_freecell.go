@@ -13,8 +13,7 @@ import (
 type Freecell struct {
 	ScriptBase
 	tabCompareFunc CardPairCompareFunc
-	blind          bool
-	easy           bool
+	blind, easy    bool
 }
 
 func (self *Freecell) BuildPiles() {

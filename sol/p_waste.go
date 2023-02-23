@@ -16,9 +16,8 @@ type Waste struct {
 
 func NewWaste(slot image.Point, fanType FanType) *Pile {
 	pile := NewPile("Waste", slot, fanType, MOVE_ONE)
-	pile.vtable = &Waste{pile: &pile}
-	TheBaize.AddPile(&pile)
-	return &pile
+	pile.vtable = &Waste{pile: pile}
+	return pile
 }
 
 func (*Waste) CanAcceptTail(tail []*Card) (bool, error) {
@@ -55,7 +54,7 @@ func (self *Waste) MovableTails() []*MovableTail {
 	if self.pile.Len() > 0 {
 		var card *Card = self.pile.Peek()
 		var tail []*Card = []*Card{card}
-		var homes []*Pile = TheBaize.FindHomesForTail(tail)
+		var homes []*Pile = TheGame.Baize.FindHomesForTail(tail)
 		for _, home := range homes {
 			tails = append(tails, &MovableTail{dst: home, tail: tail})
 		}

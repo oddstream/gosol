@@ -92,7 +92,7 @@ func (self *Antares) StartGame() {
 		}
 	}
 
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 
 	if DebugMode && self.stock.Len() > 0 {
 		log.Println("*** still", self.stock.Len(), "cards in Stock ***")

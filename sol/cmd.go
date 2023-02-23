@@ -9,63 +9,63 @@ import (
 )
 
 var CommandTable = map[ebiten.Key]func(){
-	ebiten.KeyN: func() { TheBaize.NewDeal() },
-	ebiten.KeyR: func() { TheBaize.RestartDeal() },
-	ebiten.KeyU: func() { TheBaize.Undo() },
+	ebiten.KeyN: func() { TheGame.Baize.NewDeal() },
+	ebiten.KeyR: func() { TheGame.Baize.RestartDeal() },
+	ebiten.KeyU: func() { TheGame.Baize.Undo() },
 	ebiten.KeyB: func() {
 		if ebiten.IsKeyPressed(ebiten.KeyControl) {
-			TheBaize.LoadPosition()
+			TheGame.Baize.LoadPosition()
 		} else {
-			TheBaize.SavePosition()
+			TheGame.Baize.SavePosition()
 		}
 	},
-	ebiten.KeyL: func() { TheBaize.LoadPosition() },
-	ebiten.KeyS: func() { TheBaize.SavePosition() },
-	ebiten.KeyC: func() { TheBaize.Collect2() },
+	ebiten.KeyL: func() { TheGame.Baize.LoadPosition() },
+	ebiten.KeyS: func() { TheGame.Baize.SavePosition() },
+	ebiten.KeyC: func() { TheGame.Baize.Collect2() },
 	ebiten.KeyH: func() {
-		TheSettings.ShowMovableCards = !TheSettings.ShowMovableCards
-		if TheSettings.ShowMovableCards {
-			if TheBaize.moves+TheBaize.fmoves > 0 {
-				TheUI.ToastInfo("Movable cards highlighted")
+		TheGame.Settings.ShowMovableCards = !TheGame.Settings.ShowMovableCards
+		if TheGame.Settings.ShowMovableCards {
+			if TheGame.Baize.moves+TheGame.Baize.fmoves > 0 {
+				TheGame.UI.ToastInfo("Movable cards highlighted")
 			} else {
-				TheUI.ToastError("There are no movable cards")
+				TheGame.UI.ToastError("There are no movable cards")
 			}
 		}
 	},
 	ebiten.KeyM: func() {
-		TheSettings.AlwaysShowMovableCards = !TheSettings.AlwaysShowMovableCards
-		TheSettings.ShowMovableCards = TheSettings.AlwaysShowMovableCards
-		if TheSettings.AlwaysShowMovableCards {
-			TheUI.ToastInfo("Movable cards always highlighted")
+		TheGame.Settings.AlwaysShowMovableCards = !TheGame.Settings.AlwaysShowMovableCards
+		TheGame.Settings.ShowMovableCards = TheGame.Settings.AlwaysShowMovableCards
+		if TheGame.Settings.AlwaysShowMovableCards {
+			TheGame.UI.ToastInfo("Movable cards always highlighted")
 		}
 	},
-	ebiten.KeyF: func() { TheUI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker") },
+	ebiten.KeyF: func() { TheGame.UI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker") },
 	ebiten.KeyA: func() { ShowAniSpeedDrawer() },
 	ebiten.KeyX: func() { ExitRequested = true },
 	// ebiten.KeyTab: func() {
 	// 	if DebugMode {
-	// 		for _, p := range TheBaize.piles {
+	// 		for _, p := range TheGame.Baize.piles {
 	// 			p.Refan()
 	// 		}
 	// 	}
 	// },
-	ebiten.KeyF1: func() { TheBaize.Wikipedia() },
+	ebiten.KeyF1: func() { TheGame.Baize.Wikipedia() },
 	ebiten.KeyF2: func() { ShowStatisticsDrawer() },
 	ebiten.KeyF3: func() { ShowSettingsDrawer() },
-	ebiten.KeyF5: func() { TheBaize.StartSpinning() }, // debug
-	ebiten.KeyF6: func() { TheBaize.StopSpinning() },  // debug
+	ebiten.KeyF5: func() { TheGame.Baize.StartSpinning() }, // debug
+	ebiten.KeyF6: func() { TheGame.Baize.StopSpinning() },  // debug
 	ebiten.KeyF7: func() {
-		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
-		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
+		TheGame.UI.AddButtonToFAB("restore", ebiten.KeyR)
+		TheGame.UI.AddButtonToFAB("done_all", ebiten.KeyC)
 	}, // debug
-	ebiten.KeyF8:     func() { TheUI.HideFAB() }, // debug
-	ebiten.KeyMenu:   func() { TheUI.ToggleNavDrawer() },
-	ebiten.KeyEscape: func() { TheUI.HideActiveDrawer() },
+	ebiten.KeyF8:     func() { TheGame.UI.HideFAB() }, // debug
+	ebiten.KeyMenu:   func() { TheGame.UI.ToggleNavDrawer() },
+	ebiten.KeyEscape: func() { TheGame.UI.HideActiveDrawer() },
 }
 
 func Execute(cmd interface{}) {
-	TheUI.HideActiveDrawer()
-	TheUI.HideFAB()
+	TheGame.UI.HideActiveDrawer()
+	TheGame.UI.HideFAB()
 	switch v := cmd.(type) {
 	case ebiten.Key:
 		if fn, ok := CommandTable[v]; ok {
@@ -75,20 +75,20 @@ func Execute(cmd interface{}) {
 		// a widget has sent a command
 		switch v.Command {
 		case "ShowVariantGroupPicker":
-			TheUI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker")
+			TheGame.UI.ShowVariantPickerEx(VariantGroupNames(), "ShowVariantPicker")
 		case "ShowVariantPicker":
-			TheUI.ShowVariantPickerEx(VariantNames(v.Data), "ChangeVariant")
+			TheGame.UI.ShowVariantPickerEx(VariantNames(v.Data), "ChangeVariant")
 		case "ChangeVariant":
 			if _, ok := Variants[v.Data]; !ok {
-				TheUI.ToastError(fmt.Sprintf("Don't know how to play '%s'", v.Data))
-			} else if v.Data == TheSettings.Variant {
-				TheUI.ToastError(fmt.Sprintf("Already playing '%s'", v.Data))
+				TheGame.UI.ToastError(fmt.Sprintf("Don't know how to play '%s'", v.Data))
+			} else if v.Data == TheGame.Settings.Variant {
+				TheGame.UI.ToastError(fmt.Sprintf("Already playing '%s'", v.Data))
 			} else {
-				TheBaize.ChangeVariant(v.Data)
-				TheSettings.Save() // save now especially if running in a browser
+				TheGame.Baize.ChangeVariant(v.Data)
+				TheGame.Settings.Save() // save now especially if running in a browser
 			}
 		case "SaveSettings":
-			TheSettings.Save() // save now especially if running in a browser
+			TheGame.Settings.Save() // save now especially if running in a browser
 		default:
 			log.Panic("unknown command", v.Command, v.Data)
 		}

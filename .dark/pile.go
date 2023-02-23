@@ -9,7 +9,28 @@ import (
 	"time"
 
 	"oddstream.games/gosol/cardid"
-	"oddstream.games/gosol/sol"
+)
+
+type FanType int
+
+const (
+	FAN_NONE FanType = iota
+	FAN_DOWN
+	FAN_LEFT
+	FAN_RIGHT
+	FAN_DOWN3
+	FAN_LEFT3
+	FAN_RIGHT3
+)
+
+type MoveType int
+
+const (
+	MOVE_NONE MoveType = iota
+	MOVE_ANY
+	MOVE_ONE
+	MOVE_ONE_PLUS
+	MOVE_ONE_OR_ALL
 )
 
 // pileVtabler interface for each subpile type, implements the behaviours
@@ -32,16 +53,16 @@ type movableTail struct {
 // Pile is exported from this package because it's used to pass between light and dark.
 // LIGHT should see a Pile object as immutable, hence the unexported fields and getters.
 type Pile struct {
-	category string // needed by LIGHT when creating Pile Placeholder (switch)
-	label    string // needed by LIGHT when creating Pile Placeholder
-	moveType sol.MoveType
-	fanType  sol.FanType
+	category string   // needed by LIGHT when creating Pile Placeholder (switch)
+	label    string   // needed by LIGHT when creating Pile Placeholder
+	moveType MoveType // needed by DARK, not visible to LIGHT
+	fanType  FanType  // needed by LIGHT when fanning cards
 	cards    []*Card
-	vtable   pileVtabler
-	slot     image.Point
+	vtable   pileVtabler // needed by DARK, not visible to LIGHT
+	slot     image.Point // needed by LIGHT when placing piles
 }
 
-// Public functions
+// Public functions, visible to LIGHT
 
 func (p *Pile) Category() string {
 	return p.category
@@ -59,7 +80,7 @@ func (p *Pile) Slot() image.Point {
 	return p.slot
 }
 
-func (p *Pile) FanType() sol.FanType {
+func (p *Pile) FanType() FanType {
 	return p.fanType
 }
 
@@ -69,6 +90,10 @@ func (p *Pile) FanType() sol.FanType {
 // Len satisfies the sort.Interface interface.
 func (self *Pile) Len() int {
 	return len(self.cards)
+}
+
+func (self *Pile) Empty() bool {
+	return len(self.piles) == 0
 }
 
 // Less satisfies the sort.Interface interface
@@ -85,7 +110,7 @@ func (self *Pile) Swap(i, j int) {
 
 // Private functions
 
-func newPile(category string, slot image.Point, fanType sol.FanType, moveType sol.MoveType) Pile {
+func newPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
 	var self Pile = Pile{
 		category: category,
 		fanType:  fanType,
@@ -109,10 +134,30 @@ func (self *Pile) isStock() bool {
 	return ok
 }
 
+func (self *Pile) fill(packs, suits int) int {
+	var count int = packs * suits * 13
+
+	self.cards = make([]*Card, 0, count)
+
+	for pack := 0; pack < packs; pack++ {
+		for suit := 0; suit < suits; suit++ {
+			for ord := 1; ord < 14; ord++ {
+				// suits are numbered NOSUIT=0, CLUB=1, DIAMOND=2, HEART=3, SPADE=4
+				// (i.e. not 0..3)
+				// run the suits loop backwards, so spades are used first
+				// (folks expect Spider One Suit to use spades)
+				var c Card = newCard(pack, cardid.SPADE-suit, ord)
+				self.push(&c)
+			}
+		}
+	}
+
+	return count
+}
+
 func (self *Pile) shuffle() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	rand.Shuffle(self.Len(), self.Swap)
-	log.Printf("Shuffled %d cards", self.Len())
 }
 
 // delete a *Card from this pile
@@ -178,7 +223,7 @@ func (self *Pile) reverseCards() {
 }
 
 // buryCards moves cards with the specified ordinal to the beginning of the pile
-func (self *Pile) BuryCards(ordinal int) {
+func (self *Pile) buryCards(ordinal int) {
 	tmp := make([]*Card, 0, cap(self.cards))
 	for _, c := range self.cards {
 		if c.Ordinal() == ordinal {
@@ -205,20 +250,20 @@ func (self *Pile) canMoveTail(tail []*Card) (bool, error) {
 		}
 	}
 	switch self.moveType {
-	case sol.MOVE_NONE:
+	case MOVE_NONE:
 		// eg Discard, Foundation
 		return false, fmt.Errorf("Cannot move a card from a %s", self.category)
-	case sol.MOVE_ANY:
+	case MOVE_ANY:
 		// well, that was easy
-	case sol.MOVE_ONE:
+	case MOVE_ONE:
 		// eg Cell, Reserve, Stock, Waste
 		if len(tail) > 1 {
 			return false, fmt.Errorf("Can only move one card from a %s", self.category)
 		}
-	case sol.MOVE_ONE_PLUS:
+	case MOVE_ONE_PLUS:
 		// don't (yet) know destination, so we allow this as MOVE_ANY
 		// and do power moves check later, in Tableau CanAcceptTail
-	case sol.MOVE_ONE_OR_ALL:
+	case MOVE_ONE_OR_ALL:
 		// Canfield, Toad
 		if len(tail) == 1 {
 			// that's okay
@@ -253,9 +298,9 @@ func (self *Pile) defaultTailTapped(tail []*Card) {
 		csrc := card.owner()
 		ctail := csrc.makeTail(card)
 		if len(ctail) == 1 {
-			MoveCard(csrc, card.tapDestination)
+			moveCard(csrc, card.tapDestination)
 		} else {
-			MoveTail(card, card.tapDestination)
+			moveTail(card, card.tapDestination)
 		}
 	}
 }

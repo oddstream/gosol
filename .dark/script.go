@@ -1,6 +1,9 @@
 package dark
 
-import "sort"
+import (
+	"log"
+	"sort"
+)
 
 type scriptBase struct {
 	cells       []*Pile
@@ -102,4 +105,51 @@ func (d *dark) ListVariants(group string) []string {
 		sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
 	}
 	return vnames
+}
+
+// useful generic game library of functions ///////////////////////////////////
+
+func anyCardsProne(cards []*Card) bool {
+	for _, c := range cards {
+		if c.Prone() {
+			return true
+		}
+	}
+	return false
+}
+
+// moveCard moves the top card from src to dst
+func moveCard(src *Pile, dst *Pile) *Card {
+	if c := src.pop(); c != nil {
+		dst.push(c)
+		src.flipUpExposedCard()
+		return c
+	}
+	return nil
+}
+
+// moveTail moves all the cards from card downwards onto dst
+func moveTail(card *Card, dst *Pile) {
+	var src *Pile = card.owner()
+	tmp := make([]*Card, 0, len(src.cards))
+	// pop cards from src upto and including the head of the tail
+	for {
+		var c *Card = src.pop()
+		if c == nil {
+			log.Panicf("MoveTail could not find %s", card)
+		}
+		tmp = append(tmp, c)
+		if c == card {
+			break
+		}
+	}
+	// pop cards from the tmp stack and push onto dst
+	if len(tmp) > 0 {
+		for len(tmp) > 0 {
+			var c *Card = tmp[len(tmp)-1]
+			tmp = tmp[:len(tmp)-1]
+			dst.push(c)
+		}
+		src.flipUpExposedCard()
+	}
 }

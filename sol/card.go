@@ -19,9 +19,9 @@ import (
 
 // Card object
 type Card struct {
-	id    cardid.CardID
-	owner *Pile
-	pos   image.Point
+	id         cardid.CardID
+	owningPile *Pile
+	pos        image.Point
 
 	// tap things
 	tapDestination *Pile
@@ -50,14 +50,13 @@ type Card struct {
 }
 
 // NewCard is a factory for Card objects
-func NewCard(pack, suit, ordinal int) Card {
+func NewCard(pack, suit, ordinal int, pos image.Point) Card {
 	// be nice to start the cards in the middle of the screen,
 	// but the screen will be 0,0 when app starts
 	// and ebiten.WindowSize() only works on desktops
 	// Stock is usually at (slot) 0,0 which is half a card width/height into the baize, so...
-	c := Card{id: cardid.NewCardID(pack, suit, ordinal), pos: image.Point{X: (CardWidth / 2), Y: (CardHeight / 2)}}
+	c := Card{id: cardid.NewCardID(pack, suit, ordinal), pos: pos}
 	// a joker ID will be created by having NOSUIT (0) and ordinal == 0
-	c.SetProne(true)
 	// could do c.lerpStep = 1.0 here, but a freshly created card is soon SetPosition()'ed
 	return c
 }
@@ -72,7 +71,7 @@ func (c *Card) String() string {
 }
 
 func (c *Card) Owner() *Pile {
-	// for _, p := range TheBaize.piles {
+	// for _, p := range TheGame.Baize.piles {
 	// 	for _, card := range p.cards {
 	// 		if cardid.SameCardAndPack(c.id, card.id) {
 	// 			return p
@@ -81,11 +80,11 @@ func (c *Card) Owner() *Pile {
 	// }
 	// log.Panicf("%s has no owner", c.id)
 	// return nil
-	return c.owner
+	return c.owningPile
 }
 
 func (c *Card) SetOwner(p *Pile) {
-	c.owner = p
+	c.owningPile = p
 }
 
 func (c *Card) Ordinal() int {
@@ -130,8 +129,8 @@ func (c *Card) BaizeRect() image.Rectangle {
 // ScreenRect gives the x,y screen coords of the card's top left and bottom right corners
 func (c *Card) ScreenRect() image.Rectangle {
 	var r image.Rectangle = c.BaizeRect()
-	r.Min = r.Min.Add(TheBaize.dragOffset)
-	r.Max = r.Max.Add(TheBaize.dragOffset)
+	r.Min = r.Min.Add(TheGame.Baize.dragOffset)
+	r.Max = r.Max.Add(TheGame.Baize.dragOffset)
 	return r
 }
 
@@ -157,9 +156,9 @@ func (c *Card) LerpTo(dst image.Point) {
 	// refanning waste cards can flutter with slow AniSpeed, so go faster if not far to go
 	dist := util.Distance(c.src, c.dst)
 	if dist < float64(CardWidth) {
-		c.aniSpeed = TheSettings.AniSpeed / 2.0
+		c.aniSpeed = TheGame.Settings.AniSpeed / 2.0
 	} else {
-		c.aniSpeed = TheSettings.AniSpeed
+		c.aniSpeed = TheGame.Settings.AniSpeed
 	}
 	c.lerpStartTime = time.Now()
 }
@@ -232,13 +231,13 @@ func (c *Card) FlipDown() {
 }
 
 // Flip turns the card over
-func (c *Card) Flip() {
-	if c.Prone() {
-		c.FlipUp()
-	} else {
-		c.FlipDown()
-	}
-}
+// func (c *Card) Flip() {
+// 	if c.Prone() {
+// 		c.FlipUp()
+// 	} else {
+// 		c.FlipDown()
+// 	}
+// }
 
 // SetFlip turns the card over
 func (c *Card) SetFlip(prone bool) {
@@ -258,7 +257,7 @@ func (c *Card) StartSpinning() {
 	c.tapWeight = 0
 	// delay start of spinning to allow cards to be seen to go/finish their trip to foundations
 	// https://stackoverflow.com/questions/67726230/creating-a-time-duration-from-float64-seconds
-	d := time.Duration(TheSettings.AniSpeed * float64(time.Second))
+	d := time.Duration(TheGame.Settings.AniSpeed * float64(time.Second))
 	d *= 2.0 // pause for admiration
 	c.spinStartAfter = time.Now().Add(d)
 }
@@ -344,7 +343,7 @@ func (c *Card) Update() error {
 
 	if c.Flipping() {
 		// we need to flip faster than we lerp, because flipping happens in two stages
-		t := time.Since(c.flipStartTime).Seconds() / (TheSettings.AniSpeed / 2.0)
+		t := time.Since(c.flipStartTime).Seconds() / (TheGame.Settings.AniSpeed / 2.0)
 		if c.flipDirection < 0 {
 			c.flipWidth = util.Lerp(1.0, 0.0, t)
 			if c.flipWidth <= 0.0 {
@@ -409,8 +408,8 @@ func (c *Card) Draw(screen *ebiten.Image) {
 
 		// naughty to do this here instead of Update(), but Draw() knows the screen dimensions and Update() doesn't
 		w, h := screen.Size()
-		w -= TheBaize.dragOffset.X
-		h -= TheBaize.dragOffset.Y
+		w -= TheGame.Baize.dragOffset.X
+		h -= TheGame.Baize.dragOffset.Y
 		switch {
 		case c.pos.X+CardWidth > w:
 			c.directionX = -rand.Intn(5)
@@ -426,7 +425,7 @@ func (c *Card) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	op.GeoM.Translate(float64(c.pos.X+TheBaize.dragOffset.X), float64(c.pos.Y+TheBaize.dragOffset.Y))
+	op.GeoM.Translate(float64(c.pos.X+TheGame.Baize.dragOffset.X), float64(c.pos.Y+TheGame.Baize.dragOffset.Y))
 
 	if !c.Flipping() {
 		if c.Lerping() || c.Dragging() {
@@ -450,13 +449,13 @@ func (c *Card) Draw(screen *ebiten.Image) {
 	// 	op.ColorM.Scale(0.8, 0.8, 1.0, 1.0)
 	// }
 
-	if TheSettings.ShowMovableCards {
+	if TheGame.Settings.ShowMovableCards {
 		if c.Owner().IsStock() {
 			// card will be prone because Stock
 			// nb this will color all the stock cards, not just the top card
 			img = MovableCardBackImage
 		} else {
-			if c.tapDestination != nil {
+			if !c.Flipping() && c.tapDestination != nil {
 				// c.destinations has been sorted so weightiest is first
 				switch c.tapWeight {
 				case 0: // Cell

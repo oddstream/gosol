@@ -47,7 +47,7 @@ func (self *Seahaven) StartGame() {
 	if DebugMode && self.stock.Len() > 0 {
 		log.Println("*** still", self.stock.Len(), "cards in Stock ***")
 	}
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 }
 
 func (self *Seahaven) TailMoveError(tail []*Card) (bool, error) {

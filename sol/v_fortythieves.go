@@ -87,7 +87,7 @@ func (self *FortyThieves) StartGame() {
 			pile.Get(row).FlipDown()
 		}
 	}
-	TheBaize.SetRecycles(self.recycles)
+	TheGame.Baize.SetRecycles(self.recycles)
 	MoveCard(self.stock, self.waste)
 }
 

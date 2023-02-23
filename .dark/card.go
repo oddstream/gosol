@@ -14,13 +14,20 @@ type Card struct {
 	tapWeight      int
 }
 
-func NewCard(pack, suit, ordinal int) Card {
+func newCard(pack, suit, ordinal int) Card {
 	c := Card{id: cardid.NewCardID(pack, suit, ordinal)}
-	c.setProne(true)
 	return c
 }
 
-// Public functions
+// Public functions, visible outside DARK
+
+func (c *Card) ID() cardid.CardID {
+	return c.id
+}
+
+func (c *Card) Pack() int {
+	return c.id.Pack()
+}
 
 func (c *Card) Suit() int {
 	return c.id.Suit()
@@ -30,19 +37,19 @@ func (c *Card) Ordinal() int {
 	return c.id.Ordinal()
 }
 
-func (c *Card) ID() cardid.CardID {
-	return c.id
-}
-
 func (c *Card) Prone() bool {
 	return c.id.Prone()
+}
+
+func (c *Card) Black() bool {
+	return c.id.Black()
 }
 
 func (c *Card) TapWeight() int {
 	return c.tapWeight
 }
 
-// Private functions
+// Private functions, only visible inside DARK
 
 func (c *Card) owner() *Pile {
 	return c.owningPile

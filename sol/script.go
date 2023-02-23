@@ -36,7 +36,7 @@ func (sb ScriptBase) Complete() bool {
 	for _, f := range sb.foundations {
 		n += len(f.cards)
 	}
-	return n == TheCardCount
+	return n == TheGame.cardCount
 }
 
 // SpiderComplete - used to override default Complete() in Spider varaints.
@@ -609,7 +609,9 @@ func VariantNames(group string) []string {
 	var vnames []string = nil
 	vnames = append(vnames, VariantGroups[group]...)
 	if group == "> All by Played" {
-		sort.Slice(vnames, func(i, j int) bool { return TheStatistics.Played(vnames[i]) > TheStatistics.Played(vnames[j]) })
+		sort.Slice(vnames, func(i, j int) bool {
+			return TheGame.Statistics.Played(vnames[i]) > TheGame.Statistics.Played(vnames[j])
+		})
 	} else {
 		sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
 	}
@@ -666,21 +668,21 @@ func MoveTail(card *Card, dst *Pile) {
 }
 
 func RecycleWasteToStock(waste *Pile, stock *Pile) {
-	if TheBaize.Recycles() > 0 {
+	if TheGame.Baize.Recycles() > 0 {
 		for waste.Len() > 0 {
 			MoveCard(waste, stock)
 		}
-		TheBaize.SetRecycles(TheBaize.Recycles() - 1)
+		TheGame.Baize.SetRecycles(TheGame.Baize.Recycles() - 1)
 		switch {
-		case TheBaize.recycles == 0:
-			TheUI.ToastInfo("No more recycles")
-		case TheBaize.recycles == 1:
-			TheUI.ToastInfo(fmt.Sprintf("%d recycle remaining", TheBaize.Recycles()))
-		case TheBaize.recycles < 10:
-			TheUI.ToastInfo(fmt.Sprintf("%d recycles remaining", TheBaize.Recycles()))
+		case TheGame.Baize.recycles == 0:
+			TheGame.UI.ToastInfo("No more recycles")
+		case TheGame.Baize.recycles == 1:
+			TheGame.UI.ToastInfo(fmt.Sprintf("%d recycle remaining", TheGame.Baize.Recycles()))
+		case TheGame.Baize.recycles < 10:
+			TheGame.UI.ToastInfo(fmt.Sprintf("%d recycles remaining", TheGame.Baize.Recycles()))
 		}
 	} else {
-		TheUI.ToastInfo("No more recycles")
+		TheGame.UI.ToastInfo("No more recycles")
 	}
 }
 

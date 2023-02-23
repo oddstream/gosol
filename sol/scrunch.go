@@ -109,14 +109,14 @@ func (self *Pile) Scrunch() {
 	case FAN_DOWN:
 		// baize->dragOffset is always -ve
 		// statusbar height is 24
-		// maxPileSize = TheBaize.WindowHeight - scpos.Y + util.Abs(TheBaize.dragOffset.Y)
-		maxPileSize = TheBaize.WindowHeight - self.ScreenPos().Y + (CardHeight / 2)
+		// maxPileSize = TheGame.Baize.WindowHeight - scpos.Y + util.Abs(TheGame.Baize.dragOffset.Y)
+		maxPileSize = TheGame.Baize.WindowHeight - self.ScreenPos().Y + (CardHeight / 2)
 	case FAN_LEFT:
 		maxPileSize = self.ScreenPos().X
 	case FAN_RIGHT:
 		// baize->dragOffset is always -ve
-		// maxPileSize = TheBaize.WindowWidth - scpos.X + util.Abs(TheBaize.dragOffset.X)
-		maxPileSize = TheBaize.WindowWidth - self.ScreenPos().X
+		// maxPileSize = TheGame.Baize.WindowWidth - scpos.X + util.Abs(TheGame.Baize.dragOffset.X)
+		maxPileSize = TheGame.Baize.WindowWidth - self.ScreenPos().X
 	}
 	if maxPileSize == 0 {
 		// this pile doesn't need scrunching
@@ -146,7 +146,7 @@ exitloop:
 	self.fanFactor = fanFactor
 	if DebugMode && nloops > 0 {
 		fmt.Printf("%d loops to go from %f to %f", nloops, DefaultFanFactor[self.fanType], self.fanFactor)
-		fmt.Printf(" WindowWidth, Height = %d,%d\n", TheBaize.WindowWidth, TheBaize.WindowHeight)
+		fmt.Printf(" WindowWidth, Height = %d,%d\n", TheGame.Baize.WindowWidth, TheGame.Baize.WindowHeight)
 	}
 	self.Refan()
 }

@@ -94,14 +94,14 @@ func (b *Baize) Refan() {
 	b.setFlag(dirtyCardPositions)
 }
 
-// NewGame restarts current variant (ie no pile building) with a new seed
+// NewDeal restarts current variant (ie no pile building) with a new seed
 func (b *Baize) NewDeal() {
 
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
 		percent := b.PercentComplete()
-		toastStr := TheStatistics.RecordLostGame(TheSettings.Variant, percent)
-		TheUI.Toast("Fail", toastStr)
+		toastStr := TheGame.Statistics.RecordLostGame(TheGame.Settings.Variant, percent)
+		TheGame.UI.Toast("Fail", toastStr)
 	}
 
 	// for {
@@ -112,7 +112,7 @@ func (b *Baize) NewDeal() {
 	}
 
 	// Stock.Fill() needs parameters
-	TheCardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
+	TheGame.cardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
 	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
@@ -121,7 +121,7 @@ func (b *Baize) NewDeal() {
 	// 	if b.moves > 0 {
 	// 		break
 	// 	}
-	// 	TheUI.Toast("Glass", "Found a deal with no moves")
+	// 	TheGame.UI.Toast("Glass", "Found a deal with no moves")
 	// }
 
 	sound.Play("Fan")
@@ -182,22 +182,22 @@ func (b *Baize) StartFreshGame() {
 	b.piles = nil
 
 	var ok bool
-	if b.script, ok = Variants[TheSettings.Variant]; !ok {
-		log.Println("no interface for variant", TheSettings.Variant, "reverting to Klondike")
-		TheSettings.Variant = "Klondike"
-		TheSettings.Save()
-		if b.script, ok = Variants[TheSettings.Variant]; !ok {
+	if b.script, ok = Variants[TheGame.Settings.Variant]; !ok {
+		log.Println("no interface for variant", TheGame.Settings.Variant, "reverting to Klondike")
+		TheGame.Settings.Variant = "Klondike"
+		TheGame.Settings.Save()
+		if b.script, ok = Variants[TheGame.Settings.Variant]; !ok {
 			log.Panic("no interface for Klondike")
 		}
 		NoGameLoad = true
 	}
 	b.script.BuildPiles()
-	if TheSettings.MirrorBaize {
+	if TheGame.Settings.MirrorBaize {
 		b.MirrorSlots()
 	}
 	// b.FindBuddyPiles()
 
-	TheUI.SetTitle(TheSettings.Variant)
+	TheGame.UI.SetTitle(TheGame.Settings.Variant)
 
 	sound.Play("Fan")
 
@@ -212,10 +212,10 @@ func (b *Baize) ChangeVariant(newVariant string) {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
 		percent := b.PercentComplete()
-		toastStr := TheStatistics.RecordLostGame(TheSettings.Variant, percent)
-		TheUI.Toast("Fail", toastStr)
+		toastStr := TheGame.Statistics.RecordLostGame(TheGame.Settings.Variant, percent)
+		TheGame.UI.Toast("Fail", toastStr)
 	}
-	TheSettings.Variant = newVariant
+	TheGame.Settings.Variant = newVariant
 	b.StartFreshGame()
 }
 
@@ -224,19 +224,19 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
 	b.FindDestinations()
-	TheUI.HideFAB()
+	TheGame.UI.HideFAB()
 	if b.Complete() {
-		TheUI.Toast("Complete", "Complete")
-		TheUI.AddButtonToFAB("star", ebiten.KeyN)
+		TheGame.UI.Toast("Complete", "Complete")
+		TheGame.UI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 	} else if b.Conformant() {
-		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
+		TheGame.UI.AddButtonToFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
-		TheUI.Toast("Error", "No movable cards")
-		TheUI.AddButtonToFAB("star", ebiten.KeyN)
-		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
+		TheGame.UI.Toast("Error", "No movable cards")
+		TheGame.UI.AddButtonToFAB("star", ebiten.KeyN)
+		TheGame.UI.AddButtonToFAB("restore", ebiten.KeyR)
 		if b.bookmark > 0 {
-			TheUI.AddButtonToFAB("bookmark", ebiten.KeyL)
+			TheGame.UI.AddButtonToFAB("bookmark", ebiten.KeyL)
 		}
 	}
 }
@@ -341,23 +341,23 @@ func (b *Baize) AfterUserMove() {
 	b.script.AfterMove()
 	b.UndoPush()
 	b.FindDestinations()
-	TheUI.HideFAB()
+	TheGame.UI.HideFAB()
 	if b.Complete() {
-		TheUI.AddButtonToFAB("star", ebiten.KeyN)
+		TheGame.UI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 		{
-			var toastStr = TheStatistics.RecordWonGame(TheSettings.Variant, len(b.undoStack)-1)
-			TheUI.Toast("Complete", toastStr)
+			var toastStr = TheGame.Statistics.RecordWonGame(TheGame.Settings.Variant, len(b.undoStack)-1)
+			TheGame.UI.Toast("Complete", toastStr)
 		}
 		ShowStatisticsDrawer()
 	} else if b.Conformant() {
-		TheUI.AddButtonToFAB("done_all", ebiten.KeyC)
+		TheGame.UI.AddButtonToFAB("done_all", ebiten.KeyC)
 	} else if b.moves == 0 {
-		TheUI.ToastError("No movable cards")
-		TheUI.AddButtonToFAB("star", ebiten.KeyN)
-		TheUI.AddButtonToFAB("restore", ebiten.KeyR)
+		TheGame.UI.ToastError("No movable cards")
+		TheGame.UI.AddButtonToFAB("star", ebiten.KeyN)
+		TheGame.UI.AddButtonToFAB("restore", ebiten.KeyR)
 		if b.bookmark > 0 {
-			TheUI.AddButtonToFAB("bookmark", ebiten.KeyL)
+			TheGame.UI.AddButtonToFAB("bookmark", ebiten.KeyL)
 		}
 	}
 }
@@ -366,7 +366,7 @@ func (b *Baize) AfterUserMove() {
 // Kept as separated-out function at the moment, in case this
 // creates a horrible recursive loop
 func (b *Baize) AfterAfterUserMove() {
-	if b.fmoves > 0 && TheSettings.AutoCollect {
+	if b.fmoves > 0 && TheGame.Settings.AutoCollect {
 		b.Collect2()
 	}
 }
@@ -381,7 +381,7 @@ If the Input starts on a Card, then a tail of cards is formed.
 func (b *Baize) InputStart(v input.StrokeEvent) {
 	b.stroke = v.Stroke
 
-	if con := TheUI.FindContainerAt(v.X, v.Y); con != nil {
+	if con := TheGame.UI.FindContainerAt(v.X, v.Y); con != nil {
 		if w := con.FindWidgetAt(v.X, v.Y); w != nil {
 			b.stroke.SetDraggedObject(w)
 		} else {
@@ -392,7 +392,7 @@ func (b *Baize) InputStart(v input.StrokeEvent) {
 		pt := image.Pt(v.X, v.Y)
 		if card := b.FindLowestCardAt(pt); card != nil {
 			if card.Lerping() {
-				TheUI.Toast("Glass", "Confusing to move a moving card")
+				TheGame.UI.Toast("Glass", "Confusing to move a moving card")
 				v.Stroke.Cancel()
 			} else {
 				tail := card.Owner().MakeTail(card)
@@ -471,18 +471,18 @@ func (b *Baize) InputStop(v input.StrokeEvent) {
 				var err error
 				// generically speaking, can this tail be moved?
 				if ok, err = src.CanMoveTail(tail); !ok {
-					TheUI.ToastError(err.Error())
+					TheGame.UI.ToastError(err.Error())
 					b.CancelTailDrag(tail)
 				} else {
 					if ok, err = dst.vtable.CanAcceptTail(tail); !ok {
-						TheUI.ToastError(err.Error())
+						TheGame.UI.ToastError(err.Error())
 						b.CancelTailDrag(tail)
 					} else {
 						// it's ok to move this tail
 						if src == dst {
 							b.CancelTailDrag(tail)
 						} else if ok, err = b.script.TailMoveError(tail); !ok {
-							TheUI.ToastError(err.Error())
+							TheGame.UI.ToastError(err.Error())
 							b.CancelTailDrag(tail)
 						} else {
 							crc := b.CRC()
@@ -559,7 +559,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 			b.AfterUserMove()
 			b.AfterAfterUserMove()
 		} else {
-			TheUI.Toast("Error", "Attention!")
+			TheGame.UI.Toast("Error", "Attention!")
 		}
 	case *Pile:
 		crc := b.CRC()
@@ -572,7 +572,7 @@ func (b *Baize) InputTap(v input.StrokeEvent) {
 	case *Baize:
 		pt := image.Pt(v.X, v.Y)
 		// a tap outside any open ui drawer (ie on the baize) closes the drawer
-		if con := TheUI.VisibleDrawer(); con != nil && !pt.In(image.Rect(con.Rect())) {
+		if con := TheGame.UI.VisibleDrawer(); con != nil && !pt.In(image.Rect(con.Rect())) {
 			con.Hide()
 		}
 	default:
@@ -641,10 +641,34 @@ func (b *Baize) CancelTailDrag(tail []*Card) {
 	b.ApplyToTail(tail, (*Card).CancelDrag)
 }
 
+func (b *Baize) powerMoves(pDraggingTo *Pile) int {
+	// (1 + number of empty freecells) * 2 ^ (number of empty columns)
+	// see http://ezinearticles.com/?Freecell-PowerMoves-Explained&id=104608
+	// and http://www.solitairecentral.com/articles/FreecellPowerMovesExplained.html
+	var emptyCells, emptyCols int
+	for _, p := range b.piles {
+		if p.Empty() {
+			switch p.vtable.(type) {
+			case *Cell:
+				emptyCells++
+			case *Tableau:
+				if p.Label() == "" && p != pDraggingTo {
+					// 'If you are moving into an empty column, then the column you are moving into does not count as empty column.'
+					emptyCols++
+				}
+			}
+		}
+	}
+	// 2^1 == 2, 2^0 == 1, 2^-1 == 0.5
+	n := (1 + emptyCells) * util.Pow(2, emptyCols)
+	// println(emptyCells, "emptyCells,", emptyCols, "emptyCols,", n, "powerMoves")
+	return n
+}
+
 // DoingSafeCollect return true if we are doing safe collect
 // and the safe ordinal to collect next
 func (b *Baize) DoingSafeCollect() (bool, int) {
-	if !TheSettings.SafeCollect {
+	if !TheGame.Settings.SafeCollect {
 		return false, 0
 	}
 	if !b.script.SafeCollect() {
@@ -694,7 +718,7 @@ func (b *Baize) collectFromPile(pile *Pile) int {
 			if ok, safeOrd := b.DoingSafeCollect(); ok {
 				if card.Ordinal() > safeOrd {
 					// can't toast here, collect all will create a lot of toasts
-					// TheUI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
+					// TheGame.UI.Toast("Glass", fmt.Sprintf("Unsafe to collect %s", card.String()))
 					break // done with this foundation, try another
 				}
 			}
@@ -730,7 +754,7 @@ func (b *Baize) Collect2() {
 		}
 	}
 	// if ThePreferences.SafeCollect && b.script.SafeCollect() && b.fmoves > 0 {
-	// 	TheUI.Toast("Glass", "Not safe to collect card(s)")
+	// 	TheGame.UI.Toast("Glass", "Not safe to collect card(s)")
 	// }
 }
 
@@ -784,7 +808,7 @@ func (b *Baize) ScaleCards() bool {
 
 	var slotWidth, slotHeight float64
 	slotWidth = float64(b.WindowWidth) / float64(maxX+2)
-	slotHeight = slotWidth * TheSettings.CardRatio
+	slotHeight = slotWidth * TheGame.Settings.CardRatio
 
 	PilePaddingX = int(slotWidth / 10)
 	CardWidth = int(slotWidth) - PilePaddingX
@@ -816,7 +840,7 @@ func (b *Baize) PercentComplete() int {
 		}
 		unsorted += p.vtable.UnsortedPairs()
 	}
-	// TheUI.SetMiddle(fmt.Sprintf("%d/%d", pairs-unsorted, pairs))
+	// TheGame.UI.SetMiddle(fmt.Sprintf("%d/%d", pairs-unsorted, pairs))
 	percent = (int)(100.0 - util.MapValue(float64(unsorted), 0, float64(pairs), 0.0, 100.0))
 	return percent
 }
@@ -831,31 +855,31 @@ func (b *Baize) SetRecycles(recycles int) {
 }
 
 func (b *Baize) UpdateToolbar() {
-	TheUI.EnableWidget("toolbarUndo", len(b.undoStack) > 1)
-	TheUI.EnableWidget("toolbarCollect", b.fmoves > 0)
+	TheGame.UI.EnableWidget("toolbarUndo", len(b.undoStack) > 1)
+	TheGame.UI.EnableWidget("toolbarCollect", b.fmoves > 0)
 }
 
 func (b *Baize) UpdateStatusbar() {
 	if b.script.Stock().Hidden() {
-		TheUI.SetStock(-1)
+		TheGame.UI.SetStock(-1)
 	} else {
-		TheUI.SetStock(b.script.Stock().Len())
+		TheGame.UI.SetStock(b.script.Stock().Len())
 	}
 	if b.script.Waste() == nil {
-		TheUI.SetWaste(-1) // previous variant may have had a waste, and this one does not
+		TheGame.UI.SetWaste(-1) // previous variant may have had a waste, and this one does not
 	} else {
-		TheUI.SetWaste(b.script.Waste().Len())
+		TheGame.UI.SetWaste(b.script.Waste().Len())
 	}
 	// if DebugMode {
-	// 	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
+	// 	TheGame.UI.SetMiddle(fmt.Sprintf("MOVES: %d,%d", b.moves, b.fmoves))
 	// }
-	TheUI.SetMiddle(fmt.Sprintf("MOVES: %d", len(b.undoStack)-1))
-	TheUI.SetPercent(b.PercentComplete())
+	TheGame.UI.SetMiddle(fmt.Sprintf("MOVES: %d", len(b.undoStack)-1))
+	TheGame.UI.SetPercent(b.PercentComplete())
 }
 
 func (b *Baize) UpdateDrawers() {
-	TheUI.EnableWidget("restartDeal", len(b.undoStack) > 1)
-	TheUI.EnableWidget("gotoBookmark", b.bookmark > 0)
+	TheGame.UI.EnableWidget("restartDeal", len(b.undoStack) > 1)
+	TheGame.UI.EnableWidget("gotoBookmark", b.bookmark > 0)
 }
 
 func (b *Baize) Conformant() bool {
@@ -926,7 +950,7 @@ func (b *Baize) Layout(outsideWidth, outsideHeight int) (int, int) {
 			// b.clearFlag(dirtyPileBackgrounds)
 		}
 		if b.flagSet(dirtyWindowSize) {
-			TheUI.Layout(outsideWidth, outsideHeight)
+			TheGame.UI.Layout(outsideWidth, outsideHeight)
 			// b.clearFlag(dirtyWindowSize)
 		}
 		if b.flagSet(dirtyCardPositions) {
@@ -971,7 +995,7 @@ func (b *Baize) Update() error {
 		}
 	}
 
-	TheUI.Update()
+	TheGame.UI.Update()
 
 	return nil
 }
@@ -979,7 +1003,7 @@ func (b *Baize) Update() error {
 // Draw renders the baize into the screen
 func (b *Baize) Draw(screen *ebiten.Image) {
 
-	screen.Fill(ExtendedColors[TheSettings.BaizeColor])
+	screen.Fill(ExtendedColors[TheGame.Settings.BaizeColor])
 
 	for _, p := range b.piles {
 		p.Draw(screen)
@@ -997,7 +1021,7 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	// 	b.hotCard.Draw(screen)
 	// }
 
-	TheUI.Draw(screen)
+	TheGame.UI.Draw(screen)
 	// if DebugMode {
 	// var ms runtime.MemStats
 	// runtime.ReadMemStats(&ms)

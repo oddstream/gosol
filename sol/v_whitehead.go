@@ -38,7 +38,7 @@ func (self *Whitehead) StartGame() {
 		}
 		deal++
 	}
-	TheBaize.SetRecycles(0)
+	TheGame.Baize.SetRecycles(0)
 	MoveCard(self.stock, self.waste)
 }
 
