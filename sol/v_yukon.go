@@ -93,4 +93,4 @@ func (*Yukon) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*Yukon) PileTapped(*Pile) {}
+// func (*Yukon) PileTapped(*Pile) {}

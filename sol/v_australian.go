@@ -82,4 +82,4 @@ func (self *Australian) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Australian) PileTapped(*Pile) {}
+// func (*Australian) PileTapped(*Pile) {}

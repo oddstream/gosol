@@ -151,4 +151,4 @@ func (self *Westcliff) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Westcliff) PileTapped(pile *Pile) {}
+// func (*Westcliff) PileTapped(pile *Pile) {}

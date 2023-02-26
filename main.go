@@ -57,12 +57,6 @@ func main() {
 
 	sol.NewGame() // sets sol.TheGame
 
-	if !sol.NoGameLoad {
-		if undoStack := sol.LoadUndoStack(); sol.TheGame.Baize.IsSavableStackOk(undoStack) {
-			sol.TheGame.Baize.SetUndoStack(undoStack) // TODO doing this before Baize.Layout sets WindowWidth,Height
-		}
-	}
-
 	if err := ebiten.RunGame(sol.TheGame); err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +65,7 @@ func main() {
 	// println("main exit")
 
 	if !sol.NoGameSave {
-		sol.TheGame.Baize.Save()
+		sol.TheGame.Baize.Save(sol.TheGame.Settings.Variant)
 	}
 
 	sol.TheGame.Settings.Save()

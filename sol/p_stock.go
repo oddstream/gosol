@@ -67,7 +67,7 @@ type Stock struct {
 func NewStock(slot image.Point, fanType FanType, packs int, suits int, cardFilter *[14]bool, jokersPerPack int) *Pile {
 	pile := NewPile("Stock", slot, fanType, MOVE_ONE)
 	pile.vtable = &Stock{pile: pile}
-	TheGame.cardCount = pile.Fill(packs, suits)
+	TheGame.Baize.cardCount = pile.Fill(packs, suits)
 	pile.Shuffle()
 	return pile
 }

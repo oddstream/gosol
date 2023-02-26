@@ -100,4 +100,4 @@ func (self *Oddstream) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Oddstream) PileTapped(*Pile) {}
+// func (*Oddstream) PileTapped(*Pile) {}

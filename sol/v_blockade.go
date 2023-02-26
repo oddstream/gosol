@@ -90,4 +90,4 @@ func (self *Blockade) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Blockade) PileTapped(*Pile) {}
+// func (*Blockade) PileTapped(*Pile) {}

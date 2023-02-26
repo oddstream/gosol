@@ -172,4 +172,4 @@ func (*Antares) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (self *Antares) PileTapped(pile *Pile) {}
+// func (self *Antares) PileTapped(pile *Pile) {}

@@ -122,4 +122,4 @@ func (pen *Penguin) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (pen *Penguin) PileTapped(pile *Pile) {}
+// func (pen *Penguin) PileTapped(pile *Pile) {}

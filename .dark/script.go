@@ -2,41 +2,118 @@ package dark
 
 import (
 	"log"
-	"sort"
 )
 
-type scriptBase struct {
-	cells       []*Pile
-	discards    []*Pile
-	foundations []*Pile
-	reserves    []*Pile
-	stock       *Pile
-	tableaux    []*Pile
-	waste       *Pile
-	wikipedia   string
-	cardColors  int
+// scripter defines the interface that variant-specific 'scripts' must supply,
+// albeit several will be supplied by the embedded ScriptBase struct.
+// TODO for the moment, methods are published.
+type scripter interface {
+	BuildPiles()
+	StartGame()
+	AfterMove()
+
+	TailMoveError([]*Card) (bool, error)
+	TailAppendError(*Pile, []*Card) (bool, error)
+	UnsortedPairs(*Pile) int
+
+	TailTapped([]*Card)
+	PileTapped(*Pile)
+
+	Cells() []*Pile
+	Discards() []*Pile
+	Foundations() []*Pile
+	Reserves() []*Pile
+	Stock() *Pile
+	Tableaux() []*Pile
+	Waste() *Pile
+
+	Complete() bool
+	Wikipedia() string
+	CardColors() int
+	SafeCollect() bool
+	Packs() int
+	Suits() int
 }
 
-// complete - default is number of cards in Foundations == total number of cards.
+type scriptBase struct {
+	cells        []*Pile
+	discards     []*Pile
+	foundations  []*Pile
+	reserves     []*Pile
+	stock        *Pile
+	tableaux     []*Pile
+	waste        *Pile
+	wikipedia    string
+	cardColors   int
+	packs, suits int
+}
+
+// Fallback/default methods for a scripter interface //////////////////////////
+
+// no default for BuildPiles
+
+// no default for StartGame
+
+func (sb scriptBase) AfterMove() {}
+
+// no default for TailMoveError
+
+// no default for TailAppendError
+
+// no default for UnsortedPairs
+
+// no default for TailTapped (usually redirects to Pile.vtable.TailTapped)
+
+func (sb scriptBase) PileTapped() {}
+
+func (sb scriptBase) Cells() []*Pile {
+	return sb.cells
+}
+
+func (sb scriptBase) Discards() []*Pile {
+	return sb.discards
+}
+
+func (sb scriptBase) Foundations() []*Pile {
+	return sb.foundations
+}
+
+func (sb scriptBase) Reserves() []*Pile {
+	return sb.reserves
+}
+
+func (sb scriptBase) Stock() *Pile {
+	return sb.stock
+}
+
+func (sb scriptBase) Tableaux() []*Pile {
+	return sb.tableaux
+}
+
+func (sb scriptBase) Waste() *Pile {
+	return sb.waste
+}
+
+// Complete - default is number of cards in Foundations == total number of cards.
 //
 // In Bisley, there may be <13 cards in a Foundation.
 // This will need overriding for any variants with Discard piles.
 // Could also do this by checking if any pile other than a Foundation is not empty.
-func (sb scriptBase) complete() bool {
+func (sb scriptBase) Complete() bool {
 	var n = 0
 	for _, f := range sb.foundations {
 		n += len(f.cards)
 	}
-	return n == len(baize.pack)
+	return n == len(theDark.baize.pack)
 }
 
-func (sb scriptBase) spiderComplete() bool {
+func (sb scriptBase) SpiderComplete() bool {
 	for _, tab := range sb.tableaux {
 		switch len(tab.cards) {
 		case 0:
 			// that's fine
 		case 13:
-			if !tab.vtable.conformant() {
+			if !tab.vtable.Conformant() {
 				return false
 			}
 		default:
@@ -46,65 +123,38 @@ func (sb scriptBase) spiderComplete() bool {
 	return true
 }
 
-type scripter interface {
-	buildPiles()
-	startGame()
-	afterMove()
-
-	tailMoveError([]*Card) (bool, error)
-	aailAppendError(*Pile, []*Card) (bool, error)
-	unsortedPairs(*Pile) int
-
-	tailTapped([]*Card)
-	pileTapped(*Pile)
-
-	cells() []*Pile
-	discards() []*Pile
-	foundations() []*Pile
-	reserves() []*Pile
-	stock() *Pile
-	tableaux() []*Pile
-	waste() *Pile
-
-	complete() bool
-	wikipedia() string
-	cardColors() int
-	safeCollect() bool
-}
-
-var variants = map[string]scripter{}
-
-var variantGroups = map[string][]string{}
-
-// init is used to assemble the "> All" alpha-sorted group of variants
-func init() {
-	var vnames []string = make([]string, 0, len(variants))
-	for k := range variants {
-		vnames = append(vnames, k)
-	}
-	// no need to sort here, sort gets done by func VariantNames()
-	variantGroups["> All"] = vnames
-	variantGroups["> All by Played"] = vnames
-}
-
-func (d *dark) ListVariantGroups() []string {
-	var vnames []string = make([]string, 0, len(variantGroups))
-	for k := range variantGroups {
-		vnames = append(vnames, k)
-	}
-	sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
-	return vnames
-}
-
-func (d *dark) ListVariants(group string) []string {
-	var vnames []string = nil
-	vnames = append(vnames, variantGroups[group]...)
-	if group == "> All by Played" {
-		sort.Slice(vnames, func(i, j int) bool { return TheStatistics.Played(vnames[i]) > TheStatistics.Played(vnames[j]) })
+func (sb scriptBase) Wikipedia() string {
+	if sb.wikipedia == "" { // uninitialized default
+		return "https://en.wikipedia.org/wiki/Patience_(game)"
 	} else {
-		sort.Slice(vnames, func(i, j int) bool { return vnames[i] < vnames[j] })
+		return sb.wikipedia
 	}
-	return vnames
+}
+
+func (sb scriptBase) CardColors() int {
+	if sb.cardColors == 0 { // uninitialized default
+		return 2
+	} else {
+		return sb.cardColors
+	}
+}
+
+func (sb scriptBase) SafeCollect() bool {
+	return sb.CardColors() == 2
+}
+
+func (sb scriptBase) Packs() int {
+	if sb.packs == 0 {
+		return 1
+	}
+	return sb.packs
+}
+
+func (sb scriptBase) Suits() int {
+	if sb.suits == 0 {
+		return 4
+	}
+	return sb.suits
 }
 
 // useful generic game library of functions ///////////////////////////////////

@@ -167,7 +167,7 @@ func (s *Statistics) Save() {
 }
 
 // Save the entire undo stack to file
-func (b *Baize) Save() {
+func (b *Baize) Save(variant string) {
 	// defer util.Duration(time.Now(), "Baize.Save")
 
 	// do not bother to save virgin or completed games
@@ -180,13 +180,13 @@ func (b *Baize) Save() {
 		log.Fatal(err)
 	}
 
-	saveBytesToFile(bytes, "saved.json")
+	saveBytesToFile(bytes, "saved."+variant+".json")
 }
 
-func LoadUndoStack() []*SavableBaize {
+func LoadUndoStack(variant string) []*SavableBaize {
 	// defer util.Duration(time.Now(), "LoadUndoStack")
 
-	bytes, count, err := loadBytesFromFile("saved.json", true)
+	bytes, count, err := loadBytesFromFile("saved."+variant+".json", true)
 	if err != nil || count == 0 || bytes == nil {
 		return nil
 	}

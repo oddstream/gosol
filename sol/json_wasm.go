@@ -92,7 +92,7 @@ func (s *Statistics) Save() {
 }
 
 // Save the entire undo stack to file
-func (b *Baize) Save() {
+func (b *Baize) Save(variant string) {
 
 	// do not bother to save virgin or completed games
 	if len(b.undoStack) < 2 || b.Complete() {
@@ -103,7 +103,7 @@ func (b *Baize) Save() {
 	if err != nil {
 		log.Println("Baize.Save().Marshal() error", err)
 	} else {
-		saveBytesToLocalStorage(bytes, "saved")
+		saveBytesToLocalStorage(bytes, "saved."+variant)
 	}
 
 }
@@ -129,10 +129,10 @@ func (b *Baize) Save() {
 
 // }
 
-func LoadUndoStack() []*SavableBaize {
+func LoadUndoStack(variant string) []*SavableBaize {
 	// defer util.Duration(time.Now(), "LoadUndoStack")
 
-	bytes, err := loadBytesFromLocalStorage("saved", true)
+	bytes, err := loadBytesFromLocalStorage("saved."+variant, true)
 	if err != nil {
 		log.Println(err)
 		return nil

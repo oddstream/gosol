@@ -34,7 +34,8 @@ const (
 )
 
 // pileVtabler interface for each subpile type, implements the behaviours
-// specific to each subtype
+// specific to each subtype.
+// Made public for now, but that may change.
 type pileVtabler interface {
 	CanAcceptTail([]*Card) (bool, error)
 	TailTapped([]*Card)
@@ -93,7 +94,7 @@ func (self *Pile) Len() int {
 }
 
 func (self *Pile) Empty() bool {
-	return len(self.piles) == 0
+	return len(self.cards) == 0
 }
 
 // Less satisfies the sort.Interface interface
@@ -108,16 +109,22 @@ func (self *Pile) Swap(i, j int) {
 	self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
 }
 
+// Hidden returns true if this pile is off screen
+func (self *Pile) Hidden() bool {
+	return self.slot.X < 0 || self.slot.Y < 0
+}
+
 // Private functions
 
-func newPile(category string, slot image.Point, fanType FanType, moveType MoveType) Pile {
-	var self Pile = Pile{
+func newPile(category string, slot image.Point, fanType FanType, moveType MoveType) *Pile {
+	var p *Pile = &Pile{
 		category: category,
 		fanType:  fanType,
 		moveType: moveType,
 		slot:     slot,
 	}
-	return self
+	theDark.baize.addPile(p)
+	return p
 }
 
 func (self *Pile) reset() {

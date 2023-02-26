@@ -102,4 +102,4 @@ func (self *Bisley) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Bisley) PileTapped(*Pile) {}
+// func (*Bisley) PileTapped(*Pile) {}

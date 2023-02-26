@@ -96,7 +96,7 @@ func (*MrsMop) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*MrsMop) PileTapped(*Pile) {}
+// func (*MrsMop) PileTapped(*Pile) {}
 
 func (self *MrsMop) Complete() bool {
 	return self.SpiderComplete()

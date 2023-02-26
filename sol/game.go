@@ -4,6 +4,7 @@ package sol
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"oddstream.games/gosol/sound"
@@ -16,16 +17,15 @@ type Game struct {
 	Baize      *Baize
 	Statistics *Statistics
 	Settings   *Settings
-	cardCount  int
 }
 
 var (
 	// GosolVersionMajor is the integer version number
 	GosolVersionMajor int = 5
 	// CsolVersionMinor is the integer version number
-	GosolVersionMinor int = 14
+	GosolVersionMinor int = 15
 	// CSolVersionDate is the ISO 8601 date of bumping the version number
-	GosolVersionDate string = "2023-02-23"
+	GosolVersionDate string = "2023-02-26"
 	// DebugMode is a boolean set by command line flag -debug
 	DebugMode bool = false
 	// NoGameLoad is a boolean set by command line flag -noload
@@ -70,7 +70,6 @@ var TheGame *Game // pointer to object that implements ebiten.Game interface
 // NewGame generates a new Game object, which implements ebiten.Game interface
 func NewGame() {
 	TheGame = &Game{Settings: NewSettings()}
-	TheGame.Settings.Load()
 	if TheGame.Settings.Mute {
 		sound.SetVolume(0.0)
 	} else {
@@ -78,8 +77,16 @@ func NewGame() {
 	}
 	TheGame.Statistics = NewStatistics()
 	TheGame.UI = ui.New(Execute)
-	TheGame.Baize = NewBaize()
+	if TheGame.Baize = NewBaize(TheGame.Settings.Variant); TheGame.Baize == nil {
+		log.Panic("cannot create Baize")
+	}
 	TheGame.Baize.StartFreshGame()
+	if !NoGameLoad {
+		if undoStack := LoadUndoStack(TheGame.Settings.Variant); TheGame.Baize.IsSavableStackOk(undoStack) {
+			TheGame.Baize.SetUndoStack(undoStack)
+		}
+	}
+
 	if TheGame.Settings.LastVersionMajor != GosolVersionMajor || TheGame.Settings.LastVersionMinor != GosolVersionMinor {
 		TheGame.UI.Toast("Glass", fmt.Sprintf("Upgraded from %d.%d to %d.%d",
 			TheGame.Settings.LastVersionMajor,
@@ -106,7 +113,7 @@ func (g *Game) Update() error {
 	g.Baize.Update()
 	if ExitRequested {
 		if !NoGameSave {
-			g.Baize.Save()
+			g.Baize.Save(TheGame.Settings.Variant)
 		}
 		g.Settings.Save()
 		return errors.New("exit requested")

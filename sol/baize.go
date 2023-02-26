@@ -25,7 +25,9 @@ const (
 
 // Baize object describes the baize
 type Baize struct {
+	variant      string
 	piles        []*Pile
+	cardCount    int
 	recycles     int
 	bookmark     int
 	script       Scripter
@@ -44,10 +46,15 @@ type Baize struct {
 //--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
 
 // NewBaize is the factory func for the single Baize object
-func NewBaize() *Baize {
+func NewBaize(variant string) *Baize {
 	// let WindowWidth, WindowHeight be zero, so that the first Layout will
 	// trigger card scaling and pile placement
-	return &Baize{dirtyFlags: 0xFFFF}
+	var b *Baize = &Baize{variant: variant, dirtyFlags: 0xFFFF}
+	var ok bool
+	if b.script, ok = Variants[b.variant]; !ok {
+		log.Panic("do not know how to play " + variant)
+	}
+	return b
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -100,7 +107,7 @@ func (b *Baize) NewDeal() {
 	// a virgin game has one state on the undo stack
 	if len(b.undoStack) > 1 && !b.Complete() {
 		percent := b.PercentComplete()
-		toastStr := TheGame.Statistics.RecordLostGame(TheGame.Settings.Variant, percent)
+		toastStr := TheGame.Statistics.RecordLostGame(b.variant, percent)
 		TheGame.UI.Toast("Fail", toastStr)
 	}
 
@@ -112,7 +119,7 @@ func (b *Baize) NewDeal() {
 	}
 
 	// Stock.Fill() needs parameters
-	TheGame.cardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
+	b.cardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
 	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
@@ -171,36 +178,22 @@ func (b *Baize) MirrorSlots() {
 
 func (b *Baize) Reset() {
 	b.StopSpinning()
-	b.undoStack = nil
+	b.undoStack = []*SavableBaize{}
 	b.bookmark = 0
 }
 
 // StartFreshGame resets Baize and starts a new game with a new seed
 func (b *Baize) StartFreshGame() {
-
 	b.Reset()
-	b.piles = nil
-
-	var ok bool
-	if b.script, ok = Variants[TheGame.Settings.Variant]; !ok {
-		log.Println("no interface for variant", TheGame.Settings.Variant, "reverting to Klondike")
-		TheGame.Settings.Variant = "Klondike"
-		TheGame.Settings.Save()
-		if b.script, ok = Variants[TheGame.Settings.Variant]; !ok {
-			log.Panic("no interface for Klondike")
-		}
-		NoGameLoad = true
-	}
+	b.piles = []*Pile{}
 	b.script.BuildPiles()
 	if TheGame.Settings.MirrorBaize {
 		b.MirrorSlots()
 	}
 	// b.FindBuddyPiles()
 
-	TheGame.UI.SetTitle(TheGame.Settings.Variant)
-
+	TheGame.UI.SetTitle(b.variant)
 	sound.Play("Fan")
-
 	b.dirtyFlags = 0xFFFF
 
 	b.script.StartGame()
@@ -209,14 +202,24 @@ func (b *Baize) StartFreshGame() {
 }
 
 func (b *Baize) ChangeVariant(newVariant string) {
-	// a virgin game has one state on the undo stack
-	if len(b.undoStack) > 1 && !b.Complete() {
-		percent := b.PercentComplete()
-		toastStr := TheGame.Statistics.RecordLostGame(TheGame.Settings.Variant, percent)
-		TheGame.UI.Toast("Fail", toastStr)
+	// no longer record a lost game here because variants saved in separate .json files
+	var newScript Scripter
+	var ok bool
+	if newScript, ok = Variants[newVariant]; !ok {
+		TheGame.UI.Toast("Error", "Do not know how to play "+newVariant)
+		return
 	}
-	TheGame.Settings.Variant = newVariant
+	b.Save(b.variant)
+	b.variant = newVariant
+	TheGame.Settings.Variant = b.variant
+	TheGame.Settings.Save()
+	b.script = newScript
 	b.StartFreshGame()
+	if !NoGameLoad {
+		if undoStack := LoadUndoStack(b.variant); b.IsSavableStackOk(undoStack) {
+			TheGame.Baize.SetUndoStack(undoStack)
+		}
+	}
 }
 
 func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
@@ -346,7 +349,7 @@ func (b *Baize) AfterUserMove() {
 		TheGame.UI.AddButtonToFAB("star", ebiten.KeyN)
 		b.StartSpinning()
 		{
-			var toastStr = TheGame.Statistics.RecordWonGame(TheGame.Settings.Variant, len(b.undoStack)-1)
+			var toastStr = TheGame.Statistics.RecordWonGame(b.variant, len(b.undoStack)-1)
 			TheGame.UI.Toast("Complete", toastStr)
 		}
 		ShowStatisticsDrawer()

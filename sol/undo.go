@@ -66,16 +66,16 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.
 }
 
 func (b *Baize) NewSavableBaize() *SavableBaize {
-	ss := &SavableBaize{Bookmark: b.bookmark, Recycles: b.recycles}
+	sb := &SavableBaize{Bookmark: b.bookmark, Recycles: b.recycles}
 	for _, p := range b.piles {
-		ss.Piles = append(ss.Piles, p.Savable())
+		sb.Piles = append(sb.Piles, p.Savable())
 	}
-	return ss
+	return sb
 }
 
 func (b *Baize) UndoPush() {
-	ss := b.NewSavableBaize()
-	b.undoStack = append(b.undoStack, ss)
+	sb := b.NewSavableBaize()
+	b.undoStack = append(b.undoStack, sb)
 }
 
 func (b *Baize) UndoPeek() *SavableBaize {
@@ -86,12 +86,12 @@ func (b *Baize) UndoPeek() *SavableBaize {
 }
 
 func (b *Baize) UndoPop() (*SavableBaize, bool) {
-	if len(b.undoStack) > 0 {
-		sav := b.undoStack[len(b.undoStack)-1]
-		b.undoStack = b.undoStack[:len(b.undoStack)-1]
-		return sav, true
+	if len(b.undoStack) == 0 {
+		return &SavableBaize{}, false
 	}
-	return &SavableBaize{}, false
+	sav := b.undoStack[len(b.undoStack)-1]
+	b.undoStack = b.undoStack[:len(b.undoStack)-1]
+	return sav, true
 }
 
 func (b *Baize) IsSavableOk(sb *SavableBaize) bool {

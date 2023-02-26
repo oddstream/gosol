@@ -117,7 +117,7 @@ func (self *Spider) TailTapped(tail []*Card) {
 	}
 }
 
-func (*Spider) PileTapped(*Pile) {}
+// func (*Spider) PileTapped(*Pile) {}
 
 func (self *Spider) Complete() bool {
 	return self.SpiderComplete()

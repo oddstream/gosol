@@ -81,11 +81,10 @@ func Execute(cmd interface{}) {
 		case "ChangeVariant":
 			if _, ok := Variants[v.Data]; !ok {
 				TheGame.UI.ToastError(fmt.Sprintf("Don't know how to play '%s'", v.Data))
-			} else if v.Data == TheGame.Settings.Variant {
+			} else if v.Data == TheGame.Baize.variant {
 				TheGame.UI.ToastError(fmt.Sprintf("Already playing '%s'", v.Data))
 			} else {
 				TheGame.Baize.ChangeVariant(v.Data)
-				TheGame.Settings.Save() // save now especially if running in a browser
 			}
 		case "SaveSettings":
 			TheGame.Settings.Save() // save now especially if running in a browser

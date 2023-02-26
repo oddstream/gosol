@@ -88,4 +88,4 @@ func (*Seahaven) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*Seahaven) PileTapped(*Pile) {}
+// func (*Seahaven) PileTapped(*Pile) {}

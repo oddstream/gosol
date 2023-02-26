@@ -83,4 +83,4 @@ func (*BakersDozen) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*BakersDozen) PileTapped(*Pile) {}
+// func (*BakersDozen) PileTapped(*Pile) {}

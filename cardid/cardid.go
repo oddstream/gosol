@@ -63,18 +63,17 @@ func (cid CardID) StringSuit() string {
 // SuitRune returns the unicode rune/glyph/symbol for this suit
 func (cid CardID) SuitRune() (r rune) {
 	switch cid.Suit() {
-	case NOSUIT:
-		r = 0
 	case CLUB:
-		r = CLUB_RUNE
+		return CLUB_RUNE
 	case DIAMOND:
-		r = DIAMOND_RUNE
+		return DIAMOND_RUNE
 	case HEART:
-		r = HEART_RUNE
+		return HEART_RUNE
 	case SPADE:
-		r = SPADE_RUNE
+		return SPADE_RUNE
+	default:
+		return 0
 	}
-	return
 }
 
 // Ordinal returns the ordinal number buried in the card id
@@ -134,27 +133,25 @@ func SameCardAndPack(ID1, ID2 CardID) bool {
 }
 
 // SuitStringToInt converts a suit string ("Heart") to an int (HEART)
-func SuitStringToInt(suit string) int {
-	switch suit {
-	case "":
-		return NOSUIT
-	case "Club":
-		return CLUB
-	case "Diamond":
-		return DIAMOND
-	case "Heart":
-		return HEART
-	case "Spade":
-		return SPADE
-	}
-	return 0
-}
+// func SuitStringToInt(suit string) int {
+// 	switch suit {
+// 	case "":
+// 		return NOSUIT
+// 	case "Club":
+// 		return CLUB
+// 	case "Diamond":
+// 		return DIAMOND
+// 	case "Heart":
+// 		return HEART
+// 	case "Spade":
+// 		return SPADE
+// 	}
+// 	return 0
+// }
 
 // SuitIntToString converts a suit int (HEART) to a string ("Heart")
 func SuitIntToString(suit int) string {
 	switch suit {
-	case NOSUIT:
-		return ""
 	case CLUB:
 		return "Club"
 	case DIAMOND:
@@ -163,6 +160,7 @@ func SuitIntToString(suit int) string {
 		return "Heart"
 	case SPADE:
 		return "Spade"
+	default:
+		return ""
 	}
-	return ""
 }

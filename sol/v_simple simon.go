@@ -94,7 +94,7 @@ func (*SimpleSimon) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*SimpleSimon) PileTapped(*Pile) {}
+// func (*SimpleSimon) PileTapped(*Pile) {}
 
 func (self *SimpleSimon) Complete() bool {
 	return self.SpiderComplete()

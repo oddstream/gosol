@@ -126,4 +126,4 @@ func (*Freecell) TailTapped(tail []*Card) {
 	tail[0].Owner().vtable.TailTapped(tail)
 }
 
-func (*Freecell) PileTapped(*Pile) {}
+// func (*Freecell) PileTapped(*Pile) {}

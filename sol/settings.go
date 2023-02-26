@@ -36,7 +36,7 @@ type Settings struct {
 }
 
 func NewSettings() *Settings {
-	return &Settings{
+	s := &Settings{
 		Variant:                "Klondike",
 		BaizeColor:             "BaizeGreen",
 		PowerMoves:             true,
@@ -64,6 +64,8 @@ func NewSettings() *Settings {
 		LastVersionMajor: 0,
 		LastVersionMinor: 0,
 	}
+	s.Load()
+	return s
 }
 
 func ShowSettingsDrawer() {

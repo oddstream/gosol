@@ -1,4 +1,4 @@
-package sol
+package dark
 
 //lint:file-ignore ST1005 Error messages are toasted, so need to be capitalized
 //lint:file-ignore ST1006 Receiver name will be anything I like, thank you
@@ -6,10 +6,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"image/color"
-
-	"github.com/fogleman/gg"
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Discard struct {
@@ -17,7 +13,7 @@ type Discard struct {
 }
 
 func NewDiscard(slot image.Point, fanType FanType) *Pile {
-	pile := NewPile("Discard", slot, FAN_NONE, MOVE_NONE)
+	pile := newPile("Discard", slot, FAN_NONE, MOVE_NONE)
 	pile.vtable = &Discard{pile: pile}
 	return pile
 }
@@ -26,18 +22,18 @@ func (self *Discard) CanAcceptTail(tail []*Card) (bool, error) {
 	if !self.pile.Empty() {
 		return false, errors.New("Can only move cards to an empty Discard")
 	}
-	if AnyCardsProne(tail) {
+	if anyCardsProne(tail) {
 		return false, errors.New("Cannot move a face down card to a Discard")
 	}
-	if len(tail) != TheGame.Baize.cardCount/len(TheGame.Baize.script.Discards()) {
+	if len(tail) != theDark.baize.cardCount/len(theDark.baize.script.Discards()) {
 		return false, errors.New("Can only move a full set of cards to a Discard")
 	}
-	if ok, err := TailConformant(tail, CardPair.Compare_DownSuit); !ok {
+	if ok, err := tailConformant(tail, CardPair.Compare_DownSuit); !ok {
 		return false, err
 	}
 	// Scorpion tails can always be moved, but Mrs Mop/Simple Simon tails
 	// must be conformant, so ...
-	return TheGame.Baize.script.TailMoveError(tail)
+	return theDark.baize.script.TailMoveError(tail)
 }
 
 func (*Discard) TailTapped([]*Card) {
@@ -57,17 +53,6 @@ func (*Discard) UnsortedPairs() int {
 	return 0
 }
 
-func (*Discard) MovableTails() []*MovableTail {
+func (*Discard) MovableTails() []*movableTail {
 	return nil
-}
-
-func (*Discard) Placeholder() *ebiten.Image {
-	dc := gg.NewContext(CardWidth, CardHeight)
-	dc.SetColor(color.NRGBA{255, 255, 255, 31})
-	dc.SetLineWidth(2)
-	// draw the RoundedRect entirely INSIDE the context
-	dc.DrawRoundedRectangle(1, 1, float64(CardWidth-2), float64(CardHeight-2), CardCornerRadius)
-	dc.Fill() // difference for this subpile
-	dc.Stroke()
-	return ebiten.NewImageFromImage(dc.Image())
 }

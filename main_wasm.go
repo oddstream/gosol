@@ -21,9 +21,9 @@ func main() {
 	defer func() {
 		log.Println("main defer cleanup")
 		if !sol.NoGameSave {
-			sol.TheBaize.Save()
+			sol.TheGame.Baize.Save()
 		}
-		sol.TheSettings.Save()
+		sol.TheGame.Settings.Save()
 	}()
 
 	if err := ebiten.RunGame(sol.TheGame); err != nil {
