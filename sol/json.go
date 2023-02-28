@@ -109,7 +109,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 }
 
 // Load an already existing Settings object from file
-func (prefs *Settings) Load() {
+func (s *Settings) Load() {
 	// defer util.Duration(time.Now(), "Settings.Load")
 
 	bytes, count, err := loadBytesFromFile("preferences.json", false)
@@ -118,20 +118,20 @@ func (prefs *Settings) Load() {
 	}
 
 	// golang gotcha reslice buffer to number of bytes actually read
-	err = json.Unmarshal(bytes[:count], prefs)
+	err = json.Unmarshal(bytes[:count], s)
 	if err != nil {
 		log.Panic("Settings.Load Unmarshal", err)
 	}
 }
 
 // Save writes the Settings object to file
-func (prefs *Settings) Save() {
+func (s *Settings) Save() {
 	// defer util.Duration(time.Now(), "Settings.Save")
 
-	prefs.LastVersionMajor = GosolVersionMajor
-	prefs.LastVersionMinor = GosolVersionMinor
+	s.LastVersionMajor = GosolVersionMajor
+	s.LastVersionMinor = GosolVersionMinor
 	// warning - calling ebiten function ouside RunGame loop will cause fatal panic
-	bytes, err := json.MarshalIndent(prefs, "", "\t")
+	bytes, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}

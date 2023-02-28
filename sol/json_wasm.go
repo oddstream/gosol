@@ -91,21 +91,17 @@ func (s *Statistics) Save() {
 
 }
 
-Load the entire undo stack from storage
+// Load the entire undo stack from storage
 func (b *Baize) Load() {
-
-	if runtime.GOARCH != "wasm" {
-		log.Fatal("GOOS=js GOARCH=wasm required")
-	}
-
-	bytes, err := loadBytesFromLocalStorage("saved."+b,variant, true)
+	bytes, err := loadBytesFromLocalStorage("saved."+b.variant, true)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	err = json.Unmarshal(bytes, &b.UndoStack)
+	var undoStack []*SavableBaize
+	err = json.Unmarshal(bytes, undoStack)
 	if err != nil {
-		log.Println("%s.Load().Unmarshal() error", v, err)
+		log.Println("%s.Load().Unmarshal() error", b.variant, err)
 		return
 	}
 	if !b.IsSavableStackOk(undoStack) {
@@ -116,12 +112,10 @@ func (b *Baize) Load() {
 
 // Save the entire undo stack to storage
 func (b *Baize) Save() {
-
-	// do not bother to save virgin or completed games
-	if len(b.undoStack) < 2 || b.Complete() {
-		return
-	}
-
+	// // do not bother to save virgin or completed games
+	// if len(b.undoStack) < 2 || b.Complete() {
+	// 	return
+	// }
 	bytes, err := json.Marshal(b.undoStack)
 	if err != nil {
 		log.Println("Baize.Save().Marshal() error", err)

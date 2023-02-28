@@ -21,7 +21,7 @@ func main() {
 	defer func() {
 		log.Println("main defer cleanup")
 		if !sol.NoGameSave {
-			sol.TheGame.Baize.Save(sol.TheGame.Settings.Variant)
+			sol.TheGame.Baize.Save()
 		}
 		sol.TheGame.Settings.Save()
 	}()
