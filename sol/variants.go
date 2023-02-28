@@ -122,8 +122,8 @@ var Variants = map[string]Scripter{
 	"Gargantua": &Klondike{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Gargantua_(card_game)",
+			packs:     2,
 		},
-		packs:    2,
 		draw:     1,
 		recycles: 2,
 		founds:   []int{3, 4, 5, 6, 7, 8, 9, 10},    // 8
@@ -132,8 +132,8 @@ var Variants = map[string]Scripter{
 	"Triple Klondike": &Klondike{
 		ScriptBase: ScriptBase{
 			wikipedia: "https://en.wikipedia.org/wiki/Gargantua_(card_game)",
+			packs:     3,
 		},
-		packs:    3,
 		draw:     1,
 		recycles: 2,
 		founds:   []int{4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},             // 12

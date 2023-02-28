@@ -82,9 +82,7 @@ func NewGame() {
 	}
 	TheGame.Baize.StartFreshGame()
 	if !NoGameLoad {
-		if undoStack := LoadUndoStack(TheGame.Settings.Variant); TheGame.Baize.IsSavableStackOk(undoStack) {
-			TheGame.Baize.SetUndoStack(undoStack)
-		}
+		TheGame.Baize.Load()
 	}
 
 	if TheGame.Settings.LastVersionMajor != GosolVersionMajor || TheGame.Settings.LastVersionMinor != GosolVersionMinor {
@@ -113,7 +111,7 @@ func (g *Game) Update() error {
 	g.Baize.Update()
 	if ExitRequested {
 		if !NoGameSave {
-			g.Baize.Save(TheGame.Settings.Variant)
+			g.Baize.Save()
 		}
 		g.Settings.Save()
 		return errors.New("exit requested")

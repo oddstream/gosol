@@ -114,10 +114,10 @@ func (self *Pile) Hidden() bool {
 	return self.slot.X < 0 || self.slot.Y < 0
 }
 
-func (self *Pile) IsCell() bool {
-	_, ok := self.vtable.(*Cell)
-	return ok
-}
+// func (self *Pile) IsCell() bool {
+// 	_, ok := self.vtable.(*Cell)
+// 	return ok
+// }
 
 // func (self *Pile) IsFoundation() bool {
 // 	_, ok := self.vtable.(*Foundation)

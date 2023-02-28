@@ -166,8 +166,26 @@ func (s *Statistics) Save() {
 	saveBytesToFile(bytes, "statistics.json")
 }
 
+// Load an undo stack saved to json
+func (b *Baize) Load() {
+	bytes, count, err := loadBytesFromFile("saved."+b.variant+".json", true)
+	if err != nil || count == 0 || bytes == nil {
+		return
+	}
+	var undoStack []*SavableBaize
+	// golang gotcha reslice buffer to number of bytes actually read
+	err = json.Unmarshal(bytes[:count], &undoStack)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !b.IsSavableStackOk(undoStack) {
+		log.Fatal("saved undo stack is not ok")
+	}
+	b.SetUndoStack(undoStack)
+}
+
 // Save the entire undo stack to file
-func (b *Baize) Save(variant string) {
+func (b *Baize) Save() {
 	// defer util.Duration(time.Now(), "Baize.Save")
 
 	// do not bother to save virgin or completed games
@@ -180,26 +198,5 @@ func (b *Baize) Save(variant string) {
 		log.Fatal(err)
 	}
 
-	saveBytesToFile(bytes, "saved."+variant+".json")
-}
-
-func LoadUndoStack(variant string) []*SavableBaize {
-	// defer util.Duration(time.Now(), "LoadUndoStack")
-
-	bytes, count, err := loadBytesFromFile("saved."+variant+".json", true)
-	if err != nil || count == 0 || bytes == nil {
-		return nil
-	}
-
-	var undoStack []*SavableBaize
-	// golang gotcha reslice buffer to number of bytes actually read
-	err = json.Unmarshal(bytes[:count], &undoStack)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if len(undoStack) > 0 {
-		return undoStack
-	}
-	return nil
+	saveBytesToFile(bytes, "saved."+b.variant+".json")
 }

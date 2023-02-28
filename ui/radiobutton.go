@@ -70,7 +70,9 @@ func (w *RadioButton) Tapped() {
 	if w.disabled {
 		return
 	}
-	*(w.floatVarPtr) = w.value
+	if w.floatVarPtr != nil {
+		*(w.floatVarPtr) = w.value
+	}
 	for _, wgt := range w.parent.Widgets() {
 		if rb, ok := wgt.(*RadioButton); ok {
 			rb.img = rb.createImg()

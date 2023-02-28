@@ -70,8 +70,12 @@ func (w *Checkbox) Tapped() {
 	if w.disabled {
 		return
 	}
-	*(w.boolVarPtr) = !*(w.boolVarPtr)
+	if w.boolVarPtr != nil {
+		*(w.boolVarPtr) = !*(w.boolVarPtr)
+	}
 	w.img = w.createImg()
-	w.fnUpdate()
+	if w.fnUpdate != nil {
+		w.fnUpdate()
+	}
 	cmdFn(Command{Command: "SaveSettings"})
 }

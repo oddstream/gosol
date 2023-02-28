@@ -91,8 +91,31 @@ func (s *Statistics) Save() {
 
 }
 
-// Save the entire undo stack to file
-func (b *Baize) Save(variant string) {
+Load the entire undo stack from storage
+func (b *Baize) Load() {
+
+	if runtime.GOARCH != "wasm" {
+		log.Fatal("GOOS=js GOARCH=wasm required")
+	}
+
+	bytes, err := loadBytesFromLocalStorage("saved."+b,variant, true)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = json.Unmarshal(bytes, &b.UndoStack)
+	if err != nil {
+		log.Println("%s.Load().Unmarshal() error", v, err)
+		return
+	}
+	if !b.IsSavableStackOk(undoStack) {
+		log.Println("saved undo stack is not ok")
+	}
+	b.SetUndoStack(undoStack)
+}
+
+// Save the entire undo stack to storage
+func (b *Baize) Save() {
 
 	// do not bother to save virgin or completed games
 	if len(b.undoStack) < 2 || b.Complete() {
@@ -103,50 +126,6 @@ func (b *Baize) Save(variant string) {
 	if err != nil {
 		log.Println("Baize.Save().Marshal() error", err)
 	} else {
-		saveBytesToLocalStorage(bytes, "saved."+variant)
+		saveBytesToLocalStorage(bytes, "saved."+b.variant)
 	}
-
-}
-
-// Load the entire undo stack from file
-// func (b *Baize) Load(v string) bool {
-
-// 	if runtime.GOARCH != "wasm" {
-// 		log.Fatal("GOOS=js GOARCH=wasm required")
-// 	}
-
-// 	bytes, err := loadBytesFromLocalStorage(v, true)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return false
-// 	}
-// 	err = json.Unmarshal(bytes, &b.UndoStack)
-// 	if err != nil {
-// 		log.Println("%s.Load().Unmarshal() error", v, err)
-// 		return false
-// 	}
-// 	return b.UndoStack != nil && len(b.UndoStack) > 0
-
-// }
-
-func LoadUndoStack(variant string) []*SavableBaize {
-	// defer util.Duration(time.Now(), "LoadUndoStack")
-
-	bytes, err := loadBytesFromLocalStorage("saved."+variant, true)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-
-	var undoStack []*SavableBaize
-	err = json.Unmarshal(bytes, &undoStack)
-	if err != nil {
-		log.Println("LoadUndoStack().Unmarshal() error", err)
-		// log.Fatal(err)
-	}
-
-	if len(undoStack) > 0 {
-		return undoStack
-	}
-	return nil
 }

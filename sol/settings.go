@@ -9,20 +9,18 @@ import (
 // Colors are named from the web extended colors at https://en.wikipedia.org/wiki/Web_colors
 type Settings struct {
 	// Capitals to emit to json
-	Variant              string
-	BaizeColor           string
-	CardFaceColor        string
-	CardBackColor        string
-	MovableCardBackColor string
-	BlackColor           string
-	RedColor             string
-	ClubColor            string
-	DiamondColor         string
-	HeartColor           string
-	SpadeColor           string
-	ColorfulCards        bool
-	// FixedCards                         bool
-	// FixedCardWidth, FixedCardHeight    int
+	Variant                            string
+	BaizeColor                         string
+	CardFaceColor                      string
+	CardBackColor                      string
+	MovableCardBackColor               string
+	BlackColor                         string
+	RedColor                           string
+	ClubColor                          string
+	DiamondColor                       string
+	HeartColor                         string
+	SpadeColor                         string
+	ColorfulCards                      bool
 	PowerMoves                         bool
 	SafeCollect, AutoCollect           bool
 	Mute                               bool
@@ -33,6 +31,8 @@ type Settings struct {
 	CardRatio                          float64
 	AniSpeed                           float64
 	LastVersionMajor, LastVersionMinor int
+	// FixedCards                         bool
+	// FixedCardWidth, FixedCardHeight    int
 }
 
 func NewSettings() *Settings {
@@ -70,10 +70,10 @@ func NewSettings() *Settings {
 
 func ShowSettingsDrawer() {
 	var BooleanSettings = []ui.BooleanSetting{
-		{Title: "Power moves", Var: &TheGame.Settings.PowerMoves, Update: func() {}},
-		{Title: "Auto collect", Var: &TheGame.Settings.AutoCollect, Update: func() {}},
-		{Title: "Safe collect", Var: &TheGame.Settings.SafeCollect, Update: func() {}},
-		{Title: "Show movable cards", Var: &TheGame.Settings.ShowMovableCards, Update: func() {}},
+		{Title: "Power moves", Var: &TheGame.Settings.PowerMoves},
+		{Title: "Auto collect", Var: &TheGame.Settings.AutoCollect},
+		{Title: "Safe collect", Var: &TheGame.Settings.SafeCollect},
+		{Title: "Show movable cards", Var: &TheGame.Settings.ShowMovableCards},
 		{Title: "Colorful cards", Var: &TheGame.Settings.ColorfulCards, Update: func() { TheGame.Baize.setFlag(dirtyCardImages) }},
 		{Title: "Mute sounds", Var: &TheGame.Settings.Mute, Update: func() {
 			if TheGame.Settings.Mute {

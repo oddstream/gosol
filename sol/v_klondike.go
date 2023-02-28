@@ -5,20 +5,17 @@ package sol
 
 import (
 	"image"
+	"log"
 )
 
 type Klondike struct {
 	ScriptBase
-	founds, tabs          []int
-	packs, draw, recycles int
-	thoughtful            bool
+	founds, tabs   []int
+	draw, recycles int
+	thoughtful     bool
 }
 
 func (self *Klondike) BuildPiles() {
-
-	if self.packs == 0 {
-		self.packs = 1
-	}
 	if len(self.founds) == 0 {
 		self.founds = []int{3, 4, 5, 6}
 	}
@@ -28,7 +25,7 @@ func (self *Klondike) BuildPiles() {
 	if self.draw == 0 {
 		self.draw = 1
 	}
-	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, self.packs, 4, nil, 0)
+	self.stock = NewStock(image.Point{0, 0}, FAN_NONE, self.Packs(), 4, nil, 0)
 	self.waste = NewWaste(image.Point{1, 0}, FAN_RIGHT3)
 
 	self.foundations = []*Pile{}
@@ -51,6 +48,10 @@ func (self *Klondike) StartGame() {
 	for _, pile := range self.tableaux {
 		for i := 0; i < dealDown; i++ {
 			card := MoveCard(self.stock, pile)
+			if card == nil {
+				log.Print("No card")
+				break
+			}
 			if !self.thoughtful {
 				card.FlipDown()
 			}

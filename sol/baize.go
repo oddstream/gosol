@@ -119,7 +119,9 @@ func (b *Baize) NewDeal() {
 	}
 
 	// Stock.Fill() needs parameters
-	b.cardCount = b.script.Stock().Fill(b.script.Packs(), b.script.Suits())
+	packs := b.script.Packs()
+	suits := b.script.Suits()
+	b.cardCount = b.script.Stock().Fill(packs, suits)
 	b.script.Stock().Shuffle()
 	b.script.StartGame()
 	b.UndoPush()
@@ -180,6 +182,8 @@ func (b *Baize) Reset() {
 	b.StopSpinning()
 	b.undoStack = []*SavableBaize{}
 	b.bookmark = 0
+	b.recycles = 0
+	// leave script intact
 }
 
 // StartFreshGame resets Baize and starts a new game with a new seed
@@ -209,21 +213,20 @@ func (b *Baize) ChangeVariant(newVariant string) {
 		TheGame.UI.Toast("Error", "Do not know how to play "+newVariant)
 		return
 	}
-	b.Save(b.variant)
+	b.Save()
 	b.variant = newVariant
 	TheGame.Settings.Variant = b.variant
 	TheGame.Settings.Save()
 	b.script = newScript
 	b.StartFreshGame()
 	if !NoGameLoad {
-		if undoStack := LoadUndoStack(b.variant); b.IsSavableStackOk(undoStack) {
-			TheGame.Baize.SetUndoStack(undoStack)
-		}
+		TheGame.Baize.Load()
 	}
 }
 
 func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.undoStack = undoStack
+	TheGame.UI.Toast("Glass", "Loaded a saved game of "+b.variant)
 	sav := b.UndoPeek()
 	b.UpdateFromSavable(sav)
 	b.FindDestinations()

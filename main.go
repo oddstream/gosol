@@ -65,7 +65,7 @@ func main() {
 	// println("main exit")
 
 	if !sol.NoGameSave {
-		sol.TheGame.Baize.Save(sol.TheGame.Settings.Variant)
+		sol.TheGame.Baize.Save()
 	}
 
 	sol.TheGame.Settings.Save()
