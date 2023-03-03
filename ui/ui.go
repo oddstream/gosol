@@ -18,7 +18,6 @@ const (
 )
 
 var (
-	GenerateIcons    bool        = false
 	ForegroundColor  color.Color = color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xe8}
 	BackgroundColor  color.Color = color.RGBA{R: 0x24, G: 0x24, B: 0x24, A: 0xe8}
 	TransparentColor color.Color = color.RGBA{R: 0, G: 0, B: 0, A: 0}
@@ -46,7 +45,7 @@ func New(fn func(interface{})) *UI {
 	cmdFn = fn
 	ui := &UI{}
 
-	LoadIconMap()
+	LoadIconMapFromEmbedded()
 
 	ui.toastManager = &ToastManager{}
 	ui.toolbar = NewToolbar()

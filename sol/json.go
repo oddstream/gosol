@@ -112,7 +112,7 @@ func saveBytesToFile(bytes []byte, jsonFname string) {
 func (s *Settings) Load() {
 	// defer util.Duration(time.Now(), "Settings.Load")
 
-	bytes, count, err := loadBytesFromFile("preferences.json", false)
+	bytes, count, err := loadBytesFromFile("settings.json", false)
 	if err != nil || count == 0 || bytes == nil {
 		return
 	}
@@ -135,7 +135,7 @@ func (s *Settings) Save() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	saveBytesToFile(bytes, "preferences.json")
+	saveBytesToFile(bytes, "settings.json")
 }
 
 // Load statistics for all variants from JSON to an already-created Statistics object

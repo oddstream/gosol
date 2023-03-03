@@ -40,7 +40,7 @@ func saveBytesToLocalStorage(bytes []byte, key string) {
 // Load an already existing Settings object from browser localStorage
 func (ud *Settings) Load() {
 
-	bytes, err := loadBytesFromLocalStorage("preferences", false)
+	bytes, err := loadBytesFromLocalStorage("settings", false)
 	if err != nil {
 		log.Println(err)
 		return
@@ -59,7 +59,7 @@ func (ud *Settings) Save() {
 	if err != nil {
 		log.Println("Settings.Save().Marshal() error", err)
 	} else {
-		saveBytesToLocalStorage(bytes, "preferences")
+		saveBytesToLocalStorage(bytes, "settings")
 	}
 
 }

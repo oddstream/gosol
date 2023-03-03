@@ -6,7 +6,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"log"
 )
 
 type Spiderette struct {
@@ -35,20 +34,20 @@ func (self *Spiderette) BuildPiles() {
 }
 
 func (self *Spiderette) StartGame() {
-	var dealDown int = 0
+	var deal int = 1
 	for _, pile := range self.tableaux {
-		for i := 0; i < dealDown; i++ {
-			MoveCard(self.stock, pile).FlipDown()
+		for i := 0; i < deal; i++ {
+			if c := MoveCard(self.stock, pile); c != nil {
+				c.FlipDown()
+			}
 		}
-		dealDown++
+		deal++
 		MoveCard(self.stock, pile)
 	}
 	for _, pile := range self.tableaux {
-		c := pile.Peek()
-		if c == nil {
-			log.Panic("empty tableau")
+		if c := pile.Peek(); c != nil {
+			c.FlipUp()
 		}
-		c.FlipUp()
 	}
 	TheGame.Baize.SetRecycles(0)
 }

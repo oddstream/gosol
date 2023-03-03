@@ -1,10 +1,12 @@
 package ui
-// Code automatically generated. DO NOT EDIT.
 
 //lint:file-ignore U1000,ST1003 Ignore unused code and underscores in generated code
 
 import (
+	"bytes"
 	_ "embed" // go:embed only allowed in Go files that import "embed"
+	"image"
+	"log"
 )
 
 //go:embed icons/bookmark.png
@@ -69,6 +71,16 @@ var speedIconBytes []byte
 
 //go:embed icons/wikipedia.png
 var wikipediaIconBytes []byte
+
+var IconMap = map[string]image.Image{}
+
+func decode(name string, variable []byte) {
+	img, _, err := image.Decode(bytes.NewReader(variable))
+	if err != nil {
+		log.Panic(err)
+	}
+	IconMap[name] = img
+}
 
 // LoadIconMapFromEmbedded loads icons from go:embed vars
 func LoadIconMapFromEmbedded() {

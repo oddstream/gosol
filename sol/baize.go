@@ -49,12 +49,13 @@ type Baize struct {
 func NewBaize(variant string) *Baize {
 	// let WindowWidth, WindowHeight be zero, so that the first Layout will
 	// trigger card scaling and pile placement
-	var b *Baize = &Baize{variant: variant, dirtyFlags: 0xFFFF}
+	var script Scripter
 	var ok bool
-	if b.script, ok = Variants[b.variant]; !ok {
-		log.Panic("do not know how to play " + variant)
+	if script, ok = Variants[variant]; !ok {
+		log.Printf("do not know how to play " + variant)
+		return nil
 	}
-	return b
+	return &Baize{variant: variant, script: script, dirtyFlags: 0xFFFF}
 }
 
 func (b *Baize) flagSet(flag uint32) bool {
@@ -1001,8 +1002,6 @@ func (b *Baize) Update() error {
 		}
 	}
 
-	TheGame.UI.Update()
-
 	return nil
 }
 
@@ -1027,7 +1026,6 @@ func (b *Baize) Draw(screen *ebiten.Image) {
 	// 	b.hotCard.Draw(screen)
 	// }
 
-	TheGame.UI.Draw(screen)
 	// if DebugMode {
 	// var ms runtime.MemStats
 	// runtime.ReadMemStats(&ms)

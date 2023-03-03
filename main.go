@@ -18,7 +18,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	sol "oddstream.games/gosol/sol"
-	"oddstream.games/gosol/ui"
 	"oddstream.games/gosol/util"
 )
 
@@ -31,7 +30,6 @@ func main() {
 	flag.BoolVar(&sol.NoGameLoad, "noload", false, "do not load saved game when starting")
 	flag.BoolVar(&sol.NoGameSave, "nosave", false, "do not save game before exit")
 	flag.BoolVar(&sol.NoScrunch, "noscrunch", false, "do not scrunch cards")
-	flag.BoolVar(&ui.GenerateIcons, "generateicons", false, "generate icon files")
 
 	flag.Parse()
 
@@ -43,10 +41,10 @@ func main() {
 
 	// ebiten panics if a window to maximize is not resizable
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
-		// GNOME (maybe) annoyingly keeps maximizing the window
-		ebiten.RestoreWindow()
-	}
+	// if ebiten.IsWindowMaximized() || ebiten.IsWindowMinimized() {
+	// 	// GNOME (maybe) annoyingly keeps maximizing the window
+	// 	ebiten.RestoreWindow()
+	// }
 	{
 		x, y := ebiten.ScreenSizeInFullscreen()
 		n := util.Max(x, y)

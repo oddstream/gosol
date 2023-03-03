@@ -109,6 +109,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // https://ebitencookbook.vercel.app/blog
 func (g *Game) Update() error {
 	g.Baize.Update()
+	g.UI.Update()
 	if ExitRequested {
 		if !NoGameSave {
 			g.Baize.Save()
@@ -124,4 +125,5 @@ func (g *Game) Update() error {
 // https://ebitencookbook.vercel.app/blog
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Baize.Draw(screen)
+	g.UI.Draw(screen)
 }

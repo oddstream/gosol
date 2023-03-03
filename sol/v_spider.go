@@ -6,7 +6,6 @@ package sol
 import (
 	"errors"
 	"image"
-	"log"
 )
 
 type Spider struct {
@@ -47,11 +46,9 @@ func (self *Spider) StartGame() {
 		}
 	}
 	for _, pile := range self.tableaux {
-		c := pile.Peek()
-		if c == nil {
-			log.Panic("empty tableau")
+		if c := pile.Peek(); c != nil {
+			c.FlipUp()
 		}
-		c.FlipUp()
 	}
 	TheGame.Baize.SetRecycles(0)
 }
