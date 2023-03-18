@@ -229,7 +229,7 @@ func (b *Baize) SetUndoStack(undoStack []*SavableBaize) {
 	b.undoStack = undoStack
 	TheGame.UI.Toast("Glass", "Loaded a saved game of "+b.variant)
 	sav := b.UndoPeek()
-	b.UpdateFromSavable(sav)
+	b.updateFromSavable(sav)
 	b.FindDestinations()
 	TheGame.UI.HideFAB()
 	if b.Complete() {

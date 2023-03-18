@@ -79,7 +79,7 @@ func (b *Baize) Load() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if !b.IsSavableStackOk(undoStack) {
+	if !b.isSavableStackOk(undoStack) {
 		log.Fatal("saved undo stack is not ok")
 	}
 	b.SetUndoStack(undoStack)

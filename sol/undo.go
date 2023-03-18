@@ -24,7 +24,7 @@ type SavableBaize struct {
 	Recycles int            `json:",omitempty"`
 }
 
-func (self *Pile) Savable() *SavablePile {
+func (self *Pile) savable() *SavablePile {
 	sp := &SavablePile{Category: self.category, Label: self.label}
 	for _, c := range self.cards {
 		sp.Cards = append(sp.Cards, c.id)
@@ -32,7 +32,7 @@ func (self *Pile) Savable() *SavablePile {
 	return sp
 }
 
-func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.CardID]image.Point) {
+func (self *Pile) updateFromSavable(sp *SavablePile, cardPositionMap map[cardid.CardID]image.Point) {
 	if self.category != sp.Category {
 		log.Panicf("Baize pile (%s) and SavablePile (%s) are different", self.category, sp.Category)
 	}
@@ -65,16 +65,16 @@ func (self *Pile) UpdateFromSavable(sp *SavablePile, cardPositionMap map[cardid.
 	self.SetLabel(sp.Label)
 }
 
-func (b *Baize) NewSavableBaize() *SavableBaize {
+func (b *Baize) newSavableBaize() *SavableBaize {
 	sb := &SavableBaize{Bookmark: b.bookmark, Recycles: b.recycles}
 	for _, p := range b.piles {
-		sb.Piles = append(sb.Piles, p.Savable())
+		sb.Piles = append(sb.Piles, p.savable())
 	}
 	return sb
 }
 
 func (b *Baize) UndoPush() {
-	sb := b.NewSavableBaize()
+	sb := b.newSavableBaize()
 	b.undoStack = append(b.undoStack, sb)
 }
 
@@ -94,7 +94,7 @@ func (b *Baize) UndoPop() (*SavableBaize, bool) {
 	return sav, true
 }
 
-func (b *Baize) IsSavableOk(sb *SavableBaize) bool {
+func (b *Baize) isSavableOk(sb *SavableBaize) bool {
 	if len(b.piles) != len(sb.Piles) {
 		log.Printf("Baize piles (%d) and SavableBaize piles (%d) are different", len(b.piles), len(sb.Piles))
 		return false
@@ -108,20 +108,20 @@ func (b *Baize) IsSavableOk(sb *SavableBaize) bool {
 	return true
 }
 
-func (b *Baize) IsSavableStackOk(stack []*SavableBaize) bool {
+func (b *Baize) isSavableStackOk(stack []*SavableBaize) bool {
 	if stack == nil {
 		log.Print("No savable stack")
 		return false
 	}
 	for i := 0; i < len(stack); i++ {
-		if !b.IsSavableOk(stack[i]) {
+		if !b.isSavableOk(stack[i]) {
 			return false
 		}
 	}
 	return true
 }
 
-func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
+func (b *Baize) updateFromSavable(sb *SavableBaize) {
 	if len(b.piles) != len(sb.Piles) {
 		log.Panicf("Baize piles (%d) and SavableBaize piles (%d) are different", len(b.piles), len(sb.Piles))
 	}
@@ -129,7 +129,7 @@ func (b *Baize) UpdateFromSavable(sb *SavableBaize) {
 	b.ForeachCard(func(c *Card) { cardPositionMap[c.id] = c.pos })
 
 	for i := 0; i < len(sb.Piles); i++ {
-		b.piles[i].UpdateFromSavable(sb.Piles[i], cardPositionMap)
+		b.piles[i].updateFromSavable(sb.Piles[i], cardPositionMap)
 	}
 	sound.Play("TakeOutPackage")
 	b.bookmark = sb.Bookmark
@@ -157,7 +157,7 @@ func (b *Baize) Undo() {
 	if !ok {
 		log.Panic("error popping second state from undo stack")
 	}
-	b.UpdateFromSavable(sav)
+	b.updateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
 	TheGame.Settings.AutoCollect = saved
@@ -176,7 +176,7 @@ func (b *Baize) RestartDeal() {
 			log.Panic("error popping from undo stack")
 		}
 	}
-	b.UpdateFromSavable(sav)
+	b.updateFromSavable(sav)
 	b.bookmark = 0 // do this AFTER UpdateFromSavable
 	b.UndoPush()   // replace current state
 	b.FindDestinations()
@@ -214,7 +214,7 @@ func (b *Baize) LoadPosition() {
 			log.Panic("error popping from undo stack")
 		}
 	}
-	b.UpdateFromSavable(sav)
+	b.updateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
 }
