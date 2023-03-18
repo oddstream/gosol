@@ -107,18 +107,18 @@ func (c *Card) Black() bool {
 	return c.id.Black()
 }
 
-// Pos returns the x,y baize coords of this card
+// BaizePos returns the x,y baize coords of this card
 func (c *Card) BaizePos() image.Point {
 	return c.pos
 }
 
-// SetPosition sets the position of the Card
+// SetBaizePos sets the position of the Card
 func (c *Card) SetBaizePos(pos image.Point) {
 	c.lerping = false
 	c.pos = pos
 }
 
-// Rect gives the x,y baize coords of the card's top left and bottom right corners
+// BaizeRect gives the x,y baize coords of the card's top left and bottom right corners
 func (c *Card) BaizeRect() image.Rectangle {
 	var r image.Rectangle
 	r.Min = c.pos
@@ -455,19 +455,17 @@ func (c *Card) Draw(screen *ebiten.Image) {
 			// nb this will color all the stock cards, not just the top card
 			img = MovableCardBackImage
 		} else {
-			if !c.Flipping() && c.tapDestination != nil {
+			if !c.Flipping() && c.tapWeight != 0 {
 				// c.destinations has been sorted so weightiest is first
 				switch c.tapWeight {
-				case 0: // Cell
+				case 1: // Cell
 					op.ColorM.Scale(1.0, 1.0, 0.9, 1)
-				case 1: // Normal
+				case 2: // Normal
 					op.ColorM.Scale(1.0, 1.0, 0.8, 1)
-				case 2: // Suit match
+				case 3: // Suit match
 					op.ColorM.Scale(1.0, 1.0, 0.7, 1)
-				case 3: // Discard or Foundation
+				case 4: // Discard or Foundation
 					op.ColorM.Scale(1.0, 1.0, 0.6, 1)
-				default:
-					op.ColorM.Scale(0.9, 0.9, 0.9, 1)
 				}
 			}
 		}

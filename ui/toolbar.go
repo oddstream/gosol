@@ -30,7 +30,7 @@ func NewToolbar() *Toolbar {
 func (u *UI) SetTitle(title string) {
 	var l *Label = u.toolbar.widgets[1].(*Label)
 	l.UpdateText(title)
-	// u.toolbar.LayoutWidgets()
+	u.toolbar.LayoutWidgets()
 }
 
 // Layout implements Ebiten's Layout

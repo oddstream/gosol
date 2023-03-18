@@ -586,10 +586,9 @@ func (self *Pile) ApplyToCards(fn func(*Card)) {
 func (self *Pile) DefaultTailTapped(tail []*Card) {
 	card := tail[0]
 	if card.tapDestination != nil {
-		csrc := card.Owner()
-		ctail := csrc.MakeTail(card)
-		if len(ctail) == 1 {
-			MoveCard(csrc, card.tapDestination)
+		src := card.Owner()
+		if len(tail) == 1 {
+			MoveCard(src, card.tapDestination)
 		} else {
 			MoveTail(card, card.tapDestination)
 		}

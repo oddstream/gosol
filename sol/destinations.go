@@ -102,27 +102,27 @@ func (b *Baize) FindDestinations() {
 			var weight int
 			switch dst.vtable.(type) {
 			case *Cell:
-				weight = 0
+				weight = 1
 			case *Tableau:
 				if dst.Empty() {
 					if dst.Label() != "" {
-						weight = 1
+						weight = 2
 					} else {
-						weight = 0
+						weight = 1
 					}
 				} else if dst.Peek().Suit() == card.Suit() {
 					// Simple Simon, Spider
-					weight = 2
+					weight = 3
 				} else {
-					weight = 1
+					weight = 2
 				}
 			case *Foundation, *Discard:
 				// moves to Foundation get priority when card is tapped
-				weight = 3
+				weight = 4
 			default:
-				weight = 0
+				weight = 1
 			}
-			if card.tapDestination == nil || weight > card.tapWeight {
+			if weight > card.tapWeight {
 				card.tapDestination = dst
 				card.tapWeight = weight
 			}

@@ -147,11 +147,12 @@ func (b *Baize) Undo() {
 		TheGame.UI.ToastError("Cannot undo a completed game") // otherwise the stats can be cooked
 		return
 	}
+	var saved bool = TheGame.Settings.AutoCollect
+	TheGame.Settings.AutoCollect = false
 	_, ok := b.UndoPop() // removes current state
 	if !ok {
 		log.Panic("error popping current state from undo stack")
 	}
-
 	sav, ok := b.UndoPop() // removes previous state for examination
 	if !ok {
 		log.Panic("error popping second state from undo stack")
@@ -159,6 +160,7 @@ func (b *Baize) Undo() {
 	b.UpdateFromSavable(sav)
 	b.UndoPush() // replace current state
 	b.FindDestinations()
+	TheGame.Settings.AutoCollect = saved
 }
 
 func (b *Baize) RestartDeal() {
