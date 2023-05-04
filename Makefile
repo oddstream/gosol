@@ -9,7 +9,7 @@ GOMOBILE_PATH=~/go/bin/gomobile
 wasm: Makefile
 	GOOS=js GOARCH=wasm go build -v -o $(TARGET).wasm -ldflags="-s -w"
 
-linux: Makefile
+linux darwin: Makefile
 	go build -v -o $(TARGET) -ldflags="-s -w"
 
 windows: Makefile

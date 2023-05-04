@@ -1,4 +1,4 @@
-//go:build linux || windows
+//go:build linux || windows || darwin
 
 // https://go.googlesource.com/proposal/+/master/design/draft-gobuild.md
 // $ go mod init oddstream.games/gosol
